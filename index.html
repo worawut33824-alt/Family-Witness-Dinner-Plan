@@ -731,7 +731,13 @@ let expenses = JSON.parse(localStorage.getItem('wedding_expenses') || 'null') ||
 let checklist = JSON.parse(localStorage.getItem('wedding_checklist') || 'null') || JSON.parse(JSON.stringify(INITIAL_CHECKLIST));
 let contacts = JSON.parse(localStorage.getItem('wedding_contacts') || 'null') || JSON.parse(JSON.stringify(INITIAL_CONTACTS));
 let guests = JSON.parse(localStorage.getItem('wedding_guests') || '[]');
-let budgetPlan = JSON.parse(localStorage.getItem('wedding_budget') || 'null') || JSON.parse(JSON.stringify(BUDGET_PLAN));
+let budgetPlan = (() => {
+  try {
+    const s = JSON.parse(localStorage.getItem('wedding_budget') || 'null');
+    if (s && Array.isArray(s) && s.length > 0) return s;
+  } catch(e) {}
+  return JSON.parse(JSON.stringify(BUDGET_PLAN));
+})();
 let nextExpId = expenses.reduce((m,e)=>Math.max(m,e.id),0)+1;
 let nextConId = contacts.reduce((m,c)=>Math.max(m,c.id),0)+1;
 let nextGstId = guests.reduce((m,g)=>Math.max(m,g.id),0)+1;
