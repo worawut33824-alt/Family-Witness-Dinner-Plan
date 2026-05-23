@@ -18,10 +18,12 @@ function doGet(e) {
       result.contacts  = getContacts(ss);
       result.checklist = getChecklist(ss);
       result.guests    = getGuests(ss);
+      result.budget    = getBudget(ss);
     } else if (action === 'expenses')  result.expenses  = getExpenses(ss);
     else if (action === 'contacts')    result.contacts  = getContacts(ss);
     else if (action === 'checklist')   result.checklist = getChecklist(ss);
     else if (action === 'guests')      result.guests    = getGuests(ss);
+    else if (action === 'budget')      result.budget    = getBudget(ss);
     else result.message = 'unknown action';
   } catch(err) {
     result.status = 'error';
@@ -44,6 +46,7 @@ function doPost(e) {
     if (body.contacts  !== undefined) saveContacts(ss, body.contacts);
     if (body.checklist !== undefined) saveChecklist(ss, body.checklist);
     if (body.guests    !== undefined) saveGuests(ss, body.guests);
+    if (body.budget    !== undefined) saveBudget(ss, body.budget);
   } catch(err) {
     result.status = 'error';
     result.error  = err.toString();
@@ -191,6 +194,67 @@ function saveChecklist(ss, checklist) {
     if (appStatus === 'skipped') symbol = '✗';
     sheet.getRange(row, 1).setValue(symbol);
   });
+}
+
+// ─── BUDGET ──────────────────────────────────────────────────────────────────
+// Sheet: งบประมาณ  (สร้างอัตโนมัติถ้ายังไม่มี)
+// Row 1: Headers, Row 2+: Data
+// Columns: A=หมวดหมู่  B=งบรวมหมวด  C=รายการ  D=งบรายการ
+
+function getBudget(ss) {
+  var sheet = ss.getSheetByName('งบประมาณ');
+  if (!sheet) return [];
+  var lastRow = sheet.getLastRow();
+  if (lastRow < 2) return [];
+
+  var data = sheet.getRange(2, 1, lastRow - 1, 4).getValues();
+  var catMap = {};
+  var catOrder = [];
+
+  data.forEach(function(row) {
+    if (!row[0] && !row[2]) return;
+    var cat       = (row[0] || '').toString().trim();
+    var catBudget = parseFloat(row[1]) || 0;
+    var itemName  = (row[2] || '').toString().trim();
+    var itemBudget = parseFloat(row[3]) || 0;
+
+    if (cat) {
+      if (!catMap[cat]) {
+        catMap[cat] = { cat: cat, budget: catBudget, items: [] };
+        catOrder.push(cat);
+      } else if (row[1] !== '') {
+        catMap[cat].budget = catBudget;
+      }
+      if (itemName) {
+        catMap[cat].items.push({ name: itemName, budget: itemBudget });
+      }
+    }
+  });
+
+  return catOrder.map(function(c) { return catMap[c]; });
+}
+
+function saveBudget(ss, budget) {
+  var sheet = ss.getSheetByName('งบประมาณ');
+  if (!sheet) {
+    sheet = ss.insertSheet('งบประมาณ');
+    sheet.getRange(1, 1, 1, 4).setValues([['หมวดหมู่', 'งบรวมหมวด', 'รายการ', 'งบรายการ']]);
+    sheet.getRange(1, 1, 1, 4).setFontWeight('bold');
+    sheet.setFrozenRows(1);
+  }
+
+  var lastRow = sheet.getLastRow();
+  if (lastRow >= 2) sheet.getRange(2, 1, lastRow - 1, 4).clearContent();
+  if (!budget || !budget.length) return;
+
+  var rows = [];
+  budget.forEach(function(cat) {
+    cat.items.forEach(function(item) {
+      rows.push([cat.cat, cat.budget, item.name, item.budget]);
+    });
+  });
+
+  if (rows.length) sheet.getRange(2, 1, rows.length, 4).setValues(rows);
 }
 
 // ─── GUESTS ──────────────────────────────────────────────────────────────────

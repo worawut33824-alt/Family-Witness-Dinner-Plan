@@ -288,7 +288,7 @@
 <div id="page-budget" class="page">
   <div class="section-header">
     <h2>📋 งบประมาณแผน</h2>
-    <span style="font-size:0.8rem;color:var(--text-light)">งบจริง 250,000 บาท</span>
+    <span id="budget-total-label" style="font-size:0.8rem;color:var(--text-light)">งบรวมทุกหมวด 210,000 บาท</span>
   </div>
   <div id="budget-detail"></div>
 </div>
@@ -591,6 +591,31 @@
   </div>
 </div>
 
+<!-- BUDGET MODAL -->
+<div class="modal-overlay" id="budget-modal">
+  <div class="modal" style="max-width:520px">
+    <div class="modal-title" id="bm-title">✏️ แก้ไขงบประมาณ</div>
+
+    <!-- items -->
+    <div style="font-size:0.78rem;font-weight:700;color:var(--text-light);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px">รายการย่อย (บาท)</div>
+    <div id="bm-items"></div>
+
+    <!-- category total -->
+    <div style="display:flex;align-items:center;gap:12px;margin-top:14px;padding:12px 14px;background:var(--accent);border-radius:10px">
+      <div style="flex:1;font-size:0.9rem;font-weight:700;color:var(--primary-dark)">งบรวมหมวดนี้</div>
+      <div style="width:140px">
+        <input type="number" id="bm-cat-budget" min="0" style="text-align:right;font-weight:700;font-size:1rem;background:white">
+      </div>
+    </div>
+    <div style="font-size:0.75rem;color:var(--text-light);margin-top:6px">💡 งบรวมคำนวณอัตโนมัติจากผลรวมรายการ หรือแก้ไขเองได้</div>
+
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('budget-modal')">ยกเลิก</button>
+      <button class="btn btn-primary" onclick="saveBudgetModal()">💾 บันทึก</button>
+    </div>
+  </div>
+</div>
+
 <div id="toast"></div>
 
 <script>
@@ -706,6 +731,7 @@ let expenses = JSON.parse(localStorage.getItem('wedding_expenses') || 'null') ||
 let checklist = JSON.parse(localStorage.getItem('wedding_checklist') || 'null') || JSON.parse(JSON.stringify(INITIAL_CHECKLIST));
 let contacts = JSON.parse(localStorage.getItem('wedding_contacts') || 'null') || JSON.parse(JSON.stringify(INITIAL_CONTACTS));
 let guests = JSON.parse(localStorage.getItem('wedding_guests') || '[]');
+let budgetPlan = JSON.parse(localStorage.getItem('wedding_budget') || 'null') || JSON.parse(JSON.stringify(BUDGET_PLAN));
 let nextExpId = expenses.reduce((m,e)=>Math.max(m,e.id),0)+1;
 let nextConId = contacts.reduce((m,c)=>Math.max(m,c.id),0)+1;
 let nextGstId = guests.reduce((m,g)=>Math.max(m,g.id),0)+1;
@@ -715,13 +741,14 @@ function save() {
   localStorage.setItem('wedding_checklist', JSON.stringify(checklist));
   localStorage.setItem('wedding_contacts', JSON.stringify(contacts));
   localStorage.setItem('wedding_guests', JSON.stringify(guests));
+  localStorage.setItem('wedding_budget', JSON.stringify(budgetPlan));
 }
 
 // ─── HELPERS ─────────────────────────────────────────────────────────────────
 function fmt(n) { return (n<0?'('+Math.abs(n).toLocaleString('th-TH')+')':n.toLocaleString('th-TH'))+''; }
 function fmtB(n) { return (n<0?'':'') + n.toLocaleString('th-TH'); }
 function spentByCat(cat) { return expenses.filter(e=>e.cat===cat).reduce((s,e)=>s+e.amount,0); }
-function totalBudget() { return BUDGET_PLAN.reduce((s,c)=>s+c.budget,0); }
+function totalBudget() { return budgetPlan.reduce((s,c)=>s+c.budget,0); }
 function totalSpent() { return expenses.reduce((s,e)=>s+e.amount,0); }
 function toast(msg) {
   const t = document.getElementById('toast');
@@ -774,7 +801,7 @@ function renderDashboard() {
 
   // budget table
   let html = '<table><thead><tr><th>หมวดหมู่</th><th>งบ</th><th>จ่ายจริง</th><th>คงเหลือ</th><th>%</th><th>สถานะ</th></tr></thead><tbody>';
-  BUDGET_PLAN.forEach(c => {
+  budgetPlan.forEach(c => {
     const spent = spentByCat(c.cat), rem2 = c.budget - spent, pct2 = c.budget > 0 ? spent/c.budget : 0;
     const over = pct2 > 1, nearly = pct2 > 0.9;
     const badge = over ? '<span class="badge badge-over">🔴 เกินงบ</span>' : nearly ? '<span class="badge badge-warn">⚠ ใกล้เต็ม</span>' : '<span class="badge badge-ok">✅ ปกติ</span>';
@@ -784,8 +811,8 @@ function renderDashboard() {
   document.getElementById('budget-table').innerHTML = html;
 
   // pie chart
-  const labels = BUDGET_PLAN.map(c=>c.cat);
-  const data = BUDGET_PLAN.map(c=>Math.max(0,spentByCat(c.cat)));
+  const labels = budgetPlan.map(c=>c.cat);
+  const data = budgetPlan.map(c=>Math.max(0,spentByCat(c.cat)));
   const colors = ['#b5838d','#c9a84c','#5a9e6f','#7d9ec0','#a97dc9','#e0907a'];
   if(pieChartInst) pieChartInst.destroy();
   pieChartInst = new Chart(document.getElementById('pieChart'), {
@@ -856,7 +883,7 @@ function renderExpenses() {
 
 function updateItemDropdown(selectedItem=null) {
   const cat = document.getElementById('exp-cat').value;
-  const plan = BUDGET_PLAN.find(c=>c.cat===cat);
+  const plan = budgetPlan.find(c=>c.cat===cat);
   const sel = document.getElementById('exp-item');
   sel.innerHTML = plan ? plan.items.map(i=>`<option>${i.name}</option>`).join('') : '';
   if(selectedItem) sel.value = selectedItem;
@@ -915,14 +942,17 @@ function deleteExpense(id) {
 // ─── BUDGET DETAIL ────────────────────────────────────────────────────────────
 function renderBudgetDetail() {
   let html = '';
-  BUDGET_PLAN.forEach(c => {
+  budgetPlan.forEach((c, idx) => {
     const catSpent = spentByCat(c.cat);
     const catRem = c.budget - catSpent;
     const pct = c.budget > 0 ? catSpent/c.budget : 0;
     html += `<div class="card">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px">
         <div class="card-title" style="margin:0">${c.cat}</div>
-        <span class="badge ${pct>1?'badge-over':pct>0.9?'badge-warn':'badge-ok'}">${pct>1?'🔴 เกินงบ':pct>0.9?'⚠ ใกล้เต็ม':'✅ ปกติ'}</span>
+        <div style="display:flex;align-items:center;gap:8px">
+          <span class="badge ${pct>1?'badge-over':pct>0.9?'badge-warn':'badge-ok'}">${pct>1?'🔴 เกินงบ':pct>0.9?'⚠ ใกล้เต็ม':'✅ ปกติ'}</span>
+          <button class="btn btn-outline btn-sm" onclick="openBudgetModal(${idx})">✏️ แก้ไขงบ</button>
+        </div>
       </div>
       <div style="display:flex;gap:24px;margin-bottom:10px;flex-wrap:wrap">
         <div><span style="font-size:0.78rem;color:var(--text-light)">งบประมาณ</span><br><b>${c.budget.toLocaleString()}</b></div>
@@ -939,7 +969,59 @@ function renderBudgetDetail() {
     });
     html += '</tbody></table></div>';
   });
+  // อัปเดต header งบรวม
+  const totalEl = document.getElementById('budget-total-label');
+  if (totalEl) totalEl.textContent = `งบรวมทุกหมวด ${totalBudget().toLocaleString('th-TH')} บาท`;
   document.getElementById('budget-detail').innerHTML = html;
+}
+
+// ─── BUDGET MODAL ─────────────────────────────────────────────────────────────
+let _editBudgetIdx = -1;
+
+function openBudgetModal(catIdx) {
+  _editBudgetIdx = catIdx;
+  const c = budgetPlan[catIdx];
+  document.getElementById('bm-title').textContent = `✏️ แก้ไขงบ – ${c.cat}`;
+
+  // category total (auto-sum hint)
+  let itemsHtml = '';
+  c.items.forEach((item, i) => {
+    itemsHtml += `
+      <div style="display:flex;align-items:center;gap:12px;padding:8px 0;border-bottom:1px solid var(--border)">
+        <div style="flex:1;font-size:0.88rem">${item.name}</div>
+        <div style="width:140px">
+          <input type="number" id="bm-item-${i}" value="${item.budget}" min="0"
+            style="text-align:right" oninput="updateBudgetCatTotal()">
+        </div>
+      </div>`;
+  });
+
+  document.getElementById('bm-cat-budget').value = c.budget;
+  document.getElementById('bm-items').innerHTML = itemsHtml;
+  document.getElementById('budget-modal').classList.add('show');
+}
+
+function updateBudgetCatTotal() {
+  const c = budgetPlan[_editBudgetIdx];
+  let sum = 0;
+  c.items.forEach((_, i) => {
+    sum += parseFloat(document.getElementById(`bm-item-${i}`)?.value) || 0;
+  });
+  document.getElementById('bm-cat-budget').value = sum;
+}
+
+function saveBudgetModal() {
+  const c = budgetPlan[_editBudgetIdx];
+  c.items.forEach((item, i) => {
+    item.budget = parseFloat(document.getElementById(`bm-item-${i}`).value) || 0;
+  });
+  c.budget = parseFloat(document.getElementById('bm-cat-budget').value) || 0;
+  save();
+  closeModal('budget-modal');
+  renderBudgetDetail();
+  renderDashboard();
+  toast('✅ อัปเดตงบประมาณแล้ว');
+  autoPush('budget');
 }
 
 // ─── CHECKLIST ───────────────────────────────────────────────────────────────
@@ -1226,6 +1308,9 @@ async function autoLoad() {
       guests = data.guests;
       nextGstId = guests.reduce((m,g)=>Math.max(m,g.id),0)+1;
     }
+    if (data.budget && data.budget.length) {
+      budgetPlan = data.budget;
+    }
     save();
     localStorage.setItem('last_sync_time', new Date().toISOString());
     setNavIndicator('ok', 'โหลดข้อมูลแล้ว');
@@ -1247,6 +1332,7 @@ async function autoPush(type) {
   if (type==='contacts'  || type==='all') body.contacts  = contacts;
   if (type==='checklist' || type==='all') body.checklist = checklist;
   if (type==='guests'    || type==='all') body.guests    = guests;
+  if (type==='budget'    || type==='all') body.budget    = budgetPlan;
   try {
     const res = await fetch(scriptUrl, {
       method: 'POST',
@@ -1279,6 +1365,7 @@ async function pullData(type) {
     if ((type==='all'||type==='contacts') && data.contacts) { contacts = data.contacts; nextConId = contacts.reduce((m,c)=>Math.max(m,c.id),0)+1; }
     if ((type==='all'||type==='checklist') && data.checklist) { const sm=data.checklist; checklist.forEach(p=>p.items.forEach(item=>{ if(sm[item.id]!==undefined) item.status=sm[item.id]; })); }
     if ((type==='all'||type==='guests') && data.guests) { guests = data.guests; nextGstId = guests.reduce((m,g)=>Math.max(m,g.id),0)+1; }
+    if ((type==='all'||type==='budget') && data.budget && data.budget.length) { budgetPlan = data.budget; }
     save(); localStorage.setItem('last_sync_time', new Date().toISOString());
     setNavIndicator('ok', 'ดึงข้อมูลแล้ว'); renderSyncPage(); renderDashboard();
     toast('✅ ดึงข้อมูลสำเร็จ');
