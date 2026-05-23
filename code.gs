@@ -146,62 +146,50 @@ function saveContacts(ss, contacts) {
 }
 
 // ─── CHECKLIST ───────────────────────────────────────────────────────────────
-// Sheet: Check List
-// Col A = สถานะ (✓ / ✗ / blank), Col B = รายการ
-// Returns map: { "taskText": "done"|"skipped"|"none" }
+// Sheet: Check List  Col A = สถานะ (✓ / ✗ / blank), Col B = รายการ
+// ใช้ row number แทน text matching เพื่อความแม่นยำ
+// Row numbers ของแต่ละ item (ข้าม header row และ period row)
+var CHECKLIST_ROWS = [3,4,5,6,7,8,9,10, 12,13,14,15,16,17, 19,20,21,22, 24,25,26,27, 29,30,31,32];
+// ตรงกับ id: c1, c2, ... c26 ในแอพ
 
 function getChecklist(ss) {
-  const sheet = ss.getSheetByName('Check List');
+  var sheet = ss.getSheetByName('Check List');
   if (!sheet) return {};
-  const lastRow = sheet.getLastRow();
-  const data = sheet.getRange(1, 1, lastRow, 2).getValues();
-
-  var statusMap = {};
-  data.forEach(function(row) {
-    var status = (row[0] || '').toString().trim();
-    var task   = (row[1] || '').toString().trim();
-    if (!task) return;
-    // Skip header rows and period headers
-    if (task === 'สถานะ' || task.indexOf('เดือน') !== -1 || task.indexOf('สัปดาห์') !== -1) return;
-
-    var mapped = 'none';
-    if (status === '✓') mapped = 'done';
-    else if (status === '✗') mapped = 'skipped';
-    statusMap[task] = mapped;
+  var result = {};
+  CHECKLIST_ROWS.forEach(function(row, i) {
+    var cell = sheet.getRange(row, 1).getValue().toString().trim();
+    var status = 'none';
+    if (cell === '✓') status = 'done';
+    else if (cell === '✗') status = 'skipped';
+    result['c' + (i + 1)] = status;
   });
-
-  return statusMap;
+  return result;
 }
 
 function saveChecklist(ss, checklist) {
-  const sheet = ss.getSheetByName('Check List');
+  var sheet = ss.getSheetByName('Check List');
   if (!sheet) return;
 
-  // Build task→status map from the app's checklist structure
+  // Build id→status map { c1: 'done', c2: 'skipped', ... }
   var statusMap = {};
   if (Array.isArray(checklist)) {
     checklist.forEach(function(period) {
       period.items.forEach(function(item) {
-        statusMap[item.text] = item.status;
+        statusMap[item.id] = item.status;
       });
     });
   } else if (typeof checklist === 'object') {
     statusMap = checklist;
   }
 
-  const lastRow = sheet.getLastRow();
-  const data = sheet.getRange(1, 1, lastRow, 2).getValues();
-
-  data.forEach(function(row, i) {
-    var task = (row[1] || '').toString().trim();
-    if (!task || task === 'สถานะ' || task.indexOf('เดือน') !== -1 || task.indexOf('สัปดาห์') !== -1) return;
-
-    var appStatus = statusMap[task];
+  CHECKLIST_ROWS.forEach(function(row, i) {
+    var id = 'c' + (i + 1);
+    var appStatus = statusMap[id];
     if (appStatus === undefined) return;
     var symbol = '';
     if (appStatus === 'done')    symbol = '✓';
     if (appStatus === 'skipped') symbol = '✗';
-    sheet.getRange(i + 1, 1).setValue(symbol);
+    sheet.getRange(row, 1).setValue(symbol);
   });
 }
 

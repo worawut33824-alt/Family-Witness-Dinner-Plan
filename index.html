@@ -1177,7 +1177,7 @@ async function autoLoad() {
     if (data.checklist && Object.keys(data.checklist).length) {
       const statusMap = data.checklist;
       checklist.forEach(p => p.items.forEach(item => {
-        if (statusMap[item.text] !== undefined) item.status = statusMap[item.text];
+        if (statusMap[item.id] !== undefined) item.status = statusMap[item.id];
       }));
     }
     if (data.guests) {
@@ -1235,7 +1235,7 @@ async function pullData(type) {
     if (data.status === 'error') throw new Error(data.error);
     if ((type==='all'||type==='expenses') && data.expenses) { expenses = data.expenses; nextExpId = expenses.reduce((m,e)=>Math.max(m,e.id),0)+1; }
     if ((type==='all'||type==='contacts') && data.contacts) { contacts = data.contacts; nextConId = contacts.reduce((m,c)=>Math.max(m,c.id),0)+1; }
-    if ((type==='all'||type==='checklist') && data.checklist) { const sm=data.checklist; checklist.forEach(p=>p.items.forEach(item=>{ if(sm[item.text]!==undefined) item.status=sm[item.text]; })); }
+    if ((type==='all'||type==='checklist') && data.checklist) { const sm=data.checklist; checklist.forEach(p=>p.items.forEach(item=>{ if(sm[item.id]!==undefined) item.status=sm[item.id]; })); }
     if ((type==='all'||type==='guests') && data.guests) { guests = data.guests; nextGstId = guests.reduce((m,g)=>Math.max(m,g.id),0)+1; }
     save(); localStorage.setItem('last_sync_time', new Date().toISOString());
     setNavIndicator('ok', 'ดึงข้อมูลแล้ว'); renderSyncPage(); renderDashboard();
