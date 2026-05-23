@@ -288,7 +288,10 @@
 <div id="page-budget" class="page">
   <div class="section-header">
     <h2>📋 งบประมาณแผน</h2>
-    <span id="budget-total-label" style="font-size:0.8rem;color:var(--text-light)">งบรวมทุกหมวด 210,000 บาท</span>
+    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+      <span id="budget-total-label" style="font-size:0.8rem;color:var(--text-light)">งบรวมทุกหมวด 210,000 บาท</span>
+      <button class="btn btn-outline btn-sm" onclick="resetBudget()" style="font-size:0.75rem;color:var(--text-light);border-color:var(--border)">🔄 รีเซ็ต</button>
+    </div>
   </div>
   <div id="budget-detail"></div>
 </div>
@@ -1227,6 +1230,26 @@ function deleteGuest(id) {
   autoPush('guests');
 }
 
+// ─── BUDGET VALIDATION & RESET ───────────────────────────────────────────────
+// รับข้อมูลจาก Sheets เฉพาะเมื่อ category ตรงกับ BUDGET_PLAN ทุกตัว
+function validBudgetData(data) {
+  if (!data || !Array.isArray(data) || data.length === 0) return false;
+  const validCats = new Set(BUDGET_PLAN.map(c => c.cat));
+  return data.length === BUDGET_PLAN.length &&
+         data.every(c => c.cat && validCats.has(c.cat) && Array.isArray(c.items));
+}
+
+function resetBudget() {
+  if (!confirm('รีเซ็ตงบประมาณเป็นค่าเริ่มต้น?\nข้อมูลที่แก้ไขจะถูกแทนที่ด้วยค่าตั้งต้น')) return;
+  budgetPlan = JSON.parse(JSON.stringify(BUDGET_PLAN));
+  localStorage.removeItem('wedding_budget');
+  save();
+  renderBudgetDetail();
+  renderDashboard();
+  toast('✅ รีเซ็ตงบประมาณแล้ว — กำลังบันทึกลง Sheets...');
+  autoPush('budget');
+}
+
 // ─── MODAL ───────────────────────────────────────────────────────────────────
 function closeModal(id) { document.getElementById(id).classList.remove('show'); }
 document.querySelectorAll('.modal-overlay').forEach(m => m.addEventListener('click', e => { if(e.target===m) m.classList.remove('show'); }));
@@ -1314,7 +1337,7 @@ async function autoLoad() {
       guests = data.guests;
       nextGstId = guests.reduce((m,g)=>Math.max(m,g.id),0)+1;
     }
-    if (data.budget && data.budget.length) {
+    if (validBudgetData(data.budget)) {
       budgetPlan = data.budget;
     }
     save();
@@ -1371,7 +1394,7 @@ async function pullData(type) {
     if ((type==='all'||type==='contacts') && data.contacts) { contacts = data.contacts; nextConId = contacts.reduce((m,c)=>Math.max(m,c.id),0)+1; }
     if ((type==='all'||type==='checklist') && data.checklist) { const sm=data.checklist; checklist.forEach(p=>p.items.forEach(item=>{ if(sm[item.id]!==undefined) item.status=sm[item.id]; })); }
     if ((type==='all'||type==='guests') && data.guests) { guests = data.guests; nextGstId = guests.reduce((m,g)=>Math.max(m,g.id),0)+1; }
-    if ((type==='all'||type==='budget') && data.budget && data.budget.length) { budgetPlan = data.budget; }
+    if ((type==='all'||type==='budget') && validBudgetData(data.budget)) { budgetPlan = data.budget; }
     save(); localStorage.setItem('last_sync_time', new Date().toISOString());
     setNavIndicator('ok', 'ดึงข้อมูลแล้ว'); renderSyncPage(); renderDashboard();
     toast('✅ ดึงข้อมูลสำเร็จ');
