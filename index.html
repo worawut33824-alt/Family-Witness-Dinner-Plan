@@ -737,8 +737,15 @@ let guests = JSON.parse(localStorage.getItem('wedding_guests') || '[]');
 let budgetPlan = (() => {
   try {
     const s = JSON.parse(localStorage.getItem('wedding_budget') || 'null');
-    if (s && Array.isArray(s) && s.length > 0) return s;
+    const knownCats = new Set(BUDGET_PLAN.map(c => c.cat));
+    // รับเฉพาะข้อมูลที่มี category ถูกต้องครบทุกตัว
+    if (s && Array.isArray(s) && s.length === BUDGET_PLAN.length &&
+        s.every(c => c.cat && knownCats.has(c.cat) && Array.isArray(c.items))) {
+      return s;
+    }
   } catch(e) {}
+  // ถ้าข้อมูลเสีย ลบทิ้งแล้วใช้ค่าเริ่มต้น
+  localStorage.removeItem('wedding_budget');
   return JSON.parse(JSON.stringify(BUDGET_PLAN));
 })();
 let nextExpId = expenses.reduce((m,e)=>Math.max(m,e.id),0)+1;
