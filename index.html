@@ -158,6 +158,27 @@
   .step-list li::before { content: counter(step); background: var(--primary); color: white; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 700; flex-shrink: 0; margin-top: 1px; }
   .tag { display: inline-block; background: var(--accent); color: var(--primary-dark); border-radius: 5px; padding: 1px 7px; font-size: 0.78rem; font-weight: 600; }
 
+  /* COUNTDOWN */
+  .countdown-card {
+    background: linear-gradient(135deg, var(--primary-dark) 0%, #7a3f4a 50%, #4a2030 100%);
+    border-radius: 16px; padding: 28px 24px; margin-bottom: 20px;
+    color: white; text-align: center; position: relative; overflow: hidden;
+    box-shadow: 0 8px 32px rgba(181,131,141,0.4);
+  }
+  .countdown-card::before {
+    content: '💍'; position: absolute; font-size: 8rem; opacity: 0.06;
+    top: -10px; right: -10px; line-height: 1;
+  }
+  .countdown-title { font-size: 0.82rem; opacity: 0.8; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 6px; }
+  .countdown-date { font-size: 1.05rem; font-weight: 700; color: #f4d9d0; margin-bottom: 20px; letter-spacing: 0.5px; }
+  .countdown-boxes { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; }
+  .cd-box { background: rgba(255,255,255,0.12); border-radius: 12px; padding: 14px 18px; min-width: 72px; backdrop-filter: blur(4px); border: 1px solid rgba(255,255,255,0.15); }
+  .cd-num { font-size: 2.4rem; font-weight: 700; line-height: 1; letter-spacing: -1px; font-variant-numeric: tabular-nums; }
+  .cd-label { font-size: 0.7rem; opacity: 0.75; margin-top: 4px; letter-spacing: 1px; text-transform: uppercase; }
+  .cd-sep { font-size: 2rem; opacity: 0.5; align-self: center; padding-bottom: 18px; }
+  .countdown-done { font-size: 1.4rem; font-weight: 700; color: var(--gold); margin-top: 8px; }
+  @media (max-width: 480px) { .cd-box { min-width: 58px; padding: 10px 12px; } .cd-num { font-size: 1.9rem; } }
+
   @media (max-width: 600px) {
     .page { padding: 16px; }
     .guest-stats { grid-template-columns: repeat(2, 1fr); }
@@ -191,6 +212,24 @@
 
 <!-- DASHBOARD -->
 <div id="page-dashboard" class="page active">
+
+  <!-- COUNTDOWN -->
+  <div class="countdown-card">
+    <div class="countdown-title">🎊 นับถอยหลังสู่วันแต่งงาน</div>
+    <div class="countdown-date">วันเสาร์ที่ 28 พฤศจิกายน 2569 · 14:00 น. · TARA Terrace</div>
+    <div id="countdown-content">
+      <div class="countdown-boxes">
+        <div class="cd-box"><div class="cd-num" id="cd-days">--</div><div class="cd-label">วัน</div></div>
+        <div class="cd-sep">:</div>
+        <div class="cd-box"><div class="cd-num" id="cd-hours">--</div><div class="cd-label">ชั่วโมง</div></div>
+        <div class="cd-sep">:</div>
+        <div class="cd-box"><div class="cd-num" id="cd-mins">--</div><div class="cd-label">นาที</div></div>
+        <div class="cd-sep">:</div>
+        <div class="cd-box"><div class="cd-num" id="cd-secs">--</div><div class="cd-label">วินาที</div></div>
+      </div>
+    </div>
+  </div>
+
   <div class="grid-4" id="dash-stats"></div>
   <div class="grid-2">
     <div class="card">
@@ -1261,6 +1300,39 @@ function toggleSetupGuide() {
   icon.textContent   = show ? '▼' : '▶';
   txt.textContent    = show ? 'ซ่อน' : 'ดู';
 }
+
+// ─── COUNTDOWN ───────────────────────────────────────────────────────────────
+(function startCountdown() {
+  // 28 Nov 2026 14:00:00 Bangkok (UTC+7)
+  const WEDDING = new Date('2026-11-28T14:00:00+07:00').getTime();
+
+  function pad(n) { return String(Math.max(0, n)).padStart(2, '0'); }
+
+  function tick() {
+    const now  = Date.now();
+    const diff = WEDDING - now;
+
+    if (diff <= 0) {
+      document.getElementById('countdown-content').innerHTML =
+        '<div class="countdown-done">🎊 ถึงวันแต่งงานแล้ว! ขอแสดงความยินดีครับ 💒</div>';
+      return; // stop ticking
+    }
+
+    const days  = Math.floor(diff / 86400000);
+    const hours = Math.floor((diff % 86400000) / 3600000);
+    const mins  = Math.floor((diff % 3600000)  / 60000);
+    const secs  = Math.floor((diff % 60000)    / 1000);
+
+    document.getElementById('cd-days').textContent  = days;
+    document.getElementById('cd-hours').textContent = pad(hours);
+    document.getElementById('cd-mins').textContent  = pad(mins);
+    document.getElementById('cd-secs').textContent  = pad(secs);
+
+    setTimeout(tick, 1000 - (Date.now() % 1000)); // sync to wall-clock seconds
+  }
+
+  tick();
+})();
 
 // ─── INIT ────────────────────────────────────────────────────────────────────
 renderDashboard();
