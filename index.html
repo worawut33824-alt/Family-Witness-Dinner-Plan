@@ -145,6 +145,8 @@
   .sync-dot.disconnected { background: #ccc; }
   .sync-dot.loading { background: var(--warning); animation: pulse 1s infinite; }
   @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .spin { display:inline-block; animation: spin 0.8s linear infinite; }
   .sync-action-card { background: white; border-radius: 12px; padding: 20px; border: 1px solid var(--border); box-shadow: var(--shadow); }
   .sync-action-card h3 { font-size: 0.9rem; font-weight: 700; margin-bottom: 8px; }
   .sync-btn-group { display: flex; flex-direction: column; gap: 7px; margin-top: 14px; }
@@ -166,9 +168,15 @@
 <body>
 
 <nav>
-  <div class="nav-header">
-    <div class="nav-title">🎊 Family Witness Dinner</div>
-    <div class="nav-subtitle">28 พฤศจิกายน 2569 · TARA Terrace</div>
+  <div class="nav-header" style="display:flex;align-items:center;justify-content:space-between">
+    <div>
+      <div class="nav-title">🎊 Family Witness Dinner</div>
+      <div class="nav-subtitle">28 พฤศจิกายน 2569 · TARA Terrace</div>
+    </div>
+    <div id="nav-sync-indicator" style="display:none;align-items:center;gap:6px;font-size:0.72rem;color:rgba(255,255,255,0.85);padding-right:4px">
+      <span id="nav-sync-icon">⏳</span>
+      <span id="nav-sync-text">กำลังซิงค์...</span>
+    </div>
   </div>
   <div class="nav-tabs">
     <button class="tab-btn active" onclick="showPage('dashboard')">📊 Dashboard</button>
@@ -852,12 +860,14 @@ function saveExpense() {
   }
   save(); closeModal('expense-modal'); renderExpenses();
   if(document.getElementById('page-dashboard').classList.contains('active')) renderDashboard();
+  autoPush('expenses');
 }
 
 function deleteExpense(id) {
   if(!confirm('ต้องการลบรายการนี้?')) return;
   expenses = expenses.filter(e=>e.id!==id);
   save(); renderExpenses(); toast('ลบรายการแล้ว');
+  autoPush('expenses');
 }
 
 // ─── BUDGET DETAIL ────────────────────────────────────────────────────────────
@@ -921,6 +931,7 @@ function toggleCheck(id) {
     }
   }));
   save(); renderChecklist();
+  autoPush('checklist');
 }
 
 // ─── CONTACTS ────────────────────────────────────────────────────────────────
@@ -971,12 +982,14 @@ function saveContact() {
   if(id) { const idx = contacts.findIndex(c=>c.id===parseInt(id)); contacts[idx] = { ...obj, id: parseInt(id) }; toast('แก้ไขสำเร็จ'); }
   else { contacts.push({ ...obj, id: nextConId++ }); toast('เพิ่มผู้ติดต่อสำเร็จ'); }
   save(); closeModal('contact-modal'); renderContacts();
+  autoPush('contacts');
 }
 
 function deleteContact(id) {
   if(!confirm('ต้องการลบผู้ติดต่อนี้?')) return;
   contacts = contacts.filter(c=>c.id!==id);
   save(); renderContacts(); toast('ลบผู้ติดต่อแล้ว');
+  autoPush('contacts');
 }
 
 // ─── GUESTS ───────────────────────────────────────────────────────────────────
@@ -1074,12 +1087,14 @@ function saveGuest() {
   if(id) { const idx = guests.findIndex(g=>g.id===parseInt(id)); guests[idx]={...obj,id:parseInt(id)}; toast('แก้ไขข้อมูลแขกสำเร็จ'); }
   else { guests.push({...obj,id:nextGstId++}); toast('เพิ่มแขกสำเร็จ'); }
   save(); closeModal('guest-modal'); renderGuests();
+  autoPush('guests');
 }
 
 function deleteGuest(id) {
   if(!confirm('ต้องการลบข้อมูลแขกนี้?')) return;
   guests = guests.filter(g=>g.id!==id);
   save(); renderGuests(); toast('ลบข้อมูลแขกแล้ว');
+  autoPush('guests');
 }
 
 // ─── MODAL ───────────────────────────────────────────────────────────────────
@@ -1088,13 +1103,28 @@ document.querySelectorAll('.modal-overlay').forEach(m => m.addEventListener('cli
 
 // ─── GOOGLE SHEETS SYNC ──────────────────────────────────────────────────────
 let scriptUrl = localStorage.getItem('apps_script_url') || '';
+let isSyncing = false;
 
-function setSyncDot(state) { // 'connected' | 'disconnected' | 'loading'
+// ── Nav indicator ──
+function setNavIndicator(state, text) {
+  const wrap = document.getElementById('nav-sync-indicator');
+  const icon = document.getElementById('nav-sync-icon');
+  const txt  = document.getElementById('nav-sync-text');
+  if (!wrap) return;
+  if (state === 'hidden') { wrap.style.display = 'none'; return; }
+  wrap.style.display = 'flex';
+  if (state === 'syncing') { icon.innerHTML = '<span class="spin">🔄</span>'; txt.textContent = text || 'กำลังซิงค์...'; }
+  if (state === 'ok')      { icon.textContent = '☁️'; txt.textContent = text || 'ซิงค์แล้ว'; setTimeout(()=>setNavIndicator('hidden'), 2500); }
+  if (state === 'error')   { icon.textContent = '⚠️'; txt.textContent = text || 'ซิงค์ไม่ได้'; setTimeout(()=>setNavIndicator('hidden'), 4000); }
+}
+
+// ── Sync dot (หน้า Sync page) ──
+function setSyncDot(state) {
   const dot = document.getElementById('sync-dot');
   const txt = document.getElementById('sync-status-text');
   if (!dot || !txt) return;
   dot.className = 'sync-dot ' + state;
-  if (state === 'connected')    txt.textContent = '✅ เชื่อมต่อสำเร็จ — พร้อมซิงค์ข้อมูล';
+  if (state === 'connected')    txt.textContent = '✅ เชื่อมต่อแล้ว — ซิงค์อัตโนมัติทุกครั้งที่แก้ไขข้อมูล';
   if (state === 'disconnected') txt.textContent = 'ยังไม่ได้เชื่อมต่อ — กรอก Apps Script URL ด้านล่าง';
   if (state === 'loading')      txt.textContent = '⏳ กำลังเชื่อมต่อ...';
 }
@@ -1108,6 +1138,7 @@ function renderSyncPage() {
   if (el) el.textContent = last ? ('ซิงค์ล่าสุด: ' + new Date(last).toLocaleString('th-TH')) : 'ยังไม่เคยซิงค์';
 }
 
+// ── Test & save URL ──
 async function saveScriptUrl() {
   const val = document.getElementById('apps-script-url').value.trim();
   if (!val) { alert('กรุณากรอก URL'); return; }
@@ -1119,54 +1150,61 @@ async function saveScriptUrl() {
     scriptUrl = val;
     localStorage.setItem('apps_script_url', scriptUrl);
     setSyncDot('connected');
-    toast('✅ เชื่อมต่อสำเร็จ!');
+    toast('✅ เชื่อมต่อสำเร็จ! กำลังดึงข้อมูล...');
+    await autoLoad();
   } catch(e) {
     setSyncDot('disconnected');
     toast('❌ เชื่อมต่อไม่ได้: ' + e.message);
   }
 }
 
-async function pullData(type) {
-  if (!scriptUrl) { toast('⚠️ กรอก Apps Script URL ก่อน'); showPage('sync'); return; }
-  toast('⏳ กำลังดึงข้อมูล...');
+// ── AUTO LOAD (ดึงข้อมูลตอนเปิดแอพ) ──
+async function autoLoad() {
+  if (!scriptUrl) return;
+  setNavIndicator('syncing', 'กำลังโหลดข้อมูล...');
   try {
-    const res = await fetch(`${scriptUrl}?action=${type}`, { signal: AbortSignal.timeout(15000) });
+    const res = await fetch(`${scriptUrl}?action=all`, { signal: AbortSignal.timeout(20000) });
     const data = await res.json();
     if (data.status === 'error') throw new Error(data.error);
-
-    if ((type==='all'||type==='expenses') && data.expenses) {
+    if (data.expenses && data.expenses.length) {
       expenses = data.expenses;
       nextExpId = expenses.reduce((m,e)=>Math.max(m,e.id),0)+1;
     }
-    if ((type==='all'||type==='contacts') && data.contacts) {
+    if (data.contacts && data.contacts.length) {
       contacts = data.contacts;
       nextConId = contacts.reduce((m,c)=>Math.max(m,c.id),0)+1;
     }
-    if ((type==='all'||type==='checklist') && data.checklist) {
-      const statusMap = data.checklist; // { taskText: 'done'|'skipped'|'none' }
+    if (data.checklist && Object.keys(data.checklist).length) {
+      const statusMap = data.checklist;
       checklist.forEach(p => p.items.forEach(item => {
         if (statusMap[item.text] !== undefined) item.status = statusMap[item.text];
       }));
     }
-    if ((type==='all'||type==='guests') && data.guests) {
+    if (data.guests) {
       guests = data.guests;
       nextGstId = guests.reduce((m,g)=>Math.max(m,g.id),0)+1;
     }
     save();
     localStorage.setItem('last_sync_time', new Date().toISOString());
+    setNavIndicator('ok', 'โหลดข้อมูลแล้ว');
     renderSyncPage();
-    toast('✅ ดึงข้อมูลสำเร็จ');
-  } catch(e) { toast('❌ ' + e.message); }
+    renderDashboard();
+  } catch(e) {
+    setNavIndicator('error', 'โหลดไม่ได้');
+    console.error('autoLoad:', e);
+  }
 }
 
-async function pushData(type) {
-  if (!scriptUrl) { toast('⚠️ กรอก Apps Script URL ก่อน'); showPage('sync'); return; }
-  toast('⏳ กำลังบันทึก...');
+// ── AUTO PUSH (บันทึกลง Sheets อัตโนมัติ) ──
+async function autoPush(type) {
+  if (!scriptUrl || isSyncing) return;
+  isSyncing = true;
+  setNavIndicator('syncing', 'กำลังบันทึก...');
   const body = {};
-  if (type==='all'||type==='expenses')  body.expenses  = expenses;
-  if (type==='all'||type==='contacts')  body.contacts  = contacts;
-  if (type==='all'||type==='checklist') body.checklist = checklist;
-  if (type==='all'||type==='guests')    body.guests    = guests;
+  if (type==='expenses'  || type==='all') body.expenses  = expenses;
+  if (type==='contacts'  || type==='all') body.contacts  = contacts;
+  if (type==='checklist' || type==='all') body.checklist = checklist;
+  if (type==='guests'    || type==='all') body.guests    = guests;
   try {
     const res = await fetch(scriptUrl, {
       method: 'POST',
@@ -1177,9 +1215,38 @@ async function pushData(type) {
     const data = await res.json();
     if (data.status === 'error') throw new Error(data.error);
     localStorage.setItem('last_sync_time', new Date().toISOString());
+    setNavIndicator('ok', 'บันทึกแล้ว');
     renderSyncPage();
-    toast('✅ บันทึกลง Google Sheets สำเร็จ');
-  } catch(e) { toast('❌ ' + e.message); }
+  } catch(e) {
+    setNavIndicator('error', 'บันทึกไม่ได้');
+    console.error('autoPush:', e);
+  } finally {
+    isSyncing = false;
+  }
+}
+
+// ── Manual pull/push (ปุ่มในหน้า Sync) ──
+async function pullData(type) {
+  if (!scriptUrl) { toast('⚠️ กรอก Apps Script URL ก่อน'); showPage('sync'); return; }
+  setNavIndicator('syncing', 'กำลังดึงข้อมูล...');
+  try {
+    const res = await fetch(`${scriptUrl}?action=${type}`, { signal: AbortSignal.timeout(20000) });
+    const data = await res.json();
+    if (data.status === 'error') throw new Error(data.error);
+    if ((type==='all'||type==='expenses') && data.expenses) { expenses = data.expenses; nextExpId = expenses.reduce((m,e)=>Math.max(m,e.id),0)+1; }
+    if ((type==='all'||type==='contacts') && data.contacts) { contacts = data.contacts; nextConId = contacts.reduce((m,c)=>Math.max(m,c.id),0)+1; }
+    if ((type==='all'||type==='checklist') && data.checklist) { const sm=data.checklist; checklist.forEach(p=>p.items.forEach(item=>{ if(sm[item.text]!==undefined) item.status=sm[item.text]; })); }
+    if ((type==='all'||type==='guests') && data.guests) { guests = data.guests; nextGstId = guests.reduce((m,g)=>Math.max(m,g.id),0)+1; }
+    save(); localStorage.setItem('last_sync_time', new Date().toISOString());
+    setNavIndicator('ok', 'ดึงข้อมูลแล้ว'); renderSyncPage(); renderDashboard();
+    toast('✅ ดึงข้อมูลสำเร็จ');
+  } catch(e) { setNavIndicator('error'); toast('❌ ' + e.message); }
+}
+
+async function pushData(type) {
+  if (!scriptUrl) { toast('⚠️ กรอก Apps Script URL ก่อน'); showPage('sync'); return; }
+  await autoPush(type);
+  toast('✅ บันทึกลง Google Sheets สำเร็จ');
 }
 
 function toggleSetupGuide() {
@@ -1194,6 +1261,7 @@ function toggleSetupGuide() {
 
 // ─── INIT ────────────────────────────────────────────────────────────────────
 renderDashboard();
+autoLoad(); // ดึงข้อมูลจาก Google Sheets อัตโนมัติตอนเปิดแอพ
 </script>
 </body>
 </html>
