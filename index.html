@@ -728,9 +728,9 @@ function renderDashboard() {
       <div class="stat-sub">${rem<0?'🔴 เกินงบ':'✅ ยังอยู่ในงบ'}</div>
     </div>
     <div class="stat-card">
-      <div class="stat-value" style="font-size:1.4rem">${checkDone()} / ${checkTotal()}</div>
+      <div class="stat-value" style="font-size:1.4rem">${checkDoneOrSkipped()} / ${checkTotal()}</div>
       <div class="stat-label">Checklist สำเร็จ</div>
-      <div class="stat-sub">${((checkDone()/checkTotal())*100).toFixed(0)}% เสร็จแล้ว</div>
+      <div class="stat-sub">${((checkDoneOrSkipped()/checkTotal())*100).toFixed(0)}% เสร็จ/ข้าม</div>
     </div>`;
 
   // budget table
@@ -761,12 +761,13 @@ function renderDashboard() {
     const done = period.items.filter(i=>i.status==='done').length;
     const skip = period.items.filter(i=>i.status==='skipped').length;
     const total = period.items.length;
-    const pct3 = done/total;
+    const donePct = (done/total)*100;
+    const skipPct = (skip/total)*100;
     clHtml += `<div style="margin-bottom:10px">
       <div style="display:flex;justify-content:space-between;font-size:0.82rem;margin-bottom:4px">
-        <span>${period.period}</span><span>${done}/${total}</span>
+        <span>${period.period}</span><span>${done+skip}/${total}</span>
       </div>
-      <div class="progress-bar"><div class="progress-fill ${pct3>=1?'ok':pct3>0.5?'ok':'warn'}" style="width:${pct3*100}%"></div></div>
+      <div class="progress-bar"><div style="display:flex;height:100%;border-radius:999px;overflow:hidden"><div style="width:${donePct}%;background:var(--success);transition:width 0.4s"></div><div style="width:${skipPct}%;background:#c0392b;transition:width 0.4s"></div></div></div>
     </div>`;
   });
   document.getElementById('dash-checklist').innerHTML = clHtml;
@@ -782,6 +783,8 @@ function renderDashboard() {
 }
 
 function checkDone() { return checklist.flatMap(p=>p.items).filter(i=>i.status==='done').length; }
+function checkSkipped() { return checklist.flatMap(p=>p.items).filter(i=>i.status==='skipped').length; }
+function checkDoneOrSkipped() { return checklist.flatMap(p=>p.items).filter(i=>i.status==='done'||i.status==='skipped').length; }
 function checkTotal() { return checklist.flatMap(p=>p.items).length; }
 
 // ─── EXPENSES ────────────────────────────────────────────────────────────────
@@ -902,8 +905,8 @@ function renderBudgetDetail() {
 
 // ─── CHECKLIST ───────────────────────────────────────────────────────────────
 function renderChecklist() {
-  const done = checkDone(), total = checkTotal();
-  document.getElementById('check-progress-text').textContent = `${done} / ${total} เสร็จแล้ว (${((done/total)*100).toFixed(0)}%)`;
+  const done = checkDone(), skip = checkSkipped(), total = checkTotal();
+  document.getElementById('check-progress-text').textContent = `${done+skip} / ${total} เสร็จ/ข้าม (${(((done+skip)/total)*100).toFixed(0)}%)`;
 
   let html = '';
   checklist.forEach(period => {
