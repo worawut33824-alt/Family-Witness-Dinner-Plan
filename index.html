@@ -139,6 +139,23 @@
   #toast { position: fixed; bottom: 24px; right: 24px; background: #333; color: white; padding: 12px 20px; border-radius: 10px; font-size: 0.875rem; z-index: 9999; opacity: 0; transition: opacity 0.3s; pointer-events: none; }
   #toast.show { opacity: 1; }
 
+  /* SYNC */
+  .sync-dot { width: 12px; height: 12px; border-radius: 50%; display: inline-block; flex-shrink: 0; }
+  .sync-dot.connected { background: var(--success); box-shadow: 0 0 6px var(--success); }
+  .sync-dot.disconnected { background: #ccc; }
+  .sync-dot.loading { background: var(--warning); animation: pulse 1s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+  .sync-action-card { background: white; border-radius: 12px; padding: 20px; border: 1px solid var(--border); box-shadow: var(--shadow); }
+  .sync-action-card h3 { font-size: 0.9rem; font-weight: 700; margin-bottom: 8px; }
+  .sync-btn-group { display: flex; flex-direction: column; gap: 7px; margin-top: 14px; }
+  .sync-row { display: flex; align-items: center; justify-content: space-between; padding: 7px 10px; background: var(--bg); border-radius: 8px; font-size: 0.82rem; }
+  .sync-row span { color: var(--text-light); }
+  .code-block { background: #1e1e2e; color: #cdd6f4; border-radius: 8px; padding: 14px 16px; font-family: monospace; font-size: 0.78rem; line-height: 1.6; overflow-x: auto; margin: 10px 0; }
+  .step-list { counter-reset: step; padding: 0; list-style: none; }
+  .step-list li { counter-increment: step; display: flex; gap: 12px; margin-bottom: 14px; font-size: 0.855rem; line-height: 1.6; }
+  .step-list li::before { content: counter(step); background: var(--primary); color: white; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 700; flex-shrink: 0; margin-top: 1px; }
+  .tag { display: inline-block; background: var(--accent); color: var(--primary-dark); border-radius: 5px; padding: 1px 7px; font-size: 0.78rem; font-weight: 600; }
+
   @media (max-width: 600px) {
     .page { padding: 16px; }
     .guest-stats { grid-template-columns: repeat(2, 1fr); }
@@ -160,6 +177,7 @@
     <button class="tab-btn" onclick="showPage('checklist')">✅ Checklist</button>
     <button class="tab-btn" onclick="showPage('contacts')">📞 ผู้ติดต่อ</button>
     <button class="tab-btn" onclick="showPage('guests')">👥 แขก</button>
+    <button class="tab-btn" onclick="showPage('sync')">☁️ ซิงค์</button>
   </div>
 </nav>
 
@@ -280,6 +298,107 @@
   </div>
   <div class="card" style="padding:0;overflow:hidden;">
     <div style="overflow-x:auto;"><div id="guest-table"></div></div>
+  </div>
+</div>
+
+<!-- SYNC PAGE -->
+<div id="page-sync" class="page">
+  <div class="section-header">
+    <h2>☁️ ซิงค์ Google Sheets</h2>
+    <span style="font-size:0.8rem;color:var(--text-light)">ผูกข้อมูลกับ Google Drive โดยตรง</span>
+  </div>
+
+  <!-- Status bar -->
+  <div class="card" style="padding:16px 20px;margin-bottom:20px">
+    <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+      <span class="sync-dot disconnected" id="sync-dot"></span>
+      <div>
+        <div style="font-weight:700;font-size:0.95rem" id="sync-status-text">ยังไม่ได้เชื่อมต่อ — กรอก Apps Script URL ด้านล่าง</div>
+        <div style="font-size:0.78rem;color:var(--text-light)" id="sync-last-time"></div>
+      </div>
+      <a href="https://docs.google.com/spreadsheets/d/1ShH0vdr4EwPW1KkNOAQ2pLCU8V_a90_w" target="_blank"
+         style="margin-left:auto;font-size:0.8rem;color:var(--primary);text-decoration:none;white-space:nowrap">
+        📄 เปิด Google Sheets →
+      </a>
+    </div>
+  </div>
+
+  <div class="grid-2">
+    <!-- URL Config -->
+    <div class="card">
+      <div class="card-title">🔗 Apps Script URL</div>
+      <div class="form-group" style="margin-bottom:14px">
+        <label>Web App URL (จาก Deploy)</label>
+        <input id="apps-script-url" type="url" placeholder="https://script.google.com/macros/s/…/exec">
+      </div>
+      <button class="btn btn-primary" style="width:100%" onclick="saveScriptUrl()">💾 บันทึกและทดสอบการเชื่อมต่อ</button>
+    </div>
+
+    <!-- Sync Actions -->
+    <div class="card">
+      <div class="card-title">🔄 ซิงค์ข้อมูล</div>
+      <div class="grid-2" style="gap:12px">
+        <div class="sync-action-card">
+          <h3>⬇️ ดึงจาก Sheets</h3>
+          <p style="font-size:0.78rem;color:var(--text-light)">โหลดข้อมูลล่าสุดมาแทนที่แอพ</p>
+          <div class="sync-btn-group">
+            <button class="btn btn-primary btn-sm" onclick="pullData('all')">⬇️ ดึงทั้งหมด</button>
+            <div class="sync-row"><span>💰 ค่าใช้จ่าย</span><button class="btn btn-outline btn-sm" onclick="pullData('expenses')">ดึง</button></div>
+            <div class="sync-row"><span>📞 ผู้ติดต่อ</span><button class="btn btn-outline btn-sm" onclick="pullData('contacts')">ดึง</button></div>
+            <div class="sync-row"><span>✅ Checklist</span><button class="btn btn-outline btn-sm" onclick="pullData('checklist')">ดึง</button></div>
+            <div class="sync-row"><span>👥 รายชื่อแขก</span><button class="btn btn-outline btn-sm" onclick="pullData('guests')">ดึง</button></div>
+          </div>
+        </div>
+        <div class="sync-action-card">
+          <h3>⬆️ บันทึกลง Sheets</h3>
+          <p style="font-size:0.78rem;color:var(--text-light)">อัปเดตข้อมูลกลับไปที่ Google Sheets</p>
+          <div class="sync-btn-group">
+            <button class="btn btn-primary btn-sm" onclick="pushData('all')">⬆️ บันทึกทั้งหมด</button>
+            <div class="sync-row"><span>💰 ค่าใช้จ่าย</span><button class="btn btn-outline btn-sm" onclick="pushData('expenses')">บันทึก</button></div>
+            <div class="sync-row"><span>📞 ผู้ติดต่อ</span><button class="btn btn-outline btn-sm" onclick="pushData('contacts')">บันทึก</button></div>
+            <div class="sync-row"><span>✅ Checklist</span><button class="btn btn-outline btn-sm" onclick="pushData('checklist')">บันทึก</button></div>
+            <div class="sync-row"><span>👥 รายชื่อแขก</span><button class="btn btn-outline btn-sm" onclick="pushData('guests')">บันทึก</button></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Setup Guide -->
+  <div class="card">
+    <div class="card-title" style="cursor:pointer;user-select:none" onclick="toggleSetupGuide()">
+      📋 วิธีตั้งค่า Google Apps Script (คลิกเพื่อ<span id="guide-toggle-text">ดู</span>)
+      <span id="guide-toggle-icon" style="float:right">▼</span>
+    </div>
+    <div id="setup-guide-body">
+      <ol class="step-list">
+        <li>
+          <div>เปิดไฟล์ใน Google Sheets แล้วคลิกเมนู <span class="tag">Extensions</span> → <span class="tag">Apps Script</span></div>
+        </li>
+        <li>
+          <div>ลบโค้ดเดิมทั้งหมดในหน้าต่าง Apps Script แล้ว <b>copy โค้ดจากไฟล์ <code>code.gs</code></b> วางแทน (ไฟล์อยู่ในโฟลเดอร์ wedding-app)</div>
+        </li>
+        <li>
+          <div>คลิกปุ่ม <span class="tag">💾 Save</span> แล้วคลิก <span class="tag">Deploy</span> → <span class="tag">New deployment</span></div>
+        </li>
+        <li>
+          <div>ตั้งค่าดังนี้:<br>
+            • <b>Select type:</b> Web app<br>
+            • <b>Execute as:</b> Me (your account)<br>
+            • <b>Who has access:</b> Anyone
+          </div>
+        </li>
+        <li>
+          <div>คลิก <span class="tag">Deploy</span> → อนุญาต Permission → Copy <b>Web app URL</b> ที่ได้</div>
+        </li>
+        <li>
+          <div>วาง URL ในช่อง <b>Apps Script URL</b> ด้านบน แล้วกด <b>บันทึกและทดสอบ</b></div>
+        </li>
+      </ol>
+      <div style="background:#fff8e1;border-left:4px solid var(--gold);padding:12px 16px;border-radius:0 8px 8px 0;font-size:0.82rem;color:#5a4500;margin-top:4px">
+        ⚠️ <b>หมายเหตุ:</b> ครั้งแรกที่ Deploy ต้องกด "Authorize" และอนุญาตให้สคริปต์เข้าถึง Spreadsheet — ทำได้แค่ครั้งเดียว
+      </div>
+    </div>
   </div>
 </div>
 
@@ -575,6 +694,7 @@ function showPage(id) {
   if(id==='checklist') renderChecklist();
   if(id==='contacts') renderContacts();
   if(id==='guests') renderGuests();
+  if(id==='sync') renderSyncPage();
 }
 
 // ─── DASHBOARD ───────────────────────────────────────────────────────────────
@@ -965,6 +1085,112 @@ function deleteGuest(id) {
 // ─── MODAL ───────────────────────────────────────────────────────────────────
 function closeModal(id) { document.getElementById(id).classList.remove('show'); }
 document.querySelectorAll('.modal-overlay').forEach(m => m.addEventListener('click', e => { if(e.target===m) m.classList.remove('show'); }));
+
+// ─── GOOGLE SHEETS SYNC ──────────────────────────────────────────────────────
+let scriptUrl = localStorage.getItem('apps_script_url') || '';
+
+function setSyncDot(state) { // 'connected' | 'disconnected' | 'loading'
+  const dot = document.getElementById('sync-dot');
+  const txt = document.getElementById('sync-status-text');
+  if (!dot || !txt) return;
+  dot.className = 'sync-dot ' + state;
+  if (state === 'connected')    txt.textContent = '✅ เชื่อมต่อสำเร็จ — พร้อมซิงค์ข้อมูล';
+  if (state === 'disconnected') txt.textContent = 'ยังไม่ได้เชื่อมต่อ — กรอก Apps Script URL ด้านล่าง';
+  if (state === 'loading')      txt.textContent = '⏳ กำลังเชื่อมต่อ...';
+}
+
+function renderSyncPage() {
+  const inp = document.getElementById('apps-script-url');
+  if (inp) inp.value = scriptUrl;
+  setSyncDot(scriptUrl ? 'connected' : 'disconnected');
+  const last = localStorage.getItem('last_sync_time');
+  const el = document.getElementById('sync-last-time');
+  if (el) el.textContent = last ? ('ซิงค์ล่าสุด: ' + new Date(last).toLocaleString('th-TH')) : 'ยังไม่เคยซิงค์';
+}
+
+async function saveScriptUrl() {
+  const val = document.getElementById('apps-script-url').value.trim();
+  if (!val) { alert('กรุณากรอก URL'); return; }
+  setSyncDot('loading');
+  try {
+    const res = await fetch(val + '?action=ping', { signal: AbortSignal.timeout(8000) });
+    const json = await res.json();
+    if (json.status !== 'ok') throw new Error(json.error || 'ไม่ตอบสนอง');
+    scriptUrl = val;
+    localStorage.setItem('apps_script_url', scriptUrl);
+    setSyncDot('connected');
+    toast('✅ เชื่อมต่อสำเร็จ!');
+  } catch(e) {
+    setSyncDot('disconnected');
+    toast('❌ เชื่อมต่อไม่ได้: ' + e.message);
+  }
+}
+
+async function pullData(type) {
+  if (!scriptUrl) { toast('⚠️ กรอก Apps Script URL ก่อน'); showPage('sync'); return; }
+  toast('⏳ กำลังดึงข้อมูล...');
+  try {
+    const res = await fetch(`${scriptUrl}?action=${type}`, { signal: AbortSignal.timeout(15000) });
+    const data = await res.json();
+    if (data.status === 'error') throw new Error(data.error);
+
+    if ((type==='all'||type==='expenses') && data.expenses) {
+      expenses = data.expenses;
+      nextExpId = expenses.reduce((m,e)=>Math.max(m,e.id),0)+1;
+    }
+    if ((type==='all'||type==='contacts') && data.contacts) {
+      contacts = data.contacts;
+      nextConId = contacts.reduce((m,c)=>Math.max(m,c.id),0)+1;
+    }
+    if ((type==='all'||type==='checklist') && data.checklist) {
+      const statusMap = data.checklist; // { taskText: 'done'|'skipped'|'none' }
+      checklist.forEach(p => p.items.forEach(item => {
+        if (statusMap[item.text] !== undefined) item.status = statusMap[item.text];
+      }));
+    }
+    if ((type==='all'||type==='guests') && data.guests) {
+      guests = data.guests;
+      nextGstId = guests.reduce((m,g)=>Math.max(m,g.id),0)+1;
+    }
+    save();
+    localStorage.setItem('last_sync_time', new Date().toISOString());
+    renderSyncPage();
+    toast('✅ ดึงข้อมูลสำเร็จ');
+  } catch(e) { toast('❌ ' + e.message); }
+}
+
+async function pushData(type) {
+  if (!scriptUrl) { toast('⚠️ กรอก Apps Script URL ก่อน'); showPage('sync'); return; }
+  toast('⏳ กำลังบันทึก...');
+  const body = {};
+  if (type==='all'||type==='expenses')  body.expenses  = expenses;
+  if (type==='all'||type==='contacts')  body.contacts  = contacts;
+  if (type==='all'||type==='checklist') body.checklist = checklist;
+  if (type==='all'||type==='guests')    body.guests    = guests;
+  try {
+    const res = await fetch(scriptUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify(body),
+      signal: AbortSignal.timeout(20000)
+    });
+    const data = await res.json();
+    if (data.status === 'error') throw new Error(data.error);
+    localStorage.setItem('last_sync_time', new Date().toISOString());
+    renderSyncPage();
+    toast('✅ บันทึกลง Google Sheets สำเร็จ');
+  } catch(e) { toast('❌ ' + e.message); }
+}
+
+function toggleSetupGuide() {
+  const body = document.getElementById('setup-guide-body');
+  const icon = document.getElementById('guide-toggle-icon');
+  const txt  = document.getElementById('guide-toggle-text');
+  const show = body.style.display === 'none';
+  body.style.display = show ? 'block' : 'none';
+  icon.textContent   = show ? '▼' : '▶';
+  txt.textContent    = show ? 'ซ่อน' : 'ดู';
+}
 
 // ─── INIT ────────────────────────────────────────────────────────────────────
 renderDashboard();
