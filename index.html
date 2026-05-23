@@ -1237,13 +1237,21 @@ function deleteGuest(id) {
   autoPush('guests');
 }
 
-// ─── BUDGET VALIDATION & RESET ───────────────────────────────────────────────
-// รับข้อมูลจาก Sheets เฉพาะเมื่อ category ตรงกับ BUDGET_PLAN ทุกตัว
-function validBudgetData(data) {
-  if (!data || !Array.isArray(data) || data.length === 0) return false;
-  const validCats = new Set(BUDGET_PLAN.map(c => c.cat));
-  return data.length === BUDGET_PLAN.length &&
-         data.every(c => c.cat && validCats.has(c.cat) && Array.isArray(c.items));
+// ─── BUDGET HELPERS ───────────────────────────────────────────────────────────
+// Safe-merge: อัปเดตเฉพาะตัวเลขงบจาก Sheets โดยไม่แตะโครงสร้างหมวดหมู่
+function mergeBudgetFromSheet(sheetData) {
+  if (!sheetData || !Array.isArray(sheetData)) return;
+  sheetData.forEach(sheetCat => {
+    const localCat = budgetPlan.find(c => c.cat === sheetCat.cat);
+    if (!localCat) return; // หมวดที่ไม่รู้จัก → ข้าม
+    if (typeof sheetCat.budget === 'number') localCat.budget = sheetCat.budget;
+    if (Array.isArray(sheetCat.items)) {
+      sheetCat.items.forEach(si => {
+        const li = localCat.items.find(i => i.name === si.name);
+        if (li && typeof si.budget === 'number') li.budget = si.budget;
+      });
+    }
+  });
 }
 
 function resetBudget() {
@@ -1344,9 +1352,7 @@ async function autoLoad() {
       guests = data.guests;
       nextGstId = guests.reduce((m,g)=>Math.max(m,g.id),0)+1;
     }
-    if (validBudgetData(data.budget)) {
-      budgetPlan = data.budget;
-    }
+    mergeBudgetFromSheet(data.budget); // safe-merge: อัปเดตเฉพาะตัวเลข ไม่แทนโครงสร้าง
     save();
     localStorage.setItem('last_sync_time', new Date().toISOString());
     setNavIndicator('ok', 'โหลดข้อมูลแล้ว');
@@ -1401,7 +1407,7 @@ async function pullData(type) {
     if ((type==='all'||type==='contacts') && data.contacts) { contacts = data.contacts; nextConId = contacts.reduce((m,c)=>Math.max(m,c.id),0)+1; }
     if ((type==='all'||type==='checklist') && data.checklist) { const sm=data.checklist; checklist.forEach(p=>p.items.forEach(item=>{ if(sm[item.id]!==undefined) item.status=sm[item.id]; })); }
     if ((type==='all'||type==='guests') && data.guests) { guests = data.guests; nextGstId = guests.reduce((m,g)=>Math.max(m,g.id),0)+1; }
-    if ((type==='all'||type==='budget') && validBudgetData(data.budget)) { budgetPlan = data.budget; }
+    if (type==='all'||type==='budget') mergeBudgetFromSheet(data.budget);
     save(); localStorage.setItem('last_sync_time', new Date().toISOString());
     setNavIndicator('ok', 'ดึงข้อมูลแล้ว'); renderSyncPage(); renderDashboard();
     toast('✅ ดึงข้อมูลสำเร็จ');
