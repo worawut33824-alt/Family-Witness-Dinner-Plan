@@ -764,7 +764,7 @@ function renderDashboard() {
   document.getElementById('dash-checklist').innerHTML = clHtml;
 
   // recent expenses
-  const recent = [...expenses].sort((a,b)=>b.date.localeCompare(a.date)).slice(0,5);
+  const recent = [...expenses].sort((a,b)=>new Date(b.date)-new Date(a.date)).slice(0,5);
   let rHtml = '<table><tbody>';
   recent.forEach(e => {
     rHtml += `<tr><td style="font-size:0.78rem;color:var(--text-light)">${e.date}</td><td>${e.item}</td><td style="text-align:right;font-weight:600" class="${e.amount<0?'amt-neg':''}">${e.amount.toLocaleString()}</td></tr>`;
@@ -784,7 +784,7 @@ function renderExpenses() {
     if(cat && e.cat !== cat) return false;
     if(search && !e.item.toLowerCase().includes(search) && !e.note.toLowerCase().includes(search)) return false;
     return true;
-  }).sort((a,b)=>b.date.localeCompare(a.date));
+  }).sort((a,b)=>new Date(b.date)-new Date(a.date));
 
   const total = filtered.reduce((s,e)=>s+e.amount,0);
   let html = `<table><thead><tr><th>วันที่</th><th>หมวดหมู่</th><th>รายการ</th><th style="text-align:right">จำนวน (บาท)</th><th>หมายเหตุ</th><th></th></tr></thead><tbody>`;
