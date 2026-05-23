@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Site Map – Family Witness Dinner Planner</title>
+<style>
+  :root {
+    --primary: #b5838d;
+    --primary-dark: #9a6472;
+    --secondary: #e8c4c4;
+    --accent: #f4d9d0;
+    --gold: #c9a84c;
+    --bg: #fdf8f6;
+    --card: #ffffff;
+    --text: #3d2c2c;
+    --text-light: #7a5c5c;
+    --border: #e8d5d5;
+    --success: #5a9e6f;
+    --danger: #c0392b;
+    --warning: #e67e22;
+    --shadow: 0 4px 20px rgba(181,131,141,0.15);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); }
+
+  /* HEADER */
+  .site-header {
+    background: linear-gradient(135deg, #b5838d 0%, #9a6472 60%, #c9a84c 100%);
+    color: white; padding: 48px 40px 40px; text-align: center;
+  }
+  .site-header h1 { font-size: 2rem; font-weight: 800; letter-spacing: 1px; }
+  .site-header p { opacity: 0.85; margin-top: 6px; font-size: 0.95rem; }
+  .site-header .meta { margin-top: 16px; display: flex; gap: 24px; justify-content: center; flex-wrap: wrap; font-size: 0.82rem; opacity: 0.9; }
+  .meta-item { background: rgba(255,255,255,0.18); padding: 5px 14px; border-radius: 20px; }
+
+  /* FLOW */
+  .flow-section { padding: 40px; max-width: 1200px; margin: 0 auto; }
+  .flow-title { font-size: 1.1rem; font-weight: 700; color: var(--primary-dark); margin-bottom: 28px; text-align: center; }
+
+  /* FLOW DIAGRAM */
+  .flow-diagram { display: flex; align-items: flex-start; justify-content: center; gap: 0; flex-wrap: wrap; margin-bottom: 48px; }
+  .flow-node { display: flex; flex-direction: column; align-items: center; }
+  .flow-box { background: white; border: 2px solid var(--primary); border-radius: 10px; padding: 10px 20px; font-size: 0.82rem; font-weight: 600; color: var(--primary-dark); text-align: center; white-space: nowrap; box-shadow: var(--shadow); }
+  .flow-box.root { background: var(--primary); color: white; border-color: var(--primary-dark); font-size: 0.9rem; padding: 12px 24px; }
+  .flow-arrow { font-size: 1.2rem; color: var(--primary); padding: 0 6px; align-self: center; }
+  .flow-children { display: flex; gap: 12px; margin-top: 12px; flex-wrap: wrap; justify-content: center; }
+  .flow-child { display: flex; flex-direction: column; align-items: center; }
+  .flow-vline { width: 2px; height: 20px; background: var(--border); }
+  .flow-hline { height: 2px; background: var(--border); width: 100%; }
+
+  /* PAGE CARDS GRID */
+  .pages-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 28px; padding: 0 40px 48px; max-width: 1200px; margin: 0 auto; }
+
+  .page-card { background: white; border-radius: 16px; overflow: hidden; box-shadow: var(--shadow); border: 1px solid var(--border); transition: transform 0.2s, box-shadow 0.2s; }
+  .page-card:hover { transform: translateY(-4px); box-shadow: 0 8px 32px rgba(181,131,141,0.25); }
+
+  .page-card-header { padding: 14px 18px 12px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid var(--border); }
+  .page-icon { font-size: 1.4rem; }
+  .page-card-header h2 { font-size: 1rem; font-weight: 700; color: var(--text); }
+  .page-card-header .page-url { font-size: 0.72rem; color: var(--text-light); margin-left: auto; background: var(--accent); padding: 2px 8px; border-radius: 10px; }
+
+  /* MOCKUP SCREEN */
+  .mockup { background: #f9f4f4; border: none; overflow: hidden; position: relative; height: 240px; }
+  .mockup-nav { background: linear-gradient(135deg, #b5838d, #9a6472); height: 36px; display: flex; align-items: center; padding: 0 10px; gap: 6px; }
+  .mockup-nav-dot { width: 8px; height: 8px; border-radius: 50%; background: rgba(255,255,255,0.5); }
+  .mockup-nav-title { color: white; font-size: 0.6rem; font-weight: 700; margin-left: 4px; }
+  .mockup-nav-tabs { display: flex; gap: 2px; margin-left: auto; }
+  .mockup-nav-tab { background: rgba(255,255,255,0.15); color: white; font-size: 0.52rem; padding: 2px 5px; border-radius: 3px; }
+  .mockup-nav-tab.active { background: rgba(255,255,255,0.35); }
+
+  .mockup-body { padding: 8px 10px; height: calc(100% - 36px); overflow: hidden; }
+
+  /* mini stat row */
+  .m-stat-row { display: flex; gap: 5px; margin-bottom: 7px; }
+  .m-stat { flex: 1; background: white; border-radius: 6px; padding: 5px 6px; border: 1px solid #e8d5d5; }
+  .m-stat .v { font-size: 0.7rem; font-weight: 700; color: #b5838d; }
+  .m-stat .l { font-size: 0.5rem; color: #999; margin-top: 1px; }
+
+  /* mini card */
+  .m-card { background: white; border-radius: 6px; padding: 7px 8px; border: 1px solid #e8d5d5; margin-bottom: 6px; }
+  .m-card-title { font-size: 0.6rem; font-weight: 700; color: #9a6472; margin-bottom: 5px; }
+
+  /* mini table */
+  .m-table { width: 100%; font-size: 0.5rem; border-collapse: collapse; }
+  .m-table thead tr { background: #f4d9d0; }
+  .m-table th { padding: 2px 4px; color: #9a6472; font-weight: 600; }
+  .m-table td { padding: 2px 4px; border-bottom: 1px solid #f0e4e4; color: #555; }
+  .m-table tr:last-child td { border-bottom: none; }
+
+  /* mini progress */
+  .m-progress { background: #f0e4e4; border-radius: 4px; height: 5px; margin-top: 3px; overflow: hidden; }
+  .m-progress-fill { height: 100%; border-radius: 4px; }
+  .m-progress-fill.ok { background: #5a9e6f; }
+  .m-progress-fill.warn { background: #e67e22; }
+  .m-progress-fill.over { background: #c0392b; }
+
+  /* mini badge */
+  .m-badge { display: inline-block; font-size: 0.45rem; padding: 1px 4px; border-radius: 8px; font-weight: 600; }
+  .m-badge-ok { background: #d4f5e2; color: #2d7a4f; }
+  .m-badge-over { background: #fde8e8; color: #c0392b; }
+  .m-badge-warn { background: #fef3d0; color: #8a6200; }
+
+  /* mini btn */
+  .m-btn { display: inline-block; background: #b5838d; color: white; font-size: 0.48rem; padding: 2px 6px; border-radius: 4px; }
+  .m-btn-out { background: white; border: 1px solid #b5838d; color: #b5838d; }
+
+  /* mini check */
+  .m-check { display: flex; align-items: center; gap: 4px; padding: 3px 0; font-size: 0.52rem; color: #555; }
+  .m-check-circle { width: 10px; height: 10px; border-radius: 50%; border: 1.5px solid #ccc; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 0.4rem; }
+  .m-check-circle.done { background: #5a9e6f; border-color: #5a9e6f; color: white; }
+  .m-check-circle.skip { background: #ccc; border-color: #ccc; color: white; }
+
+  /* mini chart placeholder */
+  .m-chart { width: 70px; height: 70px; border-radius: 50%; background: conic-gradient(#b5838d 0% 66%, #c9a84c 66% 80%, #5a9e6f 80% 88%, #7d9ec0 88% 94%, #a97dc9 94% 98%, #e0907a 98% 100%); margin: 4px auto; }
+  .m-chart-wrap { display: flex; align-items: center; gap: 8px; }
+  .m-legend { font-size: 0.45rem; color: #555; }
+  .m-legend-item { display: flex; align-items: center; gap: 3px; margin-bottom: 2px; }
+  .m-legend-dot { width: 5px; height: 5px; border-radius: 50%; }
+
+  /* mini contact card */
+  .m-contact { background: white; border-radius: 5px; padding: 5px 7px; border: 1px solid #e8d5d5; margin-bottom: 5px; }
+  .m-contact-role { font-size: 0.45rem; color: #b5838d; font-weight: 700; }
+  .m-contact-name { font-size: 0.6rem; font-weight: 700; }
+  .m-contact-phone { font-size: 0.48rem; color: #777; }
+
+  /* mini guest */
+  .m-guest-stats { display: flex; gap: 4px; margin-bottom: 6px; }
+  .m-guest-stat { flex: 1; background: white; border-radius: 5px; padding: 4px; text-align: center; border: 1px solid #e8d5d5; }
+  .m-guest-stat .v { font-size: 0.65rem; font-weight: 700; color: #b5838d; }
+  .m-guest-stat .l { font-size: 0.42rem; color: #999; }
+
+  /* mini modal overlay */
+  .m-modal-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center; }
+  .m-modal { background: white; border-radius: 8px; padding: 8px 10px; width: 70%; box-shadow: 0 4px 20px rgba(0,0,0,0.3); }
+  .m-modal-title { font-size: 0.58rem; font-weight: 700; color: #9a6472; margin-bottom: 6px; }
+  .m-field { margin-bottom: 4px; }
+  .m-field label { font-size: 0.45rem; color: #999; display: block; }
+  .m-field .input { background: #faf0f0; border: 1px solid #e8d5d5; border-radius: 3px; height: 10px; width: 100%; }
+  .m-modal-footer { display: flex; gap: 4px; justify-content: flex-end; margin-top: 6px; }
+
+  /* INFO SECTION */
+  .info-section { padding: 0 40px 48px; max-width: 1200px; margin: 0 auto; }
+  .info-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px; }
+  .info-card { background: white; border-radius: 12px; padding: 20px; border: 1px solid var(--border); box-shadow: var(--shadow); }
+  .info-card h3 { font-size: 0.9rem; font-weight: 700; color: var(--primary-dark); margin-bottom: 12px; }
+  .info-card ul { padding-left: 16px; }
+  .info-card li { font-size: 0.82rem; color: var(--text-light); margin-bottom: 5px; line-height: 1.5; }
+  .info-card li b { color: var(--text); }
+
+  /* FEATURE TABLE */
+  .feature-table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
+  .feature-table th { background: var(--accent); padding: 9px 12px; text-align: left; color: var(--primary-dark); font-weight: 700; }
+  .feature-table td { padding: 8px 12px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  .feature-table tr:last-child td { border-bottom: none; }
+  .dot-ok { color: var(--success); font-weight: 700; }
+
+  .section-label { font-size: 1rem; font-weight: 700; color: var(--primary-dark); margin-bottom: 20px; padding: 0 40px; max-width: 1200px; margin-left: auto; margin-right: auto; padding-top: 8px; }
+
+  footer { text-align: center; padding: 28px; font-size: 0.8rem; color: var(--text-light); border-top: 1px solid var(--border); margin-top: 16px; }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="site-header">
+  <h1>🎊 Family Witness Dinner – Site Map</h1>
+  <p>Wedding Planner Web Application · Single Page App (SPA)</p>
+  <div class="meta">
+    <span class="meta-item">📅 28 พฤศจิกายน 2569</span>
+    <span class="meta-item">📍 TARA Terrace</span>
+    <span class="meta-item">📄 1 ไฟล์ · index.html</span>
+    <span class="meta-item">💾 localStorage</span>
+    <span class="meta-item">📊 6 หน้า</span>
+  </div>
+</div>
+
+<!-- FLOW DIAGRAM -->
+<div class="flow-section">
+  <div class="flow-title">🗺 โครงสร้างแอพพลิเคชัน</div>
+  <div style="display:flex;flex-direction:column;align-items:center;gap:0">
+    <!-- Root -->
+    <div class="flow-node">
+      <div class="flow-box root">🎊 index.html<br><span style="font-size:0.7rem;opacity:0.85">Family Witness Dinner Planner</span></div>
+      <div class="flow-vline"></div>
+    </div>
+    <!-- Nav bar -->
+    <div style="background:white;border:2px solid #c9a84c;border-radius:8px;padding:8px 20px;font-size:0.78rem;font-weight:600;color:#8a6200;box-shadow:var(--shadow)">
+      🧭 Navigation Bar (Sticky Top)
+    </div>
+    <div class="flow-vline"></div>
+    <!-- 6 pages -->
+    <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;position:relative">
+      <div style="position:absolute;top:0;left:0;right:0;height:2px;background:var(--border);"></div>
+      <!-- each page node -->
+      <div style="display:flex;flex-direction:column;align-items:center;gap:0">
+        <div class="flow-vline"></div>
+        <div class="flow-box" style="font-size:0.72rem;padding:8px 12px;text-align:center">📊 Dashboard</div>
+        <div class="flow-vline"></div>
+        <div style="font-size:0.62rem;color:var(--text-light);text-align:center;background:#fdf0f0;border:1px solid var(--border);border-radius:6px;padding:4px 7px;max-width:100px">ภาพรวม<br>งบ+checklist</div>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:center;gap:0">
+        <div class="flow-vline"></div>
+        <div class="flow-box" style="font-size:0.72rem;padding:8px 12px;text-align:center">💰 ค่าใช้จ่าย</div>
+        <div class="flow-vline"></div>
+        <div style="font-size:0.62rem;color:var(--text-light);text-align:center;background:#fdf0f0;border:1px solid var(--border);border-radius:6px;padding:4px 7px;max-width:100px">เพิ่ม/แก้/ลบ<br>กรองหมวด</div>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:center;gap:0">
+        <div class="flow-vline"></div>
+        <div class="flow-box" style="font-size:0.72rem;padding:8px 12px;text-align:center">📋 งบประมาณ</div>
+        <div class="flow-vline"></div>
+        <div style="font-size:0.62rem;color:var(--text-light);text-align:center;background:#fdf0f0;border:1px solid var(--border);border-radius:6px;padding:4px 7px;max-width:100px">แผนงบ<br>vs จ่ายจริง</div>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:center;gap:0">
+        <div class="flow-vline"></div>
+        <div class="flow-box" style="font-size:0.72rem;padding:8px 12px;text-align:center">✅ Checklist</div>
+        <div class="flow-vline"></div>
+        <div style="font-size:0.62rem;color:var(--text-light);text-align:center;background:#fdf0f0;border:1px solid var(--border);border-radius:6px;padding:4px 7px;max-width:100px">5 ช่วงเวลา<br>toggle สถานะ</div>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:center;gap:0">
+        <div class="flow-vline"></div>
+        <div class="flow-box" style="font-size:0.72rem;padding:8px 12px;text-align:center">📞 ผู้ติดต่อ</div>
+        <div class="flow-vline"></div>
+        <div style="font-size:0.62rem;color:var(--text-light);text-align:center;background:#fdf0f0;border:1px solid var(--border);border-radius:6px;padding:4px 7px;max-width:100px">ทีมงาน<br>เพิ่ม/แก้/ลบ</div>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:center;gap:0">
+        <div class="flow-vline"></div>
+        <div class="flow-box" style="font-size:0.72rem;padding:8px 12px;text-align:center">👥 แขก</div>
+        <div class="flow-vline"></div>
+        <div style="font-size:0.62rem;color:var(--text-light);text-align:center;background:#fdf0f0;border:1px solid var(--border);border-radius:6px;padding:4px 7px;max-width:100px">ลงทะเบียน<br>ยืนยัน/รอ</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION LABEL -->
+<div class="section-label">🖥 ตัวอย่างหน้าจอแต่ละหน้า</div>
+
+<!-- PAGE CARDS -->
+<div class="pages-grid">
+
+  <!-- 1. DASHBOARD -->
+  <div class="page-card">
+    <div class="page-card-header">
+      <span class="page-icon">📊</span>
+      <h2>Dashboard</h2>
+      <span class="page-url">#dashboard</span>
+    </div>
+    <div class="mockup">
+      <div class="mockup-nav">
+        <div class="mockup-nav-title">🎊 Family Witness Dinner</div>
+        <div class="mockup-nav-tabs">
+          <div class="mockup-nav-tab active">Dashboard</div>
+          <div class="mockup-nav-tab">ค่าใช้จ่าย</div>
+          <div class="mockup-nav-tab">งบ</div>
+          <div class="mockup-nav-tab">Check</div>
+        </div>
+      </div>
+      <div class="mockup-body">
+        <!-- stat row -->
+        <div class="m-stat-row">
+          <div class="m-stat"><div class="v">210,000</div><div class="l">งบรวม (บาท)</div></div>
+          <div class="m-stat"><div class="v" style="color:#c0392b">197,772</div><div class="l">จ่ายไปแล้ว</div></div>
+          <div class="m-stat"><div class="v" style="color:#5a9e6f">12,228</div><div class="l">คงเหลือ</div></div>
+          <div class="m-stat"><div class="v">11/26</div><div class="l">Checklist</div></div>
+        </div>
+        <!-- 2 col -->
+        <div style="display:flex;gap:5px">
+          <div class="m-card" style="flex:1.2">
+            <div class="m-card-title">งบแยกหมวด</div>
+            <table class="m-table">
+              <thead><tr><th>หมวด</th><th>งบ</th><th>จ่าย</th><th>สถานะ</th></tr></thead>
+              <tbody>
+                <tr><td>สถานที่&อาหาร</td><td>110,000</td><td>130,000</td><td><span class="m-badge m-badge-over">เกินงบ</span></td></tr>
+                <tr><td>ชุด&ความงาม</td><td>33,000</td><td>30,472</td><td><span class="m-badge m-badge-ok">ปกติ</span></td></tr>
+                <tr><td>ผู้แลงาน</td><td>13,000</td><td>10,000</td><td><span class="m-badge m-badge-ok">ปกติ</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="m-card" style="flex:0.8">
+            <div class="m-card-title">สัดส่วนค่าใช้จ่าย</div>
+            <div class="m-chart-wrap">
+              <div class="m-chart"></div>
+              <div class="m-legend">
+                <div class="m-legend-item"><div class="m-legend-dot" style="background:#b5838d"></div>สถานที่</div>
+                <div class="m-legend-item"><div class="m-legend-dot" style="background:#c9a84c"></div>ชุด</div>
+                <div class="m-legend-item"><div class="m-legend-dot" style="background:#5a9e6f"></div>ผู้แล</div>
+                <div class="m-legend-item"><div class="m-legend-dot" style="background:#7d9ec0"></div>ภาพ</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div style="padding:14px 18px">
+      <div style="font-size:0.82rem;font-weight:700;margin-bottom:8px;color:var(--text)">ฟีเจอร์หลัก</div>
+      <ul style="padding-left:16px;font-size:0.8rem;color:var(--text-light);line-height:1.8">
+        <li>Stat cards ภาพรวมงบประมาณ 4 ตัว</li>
+        <li>ตาราง + Progress bar แยกหมวด</li>
+        <li>Doughnut chart สัดส่วนค่าใช้จ่าย</li>
+        <li>ความคืบหน้า Checklist แต่ละช่วง</li>
+        <li>รายการค่าใช้จ่าย 5 อันดับล่าสุด</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- 2. EXPENSES -->
+  <div class="page-card">
+    <div class="page-card-header">
+      <span class="page-icon">💰</span>
+      <h2>บันทึกค่าใช้จ่าย</h2>
+      <span class="page-url">#expenses</span>
+    </div>
+    <div class="mockup" style="position:relative">
+      <div class="mockup-nav">
+        <div class="mockup-nav-title">🎊 Family Witness Dinner</div>
+        <div class="mockup-nav-tabs">
+          <div class="mockup-nav-tab">Dashboard</div>
+          <div class="mockup-nav-tab active">ค่าใช้จ่าย</div>
+          <div class="mockup-nav-tab">งบ</div>
+        </div>
+      </div>
+      <div class="mockup-body">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px">
+          <span style="font-size:0.6rem;font-weight:700">💰 บันทึกค่าใช้จ่าย</span>
+          <span class="m-btn">+ เพิ่มรายการ</span>
+        </div>
+        <div style="display:flex;gap:5px;margin-bottom:5px">
+          <div style="flex:1;background:white;border:1px solid #e8d5d5;border-radius:4px;padding:3px 6px;font-size:0.48rem;color:#999">กรองหมวดหมู่ ▾</div>
+          <div style="flex:1;background:white;border:1px solid #e8d5d5;border-radius:4px;padding:3px 6px;font-size:0.48rem;color:#999">ค้นหา...</div>
+        </div>
+        <table class="m-table">
+          <thead><tr><th>วันที่</th><th>หมวด</th><th>รายการ</th><th>จำนวน</th><th></th></tr></thead>
+          <tbody>
+            <tr><td>2026-04-19</td><td>ชุด</td><td>ชุดเจ้าสาว</td><td>12,000</td><td><span class="m-btn m-btn-out" style="font-size:0.4rem">แก้ไข</span></td></tr>
+            <tr><td>2026-04-11</td><td>บันเทิง</td><td>Photobooth</td><td>6,800</td><td><span class="m-btn m-btn-out" style="font-size:0.4rem">แก้ไข</span></td></tr>
+            <tr><td>2026-04-10</td><td>ภาพ</td><td>ช่างภาพ</td><td>20,500</td><td><span class="m-btn m-btn-out" style="font-size:0.4rem">แก้ไข</span></td></tr>
+            <tr><td>2026-04-09</td><td>ชุด</td><td>ช่างแต่งหน้า</td><td>21,000</td><td><span class="m-btn m-btn-out" style="font-size:0.4rem">แก้ไข</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <!-- MODAL OVERLAY -->
+      <div class="m-modal-overlay">
+        <div class="m-modal">
+          <div class="m-modal-title">➕ เพิ่มรายการค่าใช้จ่าย</div>
+          <div style="display:flex;gap:5px">
+            <div class="m-field" style="flex:1"><label>วันที่</label><div class="input"></div></div>
+            <div class="m-field" style="flex:1"><label>หมวดหมู่ ▾</label><div class="input"></div></div>
+          </div>
+          <div style="display:flex;gap:5px">
+            <div class="m-field" style="flex:1"><label>รายการ ▾</label><div class="input" style="background:#fff0f5;border-color:#b5838d"></div></div>
+            <div class="m-field" style="flex:1"><label>จำนวนเงิน</label><div class="input"></div></div>
+          </div>
+          <div class="m-field"><label>หมายเหตุ</label><div class="input" style="height:14px"></div></div>
+          <div class="m-modal-footer">
+            <span class="m-btn m-btn-out">ยกเลิก</span>
+            <span class="m-btn">บันทึก</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div style="padding:14px 18px">
+      <div style="font-size:0.82rem;font-weight:700;margin-bottom:8px;color:var(--text)">ฟีเจอร์หลัก</div>
+      <ul style="padding-left:16px;font-size:0.8rem;color:var(--text-light);line-height:1.8">
+        <li>เพิ่ม / แก้ไข / ลบรายการค่าใช้จ่าย</li>
+        <li>Dropdown รายการตามหมวดหมู่ที่เลือก</li>
+        <li>กรองตามหมวดหมู่ + ค้นหาชื่อ/หมายเหตุ</li>
+        <li>แสดงยอดรวมท้ายตาราง</li>
+        <li>ข้อมูลเริ่มต้น 15 รายการ (197,772 บาท)</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- 3. BUDGET -->
+  <div class="page-card">
+    <div class="page-card-header">
+      <span class="page-icon">📋</span>
+      <h2>งบประมาณ</h2>
+      <span class="page-url">#budget</span>
+    </div>
+    <div class="mockup">
+      <div class="mockup-nav">
+        <div class="mockup-nav-title">🎊 Family Witness Dinner</div>
+        <div class="mockup-nav-tabs">
+          <div class="mockup-nav-tab">Dashboard</div>
+          <div class="mockup-nav-tab">ค่าใช้จ่าย</div>
+          <div class="mockup-nav-tab active">งบ</div>
+        </div>
+      </div>
+      <div class="mockup-body">
+        <div class="m-card" style="margin-bottom:5px">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div class="m-card-title" style="margin:0">สถานที่จัดงานและอาหาร</div>
+            <span class="m-badge m-badge-over">🔴 เกินงบ</span>
+          </div>
+          <div style="display:flex;gap:8px;margin:4px 0;font-size:0.5rem;color:#555">
+            <span>งบ: <b>110,000</b></span>
+            <span>จ่าย: <b style="color:#c0392b">130,000</b></span>
+            <span>คงเหลือ: <b style="color:#c0392b">-20,000</b></span>
+          </div>
+          <div class="m-progress"><div class="m-progress-fill over" style="width:100%"></div></div>
+          <table class="m-table" style="margin-top:5px">
+            <thead><tr><th>รายการ</th><th>งบ</th><th>จ่าย</th><th>ส่วนต่าง</th></tr></thead>
+            <tbody>
+              <tr><td>ค่าสถานที่</td><td>80,000</td><td>47,000</td><td style="color:#5a9e6f">33,000</td></tr>
+              <tr><td>ค่าอาหาร</td><td>20,000</td><td>52,000</td><td style="color:#c0392b">-32,000</td></tr>
+              <tr><td>ค่าตกแต่ง</td><td>–</td><td>29,000</td><td style="color:#c0392b">-29,000</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="m-card">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div class="m-card-title" style="margin:0">ชุดและความงาม</div>
+            <span class="m-badge m-badge-ok">✅ ปกติ</span>
+          </div>
+          <div class="m-progress" style="margin-top:4px"><div class="m-progress-fill ok" style="width:92%"></div></div>
+        </div>
+      </div>
+    </div>
+    <div style="padding:14px 18px">
+      <div style="font-size:0.82rem;font-weight:700;margin-bottom:8px;color:var(--text)">ฟีเจอร์หลัก</div>
+      <ul style="padding-left:16px;font-size:0.8rem;color:var(--text-light);line-height:1.8">
+        <li>แสดง 6 หมวดหมู่พร้อม Progress bar</li>
+        <li>เปรียบเทียบงบ vs จ่ายจริง ทุกรายการย่อย</li>
+        <li>สีแสดงสถานะ: เกินงบ / ใกล้เต็ม / ปกติ</li>
+        <li>คำนวณส่วนต่างอัตโนมัติจากข้อมูลจริง</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- 4. CHECKLIST -->
+  <div class="page-card">
+    <div class="page-card-header">
+      <span class="page-icon">✅</span>
+      <h2>Wedding Checklist</h2>
+      <span class="page-url">#checklist</span>
+    </div>
+    <div class="mockup">
+      <div class="mockup-nav">
+        <div class="mockup-nav-title">🎊 Family Witness Dinner</div>
+        <div class="mockup-nav-tabs">
+          <div class="mockup-nav-tab">Dashboard</div>
+          <div class="mockup-nav-tab active">Checklist</div>
+        </div>
+      </div>
+      <div class="mockup-body">
+        <div style="display:flex;justify-content:space-between;margin-bottom:6px">
+          <span style="font-size:0.6rem;font-weight:700">✅ Wedding Checklist</span>
+          <span style="font-size:0.52rem;color:#b5838d">11/26 (42%)</span>
+        </div>
+        <div style="font-size:0.55rem;font-weight:700;color:#b5838d;background:#f4d9d0;padding:3px 8px;border-radius:10px;display:inline-block;margin-bottom:5px">📅 9–12 เดือน ก่อนแต่งงาน</div>
+        <div class="m-check"><div class="m-check-circle done">✓</div>หาฤกษ์แต่งงาน</div>
+        <div class="m-check"><div class="m-check-circle done">✓</div>จัดหาสถานที่จัดงาน</div>
+        <div class="m-check"><div class="m-check-circle skip">✗</div>จัดหา Wedding Planner</div>
+        <div class="m-check"><div class="m-check-circle done">✓</div>หาช่างภาพและช่างวิดีโอ</div>
+        <div style="font-size:0.55rem;font-weight:700;color:#b5838d;background:#f4d9d0;padding:3px 8px;border-radius:10px;display:inline-block;margin:5px 0">📅 6–8 เดือน ก่อนแต่งงาน</div>
+        <div class="m-check"><div class="m-check-circle skip">✗</div>ถ่ายรูปพรีเวดดิ้ง</div>
+        <div class="m-check"><div class="m-check-circle done">✓</div>เลือกชุดแต่งงาน</div>
+        <div class="m-check"><div class="m-check-circle"></div>1–2 เดือน: เริ่มส่งการ์ดเชิญ</div>
+      </div>
+    </div>
+    <div style="padding:14px 18px">
+      <div style="font-size:0.82rem;font-weight:700;margin-bottom:8px;color:var(--text)">ฟีเจอร์หลัก</div>
+      <ul style="padding-left:16px;font-size:0.8rem;color:var(--text-light);line-height:1.8">
+        <li>26 รายการแบ่ง 5 ช่วงเวลา</li>
+        <li>คลิกเพื่อสลับ: ยังไม่ทำ → ✓ เสร็จ → ✗ ข้าม</li>
+        <li>Progress bar แยกแต่ละช่วงบน Dashboard</li>
+        <li>บันทึกสถานะใน localStorage อัตโนมัติ</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- 5. CONTACTS -->
+  <div class="page-card">
+    <div class="page-card-header">
+      <span class="page-icon">📞</span>
+      <h2>ผู้ติดต่อทีมงาน</h2>
+      <span class="page-url">#contacts</span>
+    </div>
+    <div class="mockup">
+      <div class="mockup-nav">
+        <div class="mockup-nav-title">🎊 Family Witness Dinner</div>
+        <div class="mockup-nav-tabs">
+          <div class="mockup-nav-tab active">ผู้ติดต่อ</div>
+        </div>
+      </div>
+      <div class="mockup-body">
+        <div style="display:flex;justify-content:space-between;margin-bottom:7px">
+          <span style="font-size:0.6rem;font-weight:700">📞 ผู้ติดต่อทีมงาน</span>
+          <span class="m-btn">+ เพิ่ม</span>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:5px">
+          <div class="m-contact">
+            <div class="m-contact-role">ทีมช่างภาพ</div>
+            <div class="m-contact-name">แบงค์</div>
+            <div class="m-contact-phone">📞 087-348-7069</div>
+            <div class="m-contact-phone">🔗 IG: sasori_Studio</div>
+            <div style="margin-top:4px;display:flex;gap:3px">
+              <span class="m-btn m-btn-out" style="font-size:0.42rem">แก้ไข</span>
+              <span class="m-btn" style="font-size:0.42rem;background:#fde8e8;color:#c0392b">ลบ</span>
+            </div>
+          </div>
+          <div class="m-contact">
+            <div class="m-contact-role">PhotoBooth</div>
+            <div class="m-contact-name">คุณโฟลค์</div>
+            <div class="m-contact-phone">📞 096-879-5352</div>
+            <div class="m-contact-phone">🔗 FB/IG: IFolk</div>
+            <div style="margin-top:4px;display:flex;gap:3px">
+              <span class="m-btn m-btn-out" style="font-size:0.42rem">แก้ไข</span>
+              <span class="m-btn" style="font-size:0.42rem;background:#fde8e8;color:#c0392b">ลบ</span>
+            </div>
+          </div>
+          <div class="m-contact" style="border-style:dashed;opacity:0.5;display:flex;align-items:center;justify-content:center;min-height:60px">
+            <span style="font-size:0.55rem;color:#b5838d">+ เพิ่มผู้ติดต่อ</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div style="padding:14px 18px">
+      <div style="font-size:0.82rem;font-weight:700;margin-bottom:8px;color:var(--text)">ฟีเจอร์หลัก</div>
+      <ul style="padding-left:16px;font-size:0.8rem;color:var(--text-light);line-height:1.8">
+        <li>Grid card แสดงข้อมูลทีมงาน</li>
+        <li>ลิงก์โทรออก / ส่งอีเมลได้ทันที</li>
+        <li>เพิ่ม / แก้ไข / ลบ พร้อม Modal</li>
+        <li>บันทึก Social / Page / หมายเหตุ</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- 6. GUESTS -->
+  <div class="page-card">
+    <div class="page-card-header">
+      <span class="page-icon">👥</span>
+      <h2>ระบบลงทะเบียนแขก</h2>
+      <span class="page-url">#guests</span>
+    </div>
+    <div class="mockup">
+      <div class="mockup-nav">
+        <div class="mockup-nav-title">🎊 Family Witness Dinner</div>
+        <div class="mockup-nav-tabs">
+          <div class="mockup-nav-tab active">แขก</div>
+        </div>
+      </div>
+      <div class="mockup-body">
+        <div style="display:flex;justify-content:space-between;margin-bottom:5px">
+          <span style="font-size:0.6rem;font-weight:700">👥 ลงทะเบียนแขก</span>
+          <span class="m-btn">+ เพิ่มแขก</span>
+        </div>
+        <div class="m-guest-stats">
+          <div class="m-guest-stat"><div class="v">24</div><div class="l">ทั้งหมด</div></div>
+          <div class="m-guest-stat"><div class="v" style="color:#5a9e6f">18</div><div class="l">ยืนยัน</div></div>
+          <div class="m-guest-stat"><div class="v" style="color:#e67e22">4</div><div class="l">รอยืนยัน</div></div>
+          <div class="m-guest-stat"><div class="v">22</div><div class="l">ที่นั่ง</div></div>
+        </div>
+        <div style="display:flex;gap:4px;margin-bottom:5px">
+          <div style="flex:1;background:white;border:1px solid #e8d5d5;border-radius:3px;padding:2px 5px;font-size:0.45rem;color:#999">สถานะ ▾</div>
+          <div style="flex:1;background:white;border:1px solid #e8d5d5;border-radius:3px;padding:2px 5px;font-size:0.45rem;color:#999">ฝั่ง ▾</div>
+          <div style="flex:1.5;background:white;border:1px solid #e8d5d5;border-radius:3px;padding:2px 5px;font-size:0.45rem;color:#999">ค้นหา...</div>
+        </div>
+        <table class="m-table">
+          <thead><tr><th>ชื่อ</th><th>ฝั่ง</th><th>สัมพันธ์</th><th>สถานะ</th></tr></thead>
+          <tbody>
+            <tr><td>คุณ ก</td><td>เจ้าสาว</td><td>ญาติ</td><td><span class="m-badge m-badge-ok">ยืนยัน</span></td></tr>
+            <tr><td>คุณ ข</td><td>เจ้าบ่าว</td><td>เพื่อน</td><td><span class="m-badge m-badge-warn">รอ</span></td></tr>
+            <tr><td>คุณ ค</td><td>เจ้าสาว</td><td>เพื่อน</td><td><span class="m-badge m-badge-ok">ยืนยัน</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div style="padding:14px 18px">
+      <div style="font-size:0.82rem;font-weight:700;margin-bottom:8px;color:var(--text)">ฟีเจอร์หลัก</div>
+      <ul style="padding-left:16px;font-size:0.8rem;color:var(--text-light);line-height:1.8">
+        <li>Stat cards: ยืนยัน / รอ / ที่นั่งรวม</li>
+        <li>กรองตามสถานะ / ฝั่งเจ้าบ่าว-เจ้าสาว</li>
+        <li>บันทึกอาหารพิเศษ / แพ้อาหาร</li>
+        <li>จำนวนที่นั่งต่อคน (1–10)</li>
+      </ul>
+    </div>
+  </div>
+
+</div>
+
+<!-- FEATURE TABLE -->
+<div class="info-section">
+  <div style="font-size:1rem;font-weight:700;color:var(--primary-dark);margin-bottom:16px">📦 สรุปฟีเจอร์ทั้งหมด</div>
+  <div class="card" style="padding:0;overflow:hidden;box-shadow:var(--shadow);border:1px solid var(--border);border-radius:12px;">
+    <table class="feature-table">
+      <thead><tr><th>หน้า</th><th>ข้อมูลเริ่มต้น (จาก Excel)</th><th>CRUD</th><th>ค้นหา/กรอง</th><th>พิเศษ</th></tr></thead>
+      <tbody>
+        <tr><td><b>📊 Dashboard</b></td><td>ดึงจากทุก sheet</td><td>–</td><td>–</td><td>Chart.js Doughnut, Progress bars</td></tr>
+        <tr><td><b>💰 ค่าใช้จ่าย</b></td><td>15 รายการ · 197,772 บาท</td><td><span class="dot-ok">✓</span> เพิ่ม/แก้/ลบ</td><td><span class="dot-ok">✓</span> หมวด + ชื่อ</td><td>Dropdown รายการตามหมวด, ยอดรวม</td></tr>
+        <tr><td><b>📋 งบประมาณ</b></td><td>6 หมวด · 210,000 บาท</td><td>–</td><td>–</td><td>Progress bar, สี OK/Warn/Over</td></tr>
+        <tr><td><b>✅ Checklist</b></td><td>26 งาน · 5 ช่วงเวลา</td><td><span class="dot-ok">✓</span> toggle สถานะ</td><td>–</td><td>3 สถานะ: ✓ / ✗ / ยังไม่ทำ</td></tr>
+        <tr><td><b>📞 ผู้ติดต่อ</b></td><td>2 คน (แบงค์, โฟลค์)</td><td><span class="dot-ok">✓</span> เพิ่ม/แก้/ลบ</td><td>–</td><td>ลิงก์โทร / อีเมล, Social media</td></tr>
+        <tr><td><b>👥 แขก</b></td><td>– (ระบบใหม่)</td><td><span class="dot-ok">✓</span> เพิ่ม/แก้/ลบ</td><td><span class="dot-ok">✓</span> สถานะ + ฝั่ง + ชื่อ</td><td>ที่นั่ง, อาหารพิเศษ, 2 ฝั่ง</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- TECH INFO -->
+  <div class="info-grid" style="margin-top:24px">
+    <div class="info-card">
+      <h3>⚙️ เทคโนโลยีที่ใช้</h3>
+      <ul>
+        <li><b>HTML5 / CSS3 / Vanilla JS</b> – ไม่มี framework</li>
+        <li><b>Chart.js 4.4</b> – Doughnut chart (CDN)</li>
+        <li><b>localStorage</b> – บันทึกข้อมูลในเบราว์เซอร์</li>
+        <li><b>Single HTML file</b> – เปิดได้ทันทีโดยไม่ต้องติดตั้ง</li>
+        <li><b>Responsive</b> – รองรับมือถือ / tablet</li>
+      </ul>
+    </div>
+    <div class="info-card">
+      <h3>📁 โครงสร้างไฟล์</h3>
+      <ul>
+        <li><b>index.html</b> – แอพหลัก (Wedding Planner)</li>
+        <li><b>sitemap.html</b> – Site map พร้อมตัวอย่างหน้าจอ</li>
+        <li><b>Family Witness Dinner Plan.xlsx</b> – ไฟล์ต้นฉบับ</li>
+      </ul>
+    </div>
+    <div class="info-card">
+      <h3>💡 วิธีใช้งาน</h3>
+      <ul>
+        <li>เปิด <b>index.html</b> ด้วย Chrome / Edge</li>
+        <li>ข้อมูลจะ<b>บันทึกอัตโนมัติ</b>ในเครื่อง</li>
+        <li>ไม่ต้องต่อ Internet (ยกเว้น Chart.js)</li>
+        <li>เปิดได้หลายแท็บ / หลายครั้ง ข้อมูลคงอยู่</li>
+        <li>ล้างข้อมูล: Clear localStorage ใน DevTools</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<footer>
+  🎊 Family Witness Dinner · 28 พฤศจิกายน 2569 · TARA Terrace<br>
+  Generated by Claude · <a href="index.html" style="color:var(--primary)">เปิดแอพ →</a>
+</footer>
+
+</body>
+</html>
