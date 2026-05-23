@@ -161,7 +161,7 @@
   /* COUNTDOWN */
   .countdown-card {
     background: linear-gradient(135deg, var(--primary-dark) 0%, #7a3f4a 50%, #4a2030 100%);
-    border-radius: 16px; padding: 28px 24px; margin-bottom: 20px;
+    border-radius: 16px; padding: 32px 24px; margin-bottom: 32px;
     color: white; text-align: center; position: relative; overflow: hidden;
     box-shadow: 0 8px 32px rgba(181,131,141,0.4);
   }
@@ -230,23 +230,23 @@
     </div>
   </div>
 
-  <div class="grid-4" id="dash-stats"></div>
-  <div class="grid-2">
-    <div class="card">
+  <div class="grid-4" id="dash-stats" style="margin-bottom:28px"></div>
+  <div class="grid-2" style="margin-bottom:28px">
+    <div class="card" style="margin-bottom:0">
       <div class="card-title">📊 งบประมาณแยกหมวด</div>
       <div id="budget-table"></div>
     </div>
-    <div class="card">
+    <div class="card" style="margin-bottom:0">
       <div class="card-title">🥧 สัดส่วนค่าใช้จ่าย</div>
       <div class="chart-wrap"><canvas id="pieChart"></canvas></div>
     </div>
   </div>
-  <div class="grid-2">
-    <div class="card">
+  <div class="grid-2" style="margin-bottom:8px">
+    <div class="card" style="margin-bottom:0">
       <div class="card-title">✅ ความคืบหน้า Checklist</div>
       <div id="dash-checklist"></div>
     </div>
-    <div class="card">
+    <div class="card" style="margin-bottom:0">
       <div class="card-title">💸 รายการล่าสุด</div>
       <div id="dash-recent"></div>
     </div>
