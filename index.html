@@ -1,0 +1,973 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🎊 Family Witness Dinner – Wedding Planner</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+  :root {
+    --primary: #b5838d;
+    --primary-dark: #9a6472;
+    --secondary: #e8c4c4;
+    --accent: #f4d9d0;
+    --gold: #c9a84c;
+    --bg: #fdf8f6;
+    --card: #ffffff;
+    --text: #3d2c2c;
+    --text-light: #7a5c5c;
+    --border: #e8d5d5;
+    --success: #5a9e6f;
+    --danger: #c0392b;
+    --warning: #e67e22;
+    --shadow: 0 2px 12px rgba(181,131,141,0.15);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+  /* NAV */
+  nav { background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); color: white; padding: 0; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 10px rgba(0,0,0,0.2); }
+  .nav-header { padding: 14px 24px 0; }
+  .nav-title { font-size: 1.2rem; font-weight: 700; letter-spacing: 0.5px; }
+  .nav-subtitle { font-size: 0.75rem; opacity: 0.8; }
+  .nav-tabs { display: flex; gap: 0; overflow-x: auto; padding: 0 24px; scrollbar-width: none; }
+  .nav-tabs::-webkit-scrollbar { display: none; }
+  .tab-btn { background: none; border: none; color: rgba(255,255,255,0.75); padding: 10px 16px; cursor: pointer; font-size: 0.82rem; white-space: nowrap; border-bottom: 3px solid transparent; transition: all 0.2s; }
+  .tab-btn:hover { color: white; }
+  .tab-btn.active { color: white; border-bottom-color: var(--gold); font-weight: 600; }
+
+  /* PAGES */
+  .page { display: none; padding: 24px; max-width: 1200px; margin: 0 auto; }
+  .page.active { display: block; }
+
+  /* CARDS */
+  .card { background: var(--card); border-radius: 12px; padding: 20px; box-shadow: var(--shadow); border: 1px solid var(--border); margin-bottom: 20px; }
+  .card-title { font-size: 0.95rem; font-weight: 700; color: var(--primary-dark); margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+
+  /* GRID */
+  .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
+  .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; }
+  .grid-4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 16px; }
+
+  /* STAT CARDS */
+  .stat-card { background: var(--card); border-radius: 12px; padding: 20px; box-shadow: var(--shadow); border: 1px solid var(--border); text-align: center; }
+  .stat-value { font-size: 1.8rem; font-weight: 700; color: var(--primary); }
+  .stat-label { font-size: 0.8rem; color: var(--text-light); margin-top: 4px; }
+  .stat-sub { font-size: 0.75rem; color: var(--text-light); margin-top: 2px; }
+
+  /* PROGRESS */
+  .progress-bar { background: #f0e4e4; border-radius: 8px; height: 10px; overflow: hidden; margin-top: 8px; }
+  .progress-fill { height: 100%; border-radius: 8px; transition: width 0.4s; }
+  .progress-fill.ok { background: linear-gradient(90deg, var(--success), #7ec99a); }
+  .progress-fill.warn { background: linear-gradient(90deg, var(--warning), #f39c12); }
+  .progress-fill.over { background: linear-gradient(90deg, var(--danger), #e74c3c); }
+
+  /* TABLES */
+  table { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
+  thead { background: var(--accent); }
+  th { padding: 10px 12px; text-align: left; font-weight: 600; color: var(--primary-dark); white-space: nowrap; }
+  td { padding: 9px 12px; border-bottom: 1px solid var(--border); }
+  tr:hover td { background: #fdf0f0; }
+  tr:last-child td { border-bottom: none; }
+
+  /* BADGES */
+  .badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; }
+  .badge-ok { background: #d4f5e2; color: #2d7a4f; }
+  .badge-over { background: #fde8e8; color: #c0392b; }
+  .badge-warn { background: #fef3d0; color: #8a6200; }
+  .badge-neutral { background: #f0f0f0; color: #555; }
+
+  /* FORMS */
+  .form-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-bottom: 12px; }
+  .form-group { display: flex; flex-direction: column; gap: 4px; }
+  label { font-size: 0.8rem; font-weight: 600; color: var(--text-light); }
+  input, select, textarea { border: 1px solid var(--border); border-radius: 8px; padding: 8px 12px; font-size: 0.875rem; color: var(--text); background: white; transition: border 0.2s; width: 100%; }
+  input:focus, select:focus, textarea:focus { outline: none; border-color: var(--primary); }
+  textarea { resize: vertical; min-height: 70px; }
+
+  /* BUTTONS */
+  .btn { padding: 9px 18px; border-radius: 8px; border: none; cursor: pointer; font-size: 0.875rem; font-weight: 600; transition: all 0.2s; display: inline-flex; align-items: center; gap: 6px; }
+  .btn-primary { background: var(--primary); color: white; }
+  .btn-primary:hover { background: var(--primary-dark); }
+  .btn-danger { background: #fde8e8; color: var(--danger); }
+  .btn-danger:hover { background: #f5c6c6; }
+  .btn-sm { padding: 5px 10px; font-size: 0.78rem; }
+  .btn-outline { background: white; border: 1.5px solid var(--primary); color: var(--primary); }
+  .btn-outline:hover { background: var(--accent); }
+
+  /* CHECKLIST */
+  .check-item { display: flex; align-items: center; gap: 12px; padding: 10px 14px; border-radius: 8px; margin-bottom: 6px; background: white; border: 1px solid var(--border); cursor: pointer; transition: all 0.2s; }
+  .check-item:hover { border-color: var(--primary); }
+  .check-item.done { opacity: 0.7; }
+  .check-item.skipped { opacity: 0.5; }
+  .check-circle { width: 24px; height: 24px; border-radius: 50%; border: 2px solid #ccc; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; flex-shrink: 0; transition: all 0.2s; }
+  .check-circle.done { background: var(--success); border-color: var(--success); color: white; }
+  .check-circle.skipped { background: #ccc; border-color: #ccc; color: white; }
+  .check-period { font-size: 0.72rem; font-weight: 700; color: var(--primary); background: var(--accent); padding: 4px 12px; border-radius: 20px; margin: 16px 0 8px; display: inline-block; }
+
+  /* CONTACTS */
+  .contact-card { background: white; border-radius: 12px; padding: 18px; border: 1px solid var(--border); box-shadow: var(--shadow); }
+  .contact-role { font-size: 0.75rem; font-weight: 700; color: var(--primary); text-transform: uppercase; letter-spacing: 0.5px; }
+  .contact-name { font-size: 1.05rem; font-weight: 700; margin: 4px 0; }
+  .contact-info { font-size: 0.85rem; color: var(--text-light); display: flex; align-items: center; gap: 6px; margin-top: 4px; }
+
+  /* GUESTS */
+  .guest-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 20px; }
+  .guest-stat { background: white; border-radius: 10px; padding: 14px; text-align: center; border: 1px solid var(--border); }
+  .guest-stat .num { font-size: 1.6rem; font-weight: 700; color: var(--primary); }
+  .guest-stat .lbl { font-size: 0.75rem; color: var(--text-light); }
+
+  /* MODAL */
+  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 1000; align-items: center; justify-content: center; }
+  .modal-overlay.show { display: flex; }
+  .modal { background: white; border-radius: 16px; padding: 28px; width: 90%; max-width: 500px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); max-height: 90vh; overflow-y: auto; }
+  .modal-title { font-size: 1.1rem; font-weight: 700; color: var(--primary-dark); margin-bottom: 20px; }
+  .modal-footer { display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px; }
+
+  /* CHART container */
+  .chart-wrap { position: relative; height: 220px; }
+
+  /* Amount colors */
+  .amt-neg { color: var(--danger); }
+  .amt-pos { color: var(--success); }
+
+  /* Section header */
+  .section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+  .section-header h2 { font-size: 1rem; font-weight: 700; color: var(--text); }
+
+  /* Toast */
+  #toast { position: fixed; bottom: 24px; right: 24px; background: #333; color: white; padding: 12px 20px; border-radius: 10px; font-size: 0.875rem; z-index: 9999; opacity: 0; transition: opacity 0.3s; pointer-events: none; }
+  #toast.show { opacity: 1; }
+
+  @media (max-width: 600px) {
+    .page { padding: 16px; }
+    .guest-stats { grid-template-columns: repeat(2, 1fr); }
+    .grid-4 { grid-template-columns: repeat(2, 1fr); }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-header">
+    <div class="nav-title">🎊 Family Witness Dinner</div>
+    <div class="nav-subtitle">28 พฤศจิกายน 2569 · TARA Terrace</div>
+  </div>
+  <div class="nav-tabs">
+    <button class="tab-btn active" onclick="showPage('dashboard')">📊 Dashboard</button>
+    <button class="tab-btn" onclick="showPage('expenses')">💰 ค่าใช้จ่าย</button>
+    <button class="tab-btn" onclick="showPage('budget')">📋 งบประมาณ</button>
+    <button class="tab-btn" onclick="showPage('checklist')">✅ Checklist</button>
+    <button class="tab-btn" onclick="showPage('contacts')">📞 ผู้ติดต่อ</button>
+    <button class="tab-btn" onclick="showPage('guests')">👥 แขก</button>
+  </div>
+</nav>
+
+<!-- DASHBOARD -->
+<div id="page-dashboard" class="page active">
+  <div class="grid-4" id="dash-stats"></div>
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title">📊 งบประมาณแยกหมวด</div>
+      <div id="budget-table"></div>
+    </div>
+    <div class="card">
+      <div class="card-title">🥧 สัดส่วนค่าใช้จ่าย</div>
+      <div class="chart-wrap"><canvas id="pieChart"></canvas></div>
+    </div>
+  </div>
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title">✅ ความคืบหน้า Checklist</div>
+      <div id="dash-checklist"></div>
+    </div>
+    <div class="card">
+      <div class="card-title">💸 รายการล่าสุด</div>
+      <div id="dash-recent"></div>
+    </div>
+  </div>
+</div>
+
+<!-- EXPENSES -->
+<div id="page-expenses" class="page">
+  <div class="section-header">
+    <h2>💰 บันทึกค่าใช้จ่าย</h2>
+    <button class="btn btn-primary" onclick="openExpenseModal()">+ เพิ่มรายการ</button>
+  </div>
+  <div class="card" style="padding:16px 20px;margin-bottom:16px;">
+    <div class="form-row" style="margin:0">
+      <div class="form-group">
+        <label>กรองหมวดหมู่</label>
+        <select id="filter-cat" onchange="renderExpenses()">
+          <option value="">ทั้งหมด</option>
+          <option>สถานที่จัดงานและอาหาร</option>
+          <option>ชุดและความงาม</option>
+          <option>ผู้แลงาน</option>
+          <option>งานภาพและวีดีโอ</option>
+          <option>การ์ดและของขวัญ</option>
+          <option>ความบันเทิง</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>ค้นหา</label>
+        <input id="filter-search" placeholder="ชื่อรายการ / หมายเหตุ" oninput="renderExpenses()">
+      </div>
+    </div>
+  </div>
+  <div class="card" style="padding:0;overflow:hidden;">
+    <div style="overflow-x:auto;"><div id="expense-table"></div></div>
+  </div>
+</div>
+
+<!-- BUDGET -->
+<div id="page-budget" class="page">
+  <div class="section-header">
+    <h2>📋 งบประมาณแผน</h2>
+    <span style="font-size:0.8rem;color:var(--text-light)">งบจริง 250,000 บาท</span>
+  </div>
+  <div id="budget-detail"></div>
+</div>
+
+<!-- CHECKLIST -->
+<div id="page-checklist" class="page">
+  <div class="section-header">
+    <h2>✅ Wedding Checklist</h2>
+    <span id="check-progress-text" style="font-size:0.85rem;color:var(--text-light)"></span>
+  </div>
+  <div id="checklist-content"></div>
+</div>
+
+<!-- CONTACTS -->
+<div id="page-contacts" class="page">
+  <div class="section-header">
+    <h2>📞 ผู้ติดต่อทีมงาน</h2>
+    <button class="btn btn-primary" onclick="openContactModal()">+ เพิ่มผู้ติดต่อ</button>
+  </div>
+  <div id="contacts-grid" class="grid-3"></div>
+</div>
+
+<!-- GUESTS -->
+<div id="page-guests" class="page">
+  <div class="section-header">
+    <h2>👥 ระบบลงทะเบียนแขก</h2>
+    <button class="btn btn-primary" onclick="openGuestModal()">+ เพิ่มแขก</button>
+  </div>
+  <div class="guest-stats" id="guest-stats"></div>
+  <div class="card" style="padding:16px 20px;margin-bottom:16px;">
+    <div class="form-row" style="margin:0">
+      <div class="form-group">
+        <label>กรองสถานะ</label>
+        <select id="filter-guest-status" onchange="renderGuests()">
+          <option value="">ทั้งหมด</option>
+          <option value="confirmed">ยืนยันแล้ว</option>
+          <option value="pending">รอยืนยัน</option>
+          <option value="declined">ไม่มาร่วมงาน</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>ฝั่ง</label>
+        <select id="filter-guest-side" onchange="renderGuests()">
+          <option value="">ทั้งสองฝั่ง</option>
+          <option value="bride">ฝั่งเจ้าสาว</option>
+          <option value="groom">ฝั่งเจ้าบ่าว</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>ค้นหา</label>
+        <input id="filter-guest-search" placeholder="ชื่อ / เบอร์โทร" oninput="renderGuests()">
+      </div>
+    </div>
+  </div>
+  <div class="card" style="padding:0;overflow:hidden;">
+    <div style="overflow-x:auto;"><div id="guest-table"></div></div>
+  </div>
+</div>
+
+<!-- EXPENSE MODAL -->
+<div class="modal-overlay" id="expense-modal">
+  <div class="modal">
+    <div class="modal-title" id="expense-modal-title">เพิ่มรายการค่าใช้จ่าย</div>
+    <input type="hidden" id="exp-id">
+    <div class="form-row">
+      <div class="form-group">
+        <label>วันที่ *</label>
+        <input type="date" id="exp-date">
+      </div>
+      <div class="form-group">
+        <label>หมวดหมู่ *</label>
+        <select id="exp-cat" onchange="updateItemDropdown()">
+          <option>สถานที่จัดงานและอาหาร</option>
+          <option>ชุดและความงาม</option>
+          <option>ผู้แลงาน</option>
+          <option>งานภาพและวีดีโอ</option>
+          <option>การ์ดและของขวัญ</option>
+          <option>ความบันเทิง</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>รายการ *</label>
+        <select id="exp-item"></select>
+      </div>
+      <div class="form-group">
+        <label>จำนวนเงิน (บาท) *</label>
+        <input type="number" id="exp-amount" placeholder="0">
+      </div>
+    </div>
+    <div class="form-group">
+      <label>หมายเหตุ</label>
+      <textarea id="exp-note" placeholder="รายละเอียดเพิ่มเติม"></textarea>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('expense-modal')">ยกเลิก</button>
+      <button class="btn btn-primary" onclick="saveExpense()">บันทึก</button>
+    </div>
+  </div>
+</div>
+
+<!-- CONTACT MODAL -->
+<div class="modal-overlay" id="contact-modal">
+  <div class="modal">
+    <div class="modal-title" id="contact-modal-title">เพิ่มผู้ติดต่อ</div>
+    <input type="hidden" id="con-id">
+    <div class="form-row">
+      <div class="form-group">
+        <label>บทบาท / งาน *</label>
+        <input id="con-role" placeholder="เช่น ช่างภาพ">
+      </div>
+      <div class="form-group">
+        <label>ชื่อ *</label>
+        <input id="con-name" placeholder="ชื่อ-นามสกุล">
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>เบอร์โทร</label>
+        <input id="con-phone" placeholder="08X-XXX-XXXX">
+      </div>
+      <div class="form-group">
+        <label>Email</label>
+        <input id="con-email" placeholder="email@example.com">
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Social / Page</label>
+        <input id="con-social" placeholder="IG / FB / Line">
+      </div>
+      <div class="form-group">
+        <label>หมายเหตุ</label>
+        <input id="con-note" placeholder="เพิ่มเติม">
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('contact-modal')">ยกเลิก</button>
+      <button class="btn btn-primary" onclick="saveContact()">บันทึก</button>
+    </div>
+  </div>
+</div>
+
+<!-- GUEST MODAL -->
+<div class="modal-overlay" id="guest-modal">
+  <div class="modal">
+    <div class="modal-title" id="guest-modal-title">เพิ่มแขกผู้ร่วมงาน</div>
+    <input type="hidden" id="gst-id">
+    <div class="form-row">
+      <div class="form-group">
+        <label>ชื่อ *</label>
+        <input id="gst-name" placeholder="ชื่อ-นามสกุล">
+      </div>
+      <div class="form-group">
+        <label>ฝั่ง *</label>
+        <select id="gst-side">
+          <option value="bride">ฝั่งเจ้าสาว</option>
+          <option value="groom">ฝั่งเจ้าบ่าว</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>เบอร์โทร</label>
+        <input id="gst-phone" placeholder="08X-XXX-XXXX">
+      </div>
+      <div class="form-group">
+        <label>ความสัมพันธ์</label>
+        <input id="gst-relation" placeholder="เช่น ญาติ, เพื่อน, เพื่อนร่วมงาน">
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>จำนวนที่นั่ง</label>
+        <input type="number" id="gst-seats" value="1" min="1" max="10">
+      </div>
+      <div class="form-group">
+        <label>สถานะ</label>
+        <select id="gst-status">
+          <option value="pending">รอยืนยัน</option>
+          <option value="confirmed">ยืนยันแล้ว</option>
+          <option value="declined">ไม่มาร่วมงาน</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group">
+      <label>อาหารพิเศษ / แพ้อาหาร</label>
+      <input id="gst-food" placeholder="เช่น มังสวิรัติ, แพ้อาหารทะเล">
+    </div>
+    <div class="form-group">
+      <label>หมายเหตุ</label>
+      <textarea id="gst-note" style="min-height:50px"></textarea>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('guest-modal')">ยกเลิก</button>
+      <button class="btn btn-primary" onclick="saveGuest()">บันทึก</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+// ─── INITIAL DATA ────────────────────────────────────────────────────────────
+const BUDGET_PLAN = [
+  { cat: 'สถานที่จัดงานและอาหาร', budget: 110000, items: [
+    { name: 'ค่าสถานที่', budget: 80000 },
+    { name: 'ค่าอาหาร', budget: 20000 },
+    { name: 'ค่าเครื่องดื่ม', budget: 10000 },
+    { name: 'ค่าเค้กแต่งงาน', budget: 0 },
+    { name: 'ค่าตกแต่ง', budget: 0 },
+    { name: 'อื่นๆ', budget: 0 },
+  ]},
+  { cat: 'ชุดและความงาม', budget: 33000, items: [
+    { name: 'ชุดเจ้าสาว', budget: 8000 },
+    { name: 'ชุดเจ้าบ่าว', budget: 5000 },
+    { name: 'ช่างแต่งหน้า', budget: 10000 },
+    { name: 'คอร์สความงาม', budget: 0 },
+    { name: 'แหวนแต่งงาน', budget: 10000 },
+    { name: 'อื่นๆ', budget: 0 },
+  ]},
+  { cat: 'ผู้แลงาน', budget: 13000, items: [
+    { name: 'คนรันคิว', budget: 3000 },
+    { name: 'Organizer', budget: 10000 },
+    { name: 'Planner', budget: 0 },
+    { name: 'อื่นๆ', budget: 0 },
+  ]},
+  { cat: 'งานภาพและวีดีโอ', budget: 20000, items: [
+    { name: 'Prewedding', budget: 0 },
+    { name: 'ช่างภาพ', budget: 20000 },
+    { name: 'ช่าง VDO', budget: 0 },
+    { name: 'อื่นๆ', budget: 0 },
+  ]},
+  { cat: 'การ์ดและของขวัญ', budget: 20000, items: [
+    { name: 'การ์ด', budget: 5000 },
+    { name: 'ของชำร่วย', budget: 5000 },
+    { name: 'ของรับไหว้', budget: 0 },
+    { name: 'ของตกแต่ง', budget: 10000 },
+    { name: 'อื่นๆ', budget: 0 },
+  ]},
+  { cat: 'ความบันเทิง', budget: 14000, items: [
+    { name: 'พิธีกร', budget: 4000 },
+    { name: 'นักร้อง/ดนตรี', budget: 0 },
+    { name: 'Photobooth', budget: 10000 },
+    { name: 'อื่นๆ', budget: 0 },
+  ]},
+];
+
+const INITIAL_EXPENSES = [
+  { id: 1, date: '2026-04-02', cat: 'ชุดและความงาม', item: 'แหวนแต่งงาน', amount: -2528, note: 'ใช้แหวนเก่า เอามาหลอมใหม่ (เหลือส่วนต่าง)' },
+  { id: 2, date: '2026-04-04', cat: 'สถานที่จัดงานและอาหาร', item: 'ค่าสถานที่', amount: 25000, note: 'TARA Terrace – ค่าเช่า TARA Hall (07:00-15:00) งาน 28 พ.ย. 69' },
+  { id: 3, date: '2026-04-04', cat: 'สถานที่จัดงานและอาหาร', item: 'ค่าสถานที่', amount: 9000, note: 'TARA Terrace – พิธีสงฆ์ ถวายสังฆทาน' },
+  { id: 4, date: '2026-04-04', cat: 'สถานที่จัดงานและอาหาร', item: 'ค่าสถานที่', amount: 8000, note: 'TARA Terrace – พิธี VOW' },
+  { id: 5, date: '2026-04-04', cat: 'ผู้แลงาน', item: 'คนรันคิว', amount: 10000, note: 'TARA Terrace – นายพิธี + รันคิว' },
+  { id: 6, date: '2026-04-04', cat: 'สถานที่จัดงานและอาหาร', item: 'ค่าอาหาร', amount: 3000, note: 'TARA Terrace – อาหารว่าง งานพิธี 50 ที่' },
+  { id: 7, date: '2026-04-04', cat: 'สถานที่จัดงานและอาหาร', item: 'ค่าตกแต่ง', amount: 29000, note: 'TARA Terrace – ค่าตกแต่งงานพิธี Backdrop จุดลงทะเบียน ช่อดอกไม้' },
+  { id: 8, date: '2026-04-04', cat: 'สถานที่จัดงานและอาหาร', item: 'ค่าสถานที่', amount: 5000, note: 'TARA Terrace – ค่าสถานที่ Outdoor ริมแม่น้ำ' },
+  { id: 9, date: '2026-04-04', cat: 'สถานที่จัดงานและอาหาร', item: 'ค่าอาหาร', amount: 49000, note: 'TARA Terrace – Cocktail Package 490 บาท/คน × 100 คน' },
+  { id: 10, date: '2026-04-04', cat: 'สถานที่จัดงานและอาหาร', item: 'ค่าเครื่องดื่ม', amount: 8000, note: 'TARA Terrace – ค่าเครื่องดื่ม' },
+  { id: 11, date: '2026-04-04', cat: 'สถานที่จัดงานและอาหาร', item: 'อื่นๆ', amount: -6000, note: 'ส่วนลดพิเศษ' },
+  { id: 12, date: '2026-04-09', cat: 'ชุดและความงาม', item: 'ช่างแต่งหน้า', amount: 21000, note: 'มัดจำแล้ว 4,000.- / เหลือต้องจ่าย 17,000.-' },
+  { id: 13, date: '2026-04-10', cat: 'งานภาพและวีดีโอ', item: 'ช่างภาพ', amount: 20500, note: 'ช่างภาพ 2 คน (หลัก+Candid) ผู้ช่วย 1 และระบบ QR รับภาพหน้า Backdrop จ่ายมัดจำแล้ว 5,000.- / เหลือจ่าย 15,500.-' },
+  { id: 14, date: '2026-04-11', cat: 'ความบันเทิง', item: 'Photobooth', amount: 6800, note: 'มัดจำ 3,400.- / เหลือต้องจ่าย 3,400.-' },
+  { id: 15, date: '2026-04-19', cat: 'ชุดและความงาม', item: 'ชุดเจ้าสาว', amount: 12000, note: 'มัดจำ 6,000.- / เหลือต้องจ่าย 6,000.- รวมชุดเจ้าบ่าวแล้ว' },
+];
+
+const INITIAL_CHECKLIST = [
+  { period: '9 – 12 เดือน ก่อนแต่งงาน', items: [
+    { id: 'c1', text: 'หาฤกษ์แต่งงาน', status: 'done' },
+    { id: 'c2', text: 'หาแรงบันดาลใจจากที่ต่างๆ', status: 'done' },
+    { id: 'c3', text: 'จัดหาสถานที่จัดงาน', status: 'done' },
+    { id: 'c4', text: 'กำหนดจำนวนผู้ร่วมงาน', status: 'done' },
+    { id: 'c5', text: 'ตั้งงบประมาณในการจัดงานแต่งงาน', status: 'done' },
+    { id: 'c6', text: 'จัดหา Wedding Planner หากต้องการใช้', status: 'skipped' },
+    { id: 'c7', text: 'หาช่างภาพและช่างวิดีโอที่ถูกใจ', status: 'done' },
+    { id: 'c8', text: 'ทาบทามประธานในพิธี', status: 'skipped' },
+  ]},
+  { period: '6 – 8 เดือน ก่อนแต่งงาน', items: [
+    { id: 'c9', text: 'ถ่ายรูปพรีเวดดิ้ง', status: 'skipped' },
+    { id: 'c10', text: 'เตรียมตัวทำการ์ดแต่งงานและของชำร่วย', status: 'done' },
+    { id: 'c11', text: 'เลือกเพื่อนเจ้าบ่าวเจ้าสาว', status: 'skipped' },
+    { id: 'c12', text: 'เลือกชุดแต่งงานและแหวนแต่งงาน', status: 'done' },
+    { id: 'c13', text: 'จองช่างแต่งหน้า', status: 'done' },
+    { id: 'c14', text: 'กำหนดธีมต่างๆ ให้เรียบร้อย', status: 'done' },
+  ]},
+  { period: '3 – 5 เดือน ก่อนแต่งงาน', items: [
+    { id: 'c15', text: 'สั่งซื้อการ์ดแต่งงานและของชำร่วย', status: 'none', note: 'ได้ของชำร่วยแล้ว เป็น Photobooth' },
+    { id: 'c16', text: 'จัดการเรื่องอาหารและเครื่องดื่ม', status: 'done' },
+    { id: 'c17', text: 'หาเค้กแต่งงาน', status: 'skipped' },
+    { id: 'c18', text: 'เข้าคอร์สดูแลร่างกาย', status: 'skipped' },
+  ]},
+  { period: '1 – 2 เดือน ล่วงหน้า', items: [
+    { id: 'c19', text: 'เริ่มส่งการ์ดเชิญ', status: 'none' },
+    { id: 'c20', text: 'ร่างรายละเอียดของงานและลำดับพิธีการ', status: 'none' },
+    { id: 'c21', text: 'ทำ Playlist เพลงสำหรับงานแต่งงาน', status: 'none' },
+    { id: 'c22', text: 'คุยรายละเอียดการจัดงานกับสถานที่และผู้ที่เกี่ยวข้อง', status: 'none' },
+  ]},
+  { period: '1 สัปดาห์ ก่อนแต่งงาน', items: [
+    { id: 'c23', text: 'เตรียมของที่ต้องใช้ในงานแต่งงาน', status: 'none' },
+    { id: 'c24', text: 'มอบหมายงานให้กับผู้รับผิดชอบในวันงาน', status: 'none' },
+    { id: 'c25', text: 'ทำการซ้อมรันคิวงานจริง', status: 'none' },
+    { id: 'c26', text: 'โทรคอนเฟิร์มกับสถานที่จัด ช่างภาพ วิดีโอ ช่างแต่งหน้า และผู้ที่เกี่ยวข้อง', status: 'none' },
+  ]},
+];
+
+const INITIAL_CONTACTS = [
+  { id: 1, role: 'ทีมช่างภาพ', name: 'แบงค์', phone: '087-348-7069', email: '', social: 'IG: sasori_Studio', note: '' },
+  { id: 2, role: 'PhotoBooth', name: 'คุณโฟลค์', phone: '096-879-5352', email: '', social: 'FB/IG: IFolk', note: '' },
+];
+
+// ─── STATE ───────────────────────────────────────────────────────────────────
+let expenses = JSON.parse(localStorage.getItem('wedding_expenses') || 'null') || JSON.parse(JSON.stringify(INITIAL_EXPENSES));
+let checklist = JSON.parse(localStorage.getItem('wedding_checklist') || 'null') || JSON.parse(JSON.stringify(INITIAL_CHECKLIST));
+let contacts = JSON.parse(localStorage.getItem('wedding_contacts') || 'null') || JSON.parse(JSON.stringify(INITIAL_CONTACTS));
+let guests = JSON.parse(localStorage.getItem('wedding_guests') || '[]');
+let nextExpId = expenses.reduce((m,e)=>Math.max(m,e.id),0)+1;
+let nextConId = contacts.reduce((m,c)=>Math.max(m,c.id),0)+1;
+let nextGstId = guests.reduce((m,g)=>Math.max(m,g.id),0)+1;
+
+function save() {
+  localStorage.setItem('wedding_expenses', JSON.stringify(expenses));
+  localStorage.setItem('wedding_checklist', JSON.stringify(checklist));
+  localStorage.setItem('wedding_contacts', JSON.stringify(contacts));
+  localStorage.setItem('wedding_guests', JSON.stringify(guests));
+}
+
+// ─── HELPERS ─────────────────────────────────────────────────────────────────
+function fmt(n) { return (n<0?'('+Math.abs(n).toLocaleString('th-TH')+')':n.toLocaleString('th-TH'))+''; }
+function fmtB(n) { return (n<0?'':'') + n.toLocaleString('th-TH'); }
+function spentByCat(cat) { return expenses.filter(e=>e.cat===cat).reduce((s,e)=>s+e.amount,0); }
+function totalBudget() { return BUDGET_PLAN.reduce((s,c)=>s+c.budget,0); }
+function totalSpent() { return expenses.reduce((s,e)=>s+e.amount,0); }
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 2500);
+}
+
+// ─── NAV ─────────────────────────────────────────────────────────────────────
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  document.querySelectorAll('.tab-btn').forEach(b=>{ if(b.textContent.toLowerCase().includes(id.slice(0,4).toLowerCase()) || b.getAttribute('onclick')?.includes("'"+id+"'")) b.classList.add('active'); });
+  if(id==='dashboard') renderDashboard();
+  if(id==='expenses') renderExpenses();
+  if(id==='budget') renderBudgetDetail();
+  if(id==='checklist') renderChecklist();
+  if(id==='contacts') renderContacts();
+  if(id==='guests') renderGuests();
+}
+
+// ─── DASHBOARD ───────────────────────────────────────────────────────────────
+let pieChartInst = null;
+function renderDashboard() {
+  const tb = totalBudget(), ts = totalSpent(), rem = tb - ts, pct = ts/tb;
+
+  // stat cards
+  document.getElementById('dash-stats').innerHTML = `
+    <div class="stat-card">
+      <div class="stat-value">${fmtB(tb)}</div>
+      <div class="stat-label">งบประมาณรวม (บาท)</div>
+      <div class="stat-sub" style="color:var(--text-light)">งบจริง 250,000</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value" style="color:${ts>tb?'var(--danger)':'var(--primary)'}">${fmtB(ts)}</div>
+      <div class="stat-label">จ่ายไปแล้ว (บาท)</div>
+      <div class="stat-sub">${(pct*100).toFixed(1)}% ของงบ</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value" style="color:${rem<0?'var(--danger)':'var(--success)'}">${rem<0?'('+Math.abs(rem).toLocaleString('th-TH')+')':fmtB(rem)}</div>
+      <div class="stat-label">คงเหลือ (บาท)</div>
+      <div class="stat-sub">${rem<0?'🔴 เกินงบ':'✅ ยังอยู่ในงบ'}</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value" style="font-size:1.4rem">${checkDone()} / ${checkTotal()}</div>
+      <div class="stat-label">Checklist สำเร็จ</div>
+      <div class="stat-sub">${((checkDone()/checkTotal())*100).toFixed(0)}% เสร็จแล้ว</div>
+    </div>`;
+
+  // budget table
+  let html = '<table><thead><tr><th>หมวดหมู่</th><th>งบ</th><th>จ่ายจริง</th><th>คงเหลือ</th><th>%</th><th>สถานะ</th></tr></thead><tbody>';
+  BUDGET_PLAN.forEach(c => {
+    const spent = spentByCat(c.cat), rem2 = c.budget - spent, pct2 = c.budget > 0 ? spent/c.budget : 0;
+    const over = pct2 > 1, nearly = pct2 > 0.9;
+    const badge = over ? '<span class="badge badge-over">🔴 เกินงบ</span>' : nearly ? '<span class="badge badge-warn">⚠ ใกล้เต็ม</span>' : '<span class="badge badge-ok">✅ ปกติ</span>';
+    html += `<tr><td><b>${c.cat}</b></td><td>${c.budget.toLocaleString()}</td><td class="${spent<0?'amt-neg':''}">${spent.toLocaleString()}</td><td class="${rem2<0?'amt-neg':'amt-pos'}">${rem2.toLocaleString()}</td><td>${(pct2*100).toFixed(1)}%</td><td>${badge}</td></tr>`;
+  });
+  html += '</tbody></table>';
+  document.getElementById('budget-table').innerHTML = html;
+
+  // pie chart
+  const labels = BUDGET_PLAN.map(c=>c.cat);
+  const data = BUDGET_PLAN.map(c=>Math.max(0,spentByCat(c.cat)));
+  const colors = ['#b5838d','#c9a84c','#5a9e6f','#7d9ec0','#a97dc9','#e0907a'];
+  if(pieChartInst) pieChartInst.destroy();
+  pieChartInst = new Chart(document.getElementById('pieChart'), {
+    type: 'doughnut',
+    data: { labels, datasets: [{ data, backgroundColor: colors, borderWidth: 2, borderColor: '#fff' }] },
+    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { font: { size: 11 }, padding: 8 } } } }
+  });
+
+  // checklist summary
+  let clHtml = '';
+  checklist.forEach(period => {
+    const done = period.items.filter(i=>i.status==='done').length;
+    const skip = period.items.filter(i=>i.status==='skipped').length;
+    const total = period.items.length;
+    const pct3 = done/total;
+    clHtml += `<div style="margin-bottom:10px">
+      <div style="display:flex;justify-content:space-between;font-size:0.82rem;margin-bottom:4px">
+        <span>${period.period}</span><span>${done}/${total}</span>
+      </div>
+      <div class="progress-bar"><div class="progress-fill ${pct3>=1?'ok':pct3>0.5?'ok':'warn'}" style="width:${pct3*100}%"></div></div>
+    </div>`;
+  });
+  document.getElementById('dash-checklist').innerHTML = clHtml;
+
+  // recent expenses
+  const recent = [...expenses].sort((a,b)=>b.date.localeCompare(a.date)).slice(0,5);
+  let rHtml = '<table><tbody>';
+  recent.forEach(e => {
+    rHtml += `<tr><td style="font-size:0.78rem;color:var(--text-light)">${e.date}</td><td>${e.item}</td><td style="text-align:right;font-weight:600" class="${e.amount<0?'amt-neg':''}">${e.amount.toLocaleString()}</td></tr>`;
+  });
+  rHtml += '</tbody></table>';
+  document.getElementById('dash-recent').innerHTML = rHtml;
+}
+
+function checkDone() { return checklist.flatMap(p=>p.items).filter(i=>i.status==='done').length; }
+function checkTotal() { return checklist.flatMap(p=>p.items).length; }
+
+// ─── EXPENSES ────────────────────────────────────────────────────────────────
+function renderExpenses() {
+  const cat = document.getElementById('filter-cat').value;
+  const search = document.getElementById('filter-search').value.toLowerCase();
+  let filtered = expenses.filter(e => {
+    if(cat && e.cat !== cat) return false;
+    if(search && !e.item.toLowerCase().includes(search) && !e.note.toLowerCase().includes(search)) return false;
+    return true;
+  }).sort((a,b)=>b.date.localeCompare(a.date));
+
+  const total = filtered.reduce((s,e)=>s+e.amount,0);
+  let html = `<table><thead><tr><th>วันที่</th><th>หมวดหมู่</th><th>รายการ</th><th style="text-align:right">จำนวน (บาท)</th><th>หมายเหตุ</th><th></th></tr></thead><tbody>`;
+  filtered.forEach(e => {
+    html += `<tr>
+      <td style="white-space:nowrap">${e.date}</td>
+      <td><span class="badge badge-neutral" style="font-size:0.72rem">${e.cat}</span></td>
+      <td>${e.item}</td>
+      <td style="text-align:right;font-weight:600" class="${e.amount<0?'amt-neg':''}"> ${e.amount.toLocaleString()}</td>
+      <td style="font-size:0.8rem;color:var(--text-light);max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${e.note}">${e.note||'-'}</td>
+      <td style="white-space:nowrap">
+        <button class="btn btn-sm btn-outline" onclick="editExpense(${e.id})">แก้ไข</button>
+        <button class="btn btn-sm btn-danger" onclick="deleteExpense(${e.id})">ลบ</button>
+      </td></tr>`;
+  });
+  html += `</tbody><tfoot><tr style="background:var(--accent)"><td colspan="3"><b>รวม ${filtered.length} รายการ</b></td><td style="text-align:right;font-weight:700" class="${total<0?'amt-neg':''}">${total.toLocaleString()}</td><td colspan="2"></td></tr></tfoot></table>`;
+  document.getElementById('expense-table').innerHTML = html;
+}
+
+function updateItemDropdown(selectedItem=null) {
+  const cat = document.getElementById('exp-cat').value;
+  const plan = BUDGET_PLAN.find(c=>c.cat===cat);
+  const sel = document.getElementById('exp-item');
+  sel.innerHTML = plan ? plan.items.map(i=>`<option>${i.name}</option>`).join('') : '';
+  if(selectedItem) sel.value = selectedItem;
+}
+
+function openExpenseModal(id=null) {
+  document.getElementById('expense-modal-title').textContent = id ? 'แก้ไขรายการ' : 'เพิ่มรายการค่าใช้จ่าย';
+  document.getElementById('exp-id').value = id||'';
+  if(id) {
+    const e = expenses.find(x=>x.id===id);
+    document.getElementById('exp-date').value = e.date;
+    document.getElementById('exp-cat').value = e.cat;
+    updateItemDropdown(e.item);
+    document.getElementById('exp-amount').value = e.amount;
+    document.getElementById('exp-note').value = e.note;
+  } else {
+    document.getElementById('exp-date').value = new Date().toISOString().split('T')[0];
+    document.getElementById('exp-cat').value = 'สถานที่จัดงานและอาหาร';
+    updateItemDropdown();
+    document.getElementById('exp-amount').value = '';
+    document.getElementById('exp-note').value = '';
+  }
+  document.getElementById('expense-modal').classList.add('show');
+}
+
+function editExpense(id) { openExpenseModal(id); }
+
+function saveExpense() {
+  const date = document.getElementById('exp-date').value;
+  const cat = document.getElementById('exp-cat').value;
+  const item = document.getElementById('exp-item').value;
+  const amount = parseFloat(document.getElementById('exp-amount').value);
+  const note = document.getElementById('exp-note').value.trim();
+  if(!date||!item||isNaN(amount)) { alert('กรุณากรอกข้อมูลที่จำเป็น'); return; }
+  const id = document.getElementById('exp-id').value;
+  if(id) {
+    const idx = expenses.findIndex(e=>e.id===parseInt(id));
+    expenses[idx] = { id: parseInt(id), date, cat, item, amount, note };
+    toast('แก้ไขรายการสำเร็จ');
+  } else {
+    expenses.push({ id: nextExpId++, date, cat, item, amount, note });
+    toast('เพิ่มรายการสำเร็จ');
+  }
+  save(); closeModal('expense-modal'); renderExpenses();
+  if(document.getElementById('page-dashboard').classList.contains('active')) renderDashboard();
+}
+
+function deleteExpense(id) {
+  if(!confirm('ต้องการลบรายการนี้?')) return;
+  expenses = expenses.filter(e=>e.id!==id);
+  save(); renderExpenses(); toast('ลบรายการแล้ว');
+}
+
+// ─── BUDGET DETAIL ────────────────────────────────────────────────────────────
+function renderBudgetDetail() {
+  let html = '';
+  BUDGET_PLAN.forEach(c => {
+    const catSpent = spentByCat(c.cat);
+    const catRem = c.budget - catSpent;
+    const pct = c.budget > 0 ? catSpent/c.budget : 0;
+    html += `<div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+        <div class="card-title" style="margin:0">${c.cat}</div>
+        <span class="badge ${pct>1?'badge-over':pct>0.9?'badge-warn':'badge-ok'}">${pct>1?'🔴 เกินงบ':pct>0.9?'⚠ ใกล้เต็ม':'✅ ปกติ'}</span>
+      </div>
+      <div style="display:flex;gap:24px;margin-bottom:10px;flex-wrap:wrap">
+        <div><span style="font-size:0.78rem;color:var(--text-light)">งบประมาณ</span><br><b>${c.budget.toLocaleString()}</b></div>
+        <div><span style="font-size:0.78rem;color:var(--text-light)">จ่ายจริง</span><br><b class="${catSpent<0?'amt-neg':''}">${catSpent.toLocaleString()}</b></div>
+        <div><span style="font-size:0.78rem;color:var(--text-light)">คงเหลือ</span><br><b class="${catRem<0?'amt-neg':'amt-pos'}">${catRem.toLocaleString()}</b></div>
+        <div><span style="font-size:0.78rem;color:var(--text-light)">% ใช้ไป</span><br><b>${(pct*100).toFixed(1)}%</b></div>
+      </div>
+      <div class="progress-bar" style="margin-bottom:14px"><div class="progress-fill ${pct>1?'over':pct>0.9?'warn':'ok'}" style="width:${Math.min(pct*100,100)}%"></div></div>
+      <table><thead><tr><th>รายการ</th><th style="text-align:right">งบ</th><th style="text-align:right">จ่ายจริง</th><th style="text-align:right">ส่วนต่าง</th></tr></thead><tbody>`;
+    c.items.forEach(item => {
+      const itemSpent = expenses.filter(e=>e.cat===c.cat && e.item===item.name).reduce((s,e)=>s+e.amount,0);
+      const diff = item.budget - itemSpent;
+      html += `<tr><td>${item.name}</td><td style="text-align:right">${item.budget.toLocaleString()}</td><td style="text-align:right" class="${itemSpent<0?'amt-neg':''}">${itemSpent.toLocaleString()}</td><td style="text-align:right" class="${diff<0?'amt-neg':'amt-pos'}">${diff.toLocaleString()}</td></tr>`;
+    });
+    html += '</tbody></table></div>';
+  });
+  document.getElementById('budget-detail').innerHTML = html;
+}
+
+// ─── CHECKLIST ───────────────────────────────────────────────────────────────
+function renderChecklist() {
+  const done = checkDone(), total = checkTotal();
+  document.getElementById('check-progress-text').textContent = `${done} / ${total} เสร็จแล้ว (${((done/total)*100).toFixed(0)}%)`;
+
+  let html = '';
+  checklist.forEach(period => {
+    html += `<div><span class="check-period">📅 ${period.period}</span>`;
+    period.items.forEach(item => {
+      html += `<div class="check-item ${item.status}" onclick="toggleCheck('${item.id}')">
+        <div class="check-circle ${item.status==='done'?'done':item.status==='skipped'?'skipped':''}">${item.status==='done'?'✓':item.status==='skipped'?'✗':''}</div>
+        <div>
+          <div style="font-size:0.88rem;${item.status==='done'?'text-decoration:line-through;color:var(--text-light)':''}">${item.text}</div>
+          ${item.note?`<div style="font-size:0.75rem;color:var(--primary)">${item.note}</div>`:''}
+        </div>
+      </div>`;
+    });
+    html += '</div>';
+  });
+  document.getElementById('checklist-content').innerHTML = html;
+}
+
+function toggleCheck(id) {
+  checklist.forEach(p => p.items.forEach(item => {
+    if(item.id===id) {
+      if(item.status==='none') item.status='done';
+      else if(item.status==='done') item.status='skipped';
+      else item.status='none';
+    }
+  }));
+  save(); renderChecklist();
+}
+
+// ─── CONTACTS ────────────────────────────────────────────────────────────────
+function renderContacts() {
+  let html = '';
+  contacts.forEach(c => {
+    html += `<div class="contact-card">
+      <div class="contact-role">${c.role}</div>
+      <div class="contact-name">${c.name}</div>
+      ${c.phone?`<div class="contact-info">📞 <a href="tel:${c.phone}" style="color:var(--primary)">${c.phone}</a></div>`:''}
+      ${c.email?`<div class="contact-info">✉️ <a href="mailto:${c.email}" style="color:var(--primary)">${c.email}</a></div>`:''}
+      ${c.social?`<div class="contact-info">🔗 ${c.social}</div>`:''}
+      ${c.note?`<div class="contact-info" style="font-size:0.8rem">📝 ${c.note}</div>`:''}
+      <div style="margin-top:12px;display:flex;gap:8px">
+        <button class="btn btn-sm btn-outline" onclick="editContact(${c.id})">แก้ไข</button>
+        <button class="btn btn-sm btn-danger" onclick="deleteContact(${c.id})">ลบ</button>
+      </div>
+    </div>`;
+  });
+  document.getElementById('contacts-grid').innerHTML = html || '<p style="color:var(--text-light)">ยังไม่มีผู้ติดต่อ</p>';
+}
+
+function openContactModal(id=null) {
+  document.getElementById('contact-modal-title').textContent = id ? 'แก้ไขผู้ติดต่อ' : 'เพิ่มผู้ติดต่อ';
+  document.getElementById('con-id').value = id||'';
+  if(id) {
+    const c = contacts.find(x=>x.id===id);
+    document.getElementById('con-role').value = c.role;
+    document.getElementById('con-name').value = c.name;
+    document.getElementById('con-phone').value = c.phone;
+    document.getElementById('con-email').value = c.email;
+    document.getElementById('con-social').value = c.social;
+    document.getElementById('con-note').value = c.note;
+  } else {
+    ['con-role','con-name','con-phone','con-email','con-social','con-note'].forEach(i=>document.getElementById(i).value='');
+  }
+  document.getElementById('contact-modal').classList.add('show');
+}
+
+function editContact(id) { openContactModal(id); }
+
+function saveContact() {
+  const role = document.getElementById('con-role').value.trim();
+  const name = document.getElementById('con-name').value.trim();
+  if(!role||!name) { alert('กรุณากรอกบทบาทและชื่อ'); return; }
+  const obj = { role, name, phone: document.getElementById('con-phone').value.trim(), email: document.getElementById('con-email').value.trim(), social: document.getElementById('con-social').value.trim(), note: document.getElementById('con-note').value.trim() };
+  const id = document.getElementById('con-id').value;
+  if(id) { const idx = contacts.findIndex(c=>c.id===parseInt(id)); contacts[idx] = { ...obj, id: parseInt(id) }; toast('แก้ไขสำเร็จ'); }
+  else { contacts.push({ ...obj, id: nextConId++ }); toast('เพิ่มผู้ติดต่อสำเร็จ'); }
+  save(); closeModal('contact-modal'); renderContacts();
+}
+
+function deleteContact(id) {
+  if(!confirm('ต้องการลบผู้ติดต่อนี้?')) return;
+  contacts = contacts.filter(c=>c.id!==id);
+  save(); renderContacts(); toast('ลบผู้ติดต่อแล้ว');
+}
+
+// ─── GUESTS ───────────────────────────────────────────────────────────────────
+function renderGuests() {
+  const statusFilter = document.getElementById('filter-guest-status').value;
+  const sideFilter = document.getElementById('filter-guest-side').value;
+  const search = document.getElementById('filter-guest-search').value.toLowerCase();
+
+  let filtered = guests.filter(g => {
+    if(statusFilter && g.status!==statusFilter) return false;
+    if(sideFilter && g.side!==sideFilter) return false;
+    if(search && !g.name.toLowerCase().includes(search) && !(g.phone||'').includes(search)) return false;
+    return true;
+  });
+
+  const confirmed = guests.filter(g=>g.status==='confirmed');
+  const pending = guests.filter(g=>g.status==='pending');
+  const declined = guests.filter(g=>g.status==='declined');
+  const totalSeats = confirmed.reduce((s,g)=>s+(g.seats||1),0);
+
+  document.getElementById('guest-stats').innerHTML = `
+    <div class="guest-stat"><div class="num">${guests.length}</div><div class="lbl">แขกทั้งหมด</div></div>
+    <div class="guest-stat"><div class="num" style="color:var(--success)">${confirmed.length}</div><div class="lbl">ยืนยันแล้ว</div></div>
+    <div class="guest-stat"><div class="num" style="color:var(--warning)">${pending.length}</div><div class="lbl">รอยืนยัน</div></div>
+    <div class="guest-stat"><div class="num">${totalSeats}</div><div class="lbl">ที่นั่งรวม</div></div>`;
+
+  const statusLabel = {confirmed:'<span class="badge badge-ok">ยืนยันแล้ว</span>', pending:'<span class="badge badge-warn">รอยืนยัน</span>', declined:'<span class="badge badge-over">ไม่มาร่วมงาน</span>'};
+  const sideLabel = {bride:'เจ้าสาว', groom:'เจ้าบ่าว'};
+
+  let html = `<table><thead><tr><th>#</th><th>ชื่อ</th><th>ฝั่ง</th><th>ความสัมพันธ์</th><th>เบอร์โทร</th><th style="text-align:center">ที่นั่ง</th><th>อาหาร</th><th>สถานะ</th><th></th></tr></thead><tbody>`;
+  if(filtered.length===0) {
+    html += '<tr><td colspan="9" style="text-align:center;padding:24px;color:var(--text-light)">ยังไม่มีข้อมูลแขก<br><small>กด "+ เพิ่มแขก" เพื่อเริ่มต้น</small></td></tr>';
+  } else {
+    filtered.forEach((g,i) => {
+      html += `<tr>
+        <td style="color:var(--text-light)">${i+1}</td>
+        <td><b>${g.name}</b>${g.note?`<br><span style="font-size:0.75rem;color:var(--text-light)">${g.note}</span>`:''}</td>
+        <td><span class="badge ${g.side==='bride'?'badge-neutral':'badge-neutral'}" style="${g.side==='bride'?'background:#fde8f5;color:#9b4d7a':'background:#e8f0fe;color:#2d5a9b'}">${sideLabel[g.side]||g.side}</span></td>
+        <td>${g.relation||'-'}</td>
+        <td>${g.phone?`<a href="tel:${g.phone}" style="color:var(--primary)">${g.phone}</a>`:'-'}</td>
+        <td style="text-align:center">${g.seats||1}</td>
+        <td style="font-size:0.8rem">${g.food||'-'}</td>
+        <td>${statusLabel[g.status]||g.status}</td>
+        <td style="white-space:nowrap">
+          <button class="btn btn-sm btn-outline" onclick="editGuest(${g.id})">แก้ไข</button>
+          <button class="btn btn-sm btn-danger" onclick="deleteGuest(${g.id})">ลบ</button>
+        </td></tr>`;
+    });
+  }
+  html += '</tbody></table>';
+  document.getElementById('guest-table').innerHTML = html;
+}
+
+function openGuestModal(id=null) {
+  document.getElementById('guest-modal-title').textContent = id ? 'แก้ไขข้อมูลแขก' : 'เพิ่มแขกผู้ร่วมงาน';
+  document.getElementById('gst-id').value = id||'';
+  if(id) {
+    const g = guests.find(x=>x.id===id);
+    document.getElementById('gst-name').value = g.name;
+    document.getElementById('gst-side').value = g.side;
+    document.getElementById('gst-phone').value = g.phone||'';
+    document.getElementById('gst-relation').value = g.relation||'';
+    document.getElementById('gst-seats').value = g.seats||1;
+    document.getElementById('gst-status').value = g.status;
+    document.getElementById('gst-food').value = g.food||'';
+    document.getElementById('gst-note').value = g.note||'';
+  } else {
+    document.getElementById('gst-name').value='';
+    document.getElementById('gst-side').value='bride';
+    document.getElementById('gst-phone').value='';
+    document.getElementById('gst-relation').value='';
+    document.getElementById('gst-seats').value=1;
+    document.getElementById('gst-status').value='pending';
+    document.getElementById('gst-food').value='';
+    document.getElementById('gst-note').value='';
+  }
+  document.getElementById('guest-modal').classList.add('show');
+}
+
+function editGuest(id) { openGuestModal(id); }
+
+function saveGuest() {
+  const name = document.getElementById('gst-name').value.trim();
+  if(!name) { alert('กรุณากรอกชื่อแขก'); return; }
+  const obj = {
+    name, side: document.getElementById('gst-side').value,
+    phone: document.getElementById('gst-phone').value.trim(),
+    relation: document.getElementById('gst-relation').value.trim(),
+    seats: parseInt(document.getElementById('gst-seats').value)||1,
+    status: document.getElementById('gst-status').value,
+    food: document.getElementById('gst-food').value.trim(),
+    note: document.getElementById('gst-note').value.trim(),
+  };
+  const id = document.getElementById('gst-id').value;
+  if(id) { const idx = guests.findIndex(g=>g.id===parseInt(id)); guests[idx]={...obj,id:parseInt(id)}; toast('แก้ไขข้อมูลแขกสำเร็จ'); }
+  else { guests.push({...obj,id:nextGstId++}); toast('เพิ่มแขกสำเร็จ'); }
+  save(); closeModal('guest-modal'); renderGuests();
+}
+
+function deleteGuest(id) {
+  if(!confirm('ต้องการลบข้อมูลแขกนี้?')) return;
+  guests = guests.filter(g=>g.id!==id);
+  save(); renderGuests(); toast('ลบข้อมูลแขกแล้ว');
+}
+
+// ─── MODAL ───────────────────────────────────────────────────────────────────
+function closeModal(id) { document.getElementById(id).classList.remove('show'); }
+document.querySelectorAll('.modal-overlay').forEach(m => m.addEventListener('click', e => { if(e.target===m) m.classList.remove('show'); }));
+
+// ─── INIT ────────────────────────────────────────────────────────────────────
+renderDashboard();
+</script>
+</body>
+</html>
