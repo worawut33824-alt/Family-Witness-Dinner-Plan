@@ -185,10 +185,27 @@
     .cd-sep { font-size: 1.3rem; padding-bottom: 12px; }
   }
 
-  @media (max-width: 600px) {
-    .page { padding: 16px; }
+  @media (max-width: 640px) {
+    .page { padding: 12px; }
     .guest-stats { grid-template-columns: repeat(2, 1fr); }
     .grid-4 { grid-template-columns: repeat(2, 1fr); }
+
+    /* Dashboard budget table: ซ่อน % และสถานะ */
+    #budget-table { overflow-x: auto; }
+    #budget-table th:nth-child(5), #budget-table td:nth-child(5),
+    #budget-table th:nth-child(6), #budget-table td:nth-child(6) { display: none; }
+    #budget-table th, #budget-table td { padding: 7px 8px; font-size: 0.78rem; }
+    #budget-table td:first-child, #budget-table th:first-child { max-width: 85px; word-break: break-word; }
+
+    /* Budget detail items table */
+    #budget-detail th, #budget-detail td { padding: 7px 8px; font-size: 0.78rem; }
+
+    /* Guest table: ซ่อน ความสัมพันธ์, ที่นั่ง, อาหาร */
+    #guest-table { overflow-x: auto; }
+    #guest-table th:nth-child(4), #guest-table td:nth-child(4),
+    #guest-table th:nth-child(6), #guest-table td:nth-child(6),
+    #guest-table th:nth-child(7), #guest-table td:nth-child(7) { display: none; }
+    #guest-table th, #guest-table td { padding: 7px 8px; font-size: 0.78rem; }
   }
 </style>
 </head>
@@ -890,20 +907,54 @@ function renderExpenses() {
   }).sort((a,b)=>new Date(b.date)-new Date(a.date));
 
   const total = filtered.reduce((s,e)=>s+e.amount,0);
-  let html = `<table><thead><tr><th>วันที่</th><th>หมวดหมู่</th><th>รายการ</th><th style="text-align:right">จำนวน (บาท)</th><th>หมายเหตุ</th><th></th></tr></thead><tbody>`;
-  filtered.forEach(e => {
-    html += `<tr>
-      <td style="white-space:nowrap">${e.date}</td>
-      <td><span class="badge badge-neutral" style="font-size:0.72rem">${e.cat}</span></td>
-      <td>${e.item}</td>
-      <td style="text-align:right;font-weight:600" class="${e.amount<0?'amt-neg':''}"> ${e.amount.toLocaleString()}</td>
-      <td style="font-size:0.8rem;color:var(--text-light);max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${e.note}">${e.note||'-'}</td>
-      <td style="white-space:nowrap">
-        <button class="btn btn-sm btn-outline" onclick="editExpense(${e.id})">แก้ไข</button>
-        <button class="btn btn-sm btn-danger" onclick="deleteExpense(${e.id})">ลบ</button>
-      </td></tr>`;
-  });
-  html += `</tbody><tfoot><tr style="background:var(--accent)"><td colspan="3"><b>รวม ${filtered.length} รายการ</b></td><td style="text-align:right;font-weight:700" class="${total<0?'amt-neg':''}">${total.toLocaleString()}</td><td colspan="2"></td></tr></tfoot></table>`;
+  const isMobile = window.innerWidth <= 640;
+  let html = '';
+
+  if (isMobile) {
+    // ── Card layout สำหรับมือถือ ──
+    if (filtered.length === 0) {
+      html = '<div style="padding:24px;text-align:center;color:var(--text-light)">ไม่มีรายการ</div>';
+    } else {
+      filtered.forEach(e => {
+        html += `<div style="padding:12px 16px;border-bottom:1px solid var(--border)">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px">
+            <span style="font-size:0.75rem;color:var(--text-light)">${e.date}</span>
+            <span style="font-weight:700;font-size:1rem" class="${e.amount<0?'amt-neg':''}">${e.amount.toLocaleString()} บาท</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:${e.note?'4px':'0'}">
+            <span style="font-size:0.68rem;background:var(--accent);color:var(--primary-dark);border-radius:4px;padding:1px 7px;white-space:nowrap">${e.cat}</span>
+            <span style="font-size:0.9rem;font-weight:600">${e.item}</span>
+          </div>
+          ${e.note?`<div style="font-size:0.75rem;color:var(--text-light);margin-bottom:4px;padding-left:2px">${e.note}</div>`:''}
+          <div style="display:flex;gap:6px;margin-top:6px">
+            <button class="btn btn-sm btn-outline" onclick="editExpense(${e.id})">แก้ไข</button>
+            <button class="btn btn-sm btn-danger" onclick="deleteExpense(${e.id})">ลบ</button>
+          </div>
+        </div>`;
+      });
+    }
+    html += `<div style="padding:10px 16px;background:var(--accent);display:flex;justify-content:space-between;font-weight:700;font-size:0.875rem;border-top:1px solid var(--border)">
+      <span>รวม ${filtered.length} รายการ</span>
+      <span class="${total<0?'amt-neg':''}">${total.toLocaleString()} บาท</span>
+    </div>`;
+  } else {
+    // ── Table layout สำหรับ desktop ──
+    html = `<table><thead><tr><th>วันที่</th><th>หมวดหมู่</th><th>รายการ</th><th style="text-align:right">จำนวน (บาท)</th><th>หมายเหตุ</th><th></th></tr></thead><tbody>`;
+    filtered.forEach(e => {
+      html += `<tr>
+        <td style="white-space:nowrap">${e.date}</td>
+        <td><span class="badge badge-neutral" style="font-size:0.72rem">${e.cat}</span></td>
+        <td>${e.item}</td>
+        <td style="text-align:right;font-weight:600" class="${e.amount<0?'amt-neg':''}"> ${e.amount.toLocaleString()}</td>
+        <td style="font-size:0.8rem;color:var(--text-light);max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${e.note}">${e.note||'-'}</td>
+        <td style="white-space:nowrap">
+          <button class="btn btn-sm btn-outline" onclick="editExpense(${e.id})">แก้ไข</button>
+          <button class="btn btn-sm btn-danger" onclick="deleteExpense(${e.id})">ลบ</button>
+        </td></tr>`;
+    });
+    html += `</tbody><tfoot><tr style="background:var(--accent)"><td colspan="3"><b>รวม ${filtered.length} รายการ</b></td><td style="text-align:right;font-weight:700" class="${total<0?'amt-neg':''}">${total.toLocaleString()}</td><td colspan="2"></td></tr></tfoot></table>`;
+  }
+
   document.getElementById('expense-table').innerHTML = html;
 }
 
