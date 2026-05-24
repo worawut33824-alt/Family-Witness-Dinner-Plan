@@ -185,6 +185,38 @@
     .cd-sep { font-size: 1.3rem; padding-bottom: 12px; }
   }
 
+  /* ─── WEDDING LOGO ──────────────────────────────────────────── */
+  .wedding-logo {
+    border-radius: 50%; object-fit: contain;
+    background: white; flex-shrink: 0; display: block;
+  }
+  /* small circular logo in the top nav bar */
+  .logo-nav {
+    width: 40px; height: 40px;
+    border: 2px solid rgba(255,255,255,0.45);
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    padding: 3px;
+  }
+  /* medium logo centred in the side drawer header */
+  .logo-drawer {
+    width: 96px; height: 96px;
+    border: 3px solid rgba(255,255,255,0.5);
+    box-shadow: 0 0 0 6px rgba(255,255,255,0.08), 0 6px 20px rgba(0,0,0,0.22);
+    padding: 5px; margin: 0 auto 12px;
+  }
+  /* larger logo at top of the countdown card */
+  .logo-countdown {
+    width: 110px; height: 110px;
+    border: 3px solid rgba(255,255,255,0.45);
+    box-shadow: 0 0 0 8px rgba(255,255,255,0.07), 0 8px 28px rgba(0,0,0,0.28);
+    padding: 5px; margin: 0 auto 18px;
+  }
+  @media (max-width: 480px) {
+    .logo-countdown { width: 82px; height: 82px; margin-bottom: 14px; }
+    .logo-drawer { width: 78px; height: 78px; }
+  }
+  /* ─────────────────────────────────────────────────────────────── */
+
   /* ─── DRAWER NAVIGATION ─────────────────────────────────────── */
   .hamburger-btn {
     display: none;
@@ -263,8 +295,9 @@
   <div class="nav-header" style="display:flex;align-items:center;justify-content:space-between">
     <div style="display:flex;align-items:center;gap:10px">
       <button class="hamburger-btn" onclick="openDrawer()" aria-label="เมนู">☰</button>
+      <img src="logo.png" alt="Wedding Logo" class="wedding-logo logo-nav" onerror="this.style.display='none'">
       <div>
-        <div class="nav-title">🎊 Family Witness Dinner</div>
+        <div class="nav-title">Family Witness Dinner</div>
         <div class="nav-subtitle">28 พฤศจิกายน 2569 · TARA Terrace</div>
       </div>
     </div>
@@ -289,11 +322,12 @@
 <div class="drawer" id="drawer">
   <div class="drawer-hd">
     <div style="display:flex;justify-content:space-between;align-items:flex-start">
-      <div>
-        <div class="drawer-hd-title">🎊 Family Witness Dinner</div>
+      <div style="flex:1;text-align:center">
+        <img src="logo.png" alt="Wedding Logo" class="wedding-logo logo-drawer" onerror="this.style.display='none'">
+        <div class="drawer-hd-title">Family Witness Dinner</div>
         <div class="drawer-hd-sub">28 พฤศจิกายน 2569 · TARA Terrace</div>
       </div>
-      <button onclick="closeDrawer()" style="background:rgba(255,255,255,0.15);border:none;color:white;font-size:1.1rem;cursor:pointer;padding:4px 8px;border-radius:6px;line-height:1">✕</button>
+      <button onclick="closeDrawer()" style="background:rgba(255,255,255,0.15);border:none;color:white;font-size:1.1rem;cursor:pointer;padding:4px 8px;border-radius:6px;line-height:1;flex-shrink:0;margin-left:8px">✕</button>
     </div>
   </div>
   <button class="drawer-nav-btn active" onclick="showPage('dashboard')"><span class="di">📊</span>Dashboard</button>
@@ -310,7 +344,8 @@
 
   <!-- COUNTDOWN -->
   <div class="countdown-card">
-    <div class="countdown-title">🎊 นับถอยหลังสู่วันแต่งงาน</div>
+    <img src="logo.png" alt="Wedding Logo" class="wedding-logo logo-countdown" onerror="this.style.display='none'">
+    <div class="countdown-title">นับถอยหลังสู่วันแต่งงาน</div>
     <div class="countdown-date">วันเสาร์ที่ 28 พฤศจิกายน 2569 · 14:00 น. · TARA Terrace</div>
     <div id="countdown-content">
       <div class="countdown-boxes">
