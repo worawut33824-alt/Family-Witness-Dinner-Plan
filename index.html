@@ -1292,9 +1292,9 @@ function renderContacts() {
     const byStyle = CONTACT_BY_STYLE[by] || CONTACT_BY_STYLE[''];
     const byLabel = by || 'ไม่ระบุ';
     html += `<div class="contact-card">
-      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px">
-        <div class="contact-role">${c.role}</div>
-        <span style="display:inline-block;padding:2px 10px;border-radius:20px;font-size:0.72rem;font-weight:700;${byStyle}">👤 ${byLabel}</span>
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:6px">
+        <div class="contact-role" style="flex:1;min-width:0">${c.role}</div>
+        <span style="flex-shrink:0;display:inline-block;padding:4px 12px;border-radius:20px;font-size:0.7rem;font-weight:700;min-width:54px;text-align:center;letter-spacing:0.3px;${byStyle}">${byLabel}</span>
       </div>
       <div class="contact-name">${c.name}</div>
       ${c.phone?`<div class="contact-info">📞 <a href="tel:${c.phone}" style="color:var(--primary)">${c.phone}</a></div>`:''}
@@ -1337,10 +1337,10 @@ function saveContact() {
   if(!role||!name) { alert('กรุณากรอกบทบาทและชื่อ'); return; }
   const obj = { role, name, phone: document.getElementById('con-phone').value.trim(), email: document.getElementById('con-email').value.trim(), social: document.getElementById('con-social').value.trim(), note: document.getElementById('con-note').value.trim(), contactedBy: document.getElementById('con-by').value };
   const id = document.getElementById('con-id').value;
-  if(id) { const idx = contacts.findIndex(c=>c.id===parseInt(id)); contacts[idx] = { ...obj, id: parseInt(id) }; toast('แก้ไขสำเร็จ'); }
-  else { contacts.push({ ...obj, id: nextConId++ }); toast('เพิ่มผู้ติดต่อสำเร็จ'); }
+  if(id) { const idx = contacts.findIndex(c=>c.id===parseInt(id)); contacts[idx] = { ...obj, id: parseInt(id) }; toast('✅ แก้ไขสำเร็จ'); }
+  else { contacts.push({ ...obj, id: nextConId++ }); toast('✅ เพิ่มผู้ติดต่อสำเร็จ'); }
   save(); closeModal('contact-modal'); renderContacts();
-  autoPush('contacts');
+  autoPush('contacts', true);
 }
 
 function deleteContact(id) {
@@ -1627,10 +1627,10 @@ async function autoLoad() {
 }
 
 // ── AUTO PUSH (บันทึกลง Sheets อัตโนมัติ) ──
-async function autoPush(type) {
+async function autoPush(type, showToast=false) {
   if (!scriptUrl || isSyncing) {
     if (!scriptUrl) toast('⚠️ ยังไม่ได้ตั้งค่า Script URL — ไปหน้า ☁️ ซิงค์');
-    return;
+    return false;
   }
   isSyncing = true;
   setNavIndicator('syncing', 'กำลังบันทึก...');
@@ -1650,11 +1650,15 @@ async function autoPush(type) {
     const data = await res.json();
     if (data.status === 'error') throw new Error(data.error);
     localStorage.setItem('last_sync_time', new Date().toISOString());
-    setNavIndicator('ok', 'บันทึกแล้ว');
+    setNavIndicator('ok', 'ซิงค์ Sheets แล้ว ✅');
+    if (showToast) toast('☁️ บันทึกลง Google Sheets สำเร็จ');
     renderSyncPage();
+    return true;
   } catch(e) {
-    setNavIndicator('error', 'บันทึกไม่ได้');
+    setNavIndicator('error', 'ซิงค์ไม่ได้ ❌');
+    toast('❌ บันทึกลง Sheets ไม่สำเร็จ: ' + e.message);
     console.error('autoPush:', e);
+    return false;
   } finally {
     isSyncing = false;
   }
