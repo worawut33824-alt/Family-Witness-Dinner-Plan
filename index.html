@@ -415,6 +415,9 @@
     </div>
   </div>
 
+  <!-- Share Link -->
+  <div class="card" id="share-link-box" style="display:none"></div>
+
   <!-- Setup Guide -->
   <div class="card">
     <div class="card-title" style="cursor:pointer;user-select:none" onclick="toggleSetupGuide()">
@@ -1320,6 +1323,25 @@ document.querySelectorAll('.modal-overlay').forEach(m => m.addEventListener('cli
 let scriptUrl = localStorage.getItem('apps_script_url') || '';
 let isSyncing = false;
 
+// ── AbortSignal.timeout polyfill (mobile browsers ที่ไม่รองรับ) ──
+function abortAfter(ms) {
+  if (typeof AbortSignal !== 'undefined' && AbortSignal.timeout) return AbortSignal.timeout(ms);
+  const ctrl = new AbortController();
+  setTimeout(() => ctrl.abort(), ms);
+  return ctrl.signal;
+}
+
+// ── รับ Script URL จาก query param ?surl=... (เปิดจากลิงก์แชร์) ──
+(function() {
+  try {
+    const p = new URLSearchParams(window.location.search).get('surl');
+    if (p && p.startsWith('https://script.google.com/')) {
+      scriptUrl = p;
+      localStorage.setItem('apps_script_url', scriptUrl);
+    }
+  } catch(e) {}
+})();
+
 // ── Nav indicator ──
 function setNavIndicator(state, text) {
   const wrap = document.getElementById('nav-sync-indicator');
@@ -1351,6 +1373,31 @@ function renderSyncPage() {
   const last = localStorage.getItem('last_sync_time');
   const el = document.getElementById('sync-last-time');
   if (el) el.textContent = last ? ('ซิงค์ล่าสุด: ' + new Date(last).toLocaleString('th-TH')) : 'ยังไม่เคยซิงค์';
+
+  // ── ลิงก์แชร์ไปมือถือ ──
+  const shareBox = document.getElementById('share-link-box');
+  if (!shareBox) return;
+  if (scriptUrl) {
+    const shareUrl = location.origin + location.pathname + '?surl=' + encodeURIComponent(scriptUrl);
+    shareBox.style.display = 'block';
+    shareBox.innerHTML = `
+      <div class="card-title" style="margin-bottom:10px">📱 เปิดบนมือถือ (พร้อมเชื่อมต่ออัตโนมัติ)</div>
+      <p style="font-size:0.8rem;color:var(--text-light);margin-bottom:10px">คัดลอกลิงก์นี้ไปวางในมือถือ — จะตั้งค่า Script URL ให้อัตโนมัติ</p>
+      <div style="display:flex;gap:8px;align-items:center">
+        <input id="share-url-input" value="${shareUrl}" readonly
+          style="font-size:0.72rem;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:8px 10px;flex:1;color:var(--text)">
+        <button class="btn btn-primary btn-sm" onclick="copyShareUrl()">📋 คัดลอก</button>
+      </div>`;
+  } else {
+    shareBox.style.display = 'none';
+  }
+}
+
+function copyShareUrl() {
+  const el = document.getElementById('share-url-input');
+  if (!el) return;
+  navigator.clipboard.writeText(el.value).then(() => toast('✅ คัดลอกลิงก์แล้ว — วางในมือถือได้เลย'))
+    .catch(() => { el.select(); document.execCommand('copy'); toast('✅ คัดลอกแล้ว'); });
 }
 
 // ── Test & save URL ──
@@ -1359,7 +1406,7 @@ async function saveScriptUrl() {
   if (!val) { alert('กรุณากรอก URL'); return; }
   setSyncDot('loading');
   try {
-    const res = await fetch(val + '?action=ping', { signal: AbortSignal.timeout(8000) });
+    const res = await fetch(val + '?action=ping', { signal: abortAfter(8000) });
     const json = await res.json();
     if (json.status !== 'ok') throw new Error(json.error || 'ไม่ตอบสนอง');
     scriptUrl = val;
@@ -1378,7 +1425,7 @@ async function autoLoad() {
   if (!scriptUrl) return;
   setNavIndicator('syncing', 'กำลังโหลดข้อมูล...');
   try {
-    const res = await fetch(`${scriptUrl}?action=all`, { signal: AbortSignal.timeout(20000) });
+    const res = await fetch(`${scriptUrl}?action=all`, { signal: abortAfter(20000) });
     const data = await res.json();
     if (data.status === 'error') throw new Error(data.error);
     if (data.expenses && data.expenses.length) {
@@ -1413,7 +1460,10 @@ async function autoLoad() {
 
 // ── AUTO PUSH (บันทึกลง Sheets อัตโนมัติ) ──
 async function autoPush(type) {
-  if (!scriptUrl || isSyncing) return;
+  if (!scriptUrl || isSyncing) {
+    if (!scriptUrl) toast('⚠️ ยังไม่ได้ตั้งค่า Script URL — ไปหน้า ☁️ ซิงค์');
+    return;
+  }
   isSyncing = true;
   setNavIndicator('syncing', 'กำลังบันทึก...');
   const body = {};
@@ -1427,7 +1477,7 @@ async function autoPush(type) {
       method: 'POST',
       headers: { 'Content-Type': 'text/plain' },
       body: JSON.stringify(body),
-      signal: AbortSignal.timeout(20000)
+      signal: abortAfter(20000)
     });
     const data = await res.json();
     if (data.status === 'error') throw new Error(data.error);
@@ -1447,7 +1497,7 @@ async function pullData(type) {
   if (!scriptUrl) { toast('⚠️ กรอก Apps Script URL ก่อน'); showPage('sync'); return; }
   setNavIndicator('syncing', 'กำลังดึงข้อมูล...');
   try {
-    const res = await fetch(`${scriptUrl}?action=${type}`, { signal: AbortSignal.timeout(20000) });
+    const res = await fetch(`${scriptUrl}?action=${type}`, { signal: abortAfter(20000) });
     const data = await res.json();
     if (data.status === 'error') throw new Error(data.error);
     if ((type==='all'||type==='expenses') && data.expenses) { expenses = data.expenses; nextExpId = expenses.reduce((m,e)=>Math.max(m,e.id),0)+1; }
