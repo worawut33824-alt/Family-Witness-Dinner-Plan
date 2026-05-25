@@ -3,7 +3,20 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>🎊 Family Witness Dinner – Wedding Planner</title>
+<title>PM Wedding – Family Wiseness Dinner</title>
+
+<!-- PWA -->
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#3d6a91">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="PM Wedding">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+
+<!-- SEO / Share -->
+<meta name="description" content="แพลนเนอร์งานแต่งงาน Family Wiseness Dinner · 28.11.2026 · TARA Terrace">
+<link rel="icon" type="image/png" href="icon-192.png">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <style>
   :root {
@@ -1770,6 +1783,17 @@ function toggleSetupGuide() {
 // ─── INIT ────────────────────────────────────────────────────────────────────
 renderDashboard();
 autoLoad(); // ดึงข้อมูลจาก Google Sheets อัตโนมัติตอนเปิดแอพ
+</script>
+
+<!-- ── PWA Service Worker Registration ───────────────────────── -->
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js')
+      .then(reg => console.log('[PWA] Service worker registered:', reg.scope))
+      .catch(err => console.warn('[PWA] SW registration failed:', err));
+  });
+}
 </script>
 </body>
 </html>
