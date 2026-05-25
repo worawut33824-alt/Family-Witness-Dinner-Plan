@@ -1640,6 +1640,11 @@ async function saveScriptUrl() {
 async function autoLoad() {
   if (!scriptUrl) return;
   setNavIndicator('syncing', 'กำลังโหลดข้อมูล...');
+  // Show subtle loading hint on contacts grid if it's visible and still showing defaults
+  const cGrid = document.getElementById('contacts-grid');
+  if (cGrid && document.getElementById('page-contacts')?.classList.contains('active')) {
+    cGrid.style.opacity = '0.5';
+  }
   try {
     const res = await fetch(`${scriptUrl}?action=all`, { signal: abortAfter(20000) });
     const data = await res.json();
@@ -1668,9 +1673,25 @@ async function autoLoad() {
     setNavIndicator('ok', 'โหลดข้อมูลแล้ว');
     renderSyncPage();
     renderDashboard();
+    // Re-render whichever page is currently open so users see fresh data immediately
+    if (cGrid) cGrid.style.opacity = '';
+    renderActivePage();
   } catch(e) {
     setNavIndicator('error', 'โหลดไม่ได้');
     console.error('autoLoad:', e);
+  }
+}
+
+function renderActivePage() {
+  const pages = {
+    'page-contacts':  () => renderContacts(),
+    'page-expenses':  () => renderExpenses(),
+    'page-guests':    () => { renderGuests(); renderGuestStats(); },
+    'page-budget':    () => renderBudget(),
+    'page-checklist': () => renderChecklist(),
+  };
+  for (const [id, fn] of Object.entries(pages)) {
+    if (document.getElementById(id)?.classList.contains('active')) { fn(); break; }
   }
 }
 
