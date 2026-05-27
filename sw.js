@@ -1,7 +1,7 @@
 // Wedding Planner – Service Worker
 // Caches core assets for offline use
 
-const CACHE = 'wedding-planner-v2';
+const CACHE = 'wedding-planner-v3';
 const ASSETS = [
   './',
   './index.html',
@@ -9,12 +9,6 @@ const ASSETS = [
   './icon-192.png',
   './icon-512.png',
   './apple-touch-icon.png',
-  './stickers/sticker_01.png',
-  './stickers/sticker_02.png',
-  './stickers/sticker_06.png',
-  './stickers/sticker_08.png',
-  './stickers/sticker_09.png',
-  './stickers/sticker_10.png',
   'https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js'
 ];
 
