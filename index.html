@@ -228,6 +228,44 @@
     .logo-countdown { width: 82px; height: 82px; margin-bottom: 14px; }
     .logo-drawer { width: 78px; height: 78px; }
   }
+  /* ─── COUNTDOWN 2-COLUMN LAYOUT ─────────────────────────────── */
+  .cd-layout { display: flex; align-items: center; gap: 16px; }
+  .cd-info { flex: 1; min-width: 0; }
+  .cd-couple { flex-shrink: 0; display: flex; align-items: flex-end; }
+  .cd-sticker {
+    height: 210px; width: auto; display: block;
+    filter: drop-shadow(0 6px 18px rgba(0,0,0,0.25));
+    transition: transform 0.3s ease;
+    margin-bottom: -12px;
+  }
+  .cd-sticker:hover { transform: scale(1.04); }
+
+  /* ─── PAGE BANNER (sticker + title on each page) ─────────────── */
+  .page-banner {
+    background: linear-gradient(135deg, var(--accent) 0%, #deeaf8 100%);
+    border-radius: 14px; padding: 16px 20px; margin-bottom: 20px;
+    display: flex; align-items: center; justify-content: space-between;
+    border: 1px solid rgba(123,156,191,0.22);
+    overflow: hidden; min-height: 96px;
+  }
+  .page-banner-text { flex: 1; }
+  .page-banner-title { font-size: 1.12rem; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+  .page-banner-sub   { font-size: 0.78rem; color: var(--text-light); }
+  .page-banner-actions { display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
+  .page-banner-sticker {
+    height: 118px; width: auto; flex-shrink: 0; margin-left: 10px;
+    filter: drop-shadow(0 4px 10px rgba(0,0,0,0.13));
+    transition: transform 0.3s ease;
+  }
+  .page-banner-sticker:hover { transform: scale(1.05); }
+
+  @media (max-width: 620px) {
+    .cd-layout { flex-direction: column; gap: 6px; }
+    .cd-sticker { height: 155px; margin-bottom: -8px; }
+    .logo-countdown { width: 70px !important; height: 70px !important; margin-bottom: 10px !important; }
+    .page-banner-sticker { height: 86px; }
+    .page-banner-title { font-size: 1rem; }
+  }
   /* ─────────────────────────────────────────────────────────────── */
 
   /* ─── DRAWER NAVIGATION ─────────────────────────────────────── */
@@ -357,18 +395,25 @@
 
   <!-- COUNTDOWN -->
   <div class="countdown-card">
-    <img src="logo.png" alt="Wedding Logo" class="wedding-logo logo-countdown" onerror="this.style.display='none'">
-    <div class="countdown-title">นับถอยหลังสู่วันแต่งงาน</div>
-    <div class="countdown-date">วันเสาร์ที่ 28 พฤศจิกายน 2569 · 14:00 น. · TARA Terrace</div>
-    <div id="countdown-content">
-      <div class="countdown-boxes">
-        <div class="cd-box"><div class="cd-num" id="cd-days">--</div><div class="cd-label">วัน</div></div>
-        <div class="cd-sep">:</div>
-        <div class="cd-box"><div class="cd-num" id="cd-hours">--</div><div class="cd-label">ชั่วโมง</div></div>
-        <div class="cd-sep">:</div>
-        <div class="cd-box"><div class="cd-num" id="cd-mins">--</div><div class="cd-label">นาที</div></div>
-        <div class="cd-sep">:</div>
-        <div class="cd-box"><div class="cd-num" id="cd-secs">--</div><div class="cd-label">วินาที</div></div>
+    <div class="cd-layout">
+      <div class="cd-info">
+        <img src="logo.png" alt="PM" class="wedding-logo logo-countdown" onerror="this.style.display='none'">
+        <div class="countdown-title">นับถอยหลังสู่วันแต่งงาน</div>
+        <div class="countdown-date">วันเสาร์ที่ 28 พฤศจิกายน 2569 · 14:00 น. · TARA Terrace</div>
+        <div id="countdown-content">
+          <div class="countdown-boxes">
+            <div class="cd-box"><div class="cd-num" id="cd-days">--</div><div class="cd-label">วัน</div></div>
+            <div class="cd-sep">:</div>
+            <div class="cd-box"><div class="cd-num" id="cd-hours">--</div><div class="cd-label">ชั่วโมง</div></div>
+            <div class="cd-sep">:</div>
+            <div class="cd-box"><div class="cd-num" id="cd-mins">--</div><div class="cd-label">นาที</div></div>
+            <div class="cd-sep">:</div>
+            <div class="cd-box"><div class="cd-num" id="cd-secs">--</div><div class="cd-label">วินาที</div></div>
+          </div>
+        </div>
+      </div>
+      <div class="cd-couple">
+        <img src="stickers/sticker_01.png" alt="แป้ง & เอ็ม" class="cd-sticker" onerror="this.style.display='none'">
       </div>
     </div>
   </div>
@@ -398,9 +443,15 @@
 
 <!-- EXPENSES -->
 <div id="page-expenses" class="page">
-  <div class="section-header">
-    <h2>💰 บันทึกค่าใช้จ่าย</h2>
-    <button class="btn btn-primary" onclick="openExpenseModal()">+ เพิ่มรายการ</button>
+  <div class="page-banner">
+    <div class="page-banner-text">
+      <div class="page-banner-title">💰 บันทึกค่าใช้จ่าย</div>
+      <div class="page-banner-sub">บันทึกและติดตามค่าใช้จ่ายงานแต่งงานทุกรายการ</div>
+    </div>
+    <div class="page-banner-actions">
+      <button class="btn btn-primary" onclick="openExpenseModal()">+ เพิ่มรายการ</button>
+      <img src="stickers/sticker_08.png" alt="" class="page-banner-sticker" onerror="this.style.display='none'">
+    </div>
   </div>
   <div class="card" style="padding:16px 20px;margin-bottom:16px;">
     <div class="form-row" style="margin:0">
@@ -429,9 +480,14 @@
 
 <!-- BUDGET -->
 <div id="page-budget" class="page">
-  <div class="section-header">
-    <h2>📋 งบประมาณแผน</h2>
-    <span id="budget-total-label" style="font-size:0.8rem;color:var(--text-light)">งบรวมทุกหมวด 210,000 บาท</span>
+  <div class="page-banner">
+    <div class="page-banner-text">
+      <div class="page-banner-title">📋 งบประมาณแผน</div>
+      <div class="page-banner-sub" id="budget-total-label">งบรวมทุกหมวด 210,000 บาท</div>
+    </div>
+    <div class="page-banner-actions">
+      <img src="stickers/sticker_10.png" alt="" class="page-banner-sticker" onerror="this.style.display='none'">
+    </div>
   </div>
 
   <!-- Summary cards: งบ / จ่ายจริง / คงเหลือ / % -->
@@ -442,27 +498,44 @@
 
 <!-- CHECKLIST -->
 <div id="page-checklist" class="page">
-  <div class="section-header">
-    <h2>✅ Wedding Checklist</h2>
-    <span id="check-progress-text" style="font-size:0.85rem;color:var(--text-light)"></span>
+  <div class="page-banner">
+    <div class="page-banner-text">
+      <div class="page-banner-title">✅ Wedding Checklist</div>
+      <div class="page-banner-sub" id="check-progress-text"></div>
+    </div>
+    <div class="page-banner-actions">
+      <img src="stickers/sticker_09.png" alt="" class="page-banner-sticker" onerror="this.style.display='none'">
+    </div>
   </div>
   <div id="checklist-content"></div>
 </div>
 
 <!-- CONTACTS -->
 <div id="page-contacts" class="page">
-  <div class="section-header">
-    <h2>📞 ผู้ติดต่อทีมงาน</h2>
-    <button class="btn btn-primary" onclick="openContactModal()">+ เพิ่มผู้ติดต่อ</button>
+  <div class="page-banner">
+    <div class="page-banner-text">
+      <div class="page-banner-title">📞 ผู้ติดต่อทีมงาน</div>
+      <div class="page-banner-sub">รายชื่อผู้ติดต่อและทีมงานสำหรับวันแต่งงาน</div>
+    </div>
+    <div class="page-banner-actions">
+      <button class="btn btn-primary" onclick="openContactModal()">+ เพิ่มผู้ติดต่อ</button>
+      <img src="stickers/sticker_02.png" alt="" class="page-banner-sticker" onerror="this.style.display='none'">
+    </div>
   </div>
   <div id="contacts-grid" class="grid-3"></div>
 </div>
 
 <!-- GUESTS -->
 <div id="page-guests" class="page">
-  <div class="section-header">
-    <h2>👥 ระบบลงทะเบียนแขก</h2>
-    <button class="btn btn-primary" onclick="openGuestModal()">+ เพิ่มแขก</button>
+  <div class="page-banner">
+    <div class="page-banner-text">
+      <div class="page-banner-title">👥 ระบบลงทะเบียนแขก</div>
+      <div class="page-banner-sub">จัดการรายชื่อแขกและยืนยันการเข้าร่วมงาน</div>
+    </div>
+    <div class="page-banner-actions">
+      <button class="btn btn-primary" onclick="openGuestModal()">+ เพิ่มแขก</button>
+      <img src="stickers/sticker_06.png" alt="" class="page-banner-sticker" onerror="this.style.display='none'">
+    </div>
   </div>
   <div class="guest-stats" id="guest-stats"></div>
   <div class="card" style="padding:16px 20px;margin-bottom:16px;">
