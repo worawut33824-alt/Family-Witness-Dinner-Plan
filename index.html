@@ -174,13 +174,36 @@
   /* COUNTDOWN */
   .countdown-card {
     background: linear-gradient(135deg, #3d6a91 0%, #5a7fa8 45%, #7B9CBF 100%);
-    border-radius: 16px; padding: 32px 24px; margin-bottom: 32px;
-    color: white; text-align: center; position: relative; overflow: hidden;
+    border-radius: 16px; padding: 32px 24px 32px 24px; margin-bottom: 44px;
+    color: white; text-align: center; position: relative; overflow: visible;
     box-shadow: 0 8px 32px rgba(90,127,168,0.45);
   }
   .countdown-card::before {
     content: '💍'; position: absolute; font-size: 8rem; opacity: 0.06;
-    top: -10px; right: -10px; line-height: 1;
+    top: -10px; right: -10px; line-height: 1; pointer-events: none;
+  }
+  /* ── COUPLE DECORATION ── */
+  .couple-decoration {
+    position: absolute;
+    bottom: -18px;
+    right: 18px;
+    width: 148px;
+    pointer-events: none;
+    filter: drop-shadow(0 6px 20px rgba(0,0,0,0.3));
+    animation: coupleFloat 4s ease-in-out infinite;
+    z-index: 5;
+    transform-origin: bottom center;
+  }
+  @keyframes coupleFloat {
+    0%, 100% { transform: translateY(0px); }
+    50%       { transform: translateY(-10px); }
+  }
+  @media (max-width: 640px) {
+    .couple-decoration { width: 96px; right: 10px; bottom: -10px; }
+  }
+  @media (max-width: 380px) {
+    .couple-decoration { display: none; }
+    .countdown-card { margin-bottom: 32px; }
   }
   .countdown-title { font-size: 0.82rem; opacity: 0.8; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 6px; }
   .countdown-date { font-size: 1.05rem; font-weight: 700; color: #e8f2fb; margin-bottom: 20px; letter-spacing: 0.5px; }
@@ -371,6 +394,8 @@
         <div class="cd-box"><div class="cd-num" id="cd-secs">--</div><div class="cd-label">วินาที</div></div>
       </div>
     </div>
+    <!-- คู่บ่าวสาว -->
+    <img src="Gif1.png" alt="คู่บ่าวสาว" class="couple-decoration" onerror="this.style.display='none'">
   </div>
 
   <div class="grid-4" id="dash-stats" style="margin-bottom:28px"></div>

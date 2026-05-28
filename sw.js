@@ -1,11 +1,12 @@
 // Wedding Planner – Service Worker
 // Caches core assets for offline use
 
-const CACHE = 'wedding-planner-v3';
+const CACHE = 'wedding-planner-v4';
 const ASSETS = [
   './',
   './index.html',
   './logo.png',
+  './Gif1.png',
   './icon-192.png',
   './icon-512.png',
   './apple-touch-icon.png',
