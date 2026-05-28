@@ -188,12 +188,15 @@
     bottom: 0;
     right: 0;
     width: 155px;
-    pointer-events: none;
+    pointer-events: auto;
+    cursor: pointer;
     filter: drop-shadow(-4px 0 16px rgba(0,0,0,0.18));
     animation: coupleFloat 4s ease-in-out infinite;
     z-index: 50;
     transform-origin: bottom center;
+    transition: opacity 0.15s;
   }
+  .couple-decoration:active { opacity: 0.65; }
   @keyframes coupleFloat {
     0%, 100% { transform: translateY(0px); }
     50%       { transform: translateY(-10px); }
@@ -796,7 +799,7 @@
 </div>
 
 <!-- คู่บ่าวสาว — fixed bottom-right ทุกหน้า -->
-<img src="Gif1.png" alt="คู่บ่าวสาว" class="couple-decoration" onerror="this.style.display='none'">
+<img src="Gif1.png" alt="กดเพื่อรีเฟรช" class="couple-decoration" onclick="location.reload()" onerror="this.style.display='none'">
 
 <div id="toast"></div>
 
@@ -1830,6 +1833,9 @@ function toggleSetupGuide() {
 // ─── INIT ────────────────────────────────────────────────────────────────────
 renderDashboard();
 autoLoad(); // ดึงข้อมูลจาก Google Sheets อัตโนมัติตอนเปิดแอพ
+
+// ── Auto-refresh ทุก 60 วินาที ──────────────────────────────────
+setInterval(() => location.reload(), 60000);
 </script>
 
 <!-- ── PWA Service Worker Registration ───────────────────────── -->
