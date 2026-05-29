@@ -1637,8 +1637,10 @@ async function saveScriptUrl() {
 }
 
 // ── AUTO LOAD (ดึงข้อมูลตอนเปิดแอพ) ──
+let _autoLoading = false;
 async function autoLoad() {
-  if (!scriptUrl) return;
+  if (!scriptUrl || _autoLoading) return;
+  _autoLoading = true;
   setNavIndicator('syncing', 'กำลังโหลดข้อมูล...');
   // Show subtle loading hint on contacts grid if it's visible and still showing defaults
   const cGrid = document.getElementById('contacts-grid');
@@ -1679,6 +1681,8 @@ async function autoLoad() {
   } catch(e) {
     setNavIndicator('error', 'โหลดไม่ได้');
     console.error('autoLoad:', e);
+  } finally {
+    _autoLoading = false;
   }
 }
 
@@ -1687,7 +1691,7 @@ function renderActivePage() {
     'page-contacts':  () => renderContacts(),
     'page-expenses':  () => renderExpenses(),
     'page-guests':    () => { renderGuests(); renderGuestStats(); },
-    'page-budget':    () => renderBudget(),
+    'page-budget':    () => renderBudgetDetail(),
     'page-checklist': () => renderChecklist(),
   };
   for (const [id, fn] of Object.entries(pages)) {
@@ -1804,6 +1808,9 @@ function toggleSetupGuide() {
 // ─── INIT ────────────────────────────────────────────────────────────────────
 renderDashboard();
 autoLoad(); // ดึงข้อมูลจาก Google Sheets อัตโนมัติตอนเปิดแอพ
+
+// ── Auto-refresh ทุก 60 วินาที (ไม่ reload หน้า — คงอยู่ที่หน้าปัจจุบัน) ──
+setInterval(() => { if (!document.hidden) autoLoad(); }, 60000);
 </script>
 
 <!-- ── PWA Service Worker Registration ───────────────────────── -->
