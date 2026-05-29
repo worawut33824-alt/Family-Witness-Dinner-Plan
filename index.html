@@ -975,6 +975,7 @@ function showPage(id) {
   document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
   document.querySelectorAll('.drawer-nav-btn').forEach(b=>b.classList.remove('active'));
   document.getElementById('page-'+id).classList.add('active');
+  localStorage.setItem('current_page', id);
   document.querySelectorAll('.tab-btn, .drawer-nav-btn').forEach(b=>{
     if(b.getAttribute('onclick')?.includes("'"+id+"'")) b.classList.add('active');
   });
@@ -1835,7 +1836,7 @@ function toggleSetupGuide() {
 })();
 
 // ─── INIT ────────────────────────────────────────────────────────────────────
-renderDashboard();
+showPage(localStorage.getItem('current_page') || 'dashboard');
 autoLoad(); // ดึงข้อมูลจาก Google Sheets อัตโนมัติตอนเปิดแอพ
 
 // ── Auto-refresh ทุก 60 วินาที (ไม่ reload หน้า — คงอยู่ที่หน้าปัจจุบัน) ──
