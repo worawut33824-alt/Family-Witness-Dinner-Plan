@@ -1,0 +1,1580 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>💌 คุณได้รับเชิญ · PM Wedding 28.11.2026</title>
+<meta name="description" content="งานแต่งงาน Family Witness Dinner · เอ็ม & แป้ง · 28 พฤศจิกายน 2569 · TARA Terrace">
+<meta property="og:title" content="💌 คุณได้รับเชิญ · PM Wedding">
+<meta property="og:description" content="28 พฤศจิกายน 2569 · TARA Terrace · Nakhon Pathom">
+<meta property="og:image" content="logo.png">
+<link rel="icon" href="icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400;1,600&family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+/* ════════════════════════════════════════════════
+   VARIABLES & RESET
+════════════════════════════════════════════════ */
+:root {
+  --cream:       #FFF8F3;
+  --cream-mid:   #FFF0E4;
+  --cream-warm:  #F5E6D3;
+  --blue:        #7B9CBF;
+  --blue-dk:     #5a7fa8;
+  --sage:        #809684;
+  --blush:       #F2A8BC;
+  --blush-lt:    #FDE8EF;
+  --gold:        #C9A96E;
+  --gold-lt:     #F0DEB8;
+  --brown:       #8B6335;
+  --text:        #2c3a4a;
+  --text-lt:     #7a8c9a;
+  --white:       #ffffff;
+  --shadow:      0 4px 28px rgba(90,127,168,0.15);
+  --radius:      16px;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'Sarabun', sans-serif;
+  background: var(--cream);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+img { max-width: 100%; display: block; }
+a { color: inherit; }
+
+/* ════════════════════════════════════════════════
+   SCROLL REVEAL
+════════════════════════════════════════════════ */
+.fade-up {
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity 0.75s ease, transform 0.75s ease;
+}
+.fade-up.visible { opacity: 1; transform: translateY(0); }
+.fade-up.delay-1 { transition-delay: 0.1s; }
+.fade-up.delay-2 { transition-delay: 0.22s; }
+.fade-up.delay-3 { transition-delay: 0.34s; }
+
+/* ════════════════════════════════════════════════
+   ENVELOPE OVERLAY
+════════════════════════════════════════════════ */
+#overlay {
+  position: fixed;
+  inset: 0;
+  background: linear-gradient(150deg, #FFF4E8 0%, #FDEBD4 50%, #F5DEC4 100%);
+  z-index: 900;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 32px;
+  overflow: hidden;
+  transition: opacity 1s ease, transform 1s ease;
+}
+#overlay.hide {
+  opacity: 0;
+  pointer-events: none;
+  transform: scale(0.97);
+}
+
+/* Falling petals */
+.petal {
+  position: absolute;
+  font-size: 1.4rem;
+  opacity: 0;
+  pointer-events: none;
+  animation: petalFall linear infinite;
+}
+@keyframes petalFall {
+  0%   { opacity: 0; transform: translateY(-30px) rotate(0deg); }
+  8%   { opacity: 0.55; }
+  92%  { opacity: 0.55; }
+  100% { opacity: 0; transform: translateY(105vh) rotate(520deg); }
+}
+
+/* Envelope wrapper with 3-D perspective */
+.env-persp {
+  perspective: 1000px;
+  width: min(320px, 90vw);
+  cursor: pointer;
+}
+.env-box {
+  position: relative;
+  width: 100%;
+  padding-top: 66%;
+  transform-style: preserve-3d;
+}
+
+/* Back plate */
+.env-back {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(155deg, #F8EDD9 0%, #EDD9C0 100%);
+  border-radius: 8px;
+  box-shadow:
+    0 16px 50px rgba(140,100,60,0.22),
+    0 4px 10px rgba(140,100,60,0.10),
+    inset 0 1px 0 rgba(255,255,255,0.5);
+}
+
+/* Bottom V-folds */
+.env-fold {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 62%;
+  background:
+    linear-gradient(130deg, #E5CCA8 50%, transparent 50%),
+    linear-gradient(-130deg, #E5CCA8 50%, transparent 50%);
+  background-size: 50% 100%;
+  background-position: left, right;
+  background-repeat: no-repeat;
+  border-radius: 0 0 8px 8px;
+}
+
+/* Flap (triangle top) */
+.env-flap {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 58%;
+  background: linear-gradient(160deg, #F3E6CC 0%, #E8D5B0 100%);
+  clip-path: polygon(0 0, 100% 0, 50% 100%);
+  transform-origin: 50% 0%;
+  border-radius: 8px 8px 0 0;
+  z-index: 3;
+  transition: transform 0.75s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+.env-box.open .env-flap {
+  transform: perspective(1000px) rotateX(-180deg);
+}
+
+/* Wax seal */
+.env-seal {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -52%);
+  width: 72px; height: 72px;
+  border-radius: 50%;
+  background: var(--white);
+  border: 2.5px solid var(--gold);
+  box-shadow: 0 4px 18px rgba(201,169,110,0.45), inset 0 1px 2px rgba(0,0,0,0.04);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 4;
+  transition: transform 0.35s ease, box-shadow 0.35s ease;
+  overflow: hidden;
+}
+.env-seal img { width: 54px; height: 54px; object-fit: contain; border-radius: 50%; }
+.env-box.open .env-seal {
+  transform: translate(-50%, -52%) scale(1.08);
+  box-shadow: 0 8px 28px rgba(201,169,110,0.55);
+}
+
+/* Inner text on envelope */
+.env-inner {
+  position: absolute;
+  bottom: 14%; left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+  z-index: 2;
+  white-space: nowrap;
+}
+.env-inner .env-names {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.5rem;
+  font-style: italic;
+  color: var(--brown);
+  letter-spacing: 2px;
+}
+.env-inner .env-sub {
+  font-size: 0.72rem;
+  color: #a08060;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  margin-top: 2px;
+}
+
+/* Open button */
+.env-open-btn {
+  background: var(--gold);
+  color: var(--white);
+  border: none;
+  padding: 13px 36px;
+  border-radius: 50px;
+  font-family: 'Sarabun', sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 6px 24px rgba(201,169,110,0.4);
+  letter-spacing: 1px;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.env-open-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 32px rgba(201,169,110,0.5); }
+.env-open-btn:active { transform: scale(0.96); }
+
+.env-hint {
+  font-size: 0.78rem;
+  color: #b09070;
+  letter-spacing: 1px;
+}
+
+/* ════════════════════════════════════════════════
+   SECTION BASE
+════════════════════════════════════════════════ */
+section {
+  padding: 72px 20px;
+  max-width: 680px;
+  margin: 0 auto;
+}
+.sec-label {
+  font-size: 0.72rem;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: var(--gold);
+  font-weight: 600;
+  margin-bottom: 10px;
+  text-align: center;
+}
+.sec-divider {
+  width: 60px; height: 2px;
+  background: linear-gradient(90deg, var(--gold-lt), var(--gold), var(--gold-lt));
+  margin: 12px auto 24px;
+  border-radius: 2px;
+}
+h2.sec-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 2.2rem;
+  font-weight: 400;
+  text-align: center;
+  color: var(--text);
+  line-height: 1.2;
+  margin-bottom: 8px;
+}
+h2.sec-title em { font-style: italic; color: var(--blue-dk); }
+
+/* ════════════════════════════════════════════════
+   HERO
+════════════════════════════════════════════════ */
+#sec-hero {
+  padding-top: 80px;
+  padding-bottom: 60px;
+  text-align: center;
+  position: relative;
+  background: linear-gradient(180deg, #FFF4EC 0%, var(--cream) 100%);
+}
+.hero-logo {
+  width: 90px; height: 90px;
+  border-radius: 50%;
+  object-fit: contain;
+  background: var(--white);
+  border: 3px solid var(--gold-lt);
+  box-shadow: 0 6px 24px rgba(201,169,110,0.25);
+  margin: 0 auto 24px;
+  padding: 6px;
+}
+.hero-names {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(2.8rem, 10vw, 4.5rem);
+  font-style: italic;
+  color: var(--text);
+  line-height: 1.1;
+  letter-spacing: 2px;
+}
+.hero-amp {
+  color: var(--gold);
+  font-size: 0.7em;
+  margin: 0 8px;
+}
+.hero-event {
+  font-size: 0.9rem;
+  letter-spacing: 4px;
+  color: var(--text-lt);
+  text-transform: uppercase;
+  margin: 14px 0 30px;
+}
+.hero-date-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 14px;
+  margin-top: 10px;
+}
+.hero-chip {
+  background: var(--white);
+  border: 1px solid var(--gold-lt);
+  border-radius: 50px;
+  padding: 8px 20px;
+  font-size: 0.88rem;
+  color: var(--text);
+  box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+  display: flex; align-items: center; gap: 7px;
+}
+.scroll-hint {
+  margin-top: 40px;
+  font-size: 0.78rem;
+  color: var(--text-lt);
+  letter-spacing: 2px;
+  animation: bounce 2s ease-in-out infinite;
+}
+@keyframes bounce {
+  0%,100% { transform: translateY(0); }
+  50% { transform: translateY(5px); }
+}
+
+/* ════════════════════════════════════════════════
+   STORY — VIDEO + PHOTOS
+════════════════════════════════════════════════ */
+#sec-story { background: var(--white); border-radius: var(--radius); margin: 0 16px 0; max-width: 100%; }
+@media(min-width:720px){
+  #sec-story { max-width: 680px; margin: 0 auto; border-radius: var(--radius); }
+}
+.video-wrap {
+  position: relative;
+  padding-top: 56.25%;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #1a1a2e;
+  margin-bottom: 24px;
+}
+.video-wrap iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%; height: 100%;
+  border: none;
+}
+.video-placeholder {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #1a1a2e 0%, #2d2d4e 100%);
+  color: rgba(255,255,255,0.6);
+  gap: 12px;
+}
+.video-placeholder .vp-icon { font-size: 3rem; opacity: 0.6; }
+.video-placeholder .vp-text { font-size: 0.9rem; text-align: center; max-width: 220px; }
+
+.photo-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: auto auto auto;
+  gap: 10px;
+}
+.photo-slot {
+  border-radius: 10px;
+  overflow: hidden;
+  background: linear-gradient(135deg, var(--blush-lt), #EEF4FD);
+  aspect-ratio: 4/3;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  color: #c8a0b0;
+  font-size: 0.82rem;
+  gap: 6px;
+  border: 2px dashed rgba(200,160,176,0.4);
+}
+.photo-slot.wide { grid-column: 1 / -1; aspect-ratio: 16/7; }
+.photo-slot img { width: 100%; height: 100%; object-fit: cover; }
+.photo-slot .ps-icon { font-size: 1.6rem; opacity: 0.45; }
+
+/* ════════════════════════════════════════════════
+   COUNTDOWN + DETAILS
+════════════════════════════════════════════════ */
+#sec-details {
+  background: linear-gradient(145deg, #3d6a91, #5a7fa8, #7B9CBF);
+  border-radius: var(--radius);
+  color: var(--white);
+  text-align: center;
+  padding: 60px 24px;
+  margin: 0 16px;
+  max-width: 100%;
+  box-shadow: 0 12px 40px rgba(61,106,145,0.35);
+}
+@media(min-width:720px){
+  #sec-details { max-width: 680px; margin: 0 auto; }
+}
+.cd-title { font-size: 0.78rem; letter-spacing: 3px; text-transform: uppercase; opacity: 0.75; margin-bottom: 8px; }
+.cd-date-text { font-family: 'Cormorant Garamond', serif; font-size: 1.4rem; font-weight: 600; margin-bottom: 28px; color: #E8F2FB; }
+.cd-boxes { display: flex; justify-content: center; gap: 10px; flex-wrap: nowrap; }
+.cd-box {
+  background: rgba(255,255,255,0.13);
+  border-radius: 12px;
+  padding: 16px 14px;
+  min-width: 70px;
+  backdrop-filter: blur(4px);
+  border: 1px solid rgba(255,255,255,0.18);
+}
+.cd-num { font-size: 2.4rem; font-weight: 700; line-height: 1; letter-spacing: -1px; font-variant-numeric: tabular-nums; }
+.cd-lbl { font-size: 0.68rem; opacity: 0.72; margin-top: 4px; letter-spacing: 1px; text-transform: uppercase; }
+.cd-sep { font-size: 2rem; opacity: 0.45; align-self: center; padding-bottom: 16px; }
+
+.venue-card {
+  margin-top: 36px;
+  background: rgba(255,255,255,0.12);
+  border-radius: 12px;
+  padding: 20px;
+  border: 1px solid rgba(255,255,255,0.15);
+}
+.venue-name { font-family: 'Cormorant Garamond', serif; font-size: 1.5rem; font-weight: 600; margin-bottom: 6px; }
+.venue-info { font-size: 0.88rem; opacity: 0.85; line-height: 1.8; }
+
+@media(max-width:480px){
+  .cd-boxes { gap: 5px; }
+  .cd-box { min-width: 0; flex: 1; padding: 10px 6px; }
+  .cd-num { font-size: 1.7rem; }
+  .cd-sep { font-size: 1.3rem; padding-bottom: 10px; }
+}
+
+/* ════════════════════════════════════════════════
+   MAP
+════════════════════════════════════════════════ */
+#sec-map { padding-top: 80px; }
+.map-illustration {
+  width: 100%;
+  border-radius: 18px;
+  overflow: hidden;
+  background: #C8E6C0;
+  position: relative;
+  height: 260px;
+  box-shadow: var(--shadow);
+  margin-bottom: 20px;
+}
+/* River */
+.map-river {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 55px;
+  background: linear-gradient(180deg, #90CAF9 0%, #64B5F6 100%);
+  clip-path: polygon(0 30%, 8% 10%, 16% 28%, 24% 8%, 32% 25%, 40% 5%, 48% 22%, 56% 4%, 64% 20%, 72% 2%, 80% 18%, 88% 0%, 96% 16%, 100% 5%, 100% 100%, 0 100%);
+}
+.map-river-label {
+  position: absolute;
+  bottom: 10px; left: 20px;
+  font-size: 0.72rem; color: #1565C0; font-weight: 600; letter-spacing: 1px;
+}
+/* Road */
+.map-road-h {
+  position: absolute;
+  top: 50%; left: 0; right: 0;
+  height: 18px;
+  background: #F5F0E8;
+  transform: translateY(-50%);
+  border-top: 2px solid #DDD; border-bottom: 2px solid #DDD;
+}
+.map-road-v {
+  position: absolute;
+  left: 40%; top: 0; bottom: 55px;
+  width: 18px;
+  background: #F5F0E8;
+  border-left: 2px solid #DDD; border-right: 2px solid #DDD;
+}
+/* Trees on map */
+.map-tree { position: absolute; font-size: 1.4rem; }
+/* Building */
+.map-venue {
+  position: absolute;
+  left: calc(40% - 32px); top: calc(50% - 44px);
+  width: 64px; height: 52px;
+  background: #FFF8F0;
+  border: 2px solid #D4B896;
+  border-radius: 4px;
+  box-shadow: 4px 4px 0 #C8B090, 8px 8px 0 rgba(0,0,0,0.08);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.6rem; font-weight: 700; color: #8B6335;
+  text-align: center;
+  line-height: 1.2;
+}
+.map-venue::before {
+  content: '';
+  position: absolute;
+  top: -14px; left: 50%; transform: translateX(-50%);
+  width: 0; height: 0;
+  border-left: 34px solid transparent;
+  border-right: 34px solid transparent;
+  border-bottom: 14px solid #C9A96E;
+}
+/* Pin */
+.map-pin {
+  position: absolute;
+  left: calc(40% + 6px); top: calc(50% - 68px);
+  font-size: 1.8rem;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+  animation: pinBounce 2.5s ease-in-out infinite;
+}
+@keyframes pinBounce {
+  0%,100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
+}
+/* Compass */
+.map-compass {
+  position: absolute;
+  top: 10px; right: 12px;
+  width: 36px; height: 36px;
+  background: rgba(255,255,255,0.85);
+  border-radius: 50%;
+  border: 1px solid #ccc;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.7rem; font-weight: 700; color: #c0392b;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+.map-btn {
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  width: 100%;
+  padding: 14px;
+  background: var(--blue);
+  color: var(--white);
+  border-radius: 12px;
+  font-size: 1rem; font-weight: 600;
+  text-decoration: none;
+  box-shadow: 0 4px 18px rgba(123,156,191,0.4);
+  transition: background 0.2s, transform 0.2s;
+}
+.map-btn:hover { background: var(--blue-dk); transform: translateY(-1px); }
+
+/* ════════════════════════════════════════════════
+   LOVE TREE
+════════════════════════════════════════════════ */
+#sec-tree {
+  text-align: center;
+  background: linear-gradient(180deg, #F0F7EE 0%, var(--cream) 100%);
+  border-radius: var(--radius);
+  margin: 0 16px;
+  padding: 60px 24px;
+  max-width: 100%;
+}
+@media(min-width:720px){ #sec-tree { max-width: 680px; margin: 0 auto; } }
+
+.tree-stage {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 8px;
+  margin: 24px 0 20px;
+}
+.tree-svg-wrap { width: min(220px, 55vw); flex-shrink: 0; }
+#love-tree { width: 100%; height: auto; overflow: visible; }
+
+.t-layer { transition: opacity 0.8s ease; }
+
+.tree-couple {
+  width: min(110px, 26vw);
+  flex-shrink: 0;
+  filter: drop-shadow(0 4px 10px rgba(0,0,0,0.12));
+}
+
+.tree-stats {
+  display: flex; flex-direction: column; align-items: center; gap: 8px;
+}
+.tree-counter {
+  display: flex; align-items: baseline; gap: 4px;
+}
+.tree-num {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 3rem; font-weight: 600;
+  color: var(--sage);
+  line-height: 1;
+}
+.tree-num-label { font-size: 1rem; color: var(--text-lt); }
+.tree-goal-text { font-size: 0.82rem; color: var(--text-lt); margin-bottom: 4px; }
+.tree-bar-wrap {
+  width: 100%; max-width: 280px;
+  background: #D8EAD6;
+  border-radius: 20px;
+  height: 10px;
+  overflow: hidden;
+}
+.tree-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #74C47A, #A8E4AC);
+  border-radius: 20px;
+  transition: width 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+  width: 0%;
+}
+.tree-pct { font-size: 0.82rem; color: var(--sage); font-weight: 600; }
+
+/* ════════════════════════════════════════════════
+   BLESSINGS
+════════════════════════════════════════════════ */
+#sec-bless {
+  background: var(--white);
+  border-radius: var(--radius);
+  margin: 0 16px;
+  padding: 56px 28px;
+  box-shadow: var(--shadow);
+}
+@media(min-width:720px){ #sec-bless { max-width: 680px; margin: 0 auto; } }
+
+.bless-form { display: flex; flex-direction: column; gap: 12px; margin-bottom: 32px; }
+.bless-form input,
+.bless-form textarea {
+  border: 1.5px solid #dde8f0;
+  border-radius: 10px;
+  padding: 12px 16px;
+  font-family: 'Sarabun', sans-serif;
+  font-size: 0.95rem;
+  color: var(--text);
+  background: #F9FDFF;
+  transition: border 0.2s;
+  width: 100%;
+  resize: none;
+}
+.bless-form input:focus,
+.bless-form textarea:focus { outline: none; border-color: var(--blue); background: var(--white); }
+.bless-form textarea { min-height: 90px; }
+
+.bless-list { display: flex; flex-direction: column; gap: 14px; }
+.bless-item {
+  display: flex; gap: 12px;
+  padding: 14px 16px;
+  background: #FFF8FB;
+  border-radius: 12px;
+  border-left: 3px solid var(--blush);
+}
+.bless-avatar {
+  width: 38px; height: 38px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--blush), var(--blue));
+  color: white;
+  font-weight: 700;
+  font-size: 1rem;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.bless-content { flex: 1; min-width: 0; }
+.bless-name { font-weight: 700; font-size: 0.9rem; color: var(--text); }
+.bless-msg { font-size: 0.88rem; color: var(--text-lt); margin-top: 3px; line-height: 1.5; word-break: break-word; }
+.bless-date { font-size: 0.72rem; color: #bbb; margin-top: 4px; }
+.no-bless { text-align: center; color: var(--text-lt); font-size: 0.9rem; padding: 20px 0; }
+
+/* ════════════════════════════════════════════════
+   RSVP FORM
+════════════════════════════════════════════════ */
+#sec-rsvp {
+  background: linear-gradient(155deg, #EEF5FC 0%, var(--cream) 100%);
+  border-radius: var(--radius);
+  margin: 0 16px;
+  padding: 56px 28px;
+  box-shadow: var(--shadow);
+}
+@media(min-width:720px){ #sec-rsvp { max-width: 680px; margin: 0 auto; } }
+
+.rsvp-form { display: flex; flex-direction: column; gap: 14px; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+@media(max-width:480px){ .form-row { grid-template-columns: 1fr; } }
+
+.form-group { display: flex; flex-direction: column; gap: 5px; }
+.form-label {
+  font-size: 0.8rem; font-weight: 600;
+  color: var(--text-lt); letter-spacing: 0.3px;
+}
+.form-label .req { color: var(--blush); margin-left: 2px; }
+.form-input,
+.form-select,
+.form-textarea {
+  border: 1.5px solid #dde8f0;
+  border-radius: 10px;
+  padding: 11px 14px;
+  font-family: 'Sarabun', sans-serif;
+  font-size: 0.95rem;
+  color: var(--text);
+  background: var(--white);
+  transition: border 0.2s, box-shadow 0.2s;
+  width: 100%;
+  -webkit-appearance: none;
+}
+.form-input:focus,
+.form-select:focus,
+.form-textarea:focus {
+  outline: none;
+  border-color: var(--blue);
+  box-shadow: 0 0 0 3px rgba(123,156,191,0.15);
+}
+.form-textarea { min-height: 70px; resize: none; }
+
+/* Side radio buttons */
+.side-group { display: flex; gap: 10px; }
+.side-btn {
+  flex: 1; padding: 10px;
+  border: 1.5px solid #dde8f0;
+  border-radius: 10px;
+  cursor: pointer;
+  text-align: center;
+  font-family: 'Sarabun', sans-serif;
+  font-size: 0.9rem;
+  color: var(--text-lt);
+  background: var(--white);
+  transition: all 0.2s;
+  user-select: none;
+}
+.side-btn.selected {
+  border-color: var(--blue);
+  background: #EEF5FC;
+  color: var(--blue-dk);
+  font-weight: 600;
+}
+
+/* Calendar opt-in notice */
+.calendar-notice {
+  font-size: 0.78rem;
+  color: var(--sage);
+  background: #F0F5F2;
+  border-radius: 8px;
+  padding: 8px 12px;
+  display: flex; align-items: center; gap: 6px;
+  display: none;
+}
+.calendar-notice.show { display: flex; }
+
+/* Submit button */
+.submit-btn {
+  padding: 16px;
+  background: linear-gradient(135deg, var(--blue) 0%, var(--blue-dk) 100%);
+  color: var(--white);
+  border: none;
+  border-radius: 12px;
+  font-family: 'Sarabun', sans-serif;
+  font-size: 1.05rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 6px 22px rgba(123,156,191,0.4);
+  transition: transform 0.2s, box-shadow 0.2s;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  letter-spacing: 0.5px;
+}
+.submit-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(123,156,191,0.5); }
+.submit-btn:active { transform: scale(0.97); }
+.submit-btn:disabled { opacity: 0.7; cursor: not-allowed; transform: none; }
+
+/* Success card */
+.success-card {
+  display: none;
+  text-align: center;
+  padding: 32px 20px;
+}
+.success-card.show { display: block; }
+.success-icon { font-size: 3.5rem; margin-bottom: 16px; }
+.success-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.8rem;
+  color: var(--text);
+  margin-bottom: 10px;
+}
+.success-msg { font-size: 0.95rem; color: var(--text-lt); line-height: 1.7; }
+.success-calendar {
+  margin-top: 16px;
+  font-size: 0.85rem;
+  color: var(--sage);
+  background: #F0F5F2;
+  border-radius: 10px;
+  padding: 10px 14px;
+  display: inline-block;
+}
+
+/* ════════════════════════════════════════════════
+   SHARED BUTTON
+════════════════════════════════════════════════ */
+.btn {
+  padding: 12px 28px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  font-family: 'Sarabun', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 600;
+  transition: all 0.2s;
+  display: inline-flex; align-items: center; gap: 6px;
+}
+.btn-primary {
+  background: var(--gold);
+  color: var(--white);
+  box-shadow: 0 4px 16px rgba(201,169,110,0.4);
+}
+.btn-primary:hover { background: #b8924e; }
+
+/* ════════════════════════════════════════════════
+   FOOTER
+════════════════════════════════════════════════ */
+footer {
+  text-align: center;
+  padding: 56px 20px 48px;
+  background: var(--text);
+  color: rgba(255,255,255,0.7);
+}
+.footer-logo {
+  width: 64px; height: 64px;
+  border-radius: 50%;
+  object-fit: contain;
+  background: rgba(255,255,255,0.1);
+  border: 2px solid rgba(255,255,255,0.2);
+  padding: 5px;
+  margin: 0 auto 16px;
+}
+.footer-names {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.6rem;
+  font-style: italic;
+  color: var(--gold-lt);
+  margin-bottom: 8px;
+}
+.footer-event { font-size: 0.82rem; letter-spacing: 3px; text-transform: uppercase; opacity: 0.65; }
+.footer-date { font-size: 0.9rem; color: rgba(255,255,255,0.6); margin-top: 6px; }
+.footer-copy { margin-top: 28px; font-size: 0.72rem; opacity: 0.4; }
+
+/* ════════════════════════════════════════════════
+   TOAST
+════════════════════════════════════════════════ */
+#inv-toast {
+  position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+  background: #2c3a4a;
+  color: white;
+  padding: 12px 24px;
+  border-radius: 50px;
+  font-size: 0.9rem;
+  z-index: 9999;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s;
+  white-space: nowrap;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+}
+#inv-toast.show { opacity: 1; }
+
+/* ════════════════════════════════════════════════
+   SETUP BANNER (shown when surl not configured)
+════════════════════════════════════════════════ */
+#setup-banner {
+  display: none;
+  background: #FFF3CD;
+  border: 1px solid #FFD166;
+  border-radius: 10px;
+  padding: 14px 18px;
+  font-size: 0.85rem;
+  color: #856404;
+  margin-bottom: 18px;
+  text-align: center;
+}
+#setup-banner.show { display: block; }
+
+/* ════════════════════════════════════════════════
+   SECTION SPACERS
+════════════════════════════════════════════════ */
+.sec-spacer { height: 56px; }
+
+/* Full-width section wrapper */
+.sec-full {
+  background: var(--cream);
+  padding: 56px 0;
+}
+</style>
+</head>
+<body>
+
+<!-- ══════════════ ENVELOPE OVERLAY ══════════════ -->
+<div id="overlay">
+  <!-- Petals (generated by JS) -->
+
+  <div class="env-persp" onclick="openEnvelope()">
+    <div class="env-box" id="env-box">
+      <div class="env-back"></div>
+      <div class="env-fold"></div>
+      <div class="env-flap"></div>
+      <div class="env-seal">
+        <img src="logo.png" alt="PM" onerror="this.style.display='none'">
+      </div>
+      <div class="env-inner">
+        <div class="env-names">เอ็ม &amp; แป้ง</div>
+        <div class="env-sub">Family Witness Dinner</div>
+      </div>
+    </div>
+  </div>
+
+  <button class="env-open-btn" onclick="openEnvelope()">✉️ เปิดการ์ดเชิญ</button>
+  <div class="env-hint">แตะเพื่อเปิด</div>
+</div>
+
+<!-- ══════════════ MAIN CONTENT ══════════════ -->
+<main id="main-content" style="opacity:0; transition: opacity 0.8s ease;">
+
+  <!-- ── HERO ── -->
+  <section id="sec-hero">
+    <img src="logo.png" alt="PM Wedding" class="hero-logo fade-up" onerror="this.style.display='none'">
+    <div class="hero-names fade-up delay-1">
+      เอ็ม<span class="hero-amp">×</span>แป้ง
+    </div>
+    <div class="hero-event fade-up delay-2">Family Witness Dinner</div>
+    <div class="hero-date-row fade-up delay-3">
+      <div class="hero-chip">📅 วันเสาร์ที่ 28 พฤศจิกายน 2569</div>
+      <div class="hero-chip">🕑 14:00 น.</div>
+      <div class="hero-chip">📍 TARA Terrace · นครปฐม</div>
+    </div>
+    <div class="scroll-hint fade-up delay-3">เลื่อนลงเพื่ออ่านต่อ ↓</div>
+  </section>
+
+  <div class="sec-spacer"></div>
+
+  <!-- ── STORY ── -->
+  <section id="sec-story" class="fade-up" style="max-width:none; padding: 48px 24px;">
+    <div class="sec-label">เรื่องราวของเรา</div>
+    <div class="sec-divider"></div>
+    <h2 class="sec-title">Our <em>Love Story</em></h2>
+    <p style="text-align:center;color:var(--text-lt);font-size:0.9rem;margin:12px 0 28px">ทุกเรื่องราวมีจุดเริ่มต้น — นี่คือของเราสองคน</p>
+
+    <!-- Video — ใส่ YouTube embed ID ตรงนี้ -->
+    <div class="video-wrap" id="video-wrap">
+      <!-- แทนที่ด้วย: <iframe src="https://www.youtube.com/embed/YOUR_VIDEO_ID" ...></iframe> -->
+      <div class="video-placeholder">
+        <span class="vp-icon">🎬</span>
+        <span class="vp-text">วิดีโอเรื่องราวของเรา<br><small style="opacity:.6">(เพิ่ม YouTube URL ในไฟล์ invite.html)</small></span>
+      </div>
+    </div>
+
+    <!-- 5 Photo slots -->
+    <div class="photo-grid">
+      <div class="photo-slot wide" id="photo-1">
+        <span class="ps-icon">📷</span><span>รูปที่ 1 (กว้าง)</span>
+      </div>
+      <div class="photo-slot" id="photo-2">
+        <span class="ps-icon">📷</span><span>รูปที่ 2</span>
+      </div>
+      <div class="photo-slot" id="photo-3">
+        <span class="ps-icon">📷</span><span>รูปที่ 3</span>
+      </div>
+      <div class="photo-slot" id="photo-4">
+        <span class="ps-icon">📷</span><span>รูปที่ 4</span>
+      </div>
+      <div class="photo-slot" id="photo-5">
+        <span class="ps-icon">📷</span><span>รูปที่ 5</span>
+      </div>
+    </div>
+  </section>
+
+  <div class="sec-spacer"></div>
+
+  <!-- ── DETAILS + COUNTDOWN ── -->
+  <section id="sec-details" class="fade-up" style="max-width:none; border-radius: 0;">
+    <div class="cd-title">นับถอยหลังสู่วันแต่งงาน</div>
+    <div class="cd-date-text">วันเสาร์ที่ 28 พฤศจิกายน 2569 · เวลา 14:00 น.</div>
+    <div class="cd-boxes">
+      <div class="cd-box"><div class="cd-num" id="i-days">--</div><div class="cd-lbl">วัน</div></div>
+      <div class="cd-sep">:</div>
+      <div class="cd-box"><div class="cd-num" id="i-hours">--</div><div class="cd-lbl">ชั่วโมง</div></div>
+      <div class="cd-sep">:</div>
+      <div class="cd-box"><div class="cd-num" id="i-mins">--</div><div class="cd-lbl">นาที</div></div>
+      <div class="cd-sep">:</div>
+      <div class="cd-box"><div class="cd-num" id="i-secs">--</div><div class="cd-lbl">วินาที</div></div>
+    </div>
+    <div class="venue-card">
+      <div class="venue-name">🏛️ TARA Terrace</div>
+      <div class="venue-info">
+        จ.นครปฐม · งาน Cocktail &amp; Dinner<br>
+        วันเสาร์ที่ 28 พ.ย. 2569 · ลงทะเบียน 13:30 น. · เริ่ม 14:00 น.<br>
+        📞 082-294-9629 (พี่อ้อย)
+      </div>
+    </div>
+  </section>
+
+  <div class="sec-spacer"></div>
+
+  <!-- ── MAP ── -->
+  <section id="sec-map" class="fade-up" style="max-width:680px; margin:0 auto; padding: 64px 20px;">
+    <div class="sec-label">เส้นทางมาร่วมงาน</div>
+    <div class="sec-divider"></div>
+    <h2 class="sec-title">Getting <em>Here</em></h2>
+    <p style="text-align:center;color:var(--text-lt);font-size:0.88rem;margin:10px 0 24px">TARA Terrace · จังหวัดนครปฐม</p>
+
+    <!-- Cute illustrated map -->
+    <div class="map-illustration">
+      <!-- Sky/ground -->
+      <div style="position:absolute;inset:0;background:linear-gradient(180deg,#E8F5E9 0%,#C8E6C0 100%)"></div>
+      <!-- River -->
+      <div class="map-river"></div>
+      <span class="map-river-label">แม่น้ำท่าจีน</span>
+      <!-- Roads -->
+      <div class="map-road-h"></div>
+      <div class="map-road-v"></div>
+      <!-- Trees -->
+      <span class="map-tree" style="top:15%;left:8%">🌳</span>
+      <span class="map-tree" style="top:20%;left:18%">🌲</span>
+      <span class="map-tree" style="top:12%;right:10%">🌳</span>
+      <span class="map-tree" style="top:22%;right:22%">🌿</span>
+      <span class="map-tree" style="bottom:28%;left:6%">🌴</span>
+      <span class="map-tree" style="bottom:30%;right:8%">🌴</span>
+      <!-- Venue building -->
+      <div class="map-venue">TARA<br>Terrace</div>
+      <!-- Pin -->
+      <span class="map-pin">📍</span>
+      <!-- Compass -->
+      <div class="map-compass">N</div>
+    </div>
+
+    <a href="https://www.google.com/maps/search/TARA+Terrace+Nakhon+Pathom"
+       target="_blank" rel="noopener"
+       class="map-btn">
+      🗺️ เปิดใน Google Maps
+    </a>
+  </section>
+
+  <div class="sec-spacer"></div>
+
+  <!-- ── LOVE TREE ── -->
+  <section id="sec-tree" class="fade-up" style="max-width:none; border-radius:0;">
+    <div class="sec-label">ต้นไม้แห่งความรัก</div>
+    <div class="sec-divider"></div>
+    <h2 class="sec-title">ยอดผู้มาร่วม<em>อวยพร</em></h2>
+    <p style="text-align:center;color:var(--text-lt);font-size:0.88rem;margin:10px 0 0">ต้นไม้จะเติบโตตามจำนวนผู้มาร่วมงาน · เป้าหมาย 100 คน 🌸</p>
+
+    <div class="tree-stage">
+      <div class="tree-svg-wrap">
+        <svg id="love-tree" viewBox="0 0 300 340" xmlns="http://www.w3.org/2000/svg">
+          <!-- Ground shadow -->
+          <ellipse cx="150" cy="322" rx="82" ry="13" fill="rgba(100,160,90,0.18)"/>
+          <!-- Trunk -->
+          <path d="M 141 320 C 137 295 135 265 139 245 C 143 228 147 218 150 212 C 153 218 157 228 161 245 C 165 265 163 295 159 320 Z" fill="#8B6335"/>
+          <!-- Roots -->
+          <path d="M 141 308 Q 120 320 100 325" stroke="#8B6335" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+          <path d="M 159 308 Q 180 320 200 325" stroke="#8B6335" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+
+          <!-- Layer 1: first branches (15%) -->
+          <g class="t-layer" data-pct="15" style="opacity:0">
+            <path d="M 143 268 Q 116 255 98 238" stroke="#8B6335" stroke-width="4" fill="none" stroke-linecap="round"/>
+            <path d="M 157 265 Q 184 251 202 234" stroke="#8B6335" stroke-width="4" fill="none" stroke-linecap="round"/>
+          </g>
+          <!-- Layer 2: upper branches (25%) -->
+          <g class="t-layer" data-pct="25" style="opacity:0">
+            <path d="M 145 246 Q 124 230 109 210" stroke="#8B6335" stroke-width="3" fill="none" stroke-linecap="round"/>
+            <path d="M 155 243 Q 176 226 191 207" stroke="#8B6335" stroke-width="3" fill="none" stroke-linecap="round"/>
+            <path d="M 150 228 L 150 208" stroke="#8B6335" stroke-width="3" fill="none" stroke-linecap="round"/>
+          </g>
+          <!-- Layer 3: base canopy (20%) -->
+          <g class="t-layer" data-pct="20" style="opacity:0">
+            <circle cx="102" cy="228" r="28" fill="#68B56E"/>
+            <circle cx="198" cy="225" r="28" fill="#68B56E"/>
+            <circle cx="150" cy="188" r="42" fill="#74C47A"/>
+            <circle cx="116" cy="198" r="31" fill="#7ACC80"/>
+            <circle cx="184" cy="196" r="31" fill="#7ACC80"/>
+          </g>
+          <!-- Layer 4: upper canopy (45%) -->
+          <g class="t-layer" data-pct="45" style="opacity:0">
+            <circle cx="128" cy="170" r="32" fill="#82D086"/>
+            <circle cx="172" cy="168" r="32" fill="#82D086"/>
+            <circle cx="150" cy="158" r="40" fill="#8CD890"/>
+            <circle cx="108" cy="177" r="26" fill="#78CA7C"/>
+            <circle cx="192" cy="175" r="26" fill="#78CA7C"/>
+          </g>
+          <!-- Layer 5: crown (65%) -->
+          <g class="t-layer" data-pct="65" style="opacity:0">
+            <circle cx="150" cy="135" r="44" fill="#90DC94"/>
+            <circle cx="124" cy="148" r="32" fill="#84D288"/>
+            <circle cx="176" cy="145" r="32" fill="#84D288"/>
+            <circle cx="106" cy="158" r="24" fill="#7ACC80"/>
+            <circle cx="194" cy="156" r="24" fill="#7ACC80"/>
+          </g>
+          <!-- Layer 6: pink blossoms (75%) -->
+          <g class="t-layer" data-pct="75" style="opacity:0">
+            <circle cx="136" cy="150" r="9" fill="#FFB3C6"/>
+            <circle cx="163" cy="145" r="8" fill="#FFC0CB"/>
+            <circle cx="149" cy="128" r="10" fill="#FFB3C6"/>
+            <circle cx="118" cy="162" r="8" fill="#FFC8D5"/>
+            <circle cx="181" cy="159" r="9" fill="#FFB3C6"/>
+            <circle cx="150" cy="110" r="9" fill="#FFC0CB"/>
+            <circle cx="130" cy="120" r="7" fill="#FFD0DC"/>
+            <circle cx="170" cy="118" r="7" fill="#FFD0DC"/>
+          </g>
+          <!-- Layer 7: full bloom (90%) -->
+          <g class="t-layer" data-pct="90" style="opacity:0">
+            <circle cx="140" cy="136" r="10" fill="#FF91A8"/>
+            <circle cx="160" cy="130" r="9" fill="#FFB0C3"/>
+            <circle cx="132" cy="109" r="9" fill="#FF91A8"/>
+            <circle cx="168" cy="107" r="9" fill="#FFB0C3"/>
+            <circle cx="150" cy="96" r="12" fill="#FF91A8"/>
+            <circle cx="112" cy="145" r="8" fill="#FFC0CB"/>
+            <circle cx="188" cy="142" r="8" fill="#FFC0CB"/>
+            <circle cx="96" cy="122" r="5" fill="#FFD700" opacity="0.8"/>
+            <circle cx="204" cy="119" r="5" fill="#FFD700" opacity="0.8"/>
+          </g>
+          <!-- Layer 8: 100% celebration -->
+          <g class="t-layer" data-pct="100" style="opacity:0">
+            <text x="150" y="78" font-size="16" text-anchor="middle">🌸</text>
+            <text x="106" y="112" font-size="13" text-anchor="middle">🌺</text>
+            <text x="194" y="108" font-size="13" text-anchor="middle">🌺</text>
+            <text x="124" y="70" font-size="11" text-anchor="middle">💕</text>
+            <text x="176" y="68" font-size="11" text-anchor="middle">💕</text>
+          </g>
+        </svg>
+      </div>
+      <!-- Couple image -->
+      <img src="Gif1.png" alt="คู่บ่าวสาว" class="tree-couple" onerror="this.style.display='none'">
+    </div>
+
+    <div class="tree-stats">
+      <div class="tree-counter">
+        <span class="tree-num" id="tree-num">0</span>
+        <span class="tree-num-label">&nbsp;คน</span>
+      </div>
+      <div class="tree-goal-text">จากเป้าหมาย 100 คน</div>
+      <div class="tree-bar-wrap">
+        <div class="tree-bar-fill" id="tree-bar"></div>
+      </div>
+      <div class="tree-pct" id="tree-pct-text">0%</div>
+    </div>
+  </section>
+
+  <div class="sec-spacer"></div>
+
+  <!-- ── BLESSINGS ── -->
+  <section id="sec-bless" class="fade-up" style="max-width:none; border-radius:0; box-shadow:none;">
+    <div style="max-width:640px; margin:0 auto;">
+      <div class="sec-label">กล่องคำอวยพร</div>
+      <div class="sec-divider"></div>
+      <h2 class="sec-title">ส่ง<em>คำอวยพร</em></h2>
+      <p style="text-align:center;color:var(--text-lt);font-size:0.88rem;margin:10px 0 28px">บอกเราซักอย่างนะ — คำอวยพรของคุณจะมีความหมายมากสำหรับเรา 💌</p>
+
+      <div id="setup-banner">⚠️ ยังไม่ได้เชื่อม Apps Script — ข้อมูลจะยังไม่ถูกบันทึก</div>
+
+      <div class="bless-form">
+        <input id="bless-name" class="form-input" placeholder="ชื่อของคุณ" maxlength="60">
+        <textarea id="bless-msg" placeholder="คำอวยพร..." maxlength="400" style="min-height:90px;border:1.5px solid #dde8f0;border-radius:10px;padding:12px 16px;font-family:'Sarabun',sans-serif;font-size:.95rem;width:100%;resize:none;background:#F9FDFF;"></textarea>
+        <button class="btn btn-primary" onclick="submitBlessing()" id="bless-btn" style="width:100%;padding:13px;">
+          💌 ส่งคำอวยพร
+        </button>
+      </div>
+
+      <div style="border-top:1px solid #eee; padding-top:24px; margin-top:8px;">
+        <div style="font-size:0.82rem;color:var(--text-lt);margin-bottom:14px;text-align:center;">คำอวยพรล่าสุด</div>
+        <div id="bless-list" class="bless-list">
+          <div class="no-bless">ยังไม่มีคำอวยพร · เป็นคนแรกได้เลย! 🌸</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="sec-spacer"></div>
+
+  <!-- ── RSVP ── -->
+  <section id="sec-rsvp" class="fade-up" style="max-width:none; border-radius:0;">
+    <div style="max-width:640px; margin:0 auto;">
+      <div class="sec-label">ยืนยันร่วมงาน</div>
+      <div class="sec-divider"></div>
+      <h2 class="sec-title">ลงทะเบียน<em>ร่วมงาน</em></h2>
+      <p style="text-align:center;color:var(--text-lt);font-size:0.88rem;margin:10px 0 28px">บอกให้เราทราบก่อนนะคะ ว่าคุณจะมาร่วมแจ้งชะตา 💍</p>
+
+      <!-- RSVP form -->
+      <div id="rsvp-form-wrap">
+        <div id="setup-banner-rsvp" class="setup-banner" style="display:none;background:#FFF3CD;border:1px solid #FFD166;border-radius:10px;padding:12px 16px;font-size:0.85rem;color:#856404;margin-bottom:16px;text-align:center;">
+          ⚠️ ยังไม่ได้เชื่อม Apps Script — กรุณาเพิ่ม ?surl= ใน URL
+        </div>
+        <div class="rsvp-form">
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">ชื่อ-นามสกุล <span class="req">*</span></label>
+              <input id="r-name" class="form-input" placeholder="กรอกชื่อของคุณ" maxlength="80">
+            </div>
+            <div class="form-group">
+              <label class="form-label">จำนวนคนที่มา <span class="req">*</span></label>
+              <input id="r-count" class="form-input" type="number" min="1" max="20" value="1" placeholder="1">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">เบอร์โทรศัพท์</label>
+              <input id="r-phone" class="form-input" placeholder="08X-XXX-XXXX" maxlength="20">
+            </div>
+            <div class="form-group">
+              <label class="form-label">E-mail</label>
+              <input id="r-email" class="form-input" type="email" placeholder="email@example.com" oninput="toggleCalNotice()">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">รู้จักฝั่งไหน <span class="req">*</span></label>
+            <div class="side-group">
+              <div class="side-btn" id="side-m" onclick="selectSide('m')">💙 ฝั่งเอ็ม</div>
+              <div class="side-btn" id="side-p" onclick="selectSide('p')">🩷 ฝั่งแป้ง</div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">ความสัมพันธ์</label>
+            <input id="r-relation" class="form-input" placeholder="เช่น ญาติ, เพื่อน, เพื่อนร่วมงาน" maxlength="80">
+          </div>
+          <div class="form-group">
+            <label class="form-label">หมายเหตุ</label>
+            <textarea id="r-note" class="form-textarea" placeholder="มีอะไรอยากบอกเพิ่มเติม..." maxlength="300"></textarea>
+          </div>
+          <div class="calendar-notice" id="cal-notice">
+            📅 คุณจะได้รับ Calendar Invite ทาง email เมื่อยืนยันการเข้าร่วมงาน
+          </div>
+          <button class="submit-btn" onclick="submitRSVP()" id="rsvp-btn">
+            <span id="rsvp-btn-text">💌 ยืนยันการร่วมงาน</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Success message -->
+      <div class="success-card" id="rsvp-success">
+        <div class="success-icon">🎉</div>
+        <div class="success-title">ขอบคุณมากเลย!</div>
+        <div class="success-msg" id="success-msg-text">
+          เราตั้งตารอพบคุณในวันงาน<br>
+          <strong>วันเสาร์ที่ 28 พฤศจิกายน 2569 · 14:00 น.</strong><br>
+          TARA Terrace · นครปฐม 🥂
+        </div>
+        <div class="success-calendar" id="success-cal-note" style="display:none;">
+          📅 ส่ง Calendar Invite ไปที่ email ของคุณแล้ว กรุณาตรวจสอบ inbox
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="sec-spacer"></div>
+
+</main>
+
+<!-- ══════════════ FOOTER ══════════════ -->
+<footer>
+  <img src="logo.png" alt="PM" class="footer-logo" onerror="this.style.display='none'">
+  <div class="footer-names">เอ็ม &amp; แป้ง</div>
+  <div class="footer-event">Family Witness Dinner</div>
+  <div class="footer-date">📅 28 พฤศจิกายน 2569 · TARA Terrace · นครปฐม</div>
+  <div class="footer-copy">ด้วยความรักและคิดถึง 💕</div>
+</footer>
+
+<div id="inv-toast"></div>
+
+<!-- ══════════════ SCRIPT ══════════════ -->
+<script>
+// ── CONFIG ──────────────────────────────────────────────────
+let SCRIPT_URL = '';
+const WEDDING_DATE = new Date('2026-11-28T14:00:00+07:00');
+const GUEST_GOAL   = 100;
+let selectedSide   = '';
+let guestCount     = 0;
+
+// Read surl from URL params or localStorage
+(function() {
+  try {
+    const p = new URLSearchParams(window.location.search).get('surl');
+    if (p && p.startsWith('https://script.google.com/')) {
+      SCRIPT_URL = p;
+      localStorage.setItem('invite_script_url', p);
+    } else {
+      SCRIPT_URL = localStorage.getItem('invite_script_url') || '';
+    }
+  } catch(e) {}
+  if (!SCRIPT_URL) {
+    document.getElementById('setup-banner').classList.add('show');
+    const rb = document.getElementById('setup-banner-rsvp');
+    if (rb) rb.style.display = 'block';
+  }
+})();
+
+// ── PETAL GENERATION ────────────────────────────────────────
+(function spawnPetals() {
+  const petals = ['🌸','🌺','🌹','💐','🌷'];
+  const overlay = document.getElementById('overlay');
+  for (let i = 0; i < 12; i++) {
+    const el = document.createElement('span');
+    el.className = 'petal';
+    el.textContent = petals[i % petals.length];
+    el.style.cssText = `
+      left: ${Math.random()*95}%;
+      animation-duration: ${5 + Math.random()*6}s;
+      animation-delay: ${Math.random()*6}s;
+      font-size: ${1 + Math.random()*0.8}rem;
+    `;
+    overlay.appendChild(el);
+  }
+})();
+
+// ── ENVELOPE OPEN ────────────────────────────────────────────
+function openEnvelope() {
+  const box = document.getElementById('env-box');
+  if (box.classList.contains('open')) return;
+  box.classList.add('open');
+  setTimeout(() => {
+    const overlay = document.getElementById('overlay');
+    overlay.classList.add('hide');
+    const main = document.getElementById('main-content');
+    main.style.opacity = '1';
+    setTimeout(() => { overlay.style.display = 'none'; }, 1000);
+    // Start countdown
+    startCountdown();
+    // Load stats
+    loadStats();
+    // Trigger scroll reveals for visible elements
+    triggerVisibleFades();
+  }, 900);
+}
+
+// ── SCROLL REVEAL ─────────────────────────────────────────────
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.12 });
+document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+
+function triggerVisibleFades() {
+  setTimeout(() => {
+    document.querySelectorAll('.fade-up').forEach(el => {
+      const rect = el.getBoundingClientRect();
+      if (rect.top < window.innerHeight) el.classList.add('visible');
+    });
+  }, 100);
+}
+
+// ── COUNTDOWN ────────────────────────────────────────────────
+function startCountdown() {
+  function tick() {
+    const now  = new Date();
+    const diff = WEDDING_DATE - now;
+    if (diff <= 0) {
+      ['i-days','i-hours','i-mins','i-secs'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.textContent = '00';
+      });
+      return;
+    }
+    const d  = Math.floor(diff / 86400000);
+    const h  = Math.floor((diff % 86400000) / 3600000);
+    const m  = Math.floor((diff % 3600000)  / 60000);
+    const s  = Math.floor((diff % 60000)    / 1000);
+    const pad = n => String(n).padStart(2,'0');
+    const ids = {d:'i-days', h:'i-hours', m:'i-mins', s:'i-secs'};
+    const vals = {d, h, m, s};
+    Object.entries(ids).forEach(([k,id]) => {
+      const el = document.getElementById(id);
+      if (el) el.textContent = pad(vals[k]);
+    });
+  }
+  tick();
+  setInterval(tick, 1000);
+}
+
+// ── TREE UPDATE ──────────────────────────────────────────────
+function updateTree(count) {
+  guestCount = count;
+  const pct = Math.min(count / GUEST_GOAL * 100, 100);
+
+  // Show layers based on percentage threshold
+  document.querySelectorAll('#love-tree .t-layer').forEach(el => {
+    const min = parseFloat(el.dataset.pct);
+    el.style.opacity = pct >= min ? '1' : '0';
+  });
+
+  // Update counter
+  const numEl = document.getElementById('tree-num');
+  if (numEl) animateCount(numEl, parseInt(numEl.textContent) || 0, count, 1200);
+
+  // Progress bar
+  const bar = document.getElementById('tree-bar');
+  if (bar) bar.style.width = pct.toFixed(1) + '%';
+
+  const pctEl = document.getElementById('tree-pct-text');
+  if (pctEl) pctEl.textContent = Math.round(pct) + '%';
+}
+
+function animateCount(el, from, to, duration) {
+  const start = performance.now();
+  function step(ts) {
+    const progress = Math.min((ts - start) / duration, 1);
+    const ease = 1 - Math.pow(1 - progress, 3);
+    el.textContent = Math.round(from + (to - from) * ease);
+    if (progress < 1) requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+}
+
+// ── LOAD STATS FROM APPS SCRIPT ──────────────────────────────
+function loadStats() {
+  if (!SCRIPT_URL) return;
+  fetch(SCRIPT_URL + '?action=stats')
+    .then(r => r.json())
+    .then(data => {
+      updateTree(data.guestCount || 0);
+      if (Array.isArray(data.blessings)) renderBlessings(data.blessings);
+    })
+    .catch(() => {});
+}
+
+// ── BLESSINGS ────────────────────────────────────────────────
+function renderBlessings(list) {
+  const container = document.getElementById('bless-list');
+  if (!container) return;
+  if (!list || list.length === 0) {
+    container.innerHTML = '<div class="no-bless">ยังไม่มีคำอวยพร · เป็นคนแรกได้เลย! 🌸</div>';
+    return;
+  }
+  container.innerHTML = list.map(b => `
+    <div class="bless-item">
+      <div class="bless-avatar">${(b.name||'?')[0].toUpperCase()}</div>
+      <div class="bless-content">
+        <div class="bless-name">${escHtml(b.name || 'ไม่ระบุชื่อ')}</div>
+        <div class="bless-msg">${escHtml(b.message || '')}</div>
+        <div class="bless-date">${escHtml(b.date || '')}</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function submitBlessing() {
+  const name = document.getElementById('bless-name').value.trim();
+  const msg  = document.getElementById('bless-msg').value.trim();
+  if (!name) { toast('กรุณากรอกชื่อก่อนนะคะ 🌸'); return; }
+  if (!msg)  { toast('กรุณากรอกคำอวยพรก่อนนะคะ 💌'); return; }
+
+  const btn = document.getElementById('bless-btn');
+  btn.disabled = true; btn.textContent = '⏳ กำลังส่ง...';
+
+  const payload = { action: 'bless', name, message: msg };
+
+  if (!SCRIPT_URL) {
+    // Demo mode (no backend)
+    setTimeout(() => {
+      const list = document.getElementById('bless-list');
+      const noEl = list.querySelector('.no-bless');
+      if (noEl) noEl.remove();
+      const item = document.createElement('div');
+      item.className = 'bless-item';
+      item.innerHTML = `
+        <div class="bless-avatar">${name[0].toUpperCase()}</div>
+        <div class="bless-content">
+          <div class="bless-name">${escHtml(name)}</div>
+          <div class="bless-msg">${escHtml(msg)}</div>
+          <div class="bless-date">เมื่อกี้นี้</div>
+        </div>`;
+      list.prepend(item);
+      document.getElementById('bless-name').value = '';
+      document.getElementById('bless-msg').value  = '';
+      btn.disabled = false; btn.textContent = '💌 ส่งคำอวยพร';
+      toast('ขอบคุณสำหรับคำอวยพร 💕');
+    }, 600);
+    return;
+  }
+
+  fetch(SCRIPT_URL, {
+    method: 'POST',
+    body: JSON.stringify(payload),
+    headers: { 'Content-Type': 'application/json' },
+    mode: 'no-cors'
+  }).then(() => {
+    const list = document.getElementById('bless-list');
+    const noEl = list.querySelector('.no-bless');
+    if (noEl) noEl.remove();
+    const item = document.createElement('div');
+    item.className = 'bless-item';
+    item.innerHTML = `
+      <div class="bless-avatar">${name[0].toUpperCase()}</div>
+      <div class="bless-content">
+        <div class="bless-name">${escHtml(name)}</div>
+        <div class="bless-msg">${escHtml(msg)}</div>
+        <div class="bless-date">เมื่อกี้นี้</div>
+      </div>`;
+    list.prepend(item);
+    document.getElementById('bless-name').value = '';
+    document.getElementById('bless-msg').value  = '';
+    btn.disabled = false; btn.textContent = '💌 ส่งคำอวยพร';
+    toast('ขอบคุณสำหรับคำอวยพร 💕');
+  }).catch(() => {
+    btn.disabled = false; btn.textContent = '💌 ส่งคำอวยพร';
+    toast('เกิดข้อผิดพลาด กรุณาลองใหม่ 🙏');
+  });
+}
+
+// ── RSVP ─────────────────────────────────────────────────────
+function selectSide(s) {
+  selectedSide = s;
+  document.getElementById('side-m').classList.toggle('selected', s === 'm');
+  document.getElementById('side-p').classList.toggle('selected', s === 'p');
+}
+
+function toggleCalNotice() {
+  const email = document.getElementById('r-email').value.trim();
+  const notice = document.getElementById('cal-notice');
+  if (notice) notice.classList.toggle('show', email.length > 0);
+}
+
+function submitRSVP() {
+  const name     = document.getElementById('r-name').value.trim();
+  const count    = parseInt(document.getElementById('r-count').value) || 1;
+  const phone    = document.getElementById('r-phone').value.trim();
+  const email    = document.getElementById('r-email').value.trim();
+  const relation = document.getElementById('r-relation').value.trim();
+  const note     = document.getElementById('r-note').value.trim();
+
+  if (!name)         { toast('กรุณากรอกชื่อ-นามสกุล 🙏'); return; }
+  if (!selectedSide) { toast('กรุณาเลือกฝั่งก่อนนะคะ 💙🩷'); return; }
+  if (count < 1)     { toast('จำนวนคนต้องมากกว่า 0 คน'); return; }
+
+  const btn  = document.getElementById('rsvp-btn');
+  const btnT = document.getElementById('rsvp-btn-text');
+  btn.disabled = true; btnT.textContent = '⏳ กำลังบันทึก...';
+
+  const payload = {
+    action: 'rsvp',
+    name, count, phone, email,
+    side: selectedSide === 'm' ? 'ฝั่งเอ็ม' : 'ฝั่งแป้ง',
+    relation, note
+  };
+
+  const onSuccess = (newCount) => {
+    document.getElementById('rsvp-form-wrap').style.display = 'none';
+    const sc = document.getElementById('rsvp-success');
+    sc.classList.add('show');
+    document.getElementById('success-msg-text').innerHTML = `
+      <strong>${escHtml(name)}</strong> และอีก ${count > 1 ? count - 1 + ' คน ' : ''}ได้ยืนยันการมาร่วมงานแล้ว<br><br>
+      เราตั้งตารอพบคุณในวันงาน 🥂<br>
+      <strong>วันเสาร์ที่ 28 พฤศจิกายน 2569 · 14:00 น.</strong><br>
+      TARA Terrace · นครปฐม
+    `;
+    if (email) {
+      const calNote = document.getElementById('success-cal-note');
+      if (calNote) calNote.style.display = 'inline-block';
+    }
+    // Update tree
+    if (newCount !== undefined) updateTree(newCount);
+    else updateTree(guestCount + count);
+    toast('ยืนยันเรียบร้อยแล้ว ขอบคุณมากเลย 💕');
+  };
+
+  if (!SCRIPT_URL) {
+    setTimeout(() => onSuccess(guestCount + count), 800);
+    return;
+  }
+
+  fetch(SCRIPT_URL, {
+    method: 'POST',
+    body: JSON.stringify(payload),
+    headers: { 'Content-Type': 'application/json' },
+    mode: 'no-cors'
+  }).then(() => {
+    onSuccess(guestCount + count);
+  }).catch(() => {
+    btn.disabled = false;
+    btnT.textContent = '💌 ยืนยันการร่วมงาน';
+    toast('เกิดข้อผิดพลาด กรุณาลองใหม่ 🙏');
+  });
+}
+
+// ── UTILS ─────────────────────────────────────────────────────
+function escHtml(s) {
+  return String(s)
+    .replace(/&/g,'&amp;')
+    .replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;');
+}
+
+function toast(msg, dur = 2800) {
+  const t = document.getElementById('inv-toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), dur);
+}
+
+// Init tree at 0
+updateTree(0);
+</script>
+</body>
+</html>

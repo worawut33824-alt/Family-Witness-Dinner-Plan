@@ -5,6 +5,7 @@ const CACHE = 'wedding-planner-v7';
 const ASSETS = [
   './',
   './index.html',
+  './invite.html',
   './logo.png',
   './Gif1.png',
   './icon-192.png',
