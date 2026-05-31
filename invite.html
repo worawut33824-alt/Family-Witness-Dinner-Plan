@@ -4,9 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>💌 คุณได้รับเชิญ · PM Wedding 28.11.2026</title>
-<meta name="description" content="งานแต่งงาน Family Witness Dinner · เอ็ม & แป้ง · 28 พฤศจิกายน 2569 · TARA Terrace">
+<meta name="description" content="งานแต่งงาน Family Witness Dinner · เอ็ม & แป้ง · 28 พฤศจิกายน 2569 · ธาราเทอเรส นครปฐม">
 <meta property="og:title" content="💌 คุณได้รับเชิญ · PM Wedding">
-<meta property="og:description" content="28 พฤศจิกายน 2569 · TARA Terrace · Nakhon Pathom">
+<meta property="og:description" content="28 พฤศจิกายน 2569 · ธาราเทอเรส (Tara Terrace) · นครปฐม">
 <meta property="og:image" content="logo.png">
 <link rel="icon" href="icon-192.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -433,108 +433,66 @@ h2.sec-title em { font-style: italic; color: var(--blue-dk); }
    MAP
 ════════════════════════════════════════════════ */
 #sec-map { padding-top: 80px; }
-.map-illustration {
+
+.map-embed-wrap {
   width: 100%;
   border-radius: 18px;
   overflow: hidden;
-  background: #C8E6C0;
-  position: relative;
-  height: 260px;
   box-shadow: var(--shadow);
-  margin-bottom: 20px;
+  margin-bottom: 16px;
+  border: 1px solid var(--cream-warm);
 }
-/* River */
-.map-river {
-  position: absolute;
-  bottom: 0; left: 0; right: 0;
-  height: 55px;
-  background: linear-gradient(180deg, #90CAF9 0%, #64B5F6 100%);
-  clip-path: polygon(0 30%, 8% 10%, 16% 28%, 24% 8%, 32% 25%, 40% 5%, 48% 22%, 56% 4%, 64% 20%, 72% 2%, 80% 18%, 88% 0%, 96% 16%, 100% 5%, 100% 100%, 0 100%);
+.map-embed-wrap iframe {
+  width: 100%; height: 300px;
+  border: none; display: block;
 }
-.map-river-label {
-  position: absolute;
-  bottom: 10px; left: 20px;
-  font-size: 0.72rem; color: #1565C0; font-weight: 600; letter-spacing: 1px;
+@media(min-width:480px){ .map-embed-wrap iframe { height: 340px; } }
+
+.venue-detail-card {
+  background: var(--white);
+  border-radius: 14px;
+  padding: 18px 20px;
+  box-shadow: var(--shadow);
+  border: 1px solid var(--cream-warm);
+  margin-bottom: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
-/* Road */
-.map-road-h {
-  position: absolute;
-  top: 50%; left: 0; right: 0;
-  height: 18px;
-  background: #F5F0E8;
-  transform: translateY(-50%);
-  border-top: 2px solid #DDD; border-bottom: 2px solid #DDD;
+.venue-detail-name {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: var(--text);
 }
-.map-road-v {
-  position: absolute;
-  left: 40%; top: 0; bottom: 55px;
-  width: 18px;
-  background: #F5F0E8;
-  border-left: 2px solid #DDD; border-right: 2px solid #DDD;
+.venue-detail-row {
+  display: flex; align-items: flex-start; gap: 10px;
+  font-size: 0.88rem; color: var(--text-lt); line-height: 1.6;
 }
-/* Trees on map */
-.map-tree { position: absolute; font-size: 1.4rem; }
-/* Building */
-.map-venue {
-  position: absolute;
-  left: calc(40% - 32px); top: calc(50% - 44px);
-  width: 64px; height: 52px;
-  background: #FFF8F0;
-  border: 2px solid #D4B896;
-  border-radius: 4px;
-  box-shadow: 4px 4px 0 #C8B090, 8px 8px 0 rgba(0,0,0,0.08);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 0.6rem; font-weight: 700; color: #8B6335;
-  text-align: center;
-  line-height: 1.2;
-}
-.map-venue::before {
-  content: '';
-  position: absolute;
-  top: -14px; left: 50%; transform: translateX(-50%);
-  width: 0; height: 0;
-  border-left: 34px solid transparent;
-  border-right: 34px solid transparent;
-  border-bottom: 14px solid #C9A96E;
-}
-/* Pin */
-.map-pin {
-  position: absolute;
-  left: calc(40% + 6px); top: calc(50% - 68px);
-  font-size: 1.8rem;
-  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
-  animation: pinBounce 2.5s ease-in-out infinite;
-}
-@keyframes pinBounce {
-  0%,100% { transform: translateY(0); }
-  50% { transform: translateY(-5px); }
-}
-/* Compass */
-.map-compass {
-  position: absolute;
-  top: 10px; right: 12px;
-  width: 36px; height: 36px;
-  background: rgba(255,255,255,0.85);
-  border-radius: 50%;
-  border: 1px solid #ccc;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 0.7rem; font-weight: 700; color: #c0392b;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-}
+.venue-detail-row .vi { font-size: 1rem; flex-shrink: 0; margin-top: 1px; }
+
+.map-btn-group { display: flex; gap: 10px; flex-wrap: wrap; }
 
 .map-btn {
-  display: flex; align-items: center; justify-content: center; gap: 8px;
-  width: 100%;
-  padding: 14px;
+  flex: 1; min-width: 140px;
+  display: flex; align-items: center; justify-content: center; gap: 7px;
+  padding: 13px 16px;
   background: var(--blue);
   color: var(--white);
   border-radius: 12px;
-  font-size: 1rem; font-weight: 600;
+  font-size: 0.92rem; font-weight: 600;
   text-decoration: none;
-  box-shadow: 0 4px 18px rgba(123,156,191,0.4);
+  box-shadow: 0 4px 16px rgba(123,156,191,0.35);
   transition: background 0.2s, transform 0.2s;
 }
-.map-btn:hover { background: var(--blue-dk); transform: translateY(-1px); }
+.map-btn:hover { background: var(--blue-dk); transform: translateY(-2px); }
+.map-btn.secondary {
+  background: var(--white);
+  color: var(--blue-dk);
+  border: 1.5px solid var(--blue);
+  box-shadow: none;
+}
+.map-btn.secondary:hover { background: #EEF5FC; }
 
 /* ════════════════════════════════════════════════
    LOVE TREE
@@ -910,7 +868,7 @@ footer {
     <div class="hero-date-row fade-up delay-3">
       <div class="hero-chip">📅 วันเสาร์ที่ 28 พฤศจิกายน 2569</div>
       <div class="hero-chip">🕑 14:00 น.</div>
-      <div class="hero-chip">📍 TARA Terrace · นครปฐม</div>
+      <div class="hero-chip">📍 ธาราเทอเรส · นครปฐม</div>
     </div>
     <div class="scroll-hint fade-up delay-3">เลื่อนลงเพื่ออ่านต่อ ↓</div>
   </section>
@@ -971,11 +929,11 @@ footer {
       <div class="cd-box"><div class="cd-num" id="i-secs">--</div><div class="cd-lbl">วินาที</div></div>
     </div>
     <div class="venue-card">
-      <div class="venue-name">🏛️ TARA Terrace</div>
+      <div class="venue-name">📍 ธาราเทอเรส</div>
       <div class="venue-info">
-        จ.นครปฐม · งาน Cocktail &amp; Dinner<br>
+        Tara Terrace · จ.นครปฐม · Cocktail &amp; Dinner<br>
         วันเสาร์ที่ 28 พ.ย. 2569 · ลงทะเบียน 13:30 น. · เริ่ม 14:00 น.<br>
-        📞 082-294-9629 (พี่อ้อย)
+        📞 <a href="tel:0822949629" style="color:rgba(255,255,255,0.9)">082-294-9629</a> (พี่อ้อย)
       </div>
     </div>
   </section>
@@ -987,38 +945,52 @@ footer {
     <div class="sec-label">เส้นทางมาร่วมงาน</div>
     <div class="sec-divider"></div>
     <h2 class="sec-title">Getting <em>Here</em></h2>
-    <p style="text-align:center;color:var(--text-lt);font-size:0.88rem;margin:10px 0 24px">TARA Terrace · จังหวัดนครปฐม</p>
+    <p style="text-align:center;color:var(--text-lt);font-size:0.88rem;margin:10px 0 24px">ธาราเทอเรส · จังหวัดนครปฐม</p>
 
-    <!-- Cute illustrated map -->
-    <div class="map-illustration">
-      <!-- Sky/ground -->
-      <div style="position:absolute;inset:0;background:linear-gradient(180deg,#E8F5E9 0%,#C8E6C0 100%)"></div>
-      <!-- River -->
-      <div class="map-river"></div>
-      <span class="map-river-label">แม่น้ำท่าจีน</span>
-      <!-- Roads -->
-      <div class="map-road-h"></div>
-      <div class="map-road-v"></div>
-      <!-- Trees -->
-      <span class="map-tree" style="top:15%;left:8%">🌳</span>
-      <span class="map-tree" style="top:20%;left:18%">🌲</span>
-      <span class="map-tree" style="top:12%;right:10%">🌳</span>
-      <span class="map-tree" style="top:22%;right:22%">🌿</span>
-      <span class="map-tree" style="bottom:28%;left:6%">🌴</span>
-      <span class="map-tree" style="bottom:30%;right:8%">🌴</span>
-      <!-- Venue building -->
-      <div class="map-venue">TARA<br>Terrace</div>
-      <!-- Pin -->
-      <span class="map-pin">📍</span>
-      <!-- Compass -->
-      <div class="map-compass">N</div>
+    <!-- Google Maps embed (no API key) -->
+    <div class="map-embed-wrap">
+      <iframe
+        src="https://maps.google.com/maps?q=tara+terrace+%E0%B8%98%E0%B8%B2%E0%B8%A3%E0%B8%B2+%E0%B9%80%E0%B8%97%E0%B8%AD%E0%B8%A3%E0%B9%8C%E0%B9%80%E0%B8%A3%E0%B8%8B+%E0%B8%99%E0%B8%84%E0%B8%A3%E0%B8%9B%E0%B8%90%E0%B8%A1&output=embed&hl=th&z=16"
+        title="ธาราเทอเรส Tara Terrace นครปฐม"
+        allowfullscreen=""
+        loading="lazy"
+        referrerpolicy="no-referrer-when-downgrade">
+      </iframe>
     </div>
 
-    <a href="https://www.google.com/maps/search/TARA+Terrace+Nakhon+Pathom"
-       target="_blank" rel="noopener"
-       class="map-btn">
-      🗺️ เปิดใน Google Maps
-    </a>
+    <!-- Venue detail card -->
+    <div class="venue-detail-card">
+      <div class="venue-detail-name">📍 ธาราเทอเรส (Tara Terrace)</div>
+      <div class="venue-detail-row">
+        <span class="vi">🗓️</span>
+        <span>วันเสาร์ที่ 28 พฤศจิกายน 2569 · ลงทะเบียน 13:30 น. · เริ่ม 14:00 น.</span>
+      </div>
+      <div class="venue-detail-row">
+        <span class="vi">📞</span>
+        <span><a href="tel:0822949629" style="color:var(--blue-dk);text-decoration:none;">082-294-9629</a> (พี่อ้อย)</span>
+      </div>
+      <div class="venue-detail-row">
+        <span class="vi">📘</span>
+        <span>
+          <a href="https://www.facebook.com/p/Tara-Terrace-100083355010338/" target="_blank" rel="noopener"
+             style="color:var(--blue-dk);text-decoration:none;">
+            facebook.com · Tara Terrace
+          </a>
+        </span>
+      </div>
+    </div>
+
+    <!-- Action buttons -->
+    <div class="map-btn-group">
+      <a href="https://www.google.com/maps/place/tara+terrace+%E0%B8%98%E0%B8%B2%E0%B8%A3%E0%B8%B2+%E0%B9%80%E0%B8%97%E0%B8%AD%E0%B8%A3%E0%B9%8C%E0%B9%80%E0%B8%A3%E0%B8%8B/data=!4m2!3m1!1s0x30e2956cb4a86887:0x10b33033622a9040"
+         target="_blank" rel="noopener" class="map-btn">
+        🗺️ เปิดใน Google Maps
+      </a>
+      <a href="https://www.facebook.com/p/Tara-Terrace-100083355010338/?locale=th_TH"
+         target="_blank" rel="noopener" class="map-btn secondary">
+        📘 Facebook
+      </a>
+    </div>
   </section>
 
   <div class="sec-spacer"></div>
@@ -1222,7 +1194,7 @@ footer {
         <div class="success-msg" id="success-msg-text">
           เราตั้งตารอพบคุณในวันงาน<br>
           <strong>วันเสาร์ที่ 28 พฤศจิกายน 2569 · 14:00 น.</strong><br>
-          TARA Terrace · นครปฐม 🥂
+          ธาราเทอเรส · นครปฐม 🥂
         </div>
         <div class="success-calendar" id="success-cal-note" style="display:none;">
           📅 ส่ง Calendar Invite ไปที่ email ของคุณแล้ว กรุณาตรวจสอบ inbox
@@ -1240,7 +1212,7 @@ footer {
   <img src="logo.png" alt="PM" class="footer-logo" onerror="this.style.display='none'">
   <div class="footer-names">เอ็ม &amp; แป้ง</div>
   <div class="footer-event">Family Witness Dinner</div>
-  <div class="footer-date">📅 28 พฤศจิกายน 2569 · TARA Terrace · นครปฐม</div>
+  <div class="footer-date">📅 28 พฤศจิกายน 2569 · ธาราเทอเรส · นครปฐม</div>
   <div class="footer-copy">ด้วยความรักและคิดถึง 💕</div>
 </footer>
 
@@ -1528,7 +1500,7 @@ function submitRSVP() {
       <strong>${escHtml(name)}</strong> และอีก ${count > 1 ? count - 1 + ' คน ' : ''}ได้ยืนยันการมาร่วมงานแล้ว<br><br>
       เราตั้งตารอพบคุณในวันงาน 🥂<br>
       <strong>วันเสาร์ที่ 28 พฤศจิกายน 2569 · 14:00 น.</strong><br>
-      TARA Terrace · นครปฐม
+      ธาราเทอเรส · นครปฐม
     `;
     if (email) {
       const calNote = document.getElementById('success-cal-note');
