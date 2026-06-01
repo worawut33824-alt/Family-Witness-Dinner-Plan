@@ -1409,42 +1409,56 @@ function startCountdown() {
 }
 
 // ── TREE UPDATE ──────────────────────────────────────────────
-// ตำแหน่งดอกไม้ฝั่งเอ็ม (สีฟ้า) — กระจายซ้าย/กลางพุ่ม
-const BLUE_POS = [
-  [72,218],[95,192],[118,170],[142,185],[160,152],
-  [100,242],[78,258],[125,152],[152,172],[172,148],
-  [62,232],[108,198],[135,136],[162,180],[178,128],
-  [86,212],[145,198],[118,178],[172,160],[108,138]
-];
-// ตำแหน่งดอกไม้ฝั่งแป้ง (สีชมพู) — กระจายขวา/กลางพุ่ม
-const PINK_POS = [
-  [295,218],[318,192],[342,168],[268,185],[282,152],
-  [358,240],[385,255],[298,152],[262,172],[245,148],
-  [372,228],[315,198],[278,136],[252,180],[312,128],
-  [338,212],[258,198],[332,178],[248,160],[375,180]
-];
+// --- สร้างตำแหน่งดอกไม้แบบ deterministic ----------------------------
+(function generateFlowerPositions() {
+  // วงกลมพุ่มทั้งหมด [cx, cy, r]
+  const C = [
+    [209,155,54],[160,172,41],[258,169,41],[108,196,35],[310,192,35],
+    [370,198,41],[418,218,31],[60,206,31],[28,232,19],
+    [209,122,48],[172,144,35],[246,141,35],[128,168,31],[290,164,31],
+    [209,94,34],[405,196,29],[448,218,21],
+    [142,258,33],[280,254,33],[209,218,48],[332,244,27],[82,244,23],
+    [155,196,39],[263,193,39],[112,218,31],[306,214,31],[355,224,33]
+  ];
+  const inCanopy = (x,y) => C.some(([cx,cy,r]) => Math.hypot(x-cx,y-cy) < r-3);
+
+  // seeded pseudo-random เพื่อให้ตำแหน่งคงที่ทุก load
+  let s = 42;
+  const rand = () => { s = (s*1664525+1013904223)>>>0; return s/4294967295; };
+
+  function gen(count, xMin, xMax) {
+    const pts = [];
+    let tries = 0;
+    while (pts.length < count && tries < 8000) {
+      tries++;
+      const x = xMin + rand()*(xMax-xMin);
+      const y = 78 + rand()*190;
+      if (inCanopy(x, y)) pts.push([Math.round(x), Math.round(y)]);
+    }
+    return pts;
+  }
+
+  window.BLUE_POS = gen(100, 18, 340);  // เอ็ม — ซ้าย+กลาง
+  s = 99;
+  window.PINK_POS = gen(100, 140, 470); // แป้ง — กลาง+ขวา
+})();
 
 function updateFlowers(sideM, sideP) {
   const blueEl = document.getElementById('flowers-blue');
   const pinkEl = document.getElementById('flowers-pink');
   if (!blueEl || !pinkEl) return;
 
-  const blueCount = Math.min(sideM, 20);
-  const pinkCount = Math.min(sideP, 20);
+  const blueCount = Math.min(sideM, 100);
+  const pinkCount = Math.min(sideP, 100);
 
-  blueEl.innerHTML = BLUE_POS.map((p, i) => i < blueCount
-    ? `<circle cx="${p[0]}" cy="${p[1]}" r="8" fill="#B8D4F2" opacity="0.88"/>
-       <circle cx="${p[0]}" cy="${p[1]}" r="4.5" fill="#D8ECFC" opacity="0.75"/>
-       <circle cx="${p[0]-1.5}" cy="${p[1]-1.5}" r="2" fill="white" opacity="0.5"/>`
-    : '').join('');
+  const flower = (p, fill, center) =>
+    `<circle cx="${p[0]}" cy="${p[1]}" r="7" fill="${fill}" opacity="0.86"/>` +
+    `<circle cx="${p[0]}" cy="${p[1]}" r="3.8" fill="${center}" opacity="0.72"/>` +
+    `<circle cx="${p[0]-1}" cy="${p[1]-1}" r="1.6" fill="white" opacity="0.5"/>`;
 
-  pinkEl.innerHTML = PINK_POS.map((p, i) => i < pinkCount
-    ? `<circle cx="${p[0]}" cy="${p[1]}" r="8" fill="#FFBCCC" opacity="0.88"/>
-       <circle cx="${p[0]}" cy="${p[1]}" r="4.5" fill="#FFD8E4" opacity="0.75"/>
-       <circle cx="${p[0]-1.5}" cy="${p[1]-1.5}" r="2" fill="white" opacity="0.5"/>`
-    : '').join('');
+  blueEl.innerHTML = (window.BLUE_POS||[]).slice(0, blueCount).map(p => flower(p,'#B8D4F2','#D8ECFC')).join('');
+  pinkEl.innerHTML = (window.PINK_POS||[]).slice(0, pinkCount).map(p => flower(p,'#FFBCCC','#FFD8E4')).join('');
 
-  // อัปเดต legend
   const cm = document.getElementById('count-m');
   const cp = document.getElementById('count-p');
   if (cm) cm.textContent = sideM;
