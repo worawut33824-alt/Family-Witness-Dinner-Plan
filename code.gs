@@ -55,22 +55,12 @@ function doGet(e) {
       result.summary_msg   = rfixed.msg;
       result.dashboard_msg = rfixed.msg;
     } else if (action === 'stats') {
-      var guests = getGuests(ss);
-      var totalSeats = 0;
-      for (var gi = 0; gi < guests.length; gi++) {
-        totalSeats += (parseInt(guests[gi].seats) || 1);
-      }
-      result.guestCount = totalSeats;
+      result.guestCount = countAllSeats(ss);
       result.blessings  = getBlessings(ss);
 
     } else if (action === 'rsvp') {
       saveRsvpGuest(ss, e.parameter);
-      var guestsAfter = getGuests(ss);
-      var total = 0;
-      for (var ri = 0; ri < guestsAfter.length; ri++) {
-        total += (parseInt(guestsAfter[ri].seats) || 1);
-      }
-      result.guestCount = total;
+      result.guestCount = countAllSeats(ss);
 
     } else if (action === 'bless') {
       saveBlessing(ss, e.parameter);
@@ -121,6 +111,21 @@ function doPost(e) {
   return ContentService
     .createTextOutput(JSON.stringify(result))
     .setMimeType(ContentService.MimeType.JSON);
+}
+
+// --- COUNT SEATS — นับที่นั่งทั้งหมดจาก sheet แขก -----------------
+function countAllSeats(ss) {
+  var sheet = ss.getSheetByName('แขก');
+  if (!sheet) return 0;
+  var lastRow = sheet.getLastRow();
+  if (lastRow < 2) return 0;
+  var data = sheet.getRange(2, 5, lastRow - 1, 1).getValues(); // column E = ที่นั่ง
+  var total = 0;
+  for (var i = 0; i < data.length; i++) {
+    var n = parseInt(data[i][0]);
+    if (n > 0) total += n;
+  }
+  return total;
 }
 
 // --- SETUP — รันครั้งเดียวเพื่อสร้าง sheet ที่จำเป็น ----------------
