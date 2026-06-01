@@ -543,10 +543,10 @@ h2.sec-title em { font-style: italic; color: var(--blue-dk); }
 
 .tree-couple {
   position: absolute;
-  bottom: 10%;
-  right: 1%;
-  width: 27%;
-  max-width: 115px;
+  bottom: 2%;
+  right: 0%;
+  width: 25%;
+  max-width: 108px;
   filter: drop-shadow(0 4px 12px rgba(0,0,0,0.13));
 }
 
@@ -1034,80 +1034,99 @@ footer {
       <div class="tree-svg-wrap">
         <svg id="love-tree" viewBox="0 0 480 380" xmlns="http://www.w3.org/2000/svg">
 
-          <!-- Ground shadow — wide for shade tree -->
-          <ellipse cx="210" cy="365" rx="195" ry="16" fill="rgba(90,150,80,0.14)"/>
+          <defs>
+            <linearGradient id="trunkGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stop-color="#6B4820"/>
+              <stop offset="45%" stop-color="#8B6335"/>
+              <stop offset="100%" stop-color="#7A5228"/>
+            </linearGradient>
+          </defs>
 
-          <!-- Trunk -->
-          <path d="M 200 362 C 196 336 194 306 198 286 C 202 269 206 259 209 253 C 212 259 216 269 220 286 C 224 306 222 336 218 362 Z" fill="#8B6335"/>
+          <!-- Ground shadow — wide -->
+          <ellipse cx="210" cy="368" rx="200" ry="17" fill="rgba(90,150,80,0.13)"/>
 
-          <!-- Roots -->
-          <path d="M 200 350 Q 172 362 142 367" stroke="#8B6335" stroke-width="3.5" fill="none" stroke-linecap="round"/>
-          <path d="M 218 350 Q 246 362 276 367" stroke="#8B6335" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+          <!-- Trunk — หนา มีแสงเงา -->
+          <path d="M 196 364 C 189 332 186 298 191 274 C 196 254 203 243 209 237 C 215 243 222 254 227 274 C 232 298 229 332 222 364 Z" fill="url(#trunkGrad)"/>
+          <!-- เงาด้านซ้ายลำต้น -->
+          <path d="M 196 364 C 189 332 186 298 191 274 C 196 254 203 243 209 237 C 205 245 200 258 198 278 C 194 302 195 334 198 364 Z" fill="rgba(0,0,0,0.10)"/>
 
-          <!-- Layer 1: กิ่งแรก (15%) -->
+          <!-- Roots — แผ่กว้าง มั่นคง -->
+          <!-- ซ้าย 3 เส้น -->
+          <path d="M 197 352 Q 162 366 125 374" stroke="#7A5228" stroke-width="6" fill="none" stroke-linecap="round"/>
+          <path d="M 195 358 Q 165 374 145 382" stroke="#7A5228" stroke-width="4.5" fill="none" stroke-linecap="round" opacity="0.75"/>
+          <path d="M 198 356 Q 175 362 155 364" stroke="#7A5228" stroke-width="3.5" fill="none" stroke-linecap="round" opacity="0.6"/>
+          <!-- ขวา 3 เส้น -->
+          <path d="M 221 352 Q 256 366 293 374" stroke="#7A5228" stroke-width="6" fill="none" stroke-linecap="round"/>
+          <path d="M 223 358 Q 253 374 273 382" stroke="#7A5228" stroke-width="4.5" fill="none" stroke-linecap="round" opacity="0.75"/>
+          <path d="M 220 356 Q 243 362 263 364" stroke="#7A5228" stroke-width="3.5" fill="none" stroke-linecap="round" opacity="0.6"/>
+
+          <!-- Layer 1: กิ่งแรก (15%) — หนาขึ้น -->
           <g class="t-layer" data-pct="15" style="opacity:0">
-            <path d="M 201 312 Q 166 294 136 275" stroke="#8B6335" stroke-width="4.5" fill="none" stroke-linecap="round"/>
-            <path d="M 217 309 Q 255 289 285 269" stroke="#8B6335" stroke-width="4.5" fill="none" stroke-linecap="round"/>
+            <path d="M 200 316 Q 162 296 128 274" stroke="#7A5228" stroke-width="6" fill="none" stroke-linecap="round"/>
+            <path d="M 218 313 Q 258 292 290 270" stroke="#7A5228" stroke-width="6" fill="none" stroke-linecap="round"/>
           </g>
 
-          <!-- Layer 2: กิ่งบน (25%) — เริ่มแผ่ขวา -->
+          <!-- Layer 2: กิ่งบน (25%) — หนา + กิ่งขวายาว -->
           <g class="t-layer" data-pct="25" style="opacity:0">
-            <path d="M 203 290 Q 172 272 148 250" stroke="#8B6335" stroke-width="3.5" fill="none" stroke-linecap="round"/>
-            <path d="M 215 287 Q 248 268 272 245" stroke="#8B6335" stroke-width="3.5" fill="none" stroke-linecap="round"/>
-            <path d="M 209 270 L 209 248" stroke="#8B6335" stroke-width="3.5" fill="none" stroke-linecap="round"/>
-            <!-- กิ่งยาวขวาไปทางคู่บ่าวสาว -->
-            <path d="M 217 299 Q 285 276 332 258" stroke="#8B6335" stroke-width="3" fill="none" stroke-linecap="round"/>
+            <path d="M 202 294 Q 168 274 142 250" stroke="#7A5228" stroke-width="5" fill="none" stroke-linecap="round"/>
+            <path d="M 216 291 Q 252 270 278 246" stroke="#7A5228" stroke-width="5" fill="none" stroke-linecap="round"/>
+            <path d="M 209 274 L 209 250" stroke="#7A5228" stroke-width="5" fill="none" stroke-linecap="round"/>
+            <!-- กิ่งยาวขวา -->
+            <path d="M 218 304 Q 290 280 340 260" stroke="#7A5228" stroke-width="4" fill="none" stroke-linecap="round"/>
+            <!-- กิ่งยาวซ้าย -->
+            <path d="M 200 304 Q 128 280 80 262" stroke="#7A5228" stroke-width="4" fill="none" stroke-linecap="round"/>
           </g>
 
           <!-- Layer 3: ฐานทรงพุ่ม (20%) -->
           <g class="t-layer" data-pct="20" style="opacity:0">
-            <circle cx="142" cy="262" r="34" fill="#5AAB62"/>
-            <circle cx="278" cy="258" r="34" fill="#5AAB62"/>
-            <circle cx="209" cy="222" r="50" fill="#64B46A"/>
-            <circle cx="168" cy="236" r="37" fill="#62B268"/>
-            <circle cx="250" cy="233" r="37" fill="#62B268"/>
-            <circle cx="328" cy="248" r="28" fill="#5AAB62"/>
+            <circle cx="140" cy="258" r="36" fill="#5AAB62"/>
+            <circle cx="280" cy="254" r="36" fill="#5AAB62"/>
+            <circle cx="209" cy="218" r="52" fill="#64B46A"/>
+            <circle cx="168" cy="232" r="39" fill="#62B268"/>
+            <circle cx="252" cy="229" r="39" fill="#62B268"/>
+            <circle cx="332" cy="244" r="30" fill="#5AAB62"/>
+            <circle cx="82"  cy="244" r="26" fill="#5AAB62"/>
           </g>
 
-          <!-- Layer 4: ทรงพุ่มบน แผ่ขวา (45%) -->
+          <!-- Layer 4: ทรงพุ่มบน (45%) -->
           <g class="t-layer" data-pct="45" style="opacity:0">
-            <circle cx="158" cy="200" r="40" fill="#6ABE70"/>
-            <circle cx="260" cy="197" r="40" fill="#6ABE70"/>
-            <circle cx="209" cy="185" r="48" fill="#72C478"/>
-            <circle cx="118" cy="222" r="32" fill="#66BA6C"/>
-            <circle cx="300" cy="218" r="32" fill="#66BA6C"/>
-            <!-- แผ่ขวา -->
-            <circle cx="352" cy="228" r="34" fill="#62B268"/>
-            <circle cx="395" cy="245" r="24" fill="#5AAB62"/>
+            <circle cx="155" cy="196" r="42" fill="#6ABE70"/>
+            <circle cx="263" cy="193" r="42" fill="#6ABE70"/>
+            <circle cx="209" cy="180" r="50" fill="#72C478"/>
+            <circle cx="112" cy="218" r="34" fill="#66BA6C"/>
+            <circle cx="306" cy="214" r="34" fill="#66BA6C"/>
+            <circle cx="355" cy="224" r="36" fill="#62B268"/>
+            <circle cx="400" cy="242" r="26" fill="#5EAE64"/>
+            <circle cx="65"  cy="226" r="28" fill="#60B066"/>
           </g>
 
-          <!-- Layer 5: มงกุฎ แผ่กว้างมาก เป็นร่มเงา (65%) -->
+          <!-- Layer 5: มงกุฎ ร่มเงาคลุมคู่บ่าวสาว (65%) -->
           <g class="t-layer" data-pct="65" style="opacity:0">
-            <circle cx="209" cy="160" r="56" fill="#7ACC80"/>
-            <circle cx="162" cy="176" r="42" fill="#74C87A"/>
-            <circle cx="256" cy="173" r="42" fill="#74C87A"/>
-            <circle cx="112" cy="200" r="36" fill="#6EC074"/>
-            <circle cx="306" cy="196" r="36" fill="#6EC074"/>
-            <!-- ขวาแผ่คลุมคู่บ่าวสาว -->
-            <circle cx="372" cy="205" r="42" fill="#68BA6E"/>
-            <circle cx="418" cy="225" r="30" fill="#62B468"/>
-            <circle cx="445" cy="248" r="20" fill="#5CAE62"/>
-            <!-- ซ้ายสมดุล -->
-            <circle cx="65" cy="212" r="30" fill="#62B268"/>
-            <circle cx="35" cy="238" r="20" fill="#5AAB60"/>
+            <circle cx="209" cy="155" r="58" fill="#7ACC80"/>
+            <circle cx="160" cy="172" r="44" fill="#74C87A"/>
+            <circle cx="258" cy="169" r="44" fill="#74C87A"/>
+            <circle cx="108" cy="196" r="38" fill="#6EC074"/>
+            <circle cx="310" cy="192" r="38" fill="#6EC074"/>
+            <!-- ขวา — คลุมหัวคู่บ่าวสาว -->
+            <circle cx="370" cy="198" r="44" fill="#68BA6E"/>
+            <circle cx="418" cy="218" r="34" fill="#62B468"/>
+            <circle cx="450" cy="242" r="24" fill="#5CAE62"/>
+            <!-- ซ้าย -->
+            <circle cx="60"  cy="206" r="34" fill="#62B268"/>
+            <circle cx="28"  cy="232" r="22" fill="#5AAB60"/>
           </g>
 
           <!-- Layer 6: เต็มบาน (80%) -->
           <g class="t-layer" data-pct="80" style="opacity:0">
-            <circle cx="209" cy="128" r="50" fill="#84D08A"/>
-            <circle cx="175" cy="148" r="36" fill="#7ECA84"/>
-            <circle cx="243" cy="145" r="36" fill="#7ECA84"/>
-            <circle cx="130" cy="172" r="32" fill="#78C47E"/>
-            <circle cx="288" cy="168" r="32" fill="#78C47E"/>
-            <!-- ยอดสูงสุด -->
-            <circle cx="209" cy="100" r="36" fill="#8CD492"/>
-            <!-- ขวาเพิ่ม -->
-            <circle cx="400" cy="188" r="30" fill="#70C076"/>
+            <circle cx="209" cy="122" r="52" fill="#84D08A"/>
+            <circle cx="172" cy="144" r="38" fill="#7ECA84"/>
+            <circle cx="246" cy="141" r="38" fill="#7ECA84"/>
+            <circle cx="128" cy="168" r="34" fill="#78C47E"/>
+            <circle cx="290" cy="164" r="34" fill="#78C47E"/>
+            <circle cx="209" cy="94"  r="38" fill="#8CD492"/>
+            <!-- ขวาเพิ่ม คลุมแน่น -->
+            <circle cx="405" cy="196" r="32" fill="#70C076"/>
+            <circle cx="448" cy="218" r="24" fill="#6ABE70"/>
           </g>
 
           <!-- ดอกไม้ฝั่งเอ็ม (สีฟ้าพาสเทล) — ควบคุมด้วย JS -->
@@ -1488,15 +1507,19 @@ function loadStats() {
       if (Array.isArray(data.blessings)) renderBlessings(data.blessings);
     })
     .catch(() => {
-      // fallback: ดึงจาก action=guests แล้วนับเอง
       fetch(SCRIPT_URL + '?action=guests')
         .then(r => r.json())
         .then(data => {
           if (Array.isArray(data.guests)) {
-            const total = data.guests.reduce(
-              (sum, g) => sum + (parseInt(g.seats) || 1), 0
-            );
-            updateTree(total);
+            let total = 0, sM = 0, sP = 0;
+            data.guests.forEach(g => {
+              const s = parseInt(g.seats) || 1;
+              const side = String(g.side || '');
+              total += s;
+              if (side.indexOf('เอ็ม') >= 0) sM += s;
+              else if (side.indexOf('แป้ง') >= 0) sP += s;
+            });
+            updateTree(total, sM, sP);
           }
         })
         .catch(() => {});
