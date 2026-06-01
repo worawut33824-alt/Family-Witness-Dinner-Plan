@@ -184,234 +184,208 @@ a { color: inherit; }
 .cd-box.pop.d4 { animation-delay: 0.35s; }
 
 /* ════════════════════════════════════════════════
-   ENVELOPE OVERLAY — Gold
+   ENVELOPE OVERLAY — REALISTIC 3D STYLE
 ════════════════════════════════════════════════ */
 #overlay {
-  position: fixed; inset: 0;
-  background: radial-gradient(ellipse at 50% 40%, #1E2438 0%, #141828 55%, #0C1018 100%);
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(ellipse at 50% 38%, #FAFCFF 0%, #F2F7FD 45%, #E8F0FA 100%);
   z-index: 900;
-  display: flex; flex-direction: column;
-  align-items: center; justify-content: center;
-  gap: 30px; overflow: hidden; padding: 32px 20px;
-  transition: opacity 1.2s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 32px;
+  overflow: hidden;
+  padding: 32px 20px;
+  transition: opacity 1s ease, transform 1s ease;
 }
-#overlay.hide { opacity: 0; pointer-events: none; }
-
-/* tiny gold sparkle dots */
-.env-sparkle {
-  position: absolute; border-radius: 50%;
-  background: rgba(230,190,90,0.8);
+#overlay.hide {
+  opacity: 0;
   pointer-events: none;
-  animation: spkFloat linear infinite;
-}
-@keyframes spkFloat {
-  0%   { opacity:0; transform:translateY(0) scale(1); }
-  15%  { opacity:0.9; }
-  85%  { opacity:0.5; }
-  100% { opacity:0; transform:translateY(-70px) scale(0.2); }
+  transform: scale(0.97);
 }
 
-/* ── Envelope wrapper ── */
+/* ════════════════════════════════════════════════
+   3D ENVELOPE — classic sealed-back style
+════════════════════════════════════════════════ */
 .env-3d-wrap {
-  width: min(400px, 88vw);
+  width: min(420px, 90vw);
   cursor: pointer;
-  filter:
-    drop-shadow(0 30px 60px rgba(0,0,0,0.75))
-    drop-shadow(0 8px 20px rgba(0,0,0,0.55))
-    drop-shadow(0 0 50px rgba(200,160,50,0.18));
-  transition: transform 0.38s cubic-bezier(.22,1,.36,1), filter 0.38s ease;
-  position: relative; z-index: 1;
+  /* NO filter here — interferes with perspective 3D */
+  transition: transform 0.3s ease;
 }
-.env-3d-wrap:hover {
-  transform: translateY(-9px) scale(1.012);
-  filter:
-    drop-shadow(0 40px 70px rgba(0,0,0,0.80))
-    drop-shadow(0 10px 25px rgba(0,0,0,0.60))
-    drop-shadow(0 0 60px rgba(210,170,60,0.30));
-}
+.env-3d-wrap:hover { transform: translateY(-4px); }
 
+/* The body: sets up 3D perspective for the flap rotation */
 .env-3d {
-  position: relative; width: 100%; padding-top: 66%;
-  overflow: visible; perspective: 1600px;
+  position: relative;
+  width: 100%;
+  padding-top: 65%;       /* ~1.54:1 — classic letter-envelope ratio */
+  overflow: visible;       /* must NOT be hidden — allows 3D flap to show */
+  perspective: 1400px;
 }
 
-/* Base (back face) */
+/* ── Base layer (solid back of envelope) ── */
 .env-3d-base {
   position: absolute; inset: 0;
-  background:
-    repeating-linear-gradient(45deg,
-      rgba(255,255,255,0.04) 0, rgba(255,255,255,0.04) 1px,
-      transparent 1px, transparent 5px),
-    repeating-linear-gradient(-45deg,
-      rgba(255,255,255,0.025) 0, rgba(255,255,255,0.025) 1px,
-      transparent 1px, transparent 5px),
-    linear-gradient(148deg, #D4AA48 0%, #C09030 60%, #A87820 100%);
-  border-radius: 2px;
-}
-
-/* Card/letter inside */
-.env-card-inside {
-  position: absolute;
-  bottom: 2%; left: 8%; right: 8%; height: 80%;
-  background: linear-gradient(160deg, #FFFEF8 0%, #FFF9ED 100%);
-  border-radius: 3px 3px 2px 2px;
-  border: 1px solid rgba(200,160,50,0.28);
+  background: #8BAEC8;
   box-shadow:
-    0 -4px 20px rgba(0,0,0,0.30),
-    0 2px 8px rgba(0,0,0,0.18),
-    inset 0 1px 0 rgba(255,255,255,0.95);
-  z-index: 4;
-  transform: translateY(72%);
-  transition: transform 1.05s cubic-bezier(0.34,1.15,0.64,1);
-  display: flex; align-items: center; justify-content: center;
-  flex-direction: column; gap: 9px;
-  padding: 20px 24px; overflow: hidden;
-}
-.env-card-inside::before {
-  content: '';
-  position: absolute; inset: 9px;
-  border: 1px solid rgba(200,160,50,0.30);
-  border-radius: 1px; pointer-events: none;
-}
-.env-card-inside.revealed { transform: translateY(-26%); }
-
-.env-card-divider {
-  width: 58%; height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(180,138,45,0.55), transparent);
-}
-.env-card-names {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: clamp(1.1rem, 4.5vw, 1.6rem);
-  font-style: italic; color: #5C4010;
-  text-align: center; line-height: 1.2;
-}
-.env-card-text {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: clamp(0.62rem, 1.9vw, 0.76rem);
-  color: #8A6825; letter-spacing: 4px;
-  text-align: center; text-transform: uppercase; line-height: 2;
+    0 24px 60px rgba(70,105,150,0.32),
+    0 6px 18px rgba(70,105,150,0.18),
+    inset 0 1px 0 rgba(255,255,255,0.3);
 }
 
-/* Bottom — darkest */
-.env-tri-bottom {
+/* ── Side & bottom fold triangles (body shading) ── */
+.env-tri-bottom {   /* bottom flap — darkest */
   position: absolute; inset: 0;
-  clip-path: polygon(0 100%, 100% 100%, 50% 50%);
-  background: linear-gradient(175deg, #6A4A10 0%, #4E3208 100%);
+  clip-path: polygon(0 100%, 100% 100%, 50% 55%);
+  background: linear-gradient(355deg, #5E86A6 0%, #72A0BE 100%);
 }
-/* Left */
 .env-tri-left {
   position: absolute; inset: 0;
   clip-path: polygon(0 0, 0 100%, 50% 50%);
-  background: linear-gradient(95deg, #B88C28 0%, #C89C38 100%);
+  background: linear-gradient(90deg, #80A8C6 0%, #8CB2CC 100%);
 }
-/* Right */
 .env-tri-right {
   position: absolute; inset: 0;
   clip-path: polygon(100% 0, 100% 100%, 50% 50%);
-  background: linear-gradient(-95deg, #AC8020 0%, #BA8E2E 100%);
+  background: linear-gradient(-90deg, #7298B6 0%, #82A8C4 100%);
 }
-/* Fold crease lines */
+
+/* ── Fold lines (SVG) ── */
 .env-fold-svg {
   position: absolute; inset: 0;
   width: 100%; height: 100%;
-  pointer-events: none; z-index: 6;
+  pointer-events: none;
+  z-index: 2;
 }
-/* Top flap — lightest gold */
+
+/* ── TOP FLAP — the sealed V, rotates open on click ── */
 .env-tri-top {
   position: absolute; inset: 0;
-  clip-path: polygon(0 0, 100% 0, 50% 50%);
-  background:
-    repeating-linear-gradient(45deg,
-      rgba(255,255,255,0.06) 0, rgba(255,255,255,0.06) 1px,
-      transparent 1px, transparent 5px),
-    linear-gradient(165deg, #F0CC60 0%, #E0B848 40%, #CCA030 70%, #B88820 100%);
+  /* V-tip at 40% of envelope height */
+  clip-path: polygon(0 0, 100% 0, 50% 40%);
+  background: linear-gradient(175deg, #B0CCDE 0%, #9EBAD4 40%, #8AAEC8 100%);
+  /* Paper texture overlay */
+  background-image:
+    linear-gradient(175deg, #B0CCDE 0%, #9EBAD4 40%, #8AAEC8 100%),
+    repeating-linear-gradient(45deg, rgba(255,255,255,0.03) 0, rgba(255,255,255,0.03) 1px, transparent 1px, transparent 7px),
+    repeating-linear-gradient(-45deg, rgba(255,255,255,0.03) 0, rgba(255,255,255,0.03) 1px, transparent 1px, transparent 7px);
+
+  /* 3D hinge at the TOP edge */
   transform-origin: top center;
-  transition: transform 1.25s cubic-bezier(0.4,0,0.2,1);
-  backface-visibility: hidden; z-index: 10;
-}
-.env-tri-top.open { transform: perspective(1600px) rotateX(-176deg); }
-.env-tri-top::after {
-  content: ''; position: absolute; inset: 0;
-  clip-path: polygon(0 0, 100% 0, 50% 50%);
-  background: linear-gradient(165deg, #7A5810 0%, #604008 100%);
-  transform: rotateX(180deg); backface-visibility: visible;
+  transition: transform 1s cubic-bezier(0.4, 0, 0.2, 1);
+  backface-visibility: hidden;   /* hide when fully rotated */
+  z-index: 10;
 }
 
-/* Logo seal */
+/* When opened: fold back 175° (slightly less than 180 looks more natural) */
+.env-tri-top.open {
+  transform: perspective(1400px) rotateX(-175deg);
+}
+
+/* Flap inner face (visible while it rotates past 90°) */
+.env-tri-top::after {
+  content: '';
+  position: absolute; inset: 0;
+  clip-path: polygon(0 0, 100% 0, 50% 40%);
+  background: linear-gradient(175deg, #7698B2 0%, #6A8CAC 100%);
+  transform: rotateX(180deg);
+  backface-visibility: visible;
+}
+
+/* ── Wax Seal ── */
+/* Sits at the V-tip point (50% across, 40% down) */
 .env-seal-3d {
-  position: absolute; top: 50%; left: 50%;
+  position: absolute;
+  top: 40%; left: 50%;
   transform: translate(-50%, -50%);
-  width: 86px; height: 86px; border-radius: 50%;
-  background: linear-gradient(145deg, #FFFEF2 0%, #FFF8DC 100%);
-  border: 3px solid #C8A030;
+  width: 88px; height: 88px;
+  border-radius: 50%;
+  background: var(--white);
+  border: 2.5px solid var(--gold);
   box-shadow:
-    0 5px 18px rgba(0,0,0,0.55),
-    0 1px 4px rgba(0,0,0,0.35),
-    inset 0 1px 4px rgba(255,240,150,0.7),
-    0 0 0 1.5px rgba(210,170,50,0.6);
+    0 6px 22px rgba(0,0,0,0.20),
+    0 2px 8px rgba(0,0,0,0.12),
+    inset 0 1px 0 rgba(255,255,255,0.9);
   display: flex; align-items: center; justify-content: center;
-  z-index: 15; overflow: hidden;
-  transition: transform 0.45s cubic-bezier(0.34,1.26,0.64,1), opacity 0.45s ease;
+  overflow: hidden;
+  z-index: 11;   /* above flap */
+  transition: transform 0.3s ease, opacity 0.3s ease;
+  transform-origin: center;
 }
 .env-seal-3d img {
-  width: 68px; height: 68px; object-fit: contain;
+  width: 66px; height: 66px;
+  object-fit: contain; border-radius: 50%;
 }
+
+/* Seal breaking animation states */
 .env-seal-3d.crack {
-  transform: translate(-50%,-50%) scale(1.22) rotate(6deg);
+  transform: translate(-50%, -50%) scale(1.18);
 }
 .env-seal-3d.gone {
-  transform: translate(-15%,-140%) scale(0.18) rotate(35deg);
+  transform: translate(-50%, -50%) scale(0);
   opacity: 0;
-  transition: transform 0.55s ease-in, opacity 0.42s ease-in;
 }
 
-/* Open button */
+/* ── Open button ── */
 .env-open-btn {
   display: flex; align-items: center; gap: 10px;
-  background: linear-gradient(135deg, #D4AA40 0%, #B88C20 100%);
-  color: #1A0E00; border: none;
-  padding: 15px 44px; border-radius: 50px;
+  background: #8BAEC8;
+  color: var(--white);
+  border: none;
+  padding: 14px 38px;
+  border-radius: 50px;
   font-family: 'Sarabun', sans-serif;
-  font-size: 1rem; font-weight: 700;
-  cursor: pointer; letter-spacing: 1.8px;
-  box-shadow:
-    0 8px 30px rgba(0,0,0,0.50),
-    0 2px 8px rgba(0,0,0,0.35),
-    inset 0 1px 0 rgba(255,240,140,0.40),
-    0 0 0 1px rgba(210,170,50,0.50);
-  transition: transform 0.22s, box-shadow 0.22s;
-  position: relative; z-index: 1;
+  font-size: 0.98rem;
+  font-weight: 500;
+  cursor: pointer;
+  letter-spacing: 1.5px;
+  box-shadow: 0 6px 24px rgba(80,115,160,0.28);
+  transition: transform 0.2s, background 0.2s, box-shadow 0.2s;
 }
 .env-open-btn:hover {
-  transform: translateY(-3px);
-  box-shadow:
-    0 14px 38px rgba(0,0,0,0.58),
-    0 4px 12px rgba(0,0,0,0.40),
-    0 0 30px rgba(210,170,50,0.35);
+  background: #7A9EBB;
+  transform: translateY(-2px);
+  box-shadow: 0 10px 32px rgba(80,115,160,0.38);
 }
 .env-open-btn:active { transform: scale(0.96); }
-@keyframes btnPulse {
-  0%,100% { box-shadow: 0 8px 30px rgba(0,0,0,0.50), 0 0 0 0   rgba(210,170,50,0.55); }
-  50%      { box-shadow: 0 8px 30px rgba(0,0,0,0.50), 0 0 0 12px rgba(210,170,50,0); }
-}
-.env-open-btn { animation: btnPulse 2.5s ease-in-out infinite; }
 
-/* Footer */
+/* ── Footer text ── */
 .env-footer {
-  text-align: center; display: flex; flex-direction: column;
+  text-align: center;
+  display: flex; flex-direction: column;
   align-items: center; gap: 7px;
 }
-.env-footer-line { display: flex; align-items: center; gap: 12px; }
-.env-footer-rule { width: 38px; height: 1px; background: rgba(200,165,60,0.5); }
-.env-footer-leaf { color: #C8A030; font-size: 0.9rem; line-height: 1; }
+.env-footer-line {
+  display: flex; align-items: center; gap: 12px;
+}
+.env-footer-rule {
+  width: 38px; height: 1px;
+  background: var(--sage); opacity: 0.45;
+}
+.env-footer-leaf {
+  color: var(--sage); font-size: 0.85rem; opacity: 0.75;
+  line-height: 1;
+}
 .env-event-name {
   font-family: 'Cormorant Garamond', serif;
-  font-size: 0.68rem; letter-spacing: 7px;
-  text-transform: uppercase; color: rgba(230,200,110,0.75); font-weight: 400;
+  font-size: 0.68rem;
+  letter-spacing: 7px;
+  text-transform: uppercase;
+  color: var(--text-lt);
+  font-weight: 400;
 }
-.env-event-date { font-size: 0.78rem; letter-spacing: 5px; color: rgba(220,188,100,0.65); }
-.env-dot { color: #C8A030; font-size: 0.5rem; }
-.env-footer-leaf-btm { color: rgba(200,165,60,0.7); font-size: 1rem; margin-top: 2px; }
+.env-event-date {
+  font-size: 0.78rem;
+  letter-spacing: 5px;
+  color: var(--text-lt);
+}
+.env-dot { color: var(--sage); opacity: 0.6; font-size: 0.5rem; }
+.env-footer-leaf-btm {
+  color: var(--sage); font-size: 1rem; opacity: 0.65; margin-top: 2px;
+}
 
 /* ════════════════════════════════════════════════
    SECTION BASE
@@ -1097,51 +1071,32 @@ footer {
 <!-- ══════════════ ENVELOPE OVERLAY ══════════════ -->
 <div id="overlay">
 
-  <!-- Gold sparkles injected by JS -->
-
-  <!-- Gold Envelope -->
+  <!-- 3D Realistic Envelope -->
   <div class="env-3d-wrap" id="env-box" onclick="openEnvelope()">
     <div class="env-3d">
-
       <div class="env-3d-base"></div>
-
-      <!-- Card inside — revealed when flap opens -->
-      <div class="env-card-inside" id="env-card">
-        <div class="env-card-divider"></div>
-        <div class="env-card-names">เอ็ม &amp; แป้ง</div>
-        <div class="env-card-text">Family Witness Dinner<br>28 · 11 · 2569</div>
-        <div class="env-card-divider"></div>
-      </div>
-
+      <div class="env-tri-top"></div>
       <div class="env-tri-bottom"></div>
       <div class="env-tri-left"></div>
       <div class="env-tri-right"></div>
-
-      <!-- Fold crease lines (gold-aware) -->
-      <svg class="env-fold-svg" viewBox="0 0 400 264" preserveAspectRatio="none">
-        <line x1="0"   y1="0"   x2="200" y2="132" stroke="rgba(0,0,0,0.28)"        stroke-width="2.5"/>
-        <line x1="2"   y1="0"   x2="202" y2="132" stroke="rgba(255,230,100,0.30)"  stroke-width="1.2"/>
-        <line x1="400" y1="0"   x2="200" y2="132" stroke="rgba(0,0,0,0.28)"        stroke-width="2.5"/>
-        <line x1="398" y1="0"   x2="198" y2="132" stroke="rgba(255,230,100,0.30)"  stroke-width="1.2"/>
-        <line x1="0"   y1="264" x2="200" y2="132" stroke="rgba(255,210,80,0.22)"   stroke-width="2"/>
-        <line x1="2"   y1="264" x2="202" y2="132" stroke="rgba(0,0,0,0.18)"        stroke-width="1"/>
-        <line x1="400" y1="264" x2="200" y2="132" stroke="rgba(255,210,80,0.22)"   stroke-width="2"/>
-        <line x1="398" y1="264" x2="198" y2="132" stroke="rgba(0,0,0,0.18)"        stroke-width="1"/>
+      <!-- Fold lines -->
+      <!-- fold lines converge at center — updated for 60% height ratio -->
+      <svg class="env-fold-svg" viewBox="0 0 400 240" preserveAspectRatio="none">
+        <line x1="0" y1="0"   x2="200" y2="120" stroke="rgba(255,255,255,0.22)" stroke-width="1.5"/>
+        <line x1="400" y1="0"   x2="200" y2="120" stroke="rgba(255,255,255,0.22)" stroke-width="1.5"/>
+        <line x1="0" y1="240" x2="200" y2="120" stroke="rgba(0,0,0,0.07)" stroke-width="1.5"/>
+        <line x1="400" y1="240" x2="200" y2="120" stroke="rgba(0,0,0,0.07)" stroke-width="1.5"/>
       </svg>
-
-      <div class="env-tri-top" id="env-flap"></div>
-
-      <!-- Logo seal at center -->
-      <div class="env-seal-3d" id="env-seal">
+      <!-- Wax seal -->
+      <div class="env-seal-3d">
         <img src="logo.png" alt="PM" onerror="this.style.display='none'">
       </div>
-
     </div>
   </div>
 
   <!-- Open button -->
-  <button class="env-open-btn" id="env-btn" onclick="openEnvelope()">
-    <svg width="18" height="14" viewBox="0 0 18 14" fill="none" stroke="currentColor" stroke-width="1.8">
+  <button class="env-open-btn" onclick="openEnvelope()">
+    <svg width="18" height="14" viewBox="0 0 18 14" fill="none" stroke="white" stroke-width="1.5">
       <rect x="1" y="1" width="16" height="12" rx="2"/>
       <polyline points="1,1 9,8 17,1"/>
     </svg>
@@ -1159,7 +1114,7 @@ footer {
     <div class="env-dot">·</div>
     <div class="env-event-date">28 · 11 · 2026</div>
     <div class="env-dot">·</div>
-    <div class="env-footer-leaf-btm">✦</div>
+    <div class="env-footer-leaf-btm">🌿</div>
   </div>
 </div>
 
@@ -1585,70 +1540,32 @@ let guestCount     = 0;
 
 // (old overlay petals removed — new design is clean/minimal)
 
-// ── SPARKLES on overlay ──────────────────────────────────────
-(function spawnSparkles() {
-  const ov = document.getElementById('overlay');
-  if (!ov) return;
-  for (let i = 0; i < 22; i++) {
-    const s = document.createElement('span');
-    s.className = 'env-sparkle';
-    const sz = 1.2 + Math.random() * 2.2;
-    s.style.cssText = [
-      `left:${8 + Math.random()*84}%`,
-      `top:${8 + Math.random()*84}%`,
-      `width:${sz}px`, `height:${sz}px`,
-      `animation-duration:${2.8 + Math.random()*4}s`,
-      `animation-delay:${Math.random()*6}s`,
-      `opacity:0`
-    ].join(';');
-    ov.appendChild(s);
-  }
-})();
-
 // ── ENVELOPE OPEN ────────────────────────────────────────────
 function openEnvelope() {
   const box = document.getElementById('env-box');
   if (box.dataset.opening) return;
   box.dataset.opening = '1';
+  box.classList.add('opening');
 
-  const seal = document.getElementById('env-seal');
-  const flap = document.getElementById('env-flap');
-  const card = document.getElementById('env-card');
-  const btn  = document.getElementById('env-btn');
-
-  if (btn) { btn.disabled = true; btn.style.opacity = '0.45'; }
-
-  // 1 — seal cracks
-  seal.classList.add('crack');
-
-  // 2 — seal breaks away
-  setTimeout(() => seal.classList.add('gone'), 320);
-
-  // 3 — flap swings open upward
-  setTimeout(() => flap.classList.add('open'), 520);
-
-  // 4 — card rises from inside envelope
-  setTimeout(() => card.classList.add('revealed'), 880);
-
-  // 5 — overlay fades out, main content fades in
   setTimeout(() => {
     const overlay = document.getElementById('overlay');
     overlay.classList.add('hide');
     const main = document.getElementById('main-content');
     main.style.opacity = '1';
-    setTimeout(() => { overlay.style.display = 'none'; }, 1200);
+    setTimeout(() => { overlay.style.display = 'none'; }, 1000);
     startCountdown();
     loadStats();
     triggerVisibleFades();
+    // Spawn floating petals only after entering the main content
     const petalList = ['🌸','🌺','🌷','💐','🌼'];
     for (let i = 0; i < 8; i++) {
       const p = document.createElement('span');
       p.className = 'page-petal';
       p.textContent = petalList[i % petalList.length];
-      p.style.cssText = `left:${5+Math.random()*90}%;animation-duration:${9+Math.random()*8}s;animation-delay:${Math.random()*6}s;font-size:${0.7+Math.random()*0.7}rem;`;
+      p.style.cssText = `left:${5+Math.random()*90}%;animation-duration:${9+Math.random()*8}s;animation-delay:${Math.random()*10}s;font-size:${0.7+Math.random()*0.7}rem;`;
       document.body.appendChild(p);
     }
-  }, 2100);
+  }, 480);
 }
 
 // ── SCROLL PROGRESS BAR ──────────────────────────────────────
