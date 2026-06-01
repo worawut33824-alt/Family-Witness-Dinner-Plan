@@ -206,93 +206,127 @@ a { color: inherit; }
   transform: scale(0.97);
 }
 
-/* ── 3D Envelope ── */
+/* ════════════════════════════════════════════════
+   3D ENVELOPE — classic sealed-back style
+════════════════════════════════════════════════ */
 .env-3d-wrap {
-  width: min(400px, 88vw);
+  width: min(420px, 90vw);
   cursor: pointer;
-  filter: drop-shadow(0 28px 60px rgba(80,115,160,0.28))
-          drop-shadow(0 8px 18px rgba(80,115,160,0.16));
-  transition: filter 0.3s ease, transform 0.3s ease;
+  /* NO filter here — interferes with perspective 3D */
+  transition: transform 0.3s ease;
 }
-.env-3d-wrap:hover {
-  transform: translateY(-5px);
-  filter: drop-shadow(0 40px 80px rgba(80,115,160,0.35))
-          drop-shadow(0 12px 24px rgba(80,115,160,0.20));
-}
+.env-3d-wrap:hover { transform: translateY(-4px); }
 
+/* The body: sets up 3D perspective for the flap rotation */
 .env-3d {
   position: relative;
   width: 100%;
-  padding-top: 60%;          /* landscape ~1.67:1  ← wider/flatter envelope */
-  border-radius: 7px;
-  overflow: hidden;
+  padding-top: 65%;       /* ~1.54:1 — classic letter-envelope ratio */
+  overflow: visible;       /* must NOT be hidden — allows 3D flap to show */
+  perspective: 1400px;
 }
 
-/* Base envelope body */
+/* ── Base layer (solid back of envelope) ── */
 .env-3d-base {
-  position: absolute;
-  inset: 0;
+  position: absolute; inset: 0;
   background: #8BAEC8;
+  box-shadow:
+    0 24px 60px rgba(70,105,150,0.32),
+    0 6px 18px rgba(70,105,150,0.18),
+    inset 0 1px 0 rgba(255,255,255,0.3);
 }
 
-/* 4 triangular flaps — each a slightly different shade for 3-D depth */
-.env-tri-top {          /* lightest: V-flap at 38% — not too deep */
+/* ── Side & bottom fold triangles (body shading) ── */
+.env-tri-bottom {   /* bottom flap — darkest */
   position: absolute; inset: 0;
-  clip-path: polygon(0 0, 100% 0, 50% 38%);
-  background: linear-gradient(170deg, #AECCE4 0%, #9CBED8 100%);
-}
-.env-tri-bottom {       /* darkest: in shadow */
-  position: absolute; inset: 0;
-  clip-path: polygon(0 100%, 100% 100%, 50% 62%);
-  background: linear-gradient(350deg, #6A90AE 0%, #7AA0BC 100%);
+  clip-path: polygon(0 100%, 100% 100%, 50% 55%);
+  background: linear-gradient(355deg, #5E86A6 0%, #72A0BE 100%);
 }
 .env-tri-left {
   position: absolute; inset: 0;
   clip-path: polygon(0 0, 0 100%, 50% 50%);
-  background: linear-gradient(90deg, #86AACA 0%, #92B2CC 100%);
+  background: linear-gradient(90deg, #80A8C6 0%, #8CB2CC 100%);
 }
 .env-tri-right {
   position: absolute; inset: 0;
   clip-path: polygon(100% 0, 100% 100%, 50% 50%);
-  background: linear-gradient(-90deg, #7898B8 0%, #88A8C4 100%);
+  background: linear-gradient(-90deg, #7298B6 0%, #82A8C4 100%);
 }
 
-/* Fold lines as SVG overlay */
+/* ── Fold lines (SVG) ── */
 .env-fold-svg {
-  position: absolute;
-  inset: 0;
+  position: absolute; inset: 0;
   width: 100%; height: 100%;
   pointer-events: none;
+  z-index: 2;
 }
 
-/* Opening animation */
-@keyframes envOpenAnim {
-  0%   { transform: scale(1) translateY(0); opacity: 1; }
-  40%  { transform: scale(1.05) translateY(-6px); opacity: 0.9; }
-  100% { transform: scale(0.9) translateY(20px); opacity: 0; }
+/* ── TOP FLAP — the sealed V, rotates open on click ── */
+.env-tri-top {
+  position: absolute; inset: 0;
+  /* V-tip at 40% of envelope height */
+  clip-path: polygon(0 0, 100% 0, 50% 40%);
+  background: linear-gradient(175deg, #B0CCDE 0%, #9EBAD4 40%, #8AAEC8 100%);
+  /* Paper texture overlay */
+  background-image:
+    linear-gradient(175deg, #B0CCDE 0%, #9EBAD4 40%, #8AAEC8 100%),
+    repeating-linear-gradient(45deg, rgba(255,255,255,0.03) 0, rgba(255,255,255,0.03) 1px, transparent 1px, transparent 7px),
+    repeating-linear-gradient(-45deg, rgba(255,255,255,0.03) 0, rgba(255,255,255,0.03) 1px, transparent 1px, transparent 7px);
+
+  /* 3D hinge at the TOP edge */
+  transform-origin: top center;
+  transition: transform 1s cubic-bezier(0.4, 0, 0.2, 1);
+  backface-visibility: hidden;   /* hide when fully rotated */
+  z-index: 10;
 }
-.env-3d-wrap.opening { animation: envOpenAnim 0.65s cubic-bezier(0.4,0,0.2,1) forwards; }
+
+/* When opened: fold back 175° (slightly less than 180 looks more natural) */
+.env-tri-top.open {
+  transform: perspective(1400px) rotateX(-175deg);
+}
+
+/* Flap inner face (visible while it rotates past 90°) */
+.env-tri-top::after {
+  content: '';
+  position: absolute; inset: 0;
+  clip-path: polygon(0 0, 100% 0, 50% 40%);
+  background: linear-gradient(175deg, #7698B2 0%, #6A8CAC 100%);
+  transform: rotateX(180deg);
+  backface-visibility: visible;
+}
 
 /* ── Wax Seal ── */
+/* Sits at the V-tip point (50% across, 40% down) */
 .env-seal-3d {
   position: absolute;
-  top: 50%; left: 50%;
+  top: 40%; left: 50%;
   transform: translate(-50%, -50%);
-  width: 90px; height: 90px;
+  width: 88px; height: 88px;
   border-radius: 50%;
   background: var(--white);
   border: 2.5px solid var(--gold);
   box-shadow:
-    0 6px 22px rgba(0,0,0,0.18),
-    0 2px 6px rgba(0,0,0,0.10),
+    0 6px 22px rgba(0,0,0,0.20),
+    0 2px 8px rgba(0,0,0,0.12),
     inset 0 1px 0 rgba(255,255,255,0.9);
   display: flex; align-items: center; justify-content: center;
   overflow: hidden;
-  z-index: 5;
+  z-index: 11;   /* above flap */
+  transition: transform 0.3s ease, opacity 0.3s ease;
+  transform-origin: center;
 }
 .env-seal-3d img {
-  width: 68px; height: 68px;
+  width: 66px; height: 66px;
   object-fit: contain; border-radius: 50%;
+}
+
+/* Seal breaking animation states */
+.env-seal-3d.crack {
+  transform: translate(-50%, -50%) scale(1.18);
+}
+.env-seal-3d.gone {
+  transform: translate(-50%, -50%) scale(0);
+  opacity: 0;
 }
 
 /* ── Open button ── */
