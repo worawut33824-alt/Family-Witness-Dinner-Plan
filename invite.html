@@ -543,10 +543,10 @@ h2.sec-title em { font-style: italic; color: var(--blue-dk); }
 
 .tree-couple {
   position: absolute;
-  bottom: 2%;
-  right: 0%;
-  width: 25%;
-  max-width: 108px;
+  bottom: 3%;
+  right: 8%;
+  width: 18%;
+  max-width: 80px;
   filter: drop-shadow(0 4px 12px rgba(0,0,0,0.13));
 }
 
@@ -1141,11 +1141,8 @@ footer {
            onerror="this.style.display='none'">
     </div>
 
-    <!-- ตัวบ่งชี้ดอกไม้ -->
-    <div class="flower-legend anim from-bottom d3">
-      <span><span class="dot" style="background:#B8D4F2;border:1.5px solid #8EB8E8"></span>ฝั่งเอ็ม <span id="count-m">0</span> คน</span>
-      <span><span class="dot" style="background:#FFB8C8;border:1.5px solid #FF90A8"></span>ฝั่งแป้ง <span id="count-p">0</span> คน</span>
-    </div>
+    <span id="count-m" style="display:none">0</span>
+    <span id="count-p" style="display:none">0</span>
 
     <div class="tree-stats anim from-bottom d4">
       <div class="tree-counter">
@@ -1491,30 +1488,33 @@ function animateCount(el, from, to, duration) {
 // ── LOAD STATS FROM APPS SCRIPT ──────────────────────────────
 function loadStats() {
   if (!SCRIPT_URL) return;
-  fetch(SCRIPT_URL + '?action=stats')
-    .then(r => r.json())
-    .then(data => {
-      if (typeof data.guestCount === 'number') updateTree(data.guestCount, data.sideM || 0, data.sideP || 0);
-      if (Array.isArray(data.blessings)) renderBlessings(data.blessings);
-    })
-    .catch(() => {
-      fetch(SCRIPT_URL + '?action=guests')
-        .then(r => r.json())
-        .then(data => {
-          if (Array.isArray(data.guests)) {
-            let total = 0, sM = 0, sP = 0;
-            data.guests.forEach(g => {
-              const s = parseInt(g.seats) || 1;
-              const side = String(g.side || '');
-              total += s;
-              if (side.indexOf('เอ็ม') >= 0) sM += s;
-              else if (side.indexOf('แป้ง') >= 0) sP += s;
-            });
-            updateTree(total, sM, sP);
-          }
-        })
-        .catch(() => {});
+
+  function countFromGuests(guests) {
+    let total = 0, sM = 0, sP = 0;
+    guests.forEach(g => {
+      const s = parseInt(g.seats) || 1;
+      const side = String(g.side || '');
+      total += s;
+      if (side.indexOf('เอ็ม') >= 0) sM += s;
+      else if (side.indexOf('แป้ง') >= 0) sP += s;
     });
+    return { total, sM, sP };
+  }
+
+  // ดึง stats (blessings) และ guests (side count) พร้อมกัน
+  Promise.all([
+    fetch(SCRIPT_URL + '?action=stats').then(r => r.json()).catch(() => ({})),
+    fetch(SCRIPT_URL + '?action=guests').then(r => r.json()).catch(() => ({}))
+  ]).then(([stats, gData]) => {
+    if (Array.isArray(stats.blessings)) renderBlessings(stats.blessings);
+
+    if (Array.isArray(gData.guests) && gData.guests.length > 0) {
+      const { total, sM, sP } = countFromGuests(gData.guests);
+      updateTree(total, sM, sP);
+    } else if (typeof stats.guestCount === 'number') {
+      updateTree(stats.guestCount, stats.sideM || 0, stats.sideP || 0);
+    }
+  });
 }
 
 // ── BLESSINGS ────────────────────────────────────────────────
