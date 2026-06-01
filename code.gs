@@ -55,12 +55,18 @@ function doGet(e) {
       result.summary_msg   = rfixed.msg;
       result.dashboard_msg = rfixed.msg;
     } else if (action === 'stats') {
-      result.guestCount = countAllSeats(ss);
+      var sc = countSeatsBySide(ss);
+      result.guestCount = sc.total;
+      result.sideM      = sc.sideM;
+      result.sideP      = sc.sideP;
       result.blessings  = getBlessings(ss);
 
     } else if (action === 'rsvp') {
       saveRsvpGuest(ss, e.parameter);
-      result.guestCount = countAllSeats(ss);
+      var rc = countSeatsBySide(ss);
+      result.guestCount = rc.total;
+      result.sideM      = rc.sideM;
+      result.sideP      = rc.sideP;
 
     } else if (action === 'bless') {
       saveBlessing(ss, e.parameter);
@@ -113,19 +119,28 @@ function doPost(e) {
     .setMimeType(ContentService.MimeType.JSON);
 }
 
-// --- COUNT SEATS — นับที่นั่งทั้งหมดจาก sheet แขก -----------------
+// --- COUNT SEATS — นับที่นั่งแยกตามฝั่ง --------------------------
 function countAllSeats(ss) {
+  return countSeatsBySide(ss).total;
+}
+
+function countSeatsBySide(ss) {
   var sheet = ss.getSheetByName('แขก');
-  if (!sheet) return 0;
+  if (!sheet) return { total: 0, sideM: 0, sideP: 0 };
   var lastRow = sheet.getLastRow();
-  if (lastRow < 2) return 0;
-  var data = sheet.getRange(2, 5, lastRow - 1, 1).getValues(); // column E = ที่นั่ง
-  var total = 0;
+  if (lastRow < 2) return { total: 0, sideM: 0, sideP: 0 };
+  // อ่าน column B (ฝั่ง) และ E (ที่นั่ง)
+  var data = sheet.getRange(2, 1, lastRow - 1, 5).getValues();
+  var total = 0, sideM = 0, sideP = 0;
   for (var i = 0; i < data.length; i++) {
-    var n = parseInt(data[i][0]);
-    if (n > 0) total += n;
+    var side  = String(data[i][1] || '').trim();  // column B
+    var seats = parseInt(data[i][4]) || 0;         // column E
+    if (seats <= 0) continue;
+    total += seats;
+    if (side.indexOf('เอ็ม') >= 0) sideM += seats;
+    else if (side.indexOf('แป้ง') >= 0) sideP += seats;
   }
-  return total;
+  return { total: total, sideM: sideM, sideP: sideP };
 }
 
 // --- SETUP — รันครั้งเดียวเพื่อสร้าง sheet ที่จำเป็น ----------------
