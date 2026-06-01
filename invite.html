@@ -6,37 +6,33 @@
 <title>💌 คุณได้รับเชิญ · PM Wedding 28.11.2026</title>
 <meta name="description" content="งานแต่งงาน Family Witness Dinner · เอ็ม & แป้ง · 28 พฤศจิกายน 2569 · ธาราเทอเรส นครปฐม">
 <meta property="og:title" content="💌 คุณได้รับเชิญ · PM Wedding">
-<meta property="og:description" content="28 พฤศจิกายน 2569 · ธาราเทอเรส (Tara Terrace) · นครปฐม">
+<meta property="og:description" content="28 พฤศจิกายน 2569 · ธาราเทอเรส · นครปฐม">
 <meta property="og:image" content="logo.png">
 <link rel="icon" href="icon-192.png">
+<link rel="manifest" href="manifest.json">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400;1,600&family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-
 <style>
-/* ════════════════════════════════════════════════
+
+/* ══════════════════════════════════════════════
    VARIABLES & RESET
-════════════════════════════════════════════════ */
+══════════════════════════════════════════════ */
 :root {
-  --cream:       #FFF8F3;
-  --cream-mid:   #EEF4FB;        /* blue-cream mid */
-  --cream-warm:  #E0ECF8;        /* light blue tint */
-  --blue:        #7B9CBF;        /* palette dusty blue */
-  --blue-dk:     #5a7fa8;
-  --blue-lt:     #A9C9EB;        /* palette light blue */
-  --blue-xlt:    #DCF0FF;        /* very light blue */
-  --sage:        #809684;        /* palette sage green */
-  --sage-lt:     #B8CABC;        /* lighter sage */
-  --sage-xlt:    #E8F0EA;        /* very light sage */
-  --blush:       #A9C9EB;        /* blush → replaced by light blue */
-  --blush-lt:    #E8F3FF;        /* light blue bg */
-  --gold:        #C9A96E;        /* keep gold for elegance */
-  --gold-lt:     #F0DEB8;
-  --text:        #2c3a4a;
-  --text-lt:     #6b7c8d;
-  --white:       #ffffff;
-  --shadow:      0 4px 28px rgba(90,127,168,0.15);
-  --radius:      16px;
+  --cream:    #FFF8F3;
+  --blue:     #7B9CBF;
+  --blue-dk:  #5a7fa8;
+  --blue-lt:  #A9C9EB;
+  --sage:     #809684;
+  --sage-lt:  #B8CABC;
+  --gold:     #C9A96E;
+  --gold-lt:  #F0DEB8;
+  --text:     #2c3a4a;
+  --text-lt:  #6b7c8d;
+  --white:    #ffffff;
+  --shadow:   0 4px 24px rgba(90,127,168,0.12);
+  --radius:   14px;
+  --nav-h:    62px;
 }
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { scroll-behavior: smooth; }
@@ -46,66 +42,51 @@ body {
   color: var(--text);
   min-height: 100vh;
   overflow-x: hidden;
+  padding-bottom: var(--nav-h);
 }
 img { max-width: 100%; display: block; }
-a { color: inherit; }
+a { color: inherit; text-decoration: none; }
 
-/* ════════════════════════════════════════════════
-   SCROLL PROGRESS BAR
-════════════════════════════════════════════════ */
+/* ══════════════════════════════════════════════
+   SCROLL PROGRESS
+══════════════════════════════════════════════ */
 #scroll-progress {
-  position: fixed;
-  top: 0; left: 0;
-  height: 3px;
-  width: 0%;
-  background: linear-gradient(90deg, var(--blue-lt) 0%, var(--sage) 50%, var(--blue) 100%);
-  z-index: 9999;
-  transition: width 0.12s linear;
-  pointer-events: none;
+  position: fixed; top: 0; left: 0; height: 3px; width: 0%;
+  background: linear-gradient(90deg, var(--blue-lt), var(--sage), var(--blue));
+  z-index: 9999; transition: width 0.1s linear; pointer-events: none;
 }
 
-/* ════════════════════════════════════════════════
-   SCROLL REVEAL — UNIFIED SYSTEM
-════════════════════════════════════════════════ */
-/* legacy */
+/* ══════════════════════════════════════════════
+   SCROLL REVEAL
+══════════════════════════════════════════════ */
 .fade-up {
-  opacity: 0;
-  transform: translateY(32px);
-  transition: opacity 0.82s cubic-bezier(.22,1,.36,1),
-              transform 0.82s cubic-bezier(.22,1,.36,1);
-  will-change: opacity, transform;
+  opacity: 0; transform: translateY(28px);
+  transition: opacity 0.8s cubic-bezier(.22,1,.36,1),
+              transform 0.8s cubic-bezier(.22,1,.36,1);
 }
-.fade-up.visible { opacity: 1; transform: translateY(0); }
-.fade-up.delay-1 { transition-delay: 0.1s; }
+.fade-up.visible { opacity: 1; transform: none; }
+.fade-up.delay-1 { transition-delay: 0.10s; }
 .fade-up.delay-2 { transition-delay: 0.22s; }
 .fade-up.delay-3 { transition-delay: 0.34s; }
 
-/* new — directional */
 .anim {
   opacity: 0;
-  transition: opacity 0.85s cubic-bezier(.22,1,.36,1),
-              transform 0.85s cubic-bezier(.22,1,.36,1);
-  will-change: opacity, transform;
+  transition: opacity 0.82s cubic-bezier(.22,1,.36,1),
+              transform 0.82s cubic-bezier(.22,1,.36,1);
 }
-.anim.from-left   { transform: translateX(-52px); }
-.anim.from-right  { transform: translateX(52px); }
-.anim.from-bottom { transform: translateY(38px); }
-.anim.zoom-in     { transform: scale(0.82); }
-.anim.visible {
-  opacity: 1;
-  transform: translateX(0) translateY(0) scale(1);
-}
-/* stagger */
+.anim.from-bottom { transform: translateY(32px); }
+.anim.from-left   { transform: translateX(-40px); }
+.anim.from-right  { transform: translateX(40px); }
+.anim.zoom-in     { transform: scale(0.88); }
+.anim.visible { opacity: 1; transform: none; }
 .anim.d1 { transition-delay: 0.08s; }
 .anim.d2 { transition-delay: 0.18s; }
 .anim.d3 { transition-delay: 0.28s; }
-.anim.d4 { transition-delay: 0.38s; }
-.anim.d5 { transition-delay: 0.50s; }
-.anim.d6 { transition-delay: 0.62s; }
+.anim.d4 { transition-delay: 0.40s; }
 
-/* ════════════════════════════════════════════════
-   GOLD SHIMMER HEADINGS
-════════════════════════════════════════════════ */
+/* ══════════════════════════════════════════════
+   GOLD SHIMMER
+══════════════════════════════════════════════ */
 @keyframes goldShimmer {
   0%   { background-position: -200% center; }
   100% { background-position:  200% center; }
@@ -115,934 +96,715 @@ a { color: inherit; }
     #5a7fa8 0%, #A9C9EB 28%, #e8f4ff 48%,
     #809684 62%, #A9C9EB 76%, #5a7fa8 100%);
   background-size: 250% auto;
-  -webkit-background-clip: text;
-  background-clip: text;
+  -webkit-background-clip: text; background-clip: text;
   -webkit-text-fill-color: transparent;
   font-style: italic;
   animation: goldShimmer 4s linear infinite;
 }
 
-/* ════════════════════════════════════════════════
-   PHOTO CLIP-REVEAL (bottom-up sweep)
-════════════════════════════════════════════════ */
-.photo-slot {
-  overflow: hidden;
-  position: relative;
-}
-.photo-slot .photo-inner {
-  position: absolute;
-  inset: 0;
-  transform: translateY(105%);
-  transition: transform 1.1s cubic-bezier(.77,0,.18,1);
-  display: flex; align-items: center; justify-content: center;
-  flex-direction: column; gap: 6px;
-  color: #c8a0b0; font-size: 0.82rem;
-}
-.photo-slot.visible .photo-inner { transform: translateY(0); }
-
-/* ════════════════════════════════════════════════
-   FLOATING PAGE PETALS (continuous, subtle)
-════════════════════════════════════════════════ */
+/* ══════════════════════════════════════════════
+   FLOATING PETALS
+══════════════════════════════════════════════ */
 .page-petal {
-  position: fixed;
-  pointer-events: none;
-  z-index: 2;
-  opacity: 0;
-  animation: pagePetal linear infinite;
-  font-size: 1rem;
+  position: fixed; pointer-events: none; z-index: 2;
+  opacity: 0; animation: pagePetal linear infinite;
 }
 @keyframes pagePetal {
-  0%   { opacity:0; transform: translateY(110vh) rotate(0deg); }
+  0%   { opacity:0; transform:translateY(110vh) rotate(0deg); }
   6%   { opacity:0.22; }
   94%  { opacity:0.22; }
-  100% { opacity:0; transform: translateY(-8vh)  rotate(540deg); }
+  100% { opacity:0; transform:translateY(-8vh) rotate(540deg); }
 }
 
-/* ════════════════════════════════════════════════
-   HEARTBEAT LOGO
-════════════════════════════════════════════════ */
-@keyframes heartbeat {
-  0%,100% { transform: scale(1); }
-  15%     { transform: scale(1.07); }
-  30%     { transform: scale(1); }
-  45%     { transform: scale(1.04); }
-}
-.hero-logo { animation: heartbeat 2.6s ease-in-out infinite; }
-
-/* ════════════════════════════════════════════════
-   COUNTDOWN BOX POP
-════════════════════════════════════════════════ */
-@keyframes cdPop {
-  0%   { opacity:0; transform: scale(0.6) translateY(20px); }
-  70%  { transform: scale(1.05) translateY(-2px); }
-  100% { opacity:1; transform: scale(1) translateY(0); }
-}
-.cd-box.pop { animation: cdPop 0.65s cubic-bezier(.22,1,.36,1) both; }
-.cd-box.pop.d1 { animation-delay: 0.05s; }
-.cd-box.pop.d2 { animation-delay: 0.15s; }
-.cd-box.pop.d3 { animation-delay: 0.25s; }
-.cd-box.pop.d4 { animation-delay: 0.35s; }
-
-/* ════════════════════════════════════════════════
+/* ══════════════════════════════════════════════
    SECTION BASE
-════════════════════════════════════════════════ */
-section {
-  padding: 72px 20px;
-  max-width: 680px;
-  margin: 0 auto;
-}
+══════════════════════════════════════════════ */
+.sec { padding: 56px 20px; }
+.inner { max-width: 680px; margin: 0 auto; }
 .sec-label {
-  font-size: 0.72rem;
-  letter-spacing: 4px;
-  text-transform: uppercase;
-  color: var(--gold);
-  font-weight: 600;
-  margin-bottom: 10px;
-  text-align: center;
+  font-size: 0.68rem; letter-spacing: 4px; text-transform: uppercase;
+  color: var(--gold); font-weight: 600; margin-bottom: 8px; text-align: center;
 }
 .sec-divider {
-  width: 60px; height: 2px;
+  width: 48px; height: 2px;
   background: linear-gradient(90deg, var(--blue-lt), var(--sage), var(--blue-lt));
-  margin: 12px auto 24px;
-  border-radius: 2px;
+  margin: 10px auto 20px; border-radius: 2px;
 }
 h2.sec-title {
   font-family: 'Cormorant Garamond', serif;
-  font-size: 2.2rem;
-  font-weight: 400;
-  text-align: center;
-  color: var(--text);
-  line-height: 1.2;
-  margin-bottom: 8px;
+  font-size: clamp(1.7rem, 6vw, 2.2rem); font-weight: 400;
+  text-align: center; color: var(--text); line-height: 1.2; margin-bottom: 6px;
 }
 h2.sec-title em { font-style: italic; color: var(--blue-dk); }
 
-/* ════════════════════════════════════════════════
+/* ══════════════════════════════════════════════
    HERO
-════════════════════════════════════════════════ */
+══════════════════════════════════════════════ */
 #sec-hero {
-  padding-top: 80px;
-  padding-bottom: 60px;
-  text-align: center;
-  position: relative;
-  background: linear-gradient(180deg, #EEF4FB 0%, var(--cream) 100%);
+  position: relative; padding: 0;
+  min-height: 100svh; min-height: 100vh;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: flex-end;
+  overflow: hidden; background: #16202e;
 }
-.hero-logo {
-  width: 90px; height: 90px;
-  border-radius: 50%;
-  object-fit: contain;
-  background: var(--white);
-  border: 3px solid var(--gold-lt);
-  box-shadow: 0 6px 24px rgba(201,169,110,0.25);
-  margin: 0 auto 24px;
-  padding: 6px;
+.hero-bg {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%; object-fit: cover; object-position: center 20%;
+  opacity: 0.88;
 }
+.hero-overlay {
+  position: absolute; inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(18,26,42,0.08) 0%,
+    rgba(18,26,42,0.04) 35%,
+    rgba(18,26,42,0.52) 70%,
+    rgba(18,26,42,0.88) 100%
+  );
+}
+.hero-content {
+  position: relative; z-index: 2;
+  text-align: center; padding: 0 24px 48px; width: 100%;
+}
+.hero-logo-wrap {
+  width: 76px; height: 76px; border-radius: 50%;
+  background: rgba(255,255,255,0.14); backdrop-filter: blur(8px);
+  border: 2px solid rgba(255,255,255,0.35);
+  margin: 0 auto 18px; padding: 8px;
+  display: flex; align-items: center; justify-content: center;
+}
+.hero-logo-wrap img { width: 52px; height: 52px; object-fit: contain; border-radius: 50%; }
+@keyframes heartbeat {
+  0%,100%{transform:scale(1)} 15%{transform:scale(1.07)} 30%{transform:scale(1)} 45%{transform:scale(1.04)}
+}
+.hero-logo-wrap { animation: heartbeat 2.6s ease-in-out infinite; }
 .hero-names {
   font-family: 'Cormorant Garamond', serif;
-  font-size: clamp(2.8rem, 10vw, 4.5rem);
-  font-style: italic;
-  color: var(--text);
-  line-height: 1.1;
-  letter-spacing: 2px;
+  font-size: clamp(3rem, 13vw, 5.5rem);
+  font-style: italic; color: #fff; line-height: 1; letter-spacing: 2px;
+  text-shadow: 0 2px 20px rgba(0,0,0,0.35);
 }
-.hero-amp {
-  color: var(--gold);
-  font-size: 0.7em;
-  margin: 0 8px;
-}
+.hero-amp { color: var(--gold-lt); font-size: 0.6em; margin: 0 10px; }
 .hero-event {
-  font-size: 0.9rem;
-  letter-spacing: 4px;
-  color: var(--text-lt);
-  text-transform: uppercase;
-  margin: 14px 0 30px;
+  font-size: 0.8rem; letter-spacing: 5px; color: rgba(255,255,255,0.78);
+  text-transform: uppercase; margin: 14px 0;
 }
-.hero-date-row {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 14px;
-  margin-top: 10px;
+.hero-chips {
+  display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-top: 16px;
 }
 .hero-chip {
-  background: var(--white);
-  border: 1px solid var(--blue-lt);
-  border-radius: 50px;
-  padding: 8px 20px;
-  font-size: 0.88rem;
-  color: var(--text);
-  box-shadow: 0 2px 10px rgba(90,127,168,0.10);
-  display: flex; align-items: center; gap: 7px;
+  background: rgba(255,255,255,0.16); backdrop-filter: blur(6px);
+  border: 1px solid rgba(255,255,255,0.28); border-radius: 50px;
+  padding: 7px 16px; font-size: 0.82rem; color: rgba(255,255,255,0.92);
+  display: flex; align-items: center; gap: 6px;
 }
-.scroll-hint {
-  margin-top: 40px;
-  font-size: 0.78rem;
-  color: var(--text-lt);
-  letter-spacing: 2px;
+.hero-scroll {
+  margin-top: 22px; font-size: 0.74rem;
+  color: rgba(255,255,255,0.50); letter-spacing: 2px;
   animation: bounce 2s ease-in-out infinite;
 }
-@keyframes bounce {
-  0%,100% { transform: translateY(0); }
-  50% { transform: translateY(5px); }
-}
+@keyframes bounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(6px)} }
 
-/* ════════════════════════════════════════════════
-   STORY — VIDEO + PHOTOS
-════════════════════════════════════════════════ */
-#sec-story { background: var(--white); border-radius: var(--radius); margin: 0 16px 0; max-width: 100%; }
-@media(min-width:720px){
-  #sec-story { max-width: 680px; margin: 0 auto; border-radius: var(--radius); }
-}
-.video-wrap {
-  position: relative;
-  padding-top: 56.25%;
-  border-radius: 12px;
-  overflow: hidden;
-  background: #1a1a2e;
-  margin-bottom: 24px;
-}
-.video-wrap iframe {
-  position: absolute;
-  inset: 0;
-  width: 100%; height: 100%;
-  border: none;
-}
-.video-placeholder {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  background: linear-gradient(135deg, #1a1a2e 0%, #2d2d4e 100%);
-  color: rgba(255,255,255,0.6);
-  gap: 12px;
-}
-.video-placeholder .vp-icon { font-size: 3rem; opacity: 0.6; }
-.video-placeholder .vp-text { font-size: 0.9rem; text-align: center; max-width: 220px; }
-
-.photo-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  grid-template-rows: auto auto auto;
-  gap: 10px;
-}
-.photo-slot {
-  position: relative;          /* needed for absolute img/inner */
-  border-radius: 10px;
-  overflow: hidden;
-  background: linear-gradient(135deg, #EEF4FD, #E4EEF8);
-  aspect-ratio: 4/3;
-  display: flex; flex-direction: column;
-  align-items: center; justify-content: center;
-  color: var(--blue);
-  font-size: 0.82rem;
-  gap: 6px;
-  border: 2px dashed rgba(123,156,191,0.3);
-}
-.photo-slot img.slot-img {
-  position: absolute; inset: 0;
-  width: 100%; height: 100%;
-  object-fit: cover;
-  display: block;
-  border: none;
-}
-.photo-slot.wide { grid-column: 1 / -1; aspect-ratio: 16/7; }
-.photo-slot img { width: 100%; height: 100%; object-fit: cover; }
-.photo-slot .ps-icon { font-size: 1.6rem; opacity: 0.45; }
-
-/* ════════════════════════════════════════════════
-   COUNTDOWN + DETAILS
-════════════════════════════════════════════════ */
-#sec-details {
+/* ══════════════════════════════════════════════
+   COUNTDOWN
+══════════════════════════════════════════════ */
+#sec-countdown {
   background: linear-gradient(145deg, #3d6a91, #5a7fa8, #7B9CBF);
-  border-radius: var(--radius);
-  color: var(--white);
-  text-align: center;
-  padding: 60px 24px;
-  margin: 0 16px;
-  max-width: 100%;
-  box-shadow: 0 12px 40px rgba(61,106,145,0.35);
+  color: white; text-align: center; padding: 48px 24px;
 }
-@media(min-width:720px){
-  #sec-details { max-width: 680px; margin: 0 auto; }
+.cd-title { font-size: 0.74rem; letter-spacing: 3px; text-transform: uppercase; opacity: 0.75; margin-bottom: 6px; }
+.cd-date-text {
+  font-family: 'Cormorant Garamond', serif; font-size: 1.28rem;
+  font-weight: 600; margin-bottom: 22px; color: #E8F2FB;
 }
-.cd-title { font-size: 0.78rem; letter-spacing: 3px; text-transform: uppercase; opacity: 0.75; margin-bottom: 8px; }
-.cd-date-text { font-family: 'Cormorant Garamond', serif; font-size: 1.4rem; font-weight: 600; margin-bottom: 28px; color: #E8F2FB; }
-.cd-boxes { display: flex; justify-content: center; gap: 10px; flex-wrap: nowrap; }
+.cd-boxes { display: flex; justify-content: center; gap: 10px; }
 .cd-box {
-  background: rgba(255,255,255,0.13);
-  border-radius: 12px;
-  padding: 16px 14px;
-  min-width: 70px;
-  backdrop-filter: blur(4px);
-  border: 1px solid rgba(255,255,255,0.18);
+  background: rgba(255,255,255,0.13); border-radius: 12px;
+  padding: 14px 12px; min-width: 66px;
+  backdrop-filter: blur(4px); border: 1px solid rgba(255,255,255,0.18);
 }
-.cd-num { font-size: 2.4rem; font-weight: 700; line-height: 1; letter-spacing: -1px; font-variant-numeric: tabular-nums; }
-.cd-lbl { font-size: 0.68rem; opacity: 0.72; margin-top: 4px; letter-spacing: 1px; text-transform: uppercase; }
-.cd-sep { font-size: 2rem; opacity: 0.45; align-self: center; padding-bottom: 16px; }
-
-.venue-card {
-  margin-top: 36px;
-  background: rgba(255,255,255,0.12);
-  border-radius: 12px;
-  padding: 20px;
-  border: 1px solid rgba(255,255,255,0.15);
+@keyframes cdPop {
+  0%   { opacity:0; transform:scale(0.6) translateY(18px); }
+  70%  { transform:scale(1.05) translateY(-2px); }
+  100% { opacity:1; transform:scale(1) translateY(0); }
 }
-.venue-name { font-family: 'Cormorant Garamond', serif; font-size: 1.5rem; font-weight: 600; margin-bottom: 6px; }
-.venue-info { font-size: 0.88rem; opacity: 0.85; line-height: 1.8; }
-
-@media(max-width:480px){
+.cd-box.pop { animation: cdPop 0.65s cubic-bezier(.22,1,.36,1) both; }
+.cd-box.pop.d1{animation-delay:.05s}.cd-box.pop.d2{animation-delay:.15s}
+.cd-box.pop.d3{animation-delay:.25s}.cd-box.pop.d4{animation-delay:.35s}
+.cd-num { font-size: 2.2rem; font-weight: 700; line-height: 1; letter-spacing: -1px; font-variant-numeric: tabular-nums; }
+.cd-lbl { font-size: 0.63rem; opacity: 0.72; margin-top: 3px; letter-spacing: 1px; text-transform: uppercase; }
+.cd-sep { font-size: 1.8rem; opacity: 0.42; align-self: center; padding-bottom: 14px; }
+@media(max-width:480px) {
   .cd-boxes { gap: 5px; }
-  .cd-box { min-width: 0; flex: 1; padding: 10px 6px; }
-  .cd-num { font-size: 1.7rem; }
-  .cd-sep { font-size: 1.3rem; padding-bottom: 10px; }
+  .cd-box { min-width: 0; flex: 1; padding: 10px 5px; }
+  .cd-num { font-size: 1.6rem; }
+  .cd-sep { font-size: 1.2rem; padding-bottom: 10px; }
 }
 
-/* ════════════════════════════════════════════════
-   VIDEO — full-bleed on mobile
-════════════════════════════════════════════════ */
-@media(max-width:640px){
-  #sec-story { padding-left: 0 !important; padding-right: 0 !important; }
-  #sec-story .sec-label,
-  #sec-story .sec-divider,
-  #sec-story h2.sec-title,
-  #sec-story > p { padding-left: 20px; padding-right: 20px; }
-  .video-wrap { border-radius: 0; }
+/* ══════════════════════════════════════════════
+   EVENT DETAILS
+══════════════════════════════════════════════ */
+#sec-details { background: var(--white); }
+.details-card {
+  background: linear-gradient(135deg, #F2F7FC 0%, #EFF8F2 100%);
+  border-radius: var(--radius); padding: 22px 20px;
+  border: 1px solid rgba(123,156,191,0.16);
+  box-shadow: var(--shadow);
+  display: flex; flex-direction: column; gap: 16px;
+  margin-bottom: 18px;
 }
+.detail-row { display: flex; align-items: flex-start; gap: 14px; }
+.detail-icon { font-size: 1.2rem; flex-shrink: 0; margin-top: 2px; }
+.detail-label {
+  font-size: 0.68rem; color: var(--text-lt);
+  letter-spacing: 1px; text-transform: uppercase; margin-bottom: 3px;
+}
+.detail-value { font-size: 0.95rem; color: var(--text); font-weight: 600; }
+.detail-sub { font-size: 0.86rem; color: var(--text-lt); margin-top: 2px; line-height: 1.5; }
 
-/* ════════════════════════════════════════════════
-   PHOTO BREAK SECTIONS
-════════════════════════════════════════════════ */
-.photo-break {
-  padding: 0;
-  margin: 0 auto;
-  overflow: hidden;
+.cal-btn {
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  padding: 14px 24px; border-radius: 12px; width: 100%;
+  background: linear-gradient(135deg, var(--blue), var(--blue-dk));
+  color: white; border: none; cursor: pointer;
+  font-family: 'Sarabun', sans-serif; font-size: 0.96rem; font-weight: 600;
+  box-shadow: 0 5px 20px rgba(123,156,191,0.38);
+  transition: transform 0.2s, box-shadow 0.2s;
 }
-/* single full-width photo */
-.photo-break .photo-single .photo-slot {
-  border-radius: 0;
-  aspect-ratio: 21/9;
-  max-height: 280px;
-  border: none;
-}
-/* pair of photos */
-.photo-break .photo-pair {
+.cal-btn:hover { transform: translateY(-2px); box-shadow: 0 9px 28px rgba(123,156,191,0.46); }
+.cal-btn:active { transform: scale(0.97); }
+
+/* ══════════════════════════════════════════════
+   GALLERY
+══════════════════════════════════════════════ */
+#sec-gallery { background: var(--cream); padding: 56px 12px; }
+.gallery-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 4px;
-  max-width: 680px;
-  margin: 0 auto;
-  padding: 0 16px;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 5px;
+  max-width: 740px; margin: 0 auto;
 }
-.photo-break .photo-pair .photo-slot {
-  border-radius: 10px;
-  aspect-ratio: 4/3;
+.g-item {
+  overflow: hidden; border-radius: 6px;
+  background: #dde8f0; cursor: zoom-in;
+  aspect-ratio: 3/4;
+  transition: transform 0.3s ease;
 }
-/* accent (centered, smaller) */
-.photo-break .photo-accent {
-  max-width: 440px;
-  margin: 0 auto;
-  padding: 0 20px;
-}
-.photo-break .photo-accent .photo-slot {
-  border-radius: 14px;
-  aspect-ratio: 4/3;
-}
-@media(max-width:480px){
-  .photo-break .photo-pair { padding: 0 10px; gap: 3px; }
-  .photo-break .photo-single .photo-slot { aspect-ratio: 16/9; max-height: 220px; }
-}
+.g-item:hover { transform: scale(1.02); z-index: 1; }
+.g-item.wide { grid-column: span 2; aspect-ratio: 16/9; }
+.g-item.tall { grid-row: span 2; aspect-ratio: 3/5; }
+.g-item img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s ease; display: block; }
+.g-item:hover img { transform: scale(1.06); }
 
-/* ════════════════════════════════════════════════
+/* Lightbox */
+#lightbox {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.93); z-index: 9500;
+  display: none; align-items: center; justify-content: center;
+  padding: 16px;
+}
+#lightbox.show { display: flex; }
+#lightbox-img { max-width: 100%; max-height: 92vh; object-fit: contain; border-radius: 4px; }
+#lightbox-close {
+  position: absolute; top: 14px; right: 18px;
+  color: white; font-size: 2.2rem; cursor: pointer;
+  background: none; border: none; line-height: 1; opacity: 0.75;
+}
+#lightbox-close:hover { opacity: 1; }
+
+/* ══════════════════════════════════════════════
    MAP
-════════════════════════════════════════════════ */
-#sec-map { padding-top: 80px; }
-
+══════════════════════════════════════════════ */
+#sec-map { background: var(--white); }
 .map-embed-wrap {
-  width: 100%;
-  border-radius: 18px;
-  overflow: hidden;
-  box-shadow: var(--shadow);
-  margin-bottom: 16px;
-  border: 1px solid var(--cream-warm);
+  border-radius: var(--radius); overflow: hidden;
+  box-shadow: var(--shadow); margin-bottom: 14px;
+  border: 1px solid rgba(123,156,191,0.14);
 }
-.map-embed-wrap iframe {
-  width: 100%; height: 300px;
-  border: none; display: block;
+.map-embed-wrap iframe { width: 100%; height: 280px; border: none; display: block; }
+@media(min-width:480px){ .map-embed-wrap iframe { height: 320px; } }
+.venue-card {
+  background: #F6FBFF; border-radius: 12px; padding: 17px 19px;
+  border: 1px solid rgba(123,156,191,0.16);
+  box-shadow: var(--shadow); margin-bottom: 13px;
+  display: flex; flex-direction: column; gap: 10px;
 }
-@media(min-width:480px){ .map-embed-wrap iframe { height: 340px; } }
-
-.venue-detail-card {
-  background: var(--white);
-  border-radius: 14px;
-  padding: 18px 20px;
-  box-shadow: var(--shadow);
-  border: 1px solid var(--cream-warm);
-  margin-bottom: 14px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-.venue-detail-name {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 1.3rem;
-  font-weight: 600;
-  color: var(--text);
-}
-.venue-detail-row {
-  display: flex; align-items: flex-start; gap: 10px;
-  font-size: 0.88rem; color: var(--text-lt); line-height: 1.6;
-}
-.venue-detail-row .vi { font-size: 1rem; flex-shrink: 0; margin-top: 1px; }
-
-.map-btn-group { display: flex; gap: 10px; flex-wrap: wrap; }
-
+.venue-name { font-family: 'Cormorant Garamond', serif; font-size: 1.22rem; font-weight: 600; }
+.venue-row { display: flex; align-items: flex-start; gap: 9px; font-size: 0.86rem; color: var(--text-lt); line-height: 1.6; }
+.venue-row .vi { font-size: 0.95rem; flex-shrink: 0; margin-top: 1px; }
+.map-btns { display: flex; gap: 10px; flex-wrap: wrap; }
 .map-btn {
-  flex: 1; min-width: 140px;
-  display: flex; align-items: center; justify-content: center; gap: 7px;
-  padding: 13px 16px;
-  background: var(--blue);
-  color: var(--white);
-  border-radius: 12px;
-  font-size: 0.92rem; font-weight: 600;
-  text-decoration: none;
-  box-shadow: 0 4px 16px rgba(123,156,191,0.35);
+  flex: 1; min-width: 130px;
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+  padding: 12px 14px; border-radius: 10px;
+  background: var(--blue); color: white;
+  font-size: 0.88rem; font-weight: 600;
+  box-shadow: 0 3px 14px rgba(123,156,191,0.30);
   transition: background 0.2s, transform 0.2s;
 }
 .map-btn:hover { background: var(--blue-dk); transform: translateY(-2px); }
-.map-btn.secondary {
-  background: var(--white);
-  color: var(--blue-dk);
-  border: 1.5px solid var(--blue);
-  box-shadow: none;
+.map-btn.outline {
+  background: var(--white); color: var(--blue-dk);
+  border: 1.5px solid var(--blue); box-shadow: none;
 }
-.map-btn.secondary:hover { background: #EEF5FC; }
+.map-btn.outline:hover { background: #EEF5FC; }
 
-/* ════════════════════════════════════════════════
-   LOVE TREE
-════════════════════════════════════════════════ */
-#sec-tree {
-  text-align: center;
-  background: linear-gradient(180deg, var(--sage-xlt) 0%, var(--cream) 100%);
-  border-radius: var(--radius);
-  margin: 0 16px;
-  padding: 60px 24px;
-  max-width: 100%;
-}
-@media(min-width:720px){ #sec-tree { max-width: 680px; margin: 0 auto; } }
-
-.tree-stage {
-  display: flex;
-  align-items: flex-end;
-  justify-content: center;
-  gap: 8px;
-  margin: 24px 0 20px;
-}
-.tree-svg-wrap { width: min(220px, 55vw); flex-shrink: 0; }
-#love-tree { width: 100%; height: auto; overflow: visible; }
-
-.t-layer { transition: opacity 0.8s ease; }
-
-.tree-couple {
-  width: min(110px, 26vw);
-  flex-shrink: 0;
-  filter: drop-shadow(0 4px 10px rgba(0,0,0,0.12));
-}
-
-.tree-stats {
-  display: flex; flex-direction: column; align-items: center; gap: 8px;
-}
-.tree-counter {
-  display: flex; align-items: baseline; gap: 4px;
-}
-.tree-num {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 3rem; font-weight: 600;
-  color: var(--sage);
-  line-height: 1;
-}
-.tree-num-label { font-size: 1rem; color: var(--text-lt); }
-.tree-goal-text { font-size: 0.82rem; color: var(--text-lt); margin-bottom: 4px; }
-.tree-bar-wrap {
-  width: 100%; max-width: 280px;
-  background: #D8EAD6;
-  border-radius: 20px;
-  height: 10px;
-  overflow: hidden;
-}
-.tree-bar-fill {
-  height: 100%;
-  background: linear-gradient(90deg, #74C47A, #A8E4AC);
-  border-radius: 20px;
-  transition: width 1.2s cubic-bezier(0.4, 0, 0.2, 1);
-  width: 0%;
-}
-.tree-pct { font-size: 0.82rem; color: var(--sage); font-weight: 600; }
-
-/* ════════════════════════════════════════════════
-   BLESSINGS
-════════════════════════════════════════════════ */
-#sec-bless {
-  background: var(--white);
-  border-radius: var(--radius);
-  margin: 0 16px;
-  padding: 56px 28px;
-  box-shadow: var(--shadow);
-}
-@media(min-width:720px){ #sec-bless { max-width: 680px; margin: 0 auto; } }
-
-.bless-form { display: flex; flex-direction: column; gap: 12px; margin-bottom: 32px; }
-.bless-form input,
-.bless-form textarea {
-  border: 1.5px solid #dde8f0;
-  border-radius: 10px;
-  padding: 12px 16px;
-  font-family: 'Sarabun', sans-serif;
-  font-size: 0.95rem;
-  color: var(--text);
-  background: #F9FDFF;
-  transition: border 0.2s;
-  width: 100%;
-  resize: none;
-}
-.bless-form input:focus,
-.bless-form textarea:focus { outline: none; border-color: var(--blue); background: var(--white); }
-.bless-form textarea { min-height: 90px; }
-
-.bless-list { display: flex; flex-direction: column; gap: 14px; }
-.bless-item {
-  display: flex; gap: 12px;
-  padding: 14px 16px;
-  background: #F0F6FF;
-  border-radius: 12px;
-  border-left: 3px solid var(--blue-lt);
-}
-.bless-avatar {
-  width: 38px; height: 38px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, var(--blue-lt), var(--sage));
-  color: white;
-  font-weight: 700;
-  font-size: 1rem;
-  display: flex; align-items: center; justify-content: center;
-  flex-shrink: 0;
-}
-.bless-content { flex: 1; min-width: 0; }
-.bless-name { font-weight: 700; font-size: 0.9rem; color: var(--text); }
-.bless-msg { font-size: 0.88rem; color: var(--text-lt); margin-top: 3px; line-height: 1.5; word-break: break-word; }
-.bless-date { font-size: 0.72rem; color: #bbb; margin-top: 4px; }
-.no-bless { text-align: center; color: var(--text-lt); font-size: 0.9rem; padding: 20px 0; }
-
-/* ════════════════════════════════════════════════
-   RSVP FORM
-════════════════════════════════════════════════ */
+/* ══════════════════════════════════════════════
+   RSVP
+══════════════════════════════════════════════ */
 #sec-rsvp {
   background: linear-gradient(155deg, #EEF5FC 0%, var(--cream) 100%);
-  border-radius: var(--radius);
-  margin: 0 16px;
-  padding: 56px 28px;
-  box-shadow: var(--shadow);
 }
-@media(min-width:720px){ #sec-rsvp { max-width: 680px; margin: 0 auto; } }
-
-.rsvp-form { display: flex; flex-direction: column; gap: 14px; }
-.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-@media(max-width:480px){ .form-row { grid-template-columns: 1fr; } }
-
+.rsvp-form { display: flex; flex-direction: column; gap: 13px; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 11px; }
+@media(max-width:480px) { .form-row { grid-template-columns: 1fr; } }
 .form-group { display: flex; flex-direction: column; gap: 5px; }
-.form-label {
-  font-size: 0.8rem; font-weight: 600;
-  color: var(--text-lt); letter-spacing: 0.3px;
+.form-label { font-size: 0.77rem; font-weight: 600; color: var(--text-lt); }
+.form-label .req { color: var(--blue); margin-left: 2px; }
+.form-input, .form-select, .form-textarea {
+  border: 1.5px solid #dde8f0; border-radius: 10px;
+  padding: 11px 14px; font-family: 'Sarabun', sans-serif;
+  font-size: 0.94rem; color: var(--text); background: var(--white);
+  transition: border 0.2s, box-shadow 0.2s; width: 100%; -webkit-appearance: none;
 }
-.form-label .req { color: var(--blush); margin-left: 2px; }
-.form-input,
-.form-select,
-.form-textarea {
-  border: 1.5px solid #dde8f0;
-  border-radius: 10px;
-  padding: 11px 14px;
-  font-family: 'Sarabun', sans-serif;
-  font-size: 0.95rem;
-  color: var(--text);
-  background: var(--white);
-  transition: border 0.2s, box-shadow 0.2s;
-  width: 100%;
-  -webkit-appearance: none;
-}
-.form-input:focus,
-.form-select:focus,
-.form-textarea:focus {
-  outline: none;
-  border-color: var(--blue);
-  box-shadow: 0 0 0 3px rgba(123,156,191,0.15);
+.form-input:focus, .form-select:focus, .form-textarea:focus {
+  outline: none; border-color: var(--blue);
+  box-shadow: 0 0 0 3px rgba(123,156,191,0.13);
 }
 .form-textarea { min-height: 70px; resize: none; }
-
-/* Side radio buttons */
 .side-group { display: flex; gap: 10px; }
 .side-btn {
-  flex: 1; padding: 10px;
-  border: 1.5px solid #dde8f0;
-  border-radius: 10px;
-  cursor: pointer;
-  text-align: center;
-  font-family: 'Sarabun', sans-serif;
-  font-size: 0.9rem;
-  color: var(--text-lt);
-  background: var(--white);
-  transition: all 0.2s;
-  user-select: none;
+  flex: 1; padding: 10px 8px; border: 1.5px solid #dde8f0;
+  border-radius: 10px; cursor: pointer; text-align: center;
+  font-family: 'Sarabun', sans-serif; font-size: 0.9rem;
+  color: var(--text-lt); background: var(--white);
+  transition: all 0.2s; user-select: none;
 }
 .side-btn.selected {
-  border-color: var(--blue);
-  background: var(--blush-lt);
-  color: var(--blue-dk);
-  font-weight: 600;
-  box-shadow: inset 0 1px 4px rgba(90,127,168,0.12);
+  border-color: var(--blue); background: #EEF6FF;
+  color: var(--blue-dk); font-weight: 600;
 }
-
-/* Calendar opt-in notice */
 .calendar-notice {
-  font-size: 0.78rem;
-  color: var(--blue-dk);
-  background: var(--blush-lt);
-  border-radius: 8px;
-  padding: 8px 12px;
-  display: flex; align-items: center; gap: 6px;
-  border: 1px solid var(--blue-lt);
-  display: none;
+  font-size: 0.77rem; color: var(--blue-dk); background: #EEF6FF;
+  border-radius: 8px; padding: 8px 12px; display: none;
+  align-items: center; gap: 6px; border: 1px solid var(--blue-lt);
 }
 .calendar-notice.show { display: flex; }
-
-/* Submit button */
 .submit-btn {
-  padding: 16px;
-  background: linear-gradient(135deg, var(--blue) 0%, var(--blue-dk) 100%);
-  color: var(--white);
-  border: none;
-  border-radius: 12px;
-  font-family: 'Sarabun', sans-serif;
-  font-size: 1.05rem;
-  font-weight: 700;
-  cursor: pointer;
-  box-shadow: 0 6px 22px rgba(123,156,191,0.4);
+  padding: 15px; border-radius: 12px; border: none; cursor: pointer;
+  font-family: 'Sarabun', sans-serif; font-size: 1rem; font-weight: 700;
+  background: linear-gradient(135deg, var(--blue), var(--blue-dk)); color: white;
+  box-shadow: 0 5px 20px rgba(123,156,191,0.38);
   transition: transform 0.2s, box-shadow 0.2s;
   display: flex; align-items: center; justify-content: center; gap: 8px;
-  letter-spacing: 0.5px;
 }
-.submit-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(123,156,191,0.5); }
+.submit-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 28px rgba(123,156,191,0.48); }
 .submit-btn:active { transform: scale(0.97); }
-.submit-btn:disabled { opacity: 0.7; cursor: not-allowed; transform: none; }
-
-/* Success card */
-.success-card {
-  display: none;
-  text-align: center;
-  padding: 32px 20px;
-}
+.submit-btn:disabled { opacity: 0.65; cursor: not-allowed; transform: none; }
+.success-card { display: none; text-align: center; padding: 28px 16px; }
 .success-card.show { display: block; }
-.success-icon { font-size: 3.5rem; margin-bottom: 16px; }
-.success-title {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 1.8rem;
-  color: var(--text);
-  margin-bottom: 10px;
-}
-.success-msg { font-size: 0.95rem; color: var(--text-lt); line-height: 1.7; }
-.success-calendar {
-  margin-top: 16px;
-  font-size: 0.85rem;
-  color: var(--sage);
-  background: #F0F5F2;
-  border-radius: 10px;
-  padding: 10px 14px;
-  display: inline-block;
-}
+.success-icon { font-size: 3rem; margin-bottom: 12px; }
+.success-title { font-family: 'Cormorant Garamond', serif; font-size: 1.7rem; margin-bottom: 8px; }
+.success-msg { font-size: 0.9rem; color: var(--text-lt); line-height: 1.7; }
 
-/* ════════════════════════════════════════════════
-   SHARED BUTTON
-════════════════════════════════════════════════ */
-.btn {
-  padding: 12px 28px;
-  border-radius: 10px;
-  border: none;
-  cursor: pointer;
-  font-family: 'Sarabun', sans-serif;
-  font-size: 0.95rem;
-  font-weight: 600;
-  transition: all 0.2s;
-  display: inline-flex; align-items: center; gap: 6px;
+/* ══════════════════════════════════════════════
+   BLESSINGS
+══════════════════════════════════════════════ */
+#sec-bless { background: var(--white); }
+.bless-form { display: flex; flex-direction: column; gap: 10px; margin-bottom: 26px; }
+.bless-list { display: flex; flex-direction: column; gap: 12px; }
+.bless-item {
+  display: flex; gap: 12px; padding: 13px 15px;
+  background: #F2F8FF; border-radius: 12px; border-left: 3px solid var(--blue-lt);
 }
-.btn-primary {
-  background: linear-gradient(135deg, var(--blue) 0%, var(--blue-dk) 100%);
-  color: var(--white);
-  box-shadow: 0 4px 16px rgba(90,127,168,0.35);
+.bless-avatar {
+  width: 36px; height: 36px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--blue-lt), var(--sage));
+  color: white; font-weight: 700; font-size: 0.95rem;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
 }
-.btn-primary:hover { background: linear-gradient(135deg, var(--blue-dk), #4a6e94); }
+.bless-content { flex: 1; min-width: 0; }
+.bless-name { font-weight: 700; font-size: 0.88rem; }
+.bless-msg { font-size: 0.85rem; color: var(--text-lt); margin-top: 3px; line-height: 1.5; word-break: break-word; }
+.bless-date { font-size: 0.7rem; color: #bbb; margin-top: 3px; }
+.no-bless { text-align: center; color: var(--text-lt); font-size: 0.88rem; padding: 20px 0; }
 
-/* ════════════════════════════════════════════════
-   FOOTER
-════════════════════════════════════════════════ */
-footer {
+/* ══════════════════════════════════════════════
+   LOVE TREE
+══════════════════════════════════════════════ */
+#sec-tree {
   text-align: center;
-  padding: 56px 20px 48px;
-  background: var(--text);
-  color: rgba(255,255,255,0.7);
+  background: linear-gradient(180deg, #E8F2EA 0%, var(--cream) 100%);
+}
+.tree-stage {
+  display: flex; align-items: flex-end; justify-content: center;
+  gap: 8px; margin: 20px 0 16px;
+}
+.tree-svg-wrap { width: min(210px, 52vw); flex-shrink: 0; }
+#love-tree { width: 100%; height: auto; overflow: visible; }
+.t-layer { transition: opacity 0.8s ease; }
+.tree-couple {
+  width: min(105px, 25vw); flex-shrink: 0;
+  filter: drop-shadow(0 4px 10px rgba(0,0,0,0.10));
+}
+.tree-stats { display: flex; flex-direction: column; align-items: center; gap: 7px; }
+.tree-counter { display: flex; align-items: baseline; gap: 4px; }
+.tree-num { font-family: 'Cormorant Garamond', serif; font-size: 2.8rem; font-weight: 600; color: var(--sage); line-height: 1; }
+.tree-num-label { font-size: 0.95rem; color: var(--text-lt); }
+.tree-goal-text { font-size: 0.78rem; color: var(--text-lt); }
+.tree-bar-wrap { width: 100%; max-width: 260px; background: #D0E6CE; border-radius: 20px; height: 9px; overflow: hidden; }
+.tree-bar-fill { height: 100%; background: linear-gradient(90deg, #74C47A, #A8E4AC); border-radius: 20px; transition: width 1.2s cubic-bezier(0.4,0,0.2,1); width: 0%; }
+.tree-pct { font-size: 0.78rem; color: var(--sage); font-weight: 600; }
+
+/* ══════════════════════════════════════════════
+   FOOTER
+══════════════════════════════════════════════ */
+footer {
+  text-align: center; padding: 48px 20px 28px;
+  background: var(--text); color: rgba(255,255,255,0.65);
 }
 .footer-logo {
-  width: 64px; height: 64px;
-  border-radius: 50%;
-  object-fit: contain;
-  background: rgba(255,255,255,0.1);
-  border: 2px solid rgba(255,255,255,0.2);
-  padding: 5px;
-  margin: 0 auto 16px;
+  width: 60px; height: 60px; border-radius: 50%; object-fit: contain;
+  background: rgba(255,255,255,0.08); border: 2px solid rgba(255,255,255,0.18);
+  padding: 5px; margin: 0 auto 14px;
 }
-.footer-names {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 1.6rem;
-  font-style: italic;
-  color: var(--gold-lt);
-  margin-bottom: 8px;
-}
-.footer-event { font-size: 0.82rem; letter-spacing: 3px; text-transform: uppercase; opacity: 0.65; }
-.footer-date { font-size: 0.9rem; color: rgba(255,255,255,0.6); margin-top: 6px; }
-.footer-copy { margin-top: 28px; font-size: 0.72rem; opacity: 0.4; }
+.footer-names { font-family: 'Cormorant Garamond', serif; font-size: 1.5rem; font-style: italic; color: var(--gold-lt); margin-bottom: 6px; }
+.footer-event { font-size: 0.76rem; letter-spacing: 3px; text-transform: uppercase; opacity: 0.55; }
+.footer-date { font-size: 0.84rem; color: rgba(255,255,255,0.52); margin-top: 5px; }
+.footer-copy { margin-top: 22px; font-size: 0.68rem; opacity: 0.35; }
 
-/* ════════════════════════════════════════════════
-   TOAST
-════════════════════════════════════════════════ */
+/* ══════════════════════════════════════════════
+   BOTTOM NAV
+══════════════════════════════════════════════ */
+#bottom-nav {
+  position: fixed; bottom: 0; left: 0; right: 0;
+  height: var(--nav-h); z-index: 800;
+  background: rgba(255,255,255,0.97);
+  backdrop-filter: blur(14px);
+  border-top: 1px solid rgba(123,156,191,0.16);
+  display: flex; align-items: stretch;
+  box-shadow: 0 -3px 18px rgba(0,0,0,0.07);
+}
+.nav-item {
+  flex: 1; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 3px;
+  border: none; background: none; cursor: pointer;
+  font-family: 'Sarabun', sans-serif;
+  font-size: 0.6rem; font-weight: 500;
+  color: #9AAABB; text-decoration: none; padding: 6px 2px;
+  transition: color 0.2s;
+  -webkit-tap-highlight-color: transparent;
+  position: relative;
+}
+.nav-item::after {
+  content: ''; position: absolute; bottom: 0; left: 50%;
+  transform: translateX(-50%) scaleX(0);
+  width: 28px; height: 2.5px; border-radius: 2px;
+  background: var(--blue); transition: transform 0.2s;
+}
+.nav-item.active { color: var(--blue); }
+.nav-item.active::after { transform: translateX(-50%) scaleX(1); }
+.nav-icon { font-size: 1.3rem; line-height: 1; }
+
+/* ══════════════════════════════════════════════
+   TOAST & MISC
+══════════════════════════════════════════════ */
 #inv-toast {
-  position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
-  background: #2c3a4a;
-  color: white;
-  padding: 12px 24px;
-  border-radius: 50px;
-  font-size: 0.9rem;
-  z-index: 9999;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.3s;
-  white-space: nowrap;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+  position: fixed; bottom: calc(var(--nav-h) + 14px); left: 50%;
+  transform: translateX(-50%);
+  background: #2c3a4a; color: white;
+  padding: 11px 22px; border-radius: 50px; font-size: 0.88rem;
+  z-index: 9999; opacity: 0; pointer-events: none;
+  transition: opacity 0.3s; white-space: nowrap;
+  box-shadow: 0 4px 18px rgba(0,0,0,0.22);
 }
 #inv-toast.show { opacity: 1; }
 
-/* ════════════════════════════════════════════════
-   SETUP BANNER (shown when surl not configured)
-════════════════════════════════════════════════ */
 #setup-banner {
-  display: none;
-  background: #FFF3CD;
-  border: 1px solid #FFD166;
-  border-radius: 10px;
-  padding: 14px 18px;
-  font-size: 0.85rem;
-  color: #856404;
-  margin-bottom: 18px;
-  text-align: center;
+  display: none; background: #FFF3CD; border: 1px solid #FFD166;
+  border-radius: 10px; padding: 11px 16px; font-size: 0.83rem;
+  color: #856404; margin-bottom: 16px; text-align: center;
 }
 #setup-banner.show { display: block; }
 
-/* ════════════════════════════════════════════════
-   SECTION SPACERS
-════════════════════════════════════════════════ */
-.sec-spacer { height: 56px; }
-
-/* Full-width section wrapper */
-.sec-full {
-  background: var(--cream);
-  padding: 56px 0;
+.btn {
+  padding: 12px 24px; border-radius: 10px; border: none; cursor: pointer;
+  font-family: 'Sarabun', sans-serif; font-size: 0.94rem; font-weight: 600;
+  transition: all 0.2s; display: inline-flex; align-items: center; gap: 6px;
 }
+.btn-primary {
+  background: linear-gradient(135deg, var(--blue), var(--blue-dk));
+  color: white; box-shadow: 0 4px 16px rgba(90,127,168,0.30);
+}
+.btn-primary:hover { background: linear-gradient(135deg, var(--blue-dk), #4a6e94); }
+
 </style>
 </head>
 <body>
 
-<!-- Scroll progress -->
 <div id="scroll-progress"></div>
 
-<!-- Floating page petals (generated by JS) -->
-
-<!-- ══════════════ MAIN CONTENT ══════════════ -->
-<main id="main-content">
-
-  <!-- ── HERO ── -->
-  <section id="sec-hero">
-    <img src="logo.png" alt="PM Wedding" class="hero-logo fade-up" onerror="this.style.display='none'">
-    <div class="hero-names fade-up delay-1">
-      เอ็ม<span class="hero-amp">×</span>แป้ง
+<!-- ══ HERO ══════════════════════════════════════════ -->
+<section id="sec-hero">
+  <img class="hero-bg" src="รูปประกอบการ์ดเชิญ/IMG_3687.JPG"
+       alt="เอ็ม & แป้ง" onerror="this.style.opacity='0'">
+  <div class="hero-overlay"></div>
+  <div class="hero-content">
+    <div class="hero-logo-wrap">
+      <img src="logo.png" alt="PM" onerror="this.parentElement.style.display='none'">
     </div>
-    <div class="hero-event fade-up delay-2">Family Witness Dinner</div>
-    <div class="hero-date-row fade-up delay-3">
-      <div class="hero-chip">📅 วันเสาร์ที่ 28 พฤศจิกายน 2569</div>
+    <div class="hero-names fade-up">เอ็ม<span class="hero-amp">×</span>แป้ง</div>
+    <div class="hero-event fade-up delay-1">Family Witness Dinner</div>
+    <div class="hero-chips fade-up delay-2">
+      <div class="hero-chip">📅 28 พฤศจิกายน 2569</div>
       <div class="hero-chip">🕑 14:00 น.</div>
       <div class="hero-chip">📍 ธาราเทอเรส · นครปฐม</div>
     </div>
-    <div class="scroll-hint fade-up delay-3">เลื่อนลงเพื่ออ่านต่อ ↓</div>
-  </section>
+    <div class="hero-scroll fade-up delay-3">เลื่อนลงเพื่ออ่านต่อ ↓</div>
+  </div>
+</section>
 
-  <div class="sec-spacer"></div>
+<!-- ══ COUNTDOWN ══════════════════════════════════════ -->
+<section id="sec-countdown">
+  <div class="cd-title">นับถอยหลังสู่วันแต่งงาน</div>
+  <div class="cd-date-text">วันเสาร์ที่ 28 พฤศจิกายน 2569 · 14:00 น.</div>
+  <div class="cd-boxes">
+    <div class="cd-box pop d1"><div class="cd-num" id="i-days">--</div><div class="cd-lbl">วัน</div></div>
+    <div class="cd-sep">:</div>
+    <div class="cd-box pop d2"><div class="cd-num" id="i-hours">--</div><div class="cd-lbl">ชั่วโมง</div></div>
+    <div class="cd-sep">:</div>
+    <div class="cd-box pop d3"><div class="cd-num" id="i-mins">--</div><div class="cd-lbl">นาที</div></div>
+    <div class="cd-sep">:</div>
+    <div class="cd-box pop d4"><div class="cd-num" id="i-secs">--</div><div class="cd-lbl">วินาที</div></div>
+  </div>
+</section>
 
-  <!-- ── STORY (video only) ── -->
-  <section id="sec-story" class="fade-up" style="max-width:680px; margin:0 auto; padding: 48px 24px;">
-    <div class="sec-label">เรื่องราวของเรา</div>
+<!-- ══ EVENT DETAILS ══════════════════════════════════ -->
+<section id="sec-details" class="sec">
+  <div class="inner">
+    <div class="sec-label">รายละเอียดงาน</div>
     <div class="sec-divider"></div>
-    <h2 class="sec-title gold-shimmer anim from-bottom">Our <em>Love Story</em></h2>
-    <p style="text-align:center;color:var(--text-lt);font-size:0.9rem;margin:12px 0 28px">ทุกเรื่องราวมีจุดเริ่มต้น — นี่คือของเราสองคน</p>
-    <div class="video-wrap anim zoom-in" id="video-wrap">
-      <iframe
-        src="https://www.youtube.com/embed/UTVP7uBGzGY?rel=0&showinfo=0"
-        title="เรื่องราวของเรา – เอ็ม & แป้ง"
-        frameborder="0"
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-        allowfullscreen>
-      </iframe>
-    </div>
-  </section>
-
-  <!-- ── PHOTO BREAK 1 · รูปที่ 1 (wide) ── -->
-  <div class="photo-break" style="margin-top:4px;">
-    <div class="photo-single">
-      <div class="photo-slot anim zoom-in" id="photo-1" style="border-radius:0;aspect-ratio:21/9;max-height:300px;">
-        <img class="slot-img" src="รูปประกอบการ์ดเชิญ/IMG_3686.JPG" alt="เอ็ม & แป้ง">
+    <h2 class="sec-title gold-shimmer anim from-bottom">Event <em>Details</em></h2>
+    <div class="details-card anim from-bottom d1">
+      <div class="detail-row">
+        <span class="detail-icon">📅</span>
+        <div>
+          <div class="detail-label">วันและเวลา</div>
+          <div class="detail-value">วันเสาร์ที่ 28 พฤศจิกายน 2569</div>
+          <div class="detail-sub">ลงทะเบียน 13:30 น. · เริ่มงาน 14:00 น.</div>
+        </div>
       </div>
+      <div class="detail-row">
+        <span class="detail-icon">📍</span>
+        <div>
+          <div class="detail-label">สถานที่</div>
+          <div class="detail-value">ธาราเทอเรส (Tara Terrace)</div>
+          <div class="detail-sub">Cocktail &amp; Dinner · จ.นครปฐม</div>
+        </div>
+      </div>
+      <div class="detail-row">
+        <span class="detail-icon">📞</span>
+        <div>
+          <div class="detail-label">ติดต่อสถานที่</div>
+          <div class="detail-value">
+            <a href="tel:0822949629" style="color:var(--blue-dk)">082-294-9629</a>
+            <span style="font-size:0.85rem;color:var(--text-lt);font-weight:400"> (พี่อ้อย)</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <button class="cal-btn anim from-bottom d2" onclick="addToCalendar()">
+      📅 &nbsp;เพิ่มลงปฏิทิน · Add to Calendar
+    </button>
+  </div>
+</section>
+
+<!-- ══ GALLERY ════════════════════════════════════════ -->
+<section id="sec-gallery" class="sec" style="padding-left:10px;padding-right:10px;">
+  <div class="inner">
+    <div class="sec-label">ภาพถ่าย</div>
+    <div class="sec-divider"></div>
+    <h2 class="sec-title gold-shimmer anim from-bottom">Our <em>Gallery</em></h2>
+  </div>
+  <div class="gallery-grid anim zoom-in d1" style="margin-top:20px;">
+    <div class="g-item" onclick="openLightbox(this)">
+      <img src="รูปประกอบการ์ดเชิญ/IMG_3685.JPG" alt="เอ็ม & แป้ง">
+    </div>
+    <div class="g-item" onclick="openLightbox(this)">
+      <img src="รูปประกอบการ์ดเชิญ/IMG_3831.JPG" alt="เอ็ม & แป้ง">
+    </div>
+    <div class="g-item" onclick="openLightbox(this)">
+      <img src="รูปประกอบการ์ดเชิญ/IMG_3824.JPG" alt="เอ็ม & แป้ง">
+    </div>
+    <div class="g-item wide" onclick="openLightbox(this)">
+      <img src="รูปประกอบการ์ดเชิญ/IMG_3686.JPG" alt="เอ็ม & แป้ง" style="object-position:center 30%">
+    </div>
+    <div class="g-item" onclick="openLightbox(this)">
+      <img src="รูปประกอบการ์ดเชิญ/IMG_4559.JPG" alt="เอ็ม & แป้ง">
+    </div>
+    <div class="g-item" onclick="openLightbox(this)">
+      <img src="รูปประกอบการ์ดเชิญ/IMG_2472.JPG" alt="เอ็ม & แป้ง" style="object-position:center 40%">
+    </div>
+    <div class="g-item" onclick="openLightbox(this)">
+      <img src="รูปประกอบการ์ดเชิญ/IMG_5061.JPG" alt="เอ็ม & แป้ง">
+    </div>
+    <div class="g-item" onclick="openLightbox(this)">
+      <img src="รูปประกอบการ์ดเชิญ/IMG_4644.JPG" alt="เอ็ม & แป้ง">
+    </div>
+    <div class="g-item" onclick="openLightbox(this)">
+      <img src="รูปประกอบการ์ดเชิญ/IMG_4611.JPG" alt="เอ็ม & แป้ง">
     </div>
   </div>
+</section>
 
-  <div class="sec-spacer"></div>
+<!-- Lightbox -->
+<div id="lightbox" onclick="closeLightbox()">
+  <button id="lightbox-close" onclick="closeLightbox()">✕</button>
+  <img id="lightbox-img" src="" alt="photo">
+</div>
 
-  <!-- ── DETAILS + COUNTDOWN ── -->
-  <section id="sec-details" class="fade-up" style="max-width:none; border-radius: 0;">
-    <div class="cd-title">นับถอยหลังสู่วันแต่งงาน</div>
-    <div class="cd-date-text">วันเสาร์ที่ 28 พฤศจิกายน 2569 · เวลา 14:00 น.</div>
-    <div class="cd-boxes">
-      <div class="cd-box pop d1"><div class="cd-num" id="i-days">--</div><div class="cd-lbl">วัน</div></div>
-      <div class="cd-sep anim from-bottom d2">:</div>
-      <div class="cd-box pop d2"><div class="cd-num" id="i-hours">--</div><div class="cd-lbl">ชั่วโมง</div></div>
-      <div class="cd-sep anim from-bottom d3">:</div>
-      <div class="cd-box pop d3"><div class="cd-num" id="i-mins">--</div><div class="cd-lbl">นาที</div></div>
-      <div class="cd-sep anim from-bottom d4">:</div>
-      <div class="cd-box pop d4"><div class="cd-num" id="i-secs">--</div><div class="cd-lbl">วินาที</div></div>
-    </div>
-    <div class="venue-card anim from-bottom d3">
-      <div class="venue-name">📍 ธาราเทอเรส</div>
-      <div class="venue-info">
-        Tara Terrace · จ.นครปฐม · Cocktail &amp; Dinner<br>
-        วันเสาร์ที่ 28 พ.ย. 2569 · ลงทะเบียน 13:30 น. · เริ่ม 14:00 น.<br>
-        📞 <a href="tel:0822949629" style="color:rgba(255,255,255,0.9)">082-294-9629</a> (พี่อ้อย)
-      </div>
-    </div>
-  </section>
-
-  <!-- ── PHOTO BREAK 2 · รูปที่ 2+3 ── -->
-  <div class="photo-break" style="margin-top:32px;">
-    <div class="photo-pair">
-      <div class="photo-slot anim from-left" id="photo-2">
-        <img class="slot-img" src="รูปประกอบการ์ดเชิญ/IMG_3685.JPG" alt="เอ็ม & แป้ง">
-      </div>
-      <div class="photo-slot anim from-right" id="photo-3">
-        <img class="slot-img" src="รูปประกอบการ์ดเชิญ/IMG_3831.JPG" alt="เอ็ม & แป้ง">
-      </div>
-    </div>
-  </div>
-
-  <div class="sec-spacer"></div>
-
-  <!-- ── MAP ── -->
-  <section id="sec-map" class="fade-up" style="max-width:680px; margin:0 auto; padding: 64px 20px;">
+<!-- ══ MAP ═══════════════════════════════════════════ -->
+<section id="sec-map" class="sec">
+  <div class="inner">
     <div class="sec-label">เส้นทางมาร่วมงาน</div>
     <div class="sec-divider"></div>
     <h2 class="sec-title gold-shimmer anim from-bottom">Getting <em>Here</em></h2>
-    <p style="text-align:center;color:var(--text-lt);font-size:0.88rem;margin:10px 0 24px">ธาราเทอเรส · จังหวัดนครปฐม</p>
-
-    <!-- Google Maps embed (no API key) -->
-    <div class="map-embed-wrap anim zoom-in">
+    <p style="text-align:center;color:var(--text-lt);font-size:0.86rem;margin:8px 0 20px">ธาราเทอเรส · จังหวัดนครปฐม</p>
+    <div class="map-embed-wrap anim zoom-in d1">
       <iframe
         src="https://maps.google.com/maps?q=tara+terrace+%E0%B8%98%E0%B8%B2%E0%B8%A3%E0%B8%B2+%E0%B9%80%E0%B8%97%E0%B8%AD%E0%B8%A3%E0%B9%8C%E0%B9%80%E0%B8%A3%E0%B8%8B+%E0%B8%99%E0%B8%84%E0%B8%A3%E0%B8%9B%E0%B8%90%E0%B8%A1&output=embed&hl=th&z=16"
-        title="ธาราเทอเรส Tara Terrace นครปฐม"
-        allowfullscreen=""
-        loading="lazy"
+        title="ธาราเทอเรส" allowfullscreen="" loading="lazy"
         referrerpolicy="no-referrer-when-downgrade">
       </iframe>
     </div>
-
-    <!-- Venue detail card -->
-    <div class="venue-detail-card">
-      <div class="venue-detail-name">📍 ธาราเทอเรส (Tara Terrace)</div>
-      <div class="venue-detail-row">
-        <span class="vi">🗓️</span>
-        <span>วันเสาร์ที่ 28 พฤศจิกายน 2569 · ลงทะเบียน 13:30 น. · เริ่ม 14:00 น.</span>
-      </div>
-      <div class="venue-detail-row">
-        <span class="vi">📞</span>
-        <span><a href="tel:0822949629" style="color:var(--blue-dk);text-decoration:none;">082-294-9629</a> (พี่อ้อย)</span>
-      </div>
-      <div class="venue-detail-row">
-        <span class="vi">📘</span>
-        <span>
-          <a href="https://www.facebook.com/p/Tara-Terrace-100083355010338/" target="_blank" rel="noopener"
-             style="color:var(--blue-dk);text-decoration:none;">
-            facebook.com · Tara Terrace
-          </a>
-        </span>
-      </div>
+    <div class="venue-card anim from-bottom d2">
+      <div class="venue-name">📍 ธาราเทอเรส (Tara Terrace)</div>
+      <div class="venue-row"><span class="vi">🗓️</span><span>วันเสาร์ที่ 28 พ.ย. 2569 · ลงทะเบียน 13:30 น. · เริ่ม 14:00 น.</span></div>
+      <div class="venue-row"><span class="vi">📞</span><span><a href="tel:0822949629" style="color:var(--blue-dk)">082-294-9629</a> (พี่อ้อย)</span></div>
+      <div class="venue-row"><span class="vi">📘</span><span><a href="https://www.facebook.com/p/Tara-Terrace-100083355010338/" target="_blank" rel="noopener" style="color:var(--blue-dk)">Facebook · Tara Terrace</a></span></div>
     </div>
-
-    <!-- Action buttons -->
-    <div class="map-btn-group">
+    <div class="map-btns anim from-bottom d3">
       <a href="https://www.google.com/maps/place/tara+terrace+%E0%B8%98%E0%B8%B2%E0%B8%A3%E0%B8%B2+%E0%B9%80%E0%B8%97%E0%B8%AD%E0%B8%A3%E0%B9%8C%E0%B9%80%E0%B8%A3%E0%B8%8B/data=!4m2!3m1!1s0x30e2956cb4a86887:0x10b33033622a9040"
-         target="_blank" rel="noopener" class="map-btn">
-        🗺️ เปิดใน Google Maps
-      </a>
+         target="_blank" rel="noopener" class="map-btn">🗺️ เปิดใน Google Maps</a>
       <a href="https://www.facebook.com/p/Tara-Terrace-100083355010338/?locale=th_TH"
-         target="_blank" rel="noopener" class="map-btn secondary">
-        📘 Facebook
-      </a>
+         target="_blank" rel="noopener" class="map-btn outline">📘 Facebook</a>
     </div>
-  </section>
+  </div>
+</section>
 
-  <!-- ── PHOTO BREAK 3 · รูปที่ 4 (wide) ── -->
-  <div class="photo-break" style="margin-top:32px;">
-    <div class="photo-single">
-      <div class="photo-slot anim zoom-in" id="photo-4" style="border-radius:0;aspect-ratio:21/9;max-height:300px;">
-        <img class="slot-img" src="รูปประกอบการ์ดเชิญ/IMG_4559.JPG" alt="เอ็ม & แป้ง">
+<!-- ══ RSVP ══════════════════════════════════════════ -->
+<section id="sec-rsvp" class="sec">
+  <div class="inner">
+    <div class="sec-label">ยืนยันร่วมงาน</div>
+    <div class="sec-divider"></div>
+    <h2 class="sec-title gold-shimmer anim from-bottom">ลงทะเบียน<em>ร่วมงาน</em></h2>
+    <p style="text-align:center;color:var(--text-lt);font-size:0.87rem;margin:8px 0 22px">บอกให้เราทราบก่อนนะคะ ว่าคุณจะมาร่วมแจ้งชะตา 💍</p>
+    <div id="setup-banner">⚠️ ยังไม่ได้เชื่อม Apps Script — กรุณาเพิ่ม ?surl= ใน URL</div>
+    <div id="rsvp-form-wrap">
+      <div class="rsvp-form anim from-bottom d1">
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">ชื่อ-นามสกุล <span class="req">*</span></label>
+            <input id="r-name" class="form-input" placeholder="กรอกชื่อของคุณ" maxlength="80">
+          </div>
+          <div class="form-group">
+            <label class="form-label">จำนวนคนที่มา <span class="req">*</span></label>
+            <input id="r-count" class="form-input" type="number" min="1" max="20" value="1">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">เบอร์โทรศัพท์</label>
+            <input id="r-phone" class="form-input" placeholder="08X-XXX-XXXX" maxlength="20">
+          </div>
+          <div class="form-group">
+            <label class="form-label">E-mail</label>
+            <input id="r-email" class="form-input" type="email" placeholder="email@example.com" oninput="toggleCalNotice()">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">รู้จักฝั่งไหน <span class="req">*</span></label>
+          <div class="side-group">
+            <div class="side-btn" id="side-m" onclick="selectSide('m')">💙 ฝั่งเอ็ม</div>
+            <div class="side-btn" id="side-p" onclick="selectSide('p')">🩷 ฝั่งแป้ง</div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">ความสัมพันธ์</label>
+          <input id="r-relation" class="form-input" placeholder="เช่น ญาติ, เพื่อน, เพื่อนร่วมงาน" maxlength="80">
+        </div>
+        <div class="form-group">
+          <label class="form-label">หมายเหตุ</label>
+          <textarea id="r-note" class="form-textarea" placeholder="มีอะไรอยากบอกเพิ่มเติม..." maxlength="300"></textarea>
+        </div>
+        <div class="calendar-notice" id="cal-notice">📅 คุณจะได้รับ Calendar Invite ทาง email เมื่อยืนยันการเข้าร่วมงาน</div>
+        <button class="submit-btn" onclick="submitRSVP()" id="rsvp-btn">
+          <span id="rsvp-btn-text">💌 ยืนยันการร่วมงาน</span>
+        </button>
+      </div>
+    </div>
+    <div class="success-card" id="rsvp-success">
+      <div class="success-icon">🎉</div>
+      <div class="success-title">ขอบคุณมากเลย!</div>
+      <div class="success-msg" id="success-msg-text">
+        เราตั้งตารอพบคุณในวันงาน<br>
+        <strong>วันเสาร์ที่ 28 พฤศจิกายน 2569 · 14:00 น.</strong><br>
+        ธาราเทอเรส · นครปฐม 🥂
+      </div>
+      <div id="success-cal-note" style="display:none;margin-top:14px;font-size:0.84rem;color:var(--sage);background:#F0F5F2;border-radius:10px;padding:10px 14px;display:none;">
+        📅 ส่ง Calendar Invite ไปที่ email ของคุณแล้ว
       </div>
     </div>
   </div>
+</section>
 
-  <div class="sec-spacer"></div>
+<!-- ══ BLESSINGS ═════════════════════════════════════ -->
+<section id="sec-bless" class="sec">
+  <div class="inner">
+    <div class="sec-label">กล่องคำอวยพร</div>
+    <div class="sec-divider"></div>
+    <h2 class="sec-title gold-shimmer anim from-bottom">ส่ง<em>คำอวยพร</em></h2>
+    <p style="text-align:center;color:var(--text-lt);font-size:0.87rem;margin:8px 0 22px">คำอวยพรของคุณจะมีความหมายมากสำหรับเรา 💌</p>
+    <div class="bless-form anim from-bottom d1">
+      <input id="bless-name" class="form-input" placeholder="ชื่อของคุณ" maxlength="60">
+      <textarea id="bless-msg" placeholder="คำอวยพร..." maxlength="400"
+        style="min-height:88px;border:1.5px solid #dde8f0;border-radius:10px;padding:11px 16px;font-family:'Sarabun',sans-serif;font-size:.94rem;width:100%;resize:none;background:#F9FDFF;color:var(--text);transition:border .2s;"
+        onfocus="this.style.borderColor='var(--blue)'" onblur="this.style.borderColor='#dde8f0'"></textarea>
+      <button class="btn btn-primary" onclick="submitBlessing()" id="bless-btn"
+        style="width:100%;padding:13px;justify-content:center;">💌 ส่งคำอวยพร</button>
+    </div>
+    <div style="border-top:1px solid #eee;padding-top:22px;margin-top:4px;">
+      <div style="font-size:0.78rem;color:var(--text-lt);margin-bottom:12px;text-align:center;">คำอวยพรล่าสุด</div>
+      <div id="bless-list" class="bless-list">
+        <div class="no-bless">ยังไม่มีคำอวยพร · เป็นคนแรกได้เลย! 🌸</div>
+      </div>
+    </div>
+  </div>
+</section>
 
-  <!-- ── LOVE TREE ── -->
-  <section id="sec-tree" class="fade-up" style="max-width:none; border-radius:0;">
+<!-- ══ LOVE TREE ══════════════════════════════════════ -->
+<section id="sec-tree" class="sec">
+  <div class="inner">
     <div class="sec-label">ผู้มาร่วมงาน</div>
     <div class="sec-divider"></div>
     <h2 class="sec-title gold-shimmer anim from-bottom">ผู้ร่วม<em>งาน</em></h2>
-    <p style="text-align:center;color:var(--text-lt);font-size:0.88rem;margin:10px 0 0">ต้นไม้จะเติบโตตามจำนวนผู้ยืนยันมาร่วมงาน · เป้าหมาย 100 คน 🌸</p>
-
+    <p style="text-align:center;color:var(--text-lt);font-size:0.86rem;margin:8px 0 0">ต้นไม้จะเติบโตตามจำนวนผู้ยืนยัน · เป้าหมาย 100 คน 🌸</p>
     <div class="tree-stage">
       <div class="tree-svg-wrap anim from-left">
         <svg id="love-tree" viewBox="0 0 300 340" xmlns="http://www.w3.org/2000/svg">
-          <!-- Ground shadow -->
           <ellipse cx="150" cy="322" rx="82" ry="13" fill="rgba(100,160,90,0.18)"/>
-          <!-- Trunk -->
           <path d="M 141 320 C 137 295 135 265 139 245 C 143 228 147 218 150 212 C 153 218 157 228 161 245 C 165 265 163 295 159 320 Z" fill="#8B6335"/>
-          <!-- Roots -->
           <path d="M 141 308 Q 120 320 100 325" stroke="#8B6335" stroke-width="3.5" fill="none" stroke-linecap="round"/>
           <path d="M 159 308 Q 180 320 200 325" stroke="#8B6335" stroke-width="3.5" fill="none" stroke-linecap="round"/>
-
-          <!-- Layer 1: first branches (15%) -->
           <g class="t-layer" data-pct="15" style="opacity:0">
             <path d="M 143 268 Q 116 255 98 238" stroke="#8B6335" stroke-width="4" fill="none" stroke-linecap="round"/>
             <path d="M 157 265 Q 184 251 202 234" stroke="#8B6335" stroke-width="4" fill="none" stroke-linecap="round"/>
           </g>
-          <!-- Layer 2: upper branches (25%) -->
           <g class="t-layer" data-pct="25" style="opacity:0">
             <path d="M 145 246 Q 124 230 109 210" stroke="#8B6335" stroke-width="3" fill="none" stroke-linecap="round"/>
             <path d="M 155 243 Q 176 226 191 207" stroke="#8B6335" stroke-width="3" fill="none" stroke-linecap="round"/>
             <path d="M 150 228 L 150 208" stroke="#8B6335" stroke-width="3" fill="none" stroke-linecap="round"/>
           </g>
-          <!-- Layer 3: base canopy (20%) -->
           <g class="t-layer" data-pct="20" style="opacity:0">
             <circle cx="102" cy="228" r="28" fill="#68B56E"/>
             <circle cx="198" cy="225" r="28" fill="#68B56E"/>
@@ -1050,7 +812,6 @@ footer {
             <circle cx="116" cy="198" r="31" fill="#7ACC80"/>
             <circle cx="184" cy="196" r="31" fill="#7ACC80"/>
           </g>
-          <!-- Layer 4: upper canopy (45%) -->
           <g class="t-layer" data-pct="45" style="opacity:0">
             <circle cx="128" cy="170" r="32" fill="#82D086"/>
             <circle cx="172" cy="168" r="32" fill="#82D086"/>
@@ -1058,7 +819,6 @@ footer {
             <circle cx="108" cy="177" r="26" fill="#78CA7C"/>
             <circle cx="192" cy="175" r="26" fill="#78CA7C"/>
           </g>
-          <!-- Layer 5: crown (65%) -->
           <g class="t-layer" data-pct="65" style="opacity:0">
             <circle cx="150" cy="135" r="44" fill="#90DC94"/>
             <circle cx="124" cy="148" r="32" fill="#84D288"/>
@@ -1066,7 +826,6 @@ footer {
             <circle cx="106" cy="158" r="24" fill="#7ACC80"/>
             <circle cx="194" cy="156" r="24" fill="#7ACC80"/>
           </g>
-          <!-- Layer 6: pink blossoms (75%) -->
           <g class="t-layer" data-pct="75" style="opacity:0">
             <circle cx="136" cy="150" r="9" fill="#FFB3C6"/>
             <circle cx="163" cy="145" r="8" fill="#FFC0CB"/>
@@ -1074,22 +833,14 @@ footer {
             <circle cx="118" cy="162" r="8" fill="#FFC8D5"/>
             <circle cx="181" cy="159" r="9" fill="#FFB3C6"/>
             <circle cx="150" cy="110" r="9" fill="#FFC0CB"/>
-            <circle cx="130" cy="120" r="7" fill="#FFD0DC"/>
-            <circle cx="170" cy="118" r="7" fill="#FFD0DC"/>
           </g>
-          <!-- Layer 7: full bloom (90%) -->
           <g class="t-layer" data-pct="90" style="opacity:0">
             <circle cx="140" cy="136" r="10" fill="#FF91A8"/>
             <circle cx="160" cy="130" r="9" fill="#FFB0C3"/>
-            <circle cx="132" cy="109" r="9" fill="#FF91A8"/>
-            <circle cx="168" cy="107" r="9" fill="#FFB0C3"/>
             <circle cx="150" cy="96" r="12" fill="#FF91A8"/>
             <circle cx="112" cy="145" r="8" fill="#FFC0CB"/>
             <circle cx="188" cy="142" r="8" fill="#FFC0CB"/>
-            <circle cx="96" cy="122" r="5" fill="#FFD700" opacity="0.8"/>
-            <circle cx="204" cy="119" r="5" fill="#FFD700" opacity="0.8"/>
           </g>
-          <!-- Layer 8: 100% celebration -->
           <g class="t-layer" data-pct="100" style="opacity:0">
             <text x="150" y="78" font-size="16" text-anchor="middle">🌸</text>
             <text x="106" y="112" font-size="13" text-anchor="middle">🌺</text>
@@ -1099,154 +850,22 @@ footer {
           </g>
         </svg>
       </div>
-      <!-- Couple image -->
-      <img src="Gif1.png" alt="คู่บ่าวสาว" class="tree-couple anim from-right d2" onerror="this.style.display='none'">
+      <img src="Gif1.png" alt="คู่บ่าวสาว" class="tree-couple anim from-right d2"
+           onerror="this.style.display='none'">
     </div>
-
-    <div class="tree-stats anim from-bottom d4">
+    <div class="tree-stats anim from-bottom d3">
       <div class="tree-counter">
         <span class="tree-num" id="tree-num">0</span>
         <span class="tree-num-label">&nbsp;คน</span>
       </div>
       <div class="tree-goal-text">จากเป้าหมาย 100 คน</div>
-      <div class="tree-bar-wrap">
-        <div class="tree-bar-fill" id="tree-bar"></div>
-      </div>
+      <div class="tree-bar-wrap"><div class="tree-bar-fill" id="tree-bar"></div></div>
       <div class="tree-pct" id="tree-pct-text">0%</div>
     </div>
-  </section>
-
-  <!-- ── PHOTO BREAK 4 · รูปที่ 5 (accent) ── -->
-  <div class="photo-break" style="margin-top:32px;">
-    <div class="photo-accent">
-      <div class="photo-slot anim zoom-in" id="photo-5">
-        <img class="slot-img" src="รูปประกอบการ์ดเชิญ/IMG_3824.JPG" alt="เอ็ม & แป้ง" style="object-position: center 30%;">
-      </div>
-    </div>
   </div>
+</section>
 
-  <!-- ── PHOTO BREAK 5 · รูปที่ 6+7 (pair new) ── -->
-  <div class="photo-break" style="margin-top:8px;">
-    <div class="photo-pair">
-      <div class="photo-slot anim from-left" id="photo-6">
-        <img class="slot-img" src="รูปประกอบการ์ดเชิญ/IMG_2472.JPG" alt="เอ็ม & แป้ง" style="object-position: center 40%;">
-      </div>
-      <div class="photo-slot anim from-right" id="photo-7">
-        <img class="slot-img" src="รูปประกอบการ์ดเชิญ/IMG_5061.JPG" alt="เอ็ม & แป้ง">
-      </div>
-    </div>
-  </div>
-
-  <div class="sec-spacer"></div>
-
-  <!-- ── BLESSINGS ── -->
-  <section id="sec-bless" class="fade-up" style="max-width:none; border-radius:0; box-shadow:none;">
-    <div style="max-width:640px; margin:0 auto;">
-      <div class="sec-label">กล่องคำอวยพร</div>
-      <div class="sec-divider"></div>
-      <h2 class="sec-title gold-shimmer anim from-bottom">ส่ง<em>คำอวยพร</em></h2>
-      <p style="text-align:center;color:var(--text-lt);font-size:0.88rem;margin:10px 0 28px">บอกเราซักอย่างนะ — คำอวยพรของคุณจะมีความหมายมากสำหรับเรา 💌</p>
-
-      <div id="setup-banner">⚠️ ยังไม่ได้เชื่อม Apps Script — ข้อมูลจะยังไม่ถูกบันทึก</div>
-
-      <div class="bless-form">
-        <input id="bless-name" class="form-input" placeholder="ชื่อของคุณ" maxlength="60">
-        <textarea id="bless-msg" placeholder="คำอวยพร..." maxlength="400" style="min-height:90px;border:1.5px solid #dde8f0;border-radius:10px;padding:12px 16px;font-family:'Sarabun',sans-serif;font-size:.95rem;width:100%;resize:none;background:#F9FDFF;"></textarea>
-        <button class="btn btn-primary" onclick="submitBlessing()" id="bless-btn" style="width:100%;padding:13px;">
-          💌 ส่งคำอวยพร
-        </button>
-      </div>
-
-      <div style="border-top:1px solid #eee; padding-top:24px; margin-top:8px;">
-        <div style="font-size:0.82rem;color:var(--text-lt);margin-bottom:14px;text-align:center;">คำอวยพรล่าสุด</div>
-        <div id="bless-list" class="bless-list">
-          <div class="no-bless">ยังไม่มีคำอวยพร · เป็นคนแรกได้เลย! 🌸</div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <div class="sec-spacer"></div>
-
-  <!-- ── RSVP ── -->
-  <section id="sec-rsvp" class="fade-up" style="max-width:none; border-radius:0;">
-    <div style="max-width:640px; margin:0 auto;">
-      <div class="sec-label">ยืนยันร่วมงาน</div>
-      <div class="sec-divider"></div>
-      <h2 class="sec-title gold-shimmer anim from-bottom">ลงทะเบียน<em>ร่วมงาน</em></h2>
-      <p style="text-align:center;color:var(--text-lt);font-size:0.88rem;margin:10px 0 28px">บอกให้เราทราบก่อนนะคะ ว่าคุณจะมาร่วมแจ้งชะตา 💍</p>
-
-      <!-- RSVP form -->
-      <div id="rsvp-form-wrap">
-        <div id="setup-banner-rsvp" class="setup-banner" style="display:none;background:#FFF3CD;border:1px solid #FFD166;border-radius:10px;padding:12px 16px;font-size:0.85rem;color:#856404;margin-bottom:16px;text-align:center;">
-          ⚠️ ยังไม่ได้เชื่อม Apps Script — กรุณาเพิ่ม ?surl= ใน URL
-        </div>
-        <div class="rsvp-form">
-          <div class="form-row">
-            <div class="form-group">
-              <label class="form-label">ชื่อ-นามสกุล <span class="req">*</span></label>
-              <input id="r-name" class="form-input" placeholder="กรอกชื่อของคุณ" maxlength="80">
-            </div>
-            <div class="form-group">
-              <label class="form-label">จำนวนคนที่มา <span class="req">*</span></label>
-              <input id="r-count" class="form-input" type="number" min="1" max="20" value="1" placeholder="1">
-            </div>
-          </div>
-          <div class="form-row">
-            <div class="form-group">
-              <label class="form-label">เบอร์โทรศัพท์</label>
-              <input id="r-phone" class="form-input" placeholder="08X-XXX-XXXX" maxlength="20">
-            </div>
-            <div class="form-group">
-              <label class="form-label">E-mail</label>
-              <input id="r-email" class="form-input" type="email" placeholder="email@example.com" oninput="toggleCalNotice()">
-            </div>
-          </div>
-          <div class="form-group">
-            <label class="form-label">รู้จักฝั่งไหน <span class="req">*</span></label>
-            <div class="side-group">
-              <div class="side-btn" id="side-m" onclick="selectSide('m')">💙 ฝั่งเอ็ม</div>
-              <div class="side-btn" id="side-p" onclick="selectSide('p')">🩷 ฝั่งแป้ง</div>
-            </div>
-          </div>
-          <div class="form-group">
-            <label class="form-label">ความสัมพันธ์</label>
-            <input id="r-relation" class="form-input" placeholder="เช่น ญาติ, เพื่อน, เพื่อนร่วมงาน" maxlength="80">
-          </div>
-          <div class="form-group">
-            <label class="form-label">หมายเหตุ</label>
-            <textarea id="r-note" class="form-textarea" placeholder="มีอะไรอยากบอกเพิ่มเติม..." maxlength="300"></textarea>
-          </div>
-          <div class="calendar-notice" id="cal-notice">
-            📅 คุณจะได้รับ Calendar Invite ทาง email เมื่อยืนยันการเข้าร่วมงาน
-          </div>
-          <button class="submit-btn" onclick="submitRSVP()" id="rsvp-btn">
-            <span id="rsvp-btn-text">💌 ยืนยันการร่วมงาน</span>
-          </button>
-        </div>
-      </div>
-
-      <!-- Success message -->
-      <div class="success-card" id="rsvp-success">
-        <div class="success-icon">🎉</div>
-        <div class="success-title">ขอบคุณมากเลย!</div>
-        <div class="success-msg" id="success-msg-text">
-          เราตั้งตารอพบคุณในวันงาน<br>
-          <strong>วันเสาร์ที่ 28 พฤศจิกายน 2569 · 14:00 น.</strong><br>
-          ธาราเทอเรส · นครปฐม 🥂
-        </div>
-        <div class="success-calendar" id="success-cal-note" style="display:none;">
-          📅 ส่ง Calendar Invite ไปที่ email ของคุณแล้ว กรุณาตรวจสอบ inbox
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <div class="sec-spacer"></div>
-
-</main>
-
-<!-- ══════════════ FOOTER ══════════════ -->
+<!-- ══ FOOTER ════════════════════════════════════════ -->
 <footer>
   <img src="logo.png" alt="PM" class="footer-logo" onerror="this.style.display='none'">
   <div class="footer-names">เอ็ม &amp; แป้ง</div>
@@ -1255,18 +874,37 @@ footer {
   <div class="footer-copy">ด้วยความรักและคิดถึง 💕</div>
 </footer>
 
+<!-- ══ BOTTOM NAV ════════════════════════════════════ -->
+<nav id="bottom-nav">
+  <a class="nav-item active" href="#sec-hero">
+    <span class="nav-icon">🏠</span>หน้าแรก
+  </a>
+  <a class="nav-item" href="#sec-countdown">
+    <span class="nav-icon">⏳</span>นับถอย
+  </a>
+  <a class="nav-item" href="#sec-gallery">
+    <span class="nav-icon">📷</span>แกลเลอรี
+  </a>
+  <a class="nav-item" href="#sec-map">
+    <span class="nav-icon">📍</span>แผนที่
+  </a>
+  <a class="nav-item" href="#sec-rsvp">
+    <span class="nav-icon">💌</span>RSVP
+  </a>
+</nav>
+
 <div id="inv-toast"></div>
 
-<!-- ══════════════ SCRIPT ══════════════ -->
+<!-- ══ SCRIPT ════════════════════════════════════════ -->
 <script>
-// ── CONFIG ──────────────────────────────────────────────────
+
+// ── CONFIG ──────────────────────────────────────────
 let SCRIPT_URL = '';
 const WEDDING_DATE = new Date('2026-11-28T14:00:00+07:00');
 const GUEST_GOAL   = 100;
 let selectedSide   = '';
 let guestCount     = 0;
 
-// Read surl from URL params or localStorage
 (function() {
   try {
     const p = new URLSearchParams(window.location.search).get('surl');
@@ -1277,127 +915,125 @@ let guestCount     = 0;
       SCRIPT_URL = localStorage.getItem('invite_script_url') || '';
     }
   } catch(e) {}
-  if (!SCRIPT_URL) {
-    document.getElementById('setup-banner').classList.add('show');
-    const rb = document.getElementById('setup-banner-rsvp');
-    if (rb) rb.style.display = 'block';
-  }
+  if (!SCRIPT_URL) document.getElementById('setup-banner').classList.add('show');
 })();
 
-// ── AUTO START (no envelope) ─────────────────────────────────
-startCountdown();
-loadStats();
-triggerVisibleFades();
-const petalList = ['🌸','🌺','🌷','💐','🌼'];
-for (let i = 0; i < 8; i++) {
-  const p = document.createElement('span');
-  p.className = 'page-petal';
-  p.textContent = petalList[i % petalList.length];
-  p.style.cssText = `left:${5+Math.random()*90}%;animation-duration:${9+Math.random()*8}s;animation-delay:${Math.random()*10}s;font-size:${0.7+Math.random()*0.7}rem;`;
-  document.body.appendChild(p);
+// ── ADD TO CALENDAR ──────────────────────────────────
+function addToCalendar() {
+  const ics = [
+    'BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//PM Wedding//TH',
+    'BEGIN:VEVENT',
+    'DTSTART:20261128T070000Z',
+    'DTEND:20261128T120000Z',
+    'SUMMARY:งานแต่งงาน เอ็ม & แป้ง · Family Witness Dinner',
+    'DESCRIPTION:ขอเรียนเชิญร่วมงานแต่งงาน Family Witness Dinner\\nธาราเทอเรส (Tara Terrace) · นครปฐม',
+    'LOCATION:ธาราเทอเรส (Tara Terrace) นครปฐม',
+    'BEGIN:VALARM', 'TRIGGER:-PT60M', 'ACTION:DISPLAY',
+    'DESCRIPTION:แจ้งเตือน: งานแต่งงาน เอ็ม & แป้ง อีก 1 ชั่วโมง',
+    'END:VALARM', 'END:VEVENT', 'END:VCALENDAR'
+  ].join('\r\n');
+  const blob = new Blob([ics], { type: 'text/calendar;charset=utf-8' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'pm-wedding-28nov2026.ics';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  toast('ดาวน์โหลด Calendar ไฟล์แล้ว 📅');
 }
 
-// ── SCROLL PROGRESS BAR ──────────────────────────────────────
+// ── LIGHTBOX ─────────────────────────────────────────
+function openLightbox(el) {
+  const src = el.querySelector('img').src;
+  document.getElementById('lightbox-img').src = src;
+  document.getElementById('lightbox').classList.add('show');
+  document.body.style.overflow = 'hidden';
+}
+function closeLightbox() {
+  document.getElementById('lightbox').classList.remove('show');
+  document.body.style.overflow = '';
+}
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbox(); });
+
+// ── BOTTOM NAV (active on scroll) ────────────────────
+const NAV_SECTIONS = ['sec-hero','sec-countdown','sec-gallery','sec-map','sec-rsvp'];
+const navLinks = document.querySelectorAll('.nav-item');
 window.addEventListener('scroll', () => {
-  const scrolled = window.scrollY / (document.body.scrollHeight - window.innerHeight) * 100;
-  const bar = document.getElementById('scroll-progress');
-  if (bar) bar.style.width = Math.min(scrolled, 100) + '%';
+  let current = NAV_SECTIONS[0];
+  NAV_SECTIONS.forEach(id => {
+    const el = document.getElementById(id);
+    if (el && el.getBoundingClientRect().top <= 100) current = id;
+  });
+  navLinks.forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + current));
 }, { passive: true });
 
-// Page petals are spawned after the envelope is opened (see openEnvelope)
+// ── SCROLL PROGRESS BAR ──────────────────────────────
+window.addEventListener('scroll', () => {
+  const pct = window.scrollY / (document.body.scrollHeight - window.innerHeight) * 100;
+  const bar = document.getElementById('scroll-progress');
+  if (bar) bar.style.width = Math.min(pct, 100) + '%';
+}, { passive: true });
 
-// ── SCROLL REVEAL (unified) ───────────────────────────────────
-const revealOpts = { threshold: 0.12, rootMargin: '0px 0px -40px 0px' };
-const observer = new IntersectionObserver((entries) => {
-  entries.forEach(e => {
-    if (e.isIntersecting) {
-      e.target.classList.add('visible');
-      // cd-box pop: trigger when countdown section enters view
-      if (e.target.id === 'sec-details' || e.target.closest('#sec-details')) {
-        document.querySelectorAll('.cd-box.pop').forEach(b => b.style.animationPlayState = 'running');
-      }
-    }
-  });
-}, revealOpts);
-
+// ── SCROLL REVEAL ────────────────────────────────────
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.1, rootMargin: '0px 0px -36px 0px' });
 document.querySelectorAll('.fade-up, .anim').forEach(el => observer.observe(el));
-
-// Also observe the countdown section itself to trigger box pops
-const detailsSection = document.getElementById('sec-details');
-if (detailsSection) observer.observe(detailsSection);
 
 function triggerVisibleFades() {
   setTimeout(() => {
     document.querySelectorAll('.fade-up, .anim').forEach(el => {
-      const rect = el.getBoundingClientRect();
-      if (rect.top < window.innerHeight * 0.95) el.classList.add('visible');
+      if (el.getBoundingClientRect().top < window.innerHeight * 0.95)
+        el.classList.add('visible');
     });
-  }, 120);
+  }, 100);
 }
 
-// ── COUNTDOWN ────────────────────────────────────────────────
+// ── COUNTDOWN ────────────────────────────────────────
 function startCountdown() {
   function tick() {
-    const now  = new Date();
-    const diff = WEDDING_DATE - now;
+    const diff = WEDDING_DATE - new Date();
     if (diff <= 0) {
       ['i-days','i-hours','i-mins','i-secs'].forEach(id => {
-        const el = document.getElementById(id);
-        if (el) el.textContent = '00';
+        const el = document.getElementById(id); if (el) el.textContent = '00';
       });
       return;
     }
-    const d  = Math.floor(diff / 86400000);
-    const h  = Math.floor((diff % 86400000) / 3600000);
-    const m  = Math.floor((diff % 3600000)  / 60000);
-    const s  = Math.floor((diff % 60000)    / 1000);
-    const pad = n => String(n).padStart(2,'0');
-    const ids = {d:'i-days', h:'i-hours', m:'i-mins', s:'i-secs'};
-    const vals = {d, h, m, s};
-    Object.entries(ids).forEach(([k,id]) => {
-      const el = document.getElementById(id);
-      if (el) el.textContent = pad(vals[k]);
-    });
+    const pad = n => String(Math.floor(n)).padStart(2,'0');
+    const g = id => document.getElementById(id);
+    if (g('i-days'))  g('i-days').textContent  = pad(diff / 86400000);
+    if (g('i-hours')) g('i-hours').textContent = pad((diff % 86400000) / 3600000);
+    if (g('i-mins'))  g('i-mins').textContent  = pad((diff % 3600000) / 60000);
+    if (g('i-secs'))  g('i-secs').textContent  = pad((diff % 60000) / 1000);
   }
-  tick();
-  setInterval(tick, 1000);
+  tick(); setInterval(tick, 1000);
 }
 
-// ── TREE UPDATE ──────────────────────────────────────────────
+// ── LOVE TREE ────────────────────────────────────────
 function updateTree(count) {
   guestCount = count;
   const pct = Math.min(count / GUEST_GOAL * 100, 100);
-
-  // Show layers based on percentage threshold
   document.querySelectorAll('#love-tree .t-layer').forEach(el => {
-    const min = parseFloat(el.dataset.pct);
-    el.style.opacity = pct >= min ? '1' : '0';
+    el.style.opacity = pct >= parseFloat(el.dataset.pct) ? '1' : '0';
   });
-
-  // Update counter
   const numEl = document.getElementById('tree-num');
-  if (numEl) animateCount(numEl, parseInt(numEl.textContent) || 0, count, 1200);
-
-  // Progress bar
+  if (numEl) animateCount(numEl, parseInt(numEl.textContent)||0, count, 1200);
   const bar = document.getElementById('tree-bar');
   if (bar) bar.style.width = pct.toFixed(1) + '%';
-
   const pctEl = document.getElementById('tree-pct-text');
   if (pctEl) pctEl.textContent = Math.round(pct) + '%';
 }
-
-function animateCount(el, from, to, duration) {
+function animateCount(el, from, to, dur) {
   const start = performance.now();
   function step(ts) {
-    const progress = Math.min((ts - start) / duration, 1);
-    const ease = 1 - Math.pow(1 - progress, 3);
-    el.textContent = Math.round(from + (to - from) * ease);
-    if (progress < 1) requestAnimationFrame(step);
+    const p = Math.min((ts - start) / dur, 1);
+    el.textContent = Math.round(from + (to - from) * (1 - Math.pow(1-p, 3)));
+    if (p < 1) requestAnimationFrame(step);
   }
   requestAnimationFrame(step);
 }
 
-// ── LOAD STATS FROM APPS SCRIPT ──────────────────────────────
+// ── LOAD STATS ───────────────────────────────────────
 function loadStats() {
   if (!SCRIPT_URL) return;
   fetch(SCRIPT_URL + '?action=stats')
@@ -1409,24 +1045,21 @@ function loadStats() {
     .catch(() => {});
 }
 
-// ── BLESSINGS ────────────────────────────────────────────────
+// ── BLESSINGS ────────────────────────────────────────
 function renderBlessings(list) {
-  const container = document.getElementById('bless-list');
-  if (!container) return;
-  if (!list || list.length === 0) {
-    container.innerHTML = '<div class="no-bless">ยังไม่มีคำอวยพร · เป็นคนแรกได้เลย! 🌸</div>';
-    return;
+  const c = document.getElementById('bless-list'); if (!c) return;
+  if (!list || !list.length) {
+    c.innerHTML = '<div class="no-bless">ยังไม่มีคำอวยพร · เป็นคนแรกได้เลย! 🌸</div>'; return;
   }
-  container.innerHTML = list.map(b => `
+  c.innerHTML = list.map(b => `
     <div class="bless-item">
       <div class="bless-avatar">${(b.name||'?')[0].toUpperCase()}</div>
       <div class="bless-content">
-        <div class="bless-name">${escHtml(b.name || 'ไม่ระบุชื่อ')}</div>
-        <div class="bless-msg">${escHtml(b.message || '')}</div>
-        <div class="bless-date">${escHtml(b.date || '')}</div>
+        <div class="bless-name">${escHtml(b.name||'ไม่ระบุชื่อ')}</div>
+        <div class="bless-msg">${escHtml(b.message||'')}</div>
+        <div class="bless-date">${escHtml(b.date||'')}</div>
       </div>
-    </div>
-  `).join('');
+    </div>`).join('');
 }
 
 function submitBlessing() {
@@ -1434,49 +1067,13 @@ function submitBlessing() {
   const msg  = document.getElementById('bless-msg').value.trim();
   if (!name) { toast('กรุณากรอกชื่อก่อนนะคะ 🌸'); return; }
   if (!msg)  { toast('กรุณากรอกคำอวยพรก่อนนะคะ 💌'); return; }
-
   const btn = document.getElementById('bless-btn');
   btn.disabled = true; btn.textContent = '⏳ กำลังส่ง...';
-
-  const payload = { action: 'bless', name, message: msg };
-
-  if (!SCRIPT_URL) {
-    // Demo mode (no backend)
-    setTimeout(() => {
-      const list = document.getElementById('bless-list');
-      const noEl = list.querySelector('.no-bless');
-      if (noEl) noEl.remove();
-      const item = document.createElement('div');
-      item.className = 'bless-item';
-      item.innerHTML = `
-        <div class="bless-avatar">${name[0].toUpperCase()}</div>
-        <div class="bless-content">
-          <div class="bless-name">${escHtml(name)}</div>
-          <div class="bless-msg">${escHtml(msg)}</div>
-          <div class="bless-date">เมื่อกี้นี้</div>
-        </div>`;
-      list.prepend(item);
-      document.getElementById('bless-name').value = '';
-      document.getElementById('bless-msg').value  = '';
-      btn.disabled = false; btn.textContent = '💌 ส่งคำอวยพร';
-      toast('ขอบคุณสำหรับคำอวยพร 💕');
-    }, 600);
-    return;
-  }
-
-  fetch(SCRIPT_URL, {
-    method: 'POST',
-    body: JSON.stringify(payload),
-    headers: { 'Content-Type': 'application/json' },
-    mode: 'no-cors'
-  }).then(() => {
+  const done = () => {
     const list = document.getElementById('bless-list');
-    const noEl = list.querySelector('.no-bless');
-    if (noEl) noEl.remove();
-    const item = document.createElement('div');
-    item.className = 'bless-item';
-    item.innerHTML = `
-      <div class="bless-avatar">${name[0].toUpperCase()}</div>
+    const noEl = list.querySelector('.no-bless'); if (noEl) noEl.remove();
+    const item = document.createElement('div'); item.className = 'bless-item';
+    item.innerHTML = `<div class="bless-avatar">${name[0].toUpperCase()}</div>
       <div class="bless-content">
         <div class="bless-name">${escHtml(name)}</div>
         <div class="bless-msg">${escHtml(msg)}</div>
@@ -1484,28 +1081,27 @@ function submitBlessing() {
       </div>`;
     list.prepend(item);
     document.getElementById('bless-name').value = '';
-    document.getElementById('bless-msg').value  = '';
+    document.getElementById('bless-msg').value = '';
     btn.disabled = false; btn.textContent = '💌 ส่งคำอวยพร';
     toast('ขอบคุณสำหรับคำอวยพร 💕');
-  }).catch(() => {
-    btn.disabled = false; btn.textContent = '💌 ส่งคำอวยพร';
-    toast('เกิดข้อผิดพลาด กรุณาลองใหม่ 🙏');
-  });
+  };
+  if (!SCRIPT_URL) { setTimeout(done, 600); return; }
+  fetch(SCRIPT_URL, {
+    method:'POST', body:JSON.stringify({action:'bless',name,message:msg}),
+    headers:{'Content-Type':'application/json'}, mode:'no-cors'
+  }).then(done).catch(() => { btn.disabled=false; btn.textContent='💌 ส่งคำอวยพร'; toast('เกิดข้อผิดพลาด 🙏'); });
 }
 
-// ── RSVP ─────────────────────────────────────────────────────
+// ── RSVP ─────────────────────────────────────────────
 function selectSide(s) {
   selectedSide = s;
-  document.getElementById('side-m').classList.toggle('selected', s === 'm');
-  document.getElementById('side-p').classList.toggle('selected', s === 'p');
+  document.getElementById('side-m').classList.toggle('selected', s==='m');
+  document.getElementById('side-p').classList.toggle('selected', s==='p');
 }
-
 function toggleCalNotice() {
   const email = document.getElementById('r-email').value.trim();
-  const notice = document.getElementById('cal-notice');
-  if (notice) notice.classList.toggle('show', email.length > 0);
+  document.getElementById('cal-notice').classList.toggle('show', email.length > 0);
 }
-
 function submitRSVP() {
   const name     = document.getElementById('r-name').value.trim();
   const count    = parseInt(document.getElementById('r-count').value) || 1;
@@ -1513,91 +1109,57 @@ function submitRSVP() {
   const email    = document.getElementById('r-email').value.trim();
   const relation = document.getElementById('r-relation').value.trim();
   const note     = document.getElementById('r-note').value.trim();
-
   if (!name)         { toast('กรุณากรอกชื่อ-นามสกุล 🙏'); return; }
   if (!selectedSide) { toast('กรุณาเลือกฝั่งก่อนนะคะ 💙🩷'); return; }
-  if (count < 1)     { toast('จำนวนคนต้องมากกว่า 0 คน'); return; }
-
-  const btn  = document.getElementById('rsvp-btn');
+  const btn = document.getElementById('rsvp-btn');
   const btnT = document.getElementById('rsvp-btn-text');
   btn.disabled = true; btnT.textContent = '⏳ กำลังบันทึก...';
-
-  const payload = {
-    action: 'rsvp',
-    name, count, phone, email,
-    side: selectedSide === 'm' ? 'ฝั่งเอ็ม' : 'ฝั่งแป้ง',
-    relation, note
-  };
-
   const onSuccess = (newCount) => {
     document.getElementById('rsvp-form-wrap').style.display = 'none';
-    const sc = document.getElementById('rsvp-success');
-    sc.classList.add('show');
-    document.getElementById('success-msg-text').innerHTML = `
-      <strong>${escHtml(name)}</strong> และอีก ${count > 1 ? count - 1 + ' คน ' : ''}ได้ยืนยันการมาร่วมงานแล้ว<br><br>
-      เราตั้งตารอพบคุณในวันงาน 🥂<br>
-      <strong>วันเสาร์ที่ 28 พฤศจิกายน 2569 · 14:00 น.</strong><br>
-      ธาราเทอเรส · นครปฐม
-    `;
-    if (email) {
-      const calNote = document.getElementById('success-cal-note');
-      if (calNote) calNote.style.display = 'inline-block';
-    }
-    // Update tree
-    if (newCount !== undefined) updateTree(newCount);
-    else updateTree(guestCount + count);
+    document.getElementById('rsvp-success').classList.add('show');
+    document.getElementById('success-msg-text').innerHTML =
+      `<strong>${escHtml(name)}</strong> ยืนยันการมาร่วมงานแล้ว 🎉<br><br>
+       <strong>28 พ.ย. 2569 · 14:00 น.</strong><br>ธาราเทอเรส · นครปฐม 🥂`;
+    if (email) { const c = document.getElementById('success-cal-note'); if(c) c.style.display='block'; }
+    updateTree(newCount !== undefined ? newCount : guestCount + count);
     toast('ยืนยันเรียบร้อยแล้ว ขอบคุณมากเลย 💕');
   };
-
-  if (!SCRIPT_URL) {
-    setTimeout(() => onSuccess(guestCount + count), 800);
-    return;
-  }
-
+  const payload = { action:'rsvp', name, count, phone, email,
+    side: selectedSide==='m'?'ฝั่งเอ็ม':'ฝั่งแป้ง', relation, note };
+  if (!SCRIPT_URL) { setTimeout(() => onSuccess(guestCount+count), 800); return; }
   fetch(SCRIPT_URL, {
-    method: 'POST',
-    body: JSON.stringify(payload),
-    headers: { 'Content-Type': 'application/json' },
-    mode: 'no-cors'
-  }).then(() => {
-    onSuccess(guestCount + count);
-  }).catch(() => {
-    btn.disabled = false;
-    btnT.textContent = '💌 ยืนยันการร่วมงาน';
-    toast('เกิดข้อผิดพลาด กรุณาลองใหม่ 🙏');
-  });
+    method:'POST', body:JSON.stringify(payload),
+    headers:{'Content-Type':'application/json'}, mode:'no-cors'
+  }).then(() => onSuccess(guestCount+count))
+    .catch(() => { btn.disabled=false; btnT.textContent='💌 ยืนยันการร่วมงาน'; toast('เกิดข้อผิดพลาด 🙏'); });
 }
 
-// ── UTILS ─────────────────────────────────────────────────────
+// ── UTILS ─────────────────────────────────────────────
 function escHtml(s) {
-  return String(s)
-    .replace(/&/g,'&amp;')
-    .replace(/</g,'&lt;')
-    .replace(/>/g,'&gt;')
-    .replace(/"/g,'&quot;');
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
-
-function toast(msg, dur = 2800) {
+function toast(msg, dur=2800) {
   const t = document.getElementById('inv-toast');
-  t.textContent = msg;
-  t.classList.add('show');
+  t.textContent = msg; t.classList.add('show');
   setTimeout(() => t.classList.remove('show'), dur);
 }
 
-// Init tree at 0
+// ── INIT ──────────────────────────────────────────────
 updateTree(0);
+startCountdown();
+loadStats();
+triggerVisibleFades();
 
-// ── REORDER: move tree section before story section ──────────
-(function reorder() {
-  const tree  = document.getElementById('sec-tree');
-  const story = document.getElementById('sec-story');
-  if (!tree || !story || !story.parentNode) return;
-  // Insert spacer + tree just before story section
-  const spacer = document.createElement('div');
-  spacer.className = 'sec-spacer';
-  story.parentNode.insertBefore(spacer, story);
-  story.parentNode.insertBefore(tree, spacer);
-})();
+// Floating petals
+const petalList = ['🌸','🌺','🌷','💐','🌼'];
+for (let i = 0; i < 8; i++) {
+  const p = document.createElement('span');
+  p.className = 'page-petal';
+  p.textContent = petalList[i % petalList.length];
+  p.style.cssText = `left:${5+Math.random()*90}%;animation-duration:${9+Math.random()*8}s;animation-delay:${Math.random()*10}s;font-size:${0.7+Math.random()*0.7}rem;`;
+  document.body.appendChild(p);
+}
+
 </script>
 </body>
 </html>
