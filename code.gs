@@ -55,7 +55,6 @@ function doGet(e) {
       result.summary_msg   = rfixed.msg;
       result.dashboard_msg = rfixed.msg;
     } else if (action === 'stats') {
-      // สำหรับ invite page — นับแขกและดึงคำอวยพร
       var guests = getGuests(ss);
       var totalSeats = 0;
       for (var gi = 0; gi < guests.length; gi++) {
@@ -63,6 +62,19 @@ function doGet(e) {
       }
       result.guestCount = totalSeats;
       result.blessings  = getBlessings(ss);
+
+    } else if (action === 'rsvp') {
+      saveRsvpGuest(ss, e.parameter);
+      var guestsAfter = getGuests(ss);
+      var total = 0;
+      for (var ri = 0; ri < guestsAfter.length; ri++) {
+        total += (parseInt(guestsAfter[ri].seats) || 1);
+      }
+      result.guestCount = total;
+
+    } else if (action === 'bless') {
+      saveBlessing(ss, e.parameter);
+
     } else {
       result.message = 'unknown action';
     }

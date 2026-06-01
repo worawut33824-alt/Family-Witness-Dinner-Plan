@@ -1468,33 +1468,33 @@ function submitBlessing() {
     return;
   }
 
-  fetch(SCRIPT_URL, {
-    method: 'POST',
-    body: JSON.stringify(payload),
-    headers: { 'Content-Type': 'text/plain' },
-    mode: 'no-cors'
-  }).then(() => {
-    const list = document.getElementById('bless-list');
-    const noEl = list.querySelector('.no-bless');
-    if (noEl) noEl.remove();
-    const item = document.createElement('div');
-    item.className = 'bless-item';
-    item.innerHTML = `
-      <div class="bless-avatar">${name[0].toUpperCase()}</div>
-      <div class="bless-content">
-        <div class="bless-name">${escHtml(name)}</div>
-        <div class="bless-msg">${escHtml(msg)}</div>
-        <div class="bless-date">เมื่อกี้นี้</div>
-      </div>`;
-    list.prepend(item);
-    document.getElementById('bless-name').value = '';
-    document.getElementById('bless-msg').value  = '';
-    btn.disabled = false; btn.textContent = '💌 ส่งคำอวยพร';
-    toast('ขอบคุณสำหรับคำอวยพร 💕');
-  }).catch(() => {
-    btn.disabled = false; btn.textContent = '💌 ส่งคำอวยพร';
-    toast('เกิดข้อผิดพลาด กรุณาลองใหม่ 🙏');
+  const params = new URLSearchParams({
+    action: 'bless',
+    name:    name,
+    message: msg.substring(0, 500)
   });
+  fetch(SCRIPT_URL + '?' + params.toString())
+    .then(r => r.json())
+    .then(() => {
+      const list = document.getElementById('bless-list');
+      const noEl = list.querySelector('.no-bless'); if (noEl) noEl.remove();
+      const item = document.createElement('div'); item.className = 'bless-item';
+      item.innerHTML = `
+        <div class="bless-avatar">${name[0].toUpperCase()}</div>
+        <div class="bless-content">
+          <div class="bless-name">${escHtml(name)}</div>
+          <div class="bless-msg">${escHtml(msg)}</div>
+          <div class="bless-date">เมื่อกี้นี้</div>
+        </div>`;
+      list.prepend(item);
+      document.getElementById('bless-name').value = '';
+      document.getElementById('bless-msg').value  = '';
+      btn.disabled = false; btn.textContent = '💌 ส่งคำอวยพร';
+      toast('ขอบคุณสำหรับคำอวยพร 💕');
+    }).catch(() => {
+      btn.disabled = false; btn.textContent = '💌 ส่งคำอวยพร';
+      toast('เกิดข้อผิดพลาด กรุณาลองใหม่ 🙏');
+    });
 }
 
 // ── RSVP ─────────────────────────────────────────────────────
@@ -1558,18 +1558,24 @@ function submitRSVP() {
     return;
   }
 
-  fetch(SCRIPT_URL, {
-    method: 'POST',
-    body: JSON.stringify(payload),
-    headers: { 'Content-Type': 'text/plain' },
-    mode: 'no-cors'
-  }).then(() => {
-    onSuccess(guestCount + count);
-  }).catch(() => {
-    btn.disabled = false;
-    btnT.textContent = '💌 ยืนยันการร่วมงาน';
-    toast('เกิดข้อผิดพลาด กรุณาลองใหม่ 🙏');
+  const params = new URLSearchParams({
+    action:   'rsvp',
+    name:     name,
+    count:    String(count),
+    phone:    phone,
+    email:    email,
+    side:     selectedSide === 'm' ? 'ฝั่งเอ็ม' : 'ฝั่งแป้ง',
+    relation: relation,
+    note:     note.substring(0, 300)
   });
+  fetch(SCRIPT_URL + '?' + params.toString())
+    .then(r => r.json())
+    .then(data => { onSuccess(data.guestCount); })
+    .catch(() => {
+      btn.disabled = false;
+      btnT.textContent = '💌 ยืนยันการร่วมงาน';
+      toast('เกิดข้อผิดพลาด กรุณาลองใหม่ 🙏');
+    });
 }
 
 // ── UTILS ─────────────────────────────────────────────────────
