@@ -54,6 +54,15 @@ function doGet(e) {
       result.ok            = rfixed.ok;
       result.summary_msg   = rfixed.msg;
       result.dashboard_msg = rfixed.msg;
+    } else if (action === 'stats') {
+      // สำหรับ invite page — นับแขกและดึงคำอวยพร
+      var guests = getGuests(ss);
+      var totalSeats = 0;
+      for (var gi = 0; gi < guests.length; gi++) {
+        totalSeats += (parseInt(guests[gi].seats) || 1);
+      }
+      result.guestCount = totalSeats;
+      result.blessings  = getBlessings(ss);
     } else {
       result.message = 'unknown action';
     }
@@ -74,11 +83,24 @@ function doPost(e) {
     var body = JSON.parse(e.postData.contents);
     var ss   = SpreadsheetApp.getActiveSpreadsheet();
 
-    if (body.expenses  !== undefined) saveExpenses(ss, body.expenses);
-    if (body.contacts  !== undefined) saveContacts(ss, body.contacts);
-    if (body.checklist !== undefined) saveChecklist(ss, body.checklist);
-    if (body.guests    !== undefined) saveGuests(ss, body.guests);
-    if (body.budget    !== undefined) saveBudget(ss, body.budget);
+    // --- invite page actions ---
+    if (body.action === 'rsvp') {
+      saveRsvpGuest(ss, body);
+      var guests = getGuests(ss);
+      var total = 0;
+      for (var gi = 0; gi < guests.length; gi++) total += (parseInt(guests[gi].seats) || 1);
+      result.guestCount = total;
+    } else if (body.action === 'bless') {
+      saveBlessing(ss, body);
+
+    // --- planner app actions ---
+    } else {
+      if (body.expenses  !== undefined) saveExpenses(ss, body.expenses);
+      if (body.contacts  !== undefined) saveContacts(ss, body.contacts);
+      if (body.checklist !== undefined) saveChecklist(ss, body.checklist);
+      if (body.guests    !== undefined) saveGuests(ss, body.guests);
+      if (body.budget    !== undefined) saveBudget(ss, body.budget);
+    }
   } catch (err) {
     result.status = 'error';
     result.error  = err.toString();
@@ -87,6 +109,68 @@ function doPost(e) {
   return ContentService
     .createTextOutput(JSON.stringify(result))
     .setMimeType(ContentService.MimeType.JSON);
+}
+
+// --- RSVP (invite page — บันทึกแขกรายบุคคล) -------------------------
+function saveRsvpGuest(ss, body) {
+  var sheet = ss.getSheetByName('แขก');
+  if (!sheet) {
+    sheet = ss.insertSheet('แขก');
+    sheet.getRange(1, 1, 1, 8).setValues([[
+      'ชื่อ', 'ฝั่ง', 'เบอร์โทร', 'ความสัมพันธ์',
+      'ที่นั่ง', 'สถานะ', 'อาหาร/แพ้อาหาร', 'หมายเหตุ'
+    ]]).setFontWeight('bold');
+    sheet.setFrozenRows(1);
+  }
+  var lastRow = sheet.getLastRow();
+  sheet.getRange(lastRow + 1, 1, 1, 8).setValues([[
+    body.name    || '',
+    body.side    || '',
+    body.phone   || '',
+    body.relation|| '',
+    parseInt(body.count) || 1,
+    'confirmed',
+    body.email   || '',
+    body.note    || ''
+  ]]);
+}
+
+// --- BLESSINGS -------------------------------------------------------
+function getBlessings(ss) {
+  var sheet = ss.getSheetByName('คำอวยพร');
+  if (!sheet) return [];
+  var lastRow = sheet.getLastRow();
+  if (lastRow < 2) return [];
+  var data = sheet.getRange(2, 1, lastRow - 1, 3).getValues();
+  var list = [];
+  for (var i = data.length - 1; i >= 0; i--) {
+    if (!data[i][1]) continue;
+    list.push({
+      date:    String(data[i][0] || ''),
+      name:    String(data[i][1] || ''),
+      message: String(data[i][2] || '')
+    });
+  }
+  return list.slice(0, 50);
+}
+
+function saveBlessing(ss, body) {
+  var sheet = ss.getSheetByName('คำอวยพร');
+  if (!sheet) {
+    sheet = ss.insertSheet('คำอวยพร');
+    sheet.getRange(1, 1, 1, 3).setValues([['วันที่', 'ชื่อ', 'ข้อความ']]).setFontWeight('bold');
+    sheet.setFrozenRows(1);
+    sheet.setColumnWidth(1, 140);
+    sheet.setColumnWidth(2, 150);
+    sheet.setColumnWidth(3, 400);
+  }
+  var dateStr = Utilities.formatDate(new Date(), 'Asia/Bangkok', 'dd/MM/yyyy HH:mm');
+  var lastRow = sheet.getLastRow();
+  sheet.getRange(lastRow + 1, 1, 1, 3).setValues([[
+    dateStr,
+    String(body.name    || '').substring(0, 80),
+    String(body.message || '').substring(0, 500)
+  ]]);
 }
 
 // --- EXPENSES ----------------------------------------------------------------
