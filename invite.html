@@ -1266,7 +1266,7 @@ const GUEST_GOAL   = 100;
 let selectedSide   = '';
 let guestCount     = 0;
 
-// Read surl from URL params or localStorage
+// Read surl from URL params or localStorage (hardcoded URL is fallback)
 (function() {
   try {
     const p = new URLSearchParams(window.location.search).get('surl');
@@ -1274,7 +1274,11 @@ let guestCount     = 0;
       SCRIPT_URL = p;
       localStorage.setItem('invite_script_url', p);
     } else {
-      SCRIPT_URL = localStorage.getItem('invite_script_url') || '';
+      const stored = localStorage.getItem('invite_script_url');
+      if (stored && stored.startsWith('https://script.google.com/')) {
+        SCRIPT_URL = stored;
+      }
+      // ถ้าไม่มีใน localStorage ก็ใช้ hardcoded URL ที่ตั้งไว้แล้วข้างบน
     }
   } catch(e) {}
   if (!SCRIPT_URL) {
