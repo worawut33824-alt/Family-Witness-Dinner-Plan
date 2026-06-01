@@ -184,19 +184,20 @@ a { color: inherit; }
 .cd-box.pop.d4 { animation-delay: 0.35s; }
 
 /* ════════════════════════════════════════════════
-   ENVELOPE OVERLAY — Scene-based realistic style
+   ENVELOPE OVERLAY
 ════════════════════════════════════════════════ */
 #overlay {
   position: fixed;
   inset: 0;
   background:
-    radial-gradient(ellipse at 50% 45%, #FAF4EC 0%, #F0E6D4 55%, #E2D4BC 100%);
+    radial-gradient(ellipse 80% 70% at 50% 42%,
+      #F8F2EA 0%, #EDE3D4 50%, #DFD0BC 100%);
   z-index: 900;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 28px;
+  gap: 32px;
   overflow: hidden;
   padding: 32px 20px;
   transition: opacity 1s ease, transform 1s ease;
@@ -207,128 +208,140 @@ a { color: inherit; }
   transform: scale(0.97);
 }
 
-/* Scene decorations (dried leaves / florals) */
+/* Subtle vignette */
+#overlay::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse 90% 90% at 50% 50%,
+    transparent 55%, rgba(60,45,30,0.18) 100%);
+  pointer-events: none;
+}
+
+/* Decorative scene elements */
 .env-deco {
   position: absolute;
   pointer-events: none;
   line-height: 1;
   user-select: none;
 }
-.env-deco.d-tl { top: 7%;  left: 5%;  font-size: 2.6rem; opacity: 0.22; transform: rotate(-28deg); }
-.env-deco.d-tr { top: 10%; right: 6%; font-size: 2rem;   opacity: 0.28; transform: rotate(18deg); }
-.env-deco.d-bl { bottom: 16%; left: 4%;  font-size: 1.8rem; opacity: 0.18; transform: rotate(-12deg); }
-.env-deco.d-br { bottom: 20%; right: 5%; font-size: 2.2rem; opacity: 0.22; transform: rotate(22deg); }
-.env-deco.d-mm { top: 18%; left: 50%; font-size: 1rem; opacity: 0.14; transform: translateX(-50%) rotate(5deg); }
+.env-deco.d-tl { top: 6%;  left: 4%;  font-size: 3rem;   opacity: 0.18; transform: rotate(-30deg); }
+.env-deco.d-tr { top: 8%;  right: 5%; font-size: 2.4rem; opacity: 0.22; transform: rotate(20deg); }
+.env-deco.d-bl { bottom: 14%; left: 3%;  font-size: 2rem;   opacity: 0.16; transform: rotate(-15deg); }
+.env-deco.d-br { bottom: 18%; right: 4%; font-size: 2.6rem; opacity: 0.18; transform: rotate(25deg); }
+.env-deco.d-mm { top: 15%; left: 50%; font-size: 1.2rem; opacity: 0.12; transform: translateX(-50%); }
 
 /* ════════════════════════════════════════════════
-   ENVELOPE — Classic diamond-fold (kraft style)
+   ENVELOPE — Classic diamond fold
 ════════════════════════════════════════════════ */
 .env-3d-wrap {
-  width: min(400px, 88vw);
+  width: min(420px, 90vw);
   cursor: pointer;
   filter:
-    drop-shadow(0 20px 40px rgba(60,70,90,0.28))
-    drop-shadow(0 6px 14px rgba(60,70,90,0.16));
-  transition: transform 0.35s ease, filter 0.35s ease;
+    drop-shadow(0 28px 56px rgba(40,55,70,0.38))
+    drop-shadow(0 8px 20px rgba(40,55,70,0.22))
+    drop-shadow(0 2px 4px rgba(40,55,70,0.14));
+  transition: transform 0.35s cubic-bezier(.22,1,.36,1),
+              filter 0.35s ease;
+  position: relative; z-index: 1;
 }
 .env-3d-wrap:hover {
-  transform: translateY(-6px) rotate(0.4deg);
+  transform: translateY(-8px) rotate(0.5deg);
   filter:
-    drop-shadow(0 28px 52px rgba(60,70,90,0.32))
-    drop-shadow(0 8px 18px rgba(60,70,90,0.20));
+    drop-shadow(0 36px 64px rgba(40,55,70,0.42))
+    drop-shadow(0 10px 24px rgba(40,55,70,0.26));
 }
 
 .env-3d {
   position: relative;
   width: 100%;
-  padding-top: 68%;        /* ~1.47:1 classic envelope ratio */
+  padding-top: 66%;
   overflow: visible;
-  perspective: 1400px;
+  perspective: 1600px;
 }
 
-/* ── Base: full envelope back face ── */
+/* ── Base layer ── */
 .env-3d-base {
   position: absolute; inset: 0;
   background:
     repeating-linear-gradient(
-      45deg,
-      rgba(255,255,255,0.045) 0, rgba(255,255,255,0.045) 1px,
-      transparent 1px, transparent 5px
+      0deg, rgba(255,255,255,0) 0px, rgba(255,255,255,0) 3px,
+      rgba(255,255,255,0.025) 3px, rgba(255,255,255,0.025) 4px
     ),
     repeating-linear-gradient(
-      -45deg,
-      rgba(255,255,255,0.03) 0, rgba(255,255,255,0.03) 1px,
-      transparent 1px, transparent 5px
+      90deg, rgba(255,255,255,0) 0px, rgba(255,255,255,0) 3px,
+      rgba(255,255,255,0.018) 3px, rgba(255,255,255,0.018) 4px
     ),
-    linear-gradient(155deg, #BCCFDF 0%, #A4BECF 55%, #92B0C6 100%);
-  box-shadow:
-    inset 0 0 0 1px rgba(255,255,255,0.18);
+    linear-gradient(145deg, #B0C8DA 0%, #9AB8CA 100%);
+  border-radius: 2px;
 }
 
-/* ── Card/letter inside the envelope ── */
+/* ── Card/letter inside ── */
 .env-card-inside {
   position: absolute;
-  bottom: 0; left: 8%; right: 8%;
-  height: 80%;
-  background:
-    linear-gradient(160deg, #FFFDF8 0%, #FFF8EE 100%);
+  bottom: 2%; left: 9%; right: 9%;
+  height: 78%;
+  background: linear-gradient(160deg, #FFFEF9 0%, #FFF9F0 100%);
   border-radius: 3px 3px 2px 2px;
-  border: 1px solid rgba(201,169,110,0.25);
+  border: 1px solid rgba(201,169,110,0.22);
   box-shadow:
-    0 2px 10px rgba(0,0,0,0.10),
-    inset 0 1px 0 rgba(255,255,255,0.8);
+    0 -2px 12px rgba(0,0,0,0.09),
+    0 2px 6px rgba(0,0,0,0.06),
+    inset 0 1px 0 rgba(255,255,255,0.9);
   z-index: 4;
-  transform: translateY(60%);
-  transition: transform 0.9s cubic-bezier(0.34,1.26,0.64,1);
+  transform: translateY(65%);
+  transition: transform 1s cubic-bezier(0.34,1.2,0.64,1);
   display: flex; align-items: center; justify-content: center;
   flex-direction: column; gap: 10px;
-  padding: 20px;
+  padding: 18px 22px;
   overflow: hidden;
 }
-.env-card-inside.revealed {
-  transform: translateY(-18%);
-}
+.env-card-inside.revealed { transform: translateY(-22%); }
+
 .env-card-divider {
-  width: 55%; height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(201,169,110,0.55), transparent);
-}
-.env-card-text {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: clamp(0.78rem, 2.5vw, 0.92rem);
-  color: #9A7848;
-  letter-spacing: 3px;
-  text-align: center;
-  font-style: italic;
-  line-height: 1.6;
+  width: 60%; height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(180,145,90,0.5), transparent);
 }
 .env-card-names {
   font-family: 'Cormorant Garamond', serif;
-  font-size: clamp(1.1rem, 4vw, 1.5rem);
+  font-size: clamp(1.1rem, 4vw, 1.55rem);
   font-style: italic;
-  color: #7A5C38;
+  color: #7A5C35;
   text-align: center;
+  line-height: 1.2;
+}
+.env-card-text {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(0.7rem, 2.2vw, 0.85rem);
+  color: #9A7848;
+  letter-spacing: 3px;
+  text-align: center;
+  font-style: normal;
+  line-height: 1.8;
+  text-transform: uppercase;
 }
 
-/* ── Bottom fold triangle — darkest ── */
+/* ── Bottom triangle — deepest shadow ── */
 .env-tri-bottom {
   position: absolute; inset: 0;
   clip-path: polygon(0 100%, 100% 100%, 50% 50%);
-  background: linear-gradient(175deg, #6C9CB6 0%, #5E8EA8 100%);
+  background: linear-gradient(175deg, #4A7490 0%, #3C6278 60%, #305468 100%);
 }
-/* ── Left fold ── */
+
+/* ── Left triangle ── */
 .env-tri-left {
   position: absolute; inset: 0;
   clip-path: polygon(0 0, 0 100%, 50% 50%);
-  background: linear-gradient(90deg, #94B8CE 0%, #A2C2D2 100%);
+  background: linear-gradient(95deg, #7AAEC4 0%, #8ABCCC 100%);
 }
-/* ── Right fold ── */
+
+/* ── Right triangle — slightly darker than left ── */
 .env-tri-right {
   position: absolute; inset: 0;
   clip-path: polygon(100% 0, 100% 100%, 50% 50%);
-  background: linear-gradient(-90deg, #88AEC8 0%, #96B8CC 100%);
+  background: linear-gradient(-95deg, #6A9EB8 0%, #7AACC0 100%);
 }
 
-/* ── Fold crease lines (SVG) ── */
+/* ── Fold crease SVG ── */
 .env-fold-svg {
   position: absolute; inset: 0;
   width: 100%; height: 100%;
@@ -336,123 +349,141 @@ a { color: inherit; }
   z-index: 6;
 }
 
-/* ── TOP FLAP — V-tip reaches CENTER (50%, 50%) ── */
+/* ── Top flap — lightest (faces upward) ── */
 .env-tri-top {
   position: absolute; inset: 0;
   clip-path: polygon(0 0, 100% 0, 50% 50%);
   background:
     repeating-linear-gradient(
       45deg,
-      rgba(255,255,255,0.05) 0, rgba(255,255,255,0.05) 1px,
+      rgba(255,255,255,0.06) 0, rgba(255,255,255,0.06) 1px,
       transparent 1px, transparent 5px
     ),
-    linear-gradient(168deg, #CCD8E4 0%, #B8CADE 45%, #A4BCD4 100%);
+    linear-gradient(165deg, #D8E8F2 0%, #C6D8E8 35%, #B4CADA 70%, #A4BED0 100%);
   transform-origin: top center;
-  transition: transform 1.15s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: transform 1.2s cubic-bezier(0.4, 0, 0.2, 1);
   backface-visibility: hidden;
   z-index: 10;
 }
 .env-tri-top.open {
-  transform: perspective(1400px) rotateX(-178deg);
+  transform: perspective(1600px) rotateX(-176deg);
 }
-/* Inner face of flap (shows when rotating past 90°) */
 .env-tri-top::after {
   content: '';
   position: absolute; inset: 0;
   clip-path: polygon(0 0, 100% 0, 50% 50%);
-  background: linear-gradient(168deg, #8AAEC4 0%, #7298B0 100%);
+  background: linear-gradient(165deg, #7EA8C0 0%, #6C94AC 100%);
   transform: rotateX(180deg);
   backface-visibility: visible;
 }
 
-/* ── Wax Seal — at center (where all folds meet) ── */
+/* ── Wax seal — center of envelope ── */
 .env-seal-3d {
   position: absolute;
   top: 50%; left: 50%;
   transform: translate(-50%, -50%);
-  width: 76px; height: 76px;
+  width: 82px; height: 82px;
   border-radius: 50%;
   background:
-    radial-gradient(circle at 34% 28%, #EEC878 0%, #C9A86C 45%, #A07832 80%, #8A6020 100%);
+    radial-gradient(circle at 33% 27%,
+      #F2CE80 0%, #CEAB60 35%, #A88030 65%, #8A6418 100%);
   box-shadow:
-    0 5px 16px rgba(80,50,10,0.40),
-    0 2px 5px rgba(80,50,10,0.28),
-    inset 0 1.5px 3px rgba(255,255,255,0.55),
-    inset 0 -1px 3px rgba(0,0,0,0.18);
+    0 6px 20px rgba(70,45,10,0.48),
+    0 2px 6px rgba(70,45,10,0.30),
+    inset 0 2px 4px rgba(255,240,180,0.60),
+    inset 0 -2px 4px rgba(0,0,0,0.22);
   display: flex; align-items: center; justify-content: center;
   z-index: 15;
-  transition:
-    transform 0.45s cubic-bezier(0.34,1.26,0.64,1),
-    opacity   0.45s ease;
-  overflow: hidden;
+  transition: transform 0.45s cubic-bezier(0.34,1.26,0.64,1),
+              opacity 0.45s ease;
+  overflow: visible;
 }
-/* Scalloped outer ring */
+/* Outer scalloped gold ring */
 .env-seal-3d::before {
   content: '';
   position: absolute;
-  inset: -4px;
+  inset: -5px;
   border-radius: 50%;
   background:
-    radial-gradient(circle at 34% 28%, #D8A84C 0%, #B08830 60%, #8A6820 100%);
+    radial-gradient(circle at 33% 27%,
+      #DAA840 0%, #B88A20 55%, #8A6410 100%);
   z-index: -1;
   clip-path: polygon(
-    50% 0%, 61% 4%, 70% 0%, 76% 7%, 85% 5%, 88% 14%,
-    97% 15%, 97% 25%, 100% 30%, 95% 38%, 100% 45%,
-    95% 52%, 98% 60%, 92% 65%, 93% 74%, 86% 76%,
-    84% 85%, 76% 85%, 72% 94%, 63% 91%, 56% 98%,
-    47% 94%, 39% 97%, 33% 91%, 24% 93%, 20% 85%,
-    12% 84%, 10% 74%, 3% 70%, 5% 61%, 0% 55%,
-    4% 46%, 0% 38%, 5% 31%, 2% 22%, 10% 18%,
-    10% 9%, 19% 7%, 22% -1%, 31% 2%, 38% -2%
+    50% 0%, 57% 2%, 63% 0%, 68% 3%, 74% 1%, 78% 6%,
+    84% 5%, 87% 10%, 93% 10%, 95% 16%, 100% 18%,
+    100% 24%, 100% 31%, 97% 36%, 100% 42%,
+    98% 48%, 100% 54%, 97% 59%, 99% 65%,
+    95% 70%, 95% 76%, 90% 80%, 88% 86%,
+    82% 88%, 79% 94%, 73% 95%, 69% 100%,
+    63% 99%, 57% 100%, 50% 98%,
+    43% 100%, 37% 99%, 31% 100%,
+    27% 95%, 21% 94%, 18% 88%,
+    12% 86%, 10% 80%, 5% 76%,
+    5% 70%, 1% 65%, 3% 59%,
+    0% 54%, 2% 48%, 0% 42%,
+    3% 36%, 0% 31%, 0% 24%, 0% 18%,
+    5% 16%, 7% 10%, 13% 10%, 16% 5%,
+    22% 1%, 26% 3%, 32% 0%, 37% 2%, 43% 0%
   );
 }
+/* Inner emboss ring */
+.env-seal-3d::after {
+  content: '';
+  position: absolute;
+  inset: 6px;
+  border-radius: 50%;
+  border: 1px solid rgba(255,220,120,0.35);
+  box-shadow: inset 0 1px 3px rgba(255,240,180,0.25);
+  pointer-events: none;
+  z-index: 1;
+}
 .env-seal-3d img {
-  width: 50px; height: 50px;
+  width: 52px; height: 52px;
   object-fit: contain; border-radius: 50%;
-  filter: brightness(1.08) contrast(0.82) opacity(0.88);
+  filter: brightness(1.05) contrast(0.85) opacity(0.9);
+  position: relative; z-index: 2;
 }
 
-/* Seal animation states */
 .env-seal-3d.crack {
-  transform: translate(-50%, -50%) scale(1.22) rotate(6deg);
+  transform: translate(-50%, -50%) scale(1.25) rotate(7deg);
 }
 .env-seal-3d.gone {
-  transform: translate(-30%, -120%) scale(0.3) rotate(28deg);
+  transform: translate(-20%, -130%) scale(0.25) rotate(32deg);
   opacity: 0;
-  transition: transform 0.55s ease-in, opacity 0.45s ease-in;
+  transition: transform 0.6s ease-in, opacity 0.5s ease-in;
 }
 
 /* ── Open button ── */
 .env-open-btn {
   display: flex; align-items: center; gap: 10px;
-  background: linear-gradient(135deg, #8BAEC8 0%, #7A9EBB 100%);
+  background: linear-gradient(135deg, #7B9CBF 0%, #6A8CAF 100%);
   color: var(--white);
   border: none;
-  padding: 14px 38px;
+  padding: 15px 42px;
   border-radius: 50px;
   font-family: 'Sarabun', sans-serif;
-  font-size: 0.98rem;
+  font-size: 1rem;
   font-weight: 500;
   cursor: pointer;
   letter-spacing: 1.5px;
   box-shadow:
-    0 6px 24px rgba(80,115,160,0.30),
-    0 2px 6px rgba(80,115,160,0.18);
-  transition: transform 0.22s, background 0.22s, box-shadow 0.22s;
+    0 8px 28px rgba(70,100,140,0.35),
+    0 2px 6px rgba(70,100,140,0.20),
+    inset 0 1px 0 rgba(255,255,255,0.22);
+  transition: transform 0.22s, box-shadow 0.22s;
+  position: relative; z-index: 1;
 }
 .env-open-btn:hover {
-  background: linear-gradient(135deg, #7A9EBB 0%, #698EAB 100%);
-  transform: translateY(-2px);
-  box-shadow: 0 10px 32px rgba(80,115,160,0.40);
+  transform: translateY(-3px);
+  box-shadow: 0 14px 36px rgba(70,100,140,0.42), 0 4px 10px rgba(70,100,140,0.22);
 }
 .env-open-btn:active { transform: scale(0.96); }
 
-/* Pulse animation on button */
 @keyframes btnPulse {
-  0%,100% { box-shadow: 0 6px 24px rgba(80,115,160,0.30), 0 0 0 0 rgba(123,156,191,0.35); }
-  50%      { box-shadow: 0 6px 24px rgba(80,115,160,0.30), 0 0 0 8px rgba(123,156,191,0); }
+  0%,100% { box-shadow: 0 8px 28px rgba(70,100,140,0.35), 0 0 0 0   rgba(123,156,191,0.4); }
+  50%      { box-shadow: 0 8px 28px rgba(70,100,140,0.35), 0 0 0 10px rgba(123,156,191,0); }
 }
-.env-open-btn { animation: btnPulse 2.4s ease-in-out infinite; }
+.env-open-btn { animation: btnPulse 2.6s ease-in-out infinite; }
 
 /* ── Footer text ── */
 .env-footer {
@@ -1201,12 +1232,20 @@ footer {
       <div class="env-tri-left"></div>
       <div class="env-tri-right"></div>
 
-      <!-- Fold crease lines — all 4 diagonals meeting at center -->
+      <!-- Fold crease lines — paired highlight+shadow for realistic paper fold -->
       <svg class="env-fold-svg" viewBox="0 0 400 272" preserveAspectRatio="none">
-        <line x1="0"   y1="0"   x2="200" y2="136" stroke="rgba(255,255,255,0.22)" stroke-width="1.3"/>
-        <line x1="400" y1="0"   x2="200" y2="136" stroke="rgba(255,255,255,0.22)" stroke-width="1.3"/>
-        <line x1="0"   y1="272" x2="200" y2="136" stroke="rgba(0,0,0,0.09)"       stroke-width="1.3"/>
-        <line x1="400" y1="272" x2="200" y2="136" stroke="rgba(0,0,0,0.09)"       stroke-width="1.3"/>
+        <!-- Top-left crease: shadow + highlight -->
+        <line x1="0"   y1="0"   x2="200" y2="136" stroke="rgba(0,0,0,0.22)"       stroke-width="2.2"/>
+        <line x1="2"   y1="0"   x2="202" y2="136" stroke="rgba(255,255,255,0.32)" stroke-width="1.2"/>
+        <!-- Top-right crease -->
+        <line x1="400" y1="0"   x2="200" y2="136" stroke="rgba(0,0,0,0.22)"       stroke-width="2.2"/>
+        <line x1="398" y1="0"   x2="198" y2="136" stroke="rgba(255,255,255,0.32)" stroke-width="1.2"/>
+        <!-- Bottom-left crease: lighter (bottom panel is dark) -->
+        <line x1="0"   y1="272" x2="200" y2="136" stroke="rgba(255,255,255,0.18)" stroke-width="1.8"/>
+        <line x1="2"   y1="272" x2="202" y2="136" stroke="rgba(0,0,0,0.14)"       stroke-width="1.0"/>
+        <!-- Bottom-right crease -->
+        <line x1="400" y1="272" x2="200" y2="136" stroke="rgba(255,255,255,0.18)" stroke-width="1.8"/>
+        <line x1="398" y1="272" x2="198" y2="136" stroke="rgba(0,0,0,0.14)"       stroke-width="1.0"/>
       </svg>
 
       <!-- Top flap (V-tip at center) -->
