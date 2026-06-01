@@ -1467,7 +1467,7 @@ function submitBlessing() {
   fetch(SCRIPT_URL, {
     method: 'POST',
     body: JSON.stringify(payload),
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'text/plain' },
     mode: 'no-cors'
   }).then(() => {
     const list = document.getElementById('bless-list');
@@ -1557,7 +1557,7 @@ function submitRSVP() {
   fetch(SCRIPT_URL, {
     method: 'POST',
     body: JSON.stringify(payload),
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'text/plain' },
     mode: 'no-cors'
   }).then(() => {
     onSuccess(guestCount + count);
