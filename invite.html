@@ -211,30 +211,33 @@ a { color: inherit; }
     drop-shadow(0 7px 18px rgba(90,130,170,0.18));
 }
 .env-body {
-  position: relative; width: 100%; padding-top: 66%;
+  position: relative; width: 100%; padding-top: 70%;
   perspective: 1200px;
 }
+/* ── Base: กล่องสีซอง มุมมน ── */
 .env-base {
   position: absolute; inset: 0;
-  background: #8BAEC4; border-radius: 2px;
+  background: #8BAEC4;
+  border-radius: 6px;
+  overflow: hidden;
 }
-/* Bottom — darkest */
+/* Bottom — ลึกสุด ลงไปหาจุดกลาง */
 .env-tri-bot {
   position: absolute; inset: 0;
-  clip-path: polygon(0 100%, 100% 100%, 50% 50%);
-  background: linear-gradient(175deg, #638EA8 0%, #587E98 100%);
+  clip-path: polygon(0 100%, 100% 100%, 50% 52%);
+  background: linear-gradient(178deg, #638EA8 0%, #567C96 100%);
 }
 /* Left */
 .env-tri-left {
   position: absolute; inset: 0;
-  clip-path: polygon(0 0, 0 100%, 50% 50%);
-  background: linear-gradient(92deg, #8BAEC4 0%, #94B6CC 100%);
+  clip-path: polygon(0 0, 0 100%, 50% 52%);
+  background: linear-gradient(90deg, #7EA8C2 0%, #8AAEC4 100%);
 }
 /* Right */
 .env-tri-right {
   position: absolute; inset: 0;
-  clip-path: polygon(100% 0, 100% 100%, 50% 50%);
-  background: linear-gradient(-92deg, #82A6BC 0%, #8AAEC2 100%);
+  clip-path: polygon(100% 0, 100% 100%, 50% 52%);
+  background: linear-gradient(-90deg, #7AA4BE 0%, #86AABF 100%);
 }
 /* Fold crease SVG */
 .env-svg {
@@ -242,11 +245,12 @@ a { color: inherit; }
   width: 100%; height: 100%;
   pointer-events: none; z-index: 5;
 }
-/* Top flap — lightest, opens upward */
+/* Top flap — ฝา V ตื้น ทรงคล้าย reference */
 .env-flap {
   position: absolute; inset: 0;
-  clip-path: polygon(0 0, 100% 0, 50% 50%);
-  background: linear-gradient(165deg, #C2D2DE 0%, #AABFCE 45%, #97AEC0 100%);
+  /* V-tip ที่ ~44% ลึก ไม่ลงไปถึงกลาง */
+  clip-path: polygon(0 0, 100% 0, 50% 44%);
+  background: linear-gradient(168deg, #C8D8E4 0%, #B4C8D6 42%, #A0B8CC 100%);
   transform-origin: top center;
   transition: transform 1.1s cubic-bezier(0.4, 0, 0.2, 1);
   backface-visibility: hidden; z-index: 8;
@@ -254,8 +258,8 @@ a { color: inherit; }
 .env-flap.open { transform: perspective(1200px) rotateX(-176deg); }
 .env-flap::after {
   content: ''; position: absolute; inset: 0;
-  clip-path: polygon(0 0, 100% 0, 50% 50%);
-  background: linear-gradient(165deg, #6A8CA4 0%, #5C7E96 100%);
+  clip-path: polygon(0 0, 100% 0, 50% 44%);
+  background: linear-gradient(168deg, #6A8CA4 0%, #5A7C94 100%);
   transform: rotateX(180deg); backface-visibility: visible;
 }
 /* Seal */
@@ -1012,14 +1016,17 @@ footer {
       <div class="env-tri-bot"></div>
       <div class="env-tri-left"></div>
       <div class="env-tri-right"></div>
-      <!-- Fold crease lines -->
-      <svg class="env-svg" viewBox="0 0 400 264" preserveAspectRatio="none">
-        <line x1="0"   y1="0"   x2="200" y2="132" stroke="rgba(0,0,0,0.12)"       stroke-width="1.8"/>
-        <line x1="1.5" y1="0"   x2="201" y2="132" stroke="rgba(255,255,255,0.22)" stroke-width="1"/>
-        <line x1="400" y1="0"   x2="200" y2="132" stroke="rgba(0,0,0,0.12)"       stroke-width="1.8"/>
-        <line x1="398" y1="0"   x2="199" y2="132" stroke="rgba(255,255,255,0.22)" stroke-width="1"/>
-        <line x1="0"   y1="264" x2="200" y2="132" stroke="rgba(255,255,255,0.14)" stroke-width="1.5"/>
-        <line x1="400" y1="264" x2="200" y2="132" stroke="rgba(255,255,255,0.14)" stroke-width="1.5"/>
+      <!-- Fold crease lines — meet at center (52% down) -->
+      <svg class="env-svg" viewBox="0 0 400 280" preserveAspectRatio="none">
+        <!-- top-left crease -->
+        <line x1="0"   y1="0"   x2="200" y2="146" stroke="rgba(0,0,0,0.10)"       stroke-width="1.5"/>
+        <line x1="1.5" y1="0"   x2="201" y2="146" stroke="rgba(255,255,255,0.20)" stroke-width="0.9"/>
+        <!-- top-right crease -->
+        <line x1="400" y1="0"   x2="200" y2="146" stroke="rgba(0,0,0,0.10)"       stroke-width="1.5"/>
+        <line x1="398" y1="0"   x2="199" y2="146" stroke="rgba(255,255,255,0.20)" stroke-width="0.9"/>
+        <!-- bottom creases -->
+        <line x1="0"   y1="280" x2="200" y2="146" stroke="rgba(255,255,255,0.12)" stroke-width="1.2"/>
+        <line x1="400" y1="280" x2="200" y2="146" stroke="rgba(255,255,255,0.12)" stroke-width="1.2"/>
       </svg>
       <div class="env-flap" id="env-flap"></div>
       <div class="env-seal" id="env-seal">
