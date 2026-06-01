@@ -550,6 +550,61 @@ h2.sec-title em { font-style: italic; color: var(--blue-dk); }
 }
 
 /* ════════════════════════════════════════════════
+   VIDEO — full-bleed on mobile
+════════════════════════════════════════════════ */
+@media(max-width:640px){
+  #sec-story { padding-left: 0 !important; padding-right: 0 !important; }
+  #sec-story .sec-label,
+  #sec-story .sec-divider,
+  #sec-story h2.sec-title,
+  #sec-story > p { padding-left: 20px; padding-right: 20px; }
+  .video-wrap { border-radius: 0; }
+}
+
+/* ════════════════════════════════════════════════
+   PHOTO BREAK SECTIONS
+════════════════════════════════════════════════ */
+.photo-break {
+  padding: 0;
+  margin: 0 auto;
+  overflow: hidden;
+}
+/* single full-width photo */
+.photo-break .photo-single .photo-slot {
+  border-radius: 0;
+  aspect-ratio: 21/9;
+  max-height: 280px;
+  border: none;
+}
+/* pair of photos */
+.photo-break .photo-pair {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px;
+  max-width: 680px;
+  margin: 0 auto;
+  padding: 0 16px;
+}
+.photo-break .photo-pair .photo-slot {
+  border-radius: 10px;
+  aspect-ratio: 4/3;
+}
+/* accent (centered, smaller) */
+.photo-break .photo-accent {
+  max-width: 440px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+.photo-break .photo-accent .photo-slot {
+  border-radius: 14px;
+  aspect-ratio: 4/3;
+}
+@media(max-width:480px){
+  .photo-break .photo-pair { padding: 0 10px; gap: 3px; }
+  .photo-break .photo-single .photo-slot { aspect-ratio: 16/9; max-height: 220px; }
+}
+
+/* ════════════════════════════════════════════════
    MAP
 ════════════════════════════════════════════════ */
 #sec-map { padding-top: 80px; }
@@ -1000,15 +1055,13 @@ footer {
 
   <div class="sec-spacer"></div>
 
-  <!-- ── STORY ── -->
-  <section id="sec-story" class="fade-up" style="max-width:none; padding: 48px 24px;">
+  <!-- ── STORY (video only) ── -->
+  <section id="sec-story" class="fade-up" style="max-width:680px; margin:0 auto; padding: 48px 24px;">
     <div class="sec-label">เรื่องราวของเรา</div>
     <div class="sec-divider"></div>
     <h2 class="sec-title gold-shimmer anim from-bottom">Our <em>Love Story</em></h2>
     <p style="text-align:center;color:var(--text-lt);font-size:0.9rem;margin:12px 0 28px">ทุกเรื่องราวมีจุดเริ่มต้น — นี่คือของเราสองคน</p>
-
-    <!-- Video — ใส่ YouTube embed ID ตรงนี้ -->
-    <div class="video-wrap" id="video-wrap">
+    <div class="video-wrap anim zoom-in" id="video-wrap">
       <iframe
         src="https://www.youtube.com/embed/UTVP7uBGzGY?rel=0&showinfo=0"
         title="เรื่องราวของเรา – เอ็ม & แป้ง"
@@ -1017,26 +1070,16 @@ footer {
         allowfullscreen>
       </iframe>
     </div>
+  </section>
 
-    <!-- 5 Photo slots -->
-    <div class="photo-grid">
-      <div class="photo-slot wide anim zoom-in" id="photo-1">
-        <div class="photo-inner"><span class="ps-icon">📷</span><span>รูปที่ 1 (กว้าง)</span></div>
-      </div>
-      <div class="photo-slot anim from-left d1" id="photo-2">
-        <div class="photo-inner"><span class="ps-icon">📷</span><span>รูปที่ 2</span></div>
-      </div>
-      <div class="photo-slot anim from-right d1" id="photo-3">
-        <div class="photo-inner"><span class="ps-icon">📷</span><span>รูปที่ 3</span></div>
-      </div>
-      <div class="photo-slot anim from-left d2" id="photo-4">
-        <div class="photo-inner"><span class="ps-icon">📷</span><span>รูปที่ 4</span></div>
-      </div>
-      <div class="photo-slot anim from-right d2" id="photo-5">
-        <div class="photo-inner"><span class="ps-icon">📷</span><span>รูปที่ 5</span></div>
+  <!-- ── PHOTO BREAK 1 · รูปที่ 1 (wide) ── -->
+  <div class="photo-break" style="margin-top:4px;">
+    <div class="photo-single">
+      <div class="photo-slot anim zoom-in" id="photo-1" style="border-radius:0;aspect-ratio:21/9;max-height:280px;">
+        <div class="photo-inner"><span class="ps-icon">📷</span><span>รูปที่ 1</span></div>
       </div>
     </div>
-  </section>
+  </div>
 
   <div class="sec-spacer"></div>
 
@@ -1062,6 +1105,18 @@ footer {
       </div>
     </div>
   </section>
+
+  <!-- ── PHOTO BREAK 2 · รูปที่ 2+3 ── -->
+  <div class="photo-break" style="margin-top:32px;">
+    <div class="photo-pair">
+      <div class="photo-slot anim from-left" id="photo-2">
+        <div class="photo-inner"><span class="ps-icon">📷</span><span>รูปที่ 2</span></div>
+      </div>
+      <div class="photo-slot anim from-right" id="photo-3">
+        <div class="photo-inner"><span class="ps-icon">📷</span><span>รูปที่ 3</span></div>
+      </div>
+    </div>
+  </div>
 
   <div class="sec-spacer"></div>
 
@@ -1118,14 +1173,23 @@ footer {
     </div>
   </section>
 
+  <!-- ── PHOTO BREAK 3 · รูปที่ 4 (wide) ── -->
+  <div class="photo-break" style="margin-top:32px;">
+    <div class="photo-single">
+      <div class="photo-slot anim zoom-in" id="photo-4" style="border-radius:0;aspect-ratio:21/9;max-height:280px;">
+        <div class="photo-inner"><span class="ps-icon">📷</span><span>รูปที่ 4</span></div>
+      </div>
+    </div>
+  </div>
+
   <div class="sec-spacer"></div>
 
   <!-- ── LOVE TREE ── -->
   <section id="sec-tree" class="fade-up" style="max-width:none; border-radius:0;">
-    <div class="sec-label">ต้นไม้แห่งความรัก</div>
+    <div class="sec-label">ผู้มาร่วมงาน</div>
     <div class="sec-divider"></div>
-    <h2 class="sec-title gold-shimmer anim from-bottom">ยอดผู้มาร่วม<em>อวยพร</em></h2>
-    <p style="text-align:center;color:var(--text-lt);font-size:0.88rem;margin:10px 0 0">ต้นไม้จะเติบโตตามจำนวนผู้มาร่วมงาน · เป้าหมาย 100 คน 🌸</p>
+    <h2 class="sec-title gold-shimmer anim from-bottom">ผู้ร่วม<em>งาน</em></h2>
+    <p style="text-align:center;color:var(--text-lt);font-size:0.88rem;margin:10px 0 0">ต้นไม้จะเติบโตตามจำนวนผู้ยืนยันมาร่วมงาน · เป้าหมาย 100 คน 🌸</p>
 
     <div class="tree-stage">
       <div class="tree-svg-wrap anim from-left">
@@ -1222,6 +1286,15 @@ footer {
       <div class="tree-pct" id="tree-pct-text">0%</div>
     </div>
   </section>
+
+  <!-- ── PHOTO BREAK 4 · รูปที่ 5 (accent) ── -->
+  <div class="photo-break" style="margin-top:32px;">
+    <div class="photo-accent">
+      <div class="photo-slot anim zoom-in" id="photo-5">
+        <div class="photo-inner"><span class="ps-icon">📷</span><span>รูปที่ 5</span></div>
+      </div>
+    </div>
+  </div>
 
   <div class="sec-spacer"></div>
 
@@ -1712,6 +1785,18 @@ function toast(msg, dur = 2800) {
 
 // Init tree at 0
 updateTree(0);
+
+// ── REORDER: move tree section before story section ──────────
+(function reorder() {
+  const tree  = document.getElementById('sec-tree');
+  const story = document.getElementById('sec-story');
+  if (!tree || !story || !story.parentNode) return;
+  // Insert spacer + tree just before story section
+  const spacer = document.createElement('div');
+  spacer.className = 'sec-spacer';
+  story.parentNode.insertBefore(spacer, story);
+  story.parentNode.insertBefore(tree, spacer);
+})();
 </script>
 </body>
 </html>
