@@ -190,7 +190,7 @@ a { color: inherit; }
 ════════════════════════════════════════════════ */
 #overlay {
   position: fixed; inset: 0;
-  background: radial-gradient(ellipse at 50% 40%, #F8F6F2 0%, #EEEAE4 60%, #E4E0D8 100%);
+  background: radial-gradient(ellipse at 50% 38%, #FAFBFC 0%, #F1F5F8 55%, #E6EDF3 100%);
   z-index: 900;
   display: flex; flex-direction: column;
   align-items: center; justify-content: center;
@@ -200,49 +200,48 @@ a { color: inherit; }
 #overlay.hide { opacity: 0; pointer-events: none; }
 
 .env-wrap {
-  width: min(420px, 88vw); cursor: pointer;
+  width: min(400px, 86vw); cursor: pointer;
   filter:
-    drop-shadow(0 20px 50px rgba(0,0,0,0.16))
-    drop-shadow(0 6px 16px rgba(0,0,0,0.10));
+    drop-shadow(0 18px 50px rgba(90,130,170,0.22))
+    drop-shadow(0 5px 14px rgba(90,130,170,0.14));
   transition: transform 0.32s ease, filter 0.32s ease;
 }
 .env-wrap:hover {
-  transform: translateY(-8px);
+  transform: translateY(-7px);
   filter:
-    drop-shadow(0 30px 60px rgba(0,0,0,0.20))
-    drop-shadow(0 8px 22px rgba(0,0,0,0.13));
+    drop-shadow(0 26px 58px rgba(90,130,170,0.28))
+    drop-shadow(0 7px 18px rgba(90,130,170,0.18));
 }
 .env-body {
-  position: relative; width: 100%; padding-top: 68%;
-  perspective: 1400px;
+  position: relative; width: 100%; padding-top: 70%;
+  perspective: 1200px;
 }
-
-/* ── static parts — มุมมน, สีขาว ── */
+/* ── static parts wrapper — มุมมน ── */
 .env-static {
   position: absolute; inset: 0;
-  border-radius: 6px; overflow: hidden;
+  border-radius: 8px; overflow: hidden;
 }
 .env-base {
   position: absolute; inset: 0;
-  background: #FAFAF8;
+  background: #8BAEC4;
 }
-/* Bottom flap — ครีมอ่อน */
+/* Bottom */
 .env-tri-bot {
   position: absolute; inset: 0;
-  clip-path: polygon(0 100%, 100% 100%, 50% 54%);
-  background: linear-gradient(175deg, #EDE8E0 0%, #E4DDD4 100%);
+  clip-path: polygon(0 100%, 100% 100%, 50% 52%);
+  background: linear-gradient(178deg, #5E8AA4 0%, #527898 100%);
 }
-/* Left flap */
+/* Left — เกือบเหมือน base ทำให้ดูสะอาด */
 .env-tri-left {
   position: absolute; inset: 0;
-  clip-path: polygon(0 0, 0 100%, 50% 54%);
-  background: linear-gradient(90deg, #F2F0EC 0%, #F6F4F0 100%);
+  clip-path: polygon(0 0, 0 100%, 50% 52%);
+  background: linear-gradient(90deg, #86ACC4 0%, #8CB2C8 100%);
 }
-/* Right flap */
+/* Right */
 .env-tri-right {
   position: absolute; inset: 0;
-  clip-path: polygon(100% 0, 100% 100%, 50% 54%);
-  background: linear-gradient(-90deg, #EEECEA 0%, #F4F2EE 100%);
+  clip-path: polygon(100% 0, 100% 100%, 50% 52%);
+  background: linear-gradient(-90deg, #80A8C0 0%, #88AEC4 100%);
 }
 /* Fold crease SVG */
 .env-svg {
@@ -250,65 +249,60 @@ a { color: inherit; }
   width: 100%; height: 100%;
   pointer-events: none;
 }
-
-/* ── Top flap — อยู่นอก env-static เพื่อให้ 3D rotation ทำงานได้ ── */
+/* ── Top flap — อยู่นอก env-static เพื่อให้ 3D ทำงานได้ ── */
 .env-flap {
   position: absolute; inset: 0;
-  clip-path: polygon(0 0, 100% 0, 50% 44%);
-  background: linear-gradient(175deg, #FEFEFE 0%, #F8F6F2 60%, #F2EFEA 100%);
+  clip-path: polygon(0 0, 100% 0, 50% 42%);
+  background: linear-gradient(165deg, #C4D6E4 0%, #B0C8D8 40%, #9EBCCE 100%);
   transform-origin: top center;
-  transition: transform 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: transform 1.15s cubic-bezier(0.4, 0, 0.2, 1);
   backface-visibility: hidden; z-index: 8;
 }
-.env-flap.open { transform: perspective(1400px) rotateX(-178deg); }
-/* ด้านในฝา — ครีม/งาช้าง */
+.env-flap.open { transform: perspective(1200px) rotateX(-176deg); }
 .env-flap::after {
   content: ''; position: absolute; inset: 0;
-  clip-path: polygon(0 0, 100% 0, 50% 44%);
-  background: linear-gradient(175deg, #F5F0E6 0%, #EDE7DA 100%);
+  clip-path: polygon(0 0, 100% 0, 50% 42%);
+  background: linear-gradient(165deg, #668CA8 0%, #587E9A 100%);
   transform: rotateX(180deg); backface-visibility: visible;
 }
-
 /* Seal */
 .env-seal {
-  position: absolute; top: 54%; left: 50%;
+  position: absolute; top: 50%; left: 50%;
   transform: translate(-50%, -50%);
-  width: 78px; height: 78px; border-radius: 50%;
+  width: 82px; height: 82px; border-radius: 50%;
   background: white;
-  border: 2px solid #C9A96E;
+  border: 2.5px solid #C9A96E;
   box-shadow:
-    0 3px 14px rgba(0,0,0,0.12),
-    0 1px 4px rgba(0,0,0,0.07),
+    0 4px 18px rgba(0,0,0,0.14),
+    0 1px 4px rgba(0,0,0,0.09),
     inset 0 1px 0 rgba(255,255,255,0.95);
   display: flex; align-items: center; justify-content: center;
   z-index: 12; overflow: hidden;
   transition: transform 0.4s cubic-bezier(.34,1.26,.64,1), opacity 0.4s ease;
 }
-.env-seal img { width: 62px; height: 62px; object-fit: contain; }
+.env-seal img { width: 64px; height: 64px; object-fit: contain; }
 .env-seal.crack { transform: translate(-50%,-50%) scale(1.18) rotate(4deg); }
 .env-seal.gone {
   transform: translate(-50%,-130%) scale(0.25) rotate(22deg);
   opacity: 0;
   transition: transform 0.5s ease-in, opacity 0.4s ease-in;
 }
-
 /* Open button */
 .env-btn {
   display: flex; align-items: center; gap: 11px;
-  background: #3d5a72; color: white; border: none;
+  background: #8BAEC4; color: white; border: none;
   padding: 14px 42px; border-radius: 50px;
   font-family: 'Sarabun', sans-serif;
   font-size: 1rem; font-weight: 500;
   cursor: pointer; letter-spacing: 1.5px;
-  box-shadow: 0 6px 22px rgba(0,0,0,0.18);
+  box-shadow: 0 6px 22px rgba(100,140,180,0.28);
   transition: transform 0.2s, box-shadow 0.2s;
 }
 .env-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 10px 30px rgba(0,0,0,0.24);
+  box-shadow: 0 10px 30px rgba(100,140,180,0.38);
 }
 .env-btn:active { transform: scale(0.97); }
-
 /* Footer */
 .env-footer {
   display: flex; flex-direction: column;
@@ -317,13 +311,13 @@ a { color: inherit; }
 .env-footer-row {
   display: flex; align-items: center; gap: 10px;
 }
-.env-footer-rule { width: 30px; height: 1px; background: #7a7060; opacity: 0.4; }
+.env-footer-rule { width: 30px; height: 1px; background: #8a9daa; opacity: 0.4; }
 .env-footer-text {
   font-family: 'Cormorant Garamond', serif;
   font-size: 0.62rem; letter-spacing: 6px;
-  text-transform: uppercase; color: #7a7060; font-weight: 400;
+  text-transform: uppercase; color: #8a9daa; font-weight: 400;
 }
-.env-footer-date { font-size: 0.7rem; letter-spacing: 5px; color: #7a7060; }
+.env-footer-date { font-size: 0.7rem; letter-spacing: 5px; color: #8a9daa; }
 
 /* ════════════════════════════════════════════════
    SECTION BASE
@@ -1028,12 +1022,10 @@ footer {
         <div class="env-tri-left"></div>
         <div class="env-tri-right"></div>
         <svg class="env-svg" viewBox="0 0 400 280" preserveAspectRatio="none">
-          <!-- เส้นรอยพับ — บน left/right -->
-          <line x1="0"   y1="0"   x2="200" y2="151" stroke="rgba(0,0,0,0.07)" stroke-width="1"/>
-          <line x1="400" y1="0"   x2="200" y2="151" stroke="rgba(0,0,0,0.07)" stroke-width="1"/>
-          <!-- เส้นรอยพับ — ล่าง left/right -->
-          <line x1="0"   y1="280" x2="200" y2="151" stroke="rgba(0,0,0,0.05)" stroke-width="0.8"/>
-          <line x1="400" y1="280" x2="200" y2="151" stroke="rgba(0,0,0,0.05)" stroke-width="0.8"/>
+          <line x1="0"   y1="0"   x2="200" y2="146" stroke="rgba(0,0,0,0.09)"       stroke-width="1.3"/>
+          <line x1="400" y1="0"   x2="200" y2="146" stroke="rgba(0,0,0,0.09)"       stroke-width="1.3"/>
+          <line x1="0"   y1="280" x2="200" y2="146" stroke="rgba(255,255,255,0.10)" stroke-width="1.1"/>
+          <line x1="400" y1="280" x2="200" y2="146" stroke="rgba(255,255,255,0.10)" stroke-width="1.1"/>
         </svg>
       </div>
       <!-- flap — แยกออกมาเพื่อให้ 3D rotation ทำงานได้ -->
