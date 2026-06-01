@@ -184,18 +184,19 @@ a { color: inherit; }
 .cd-box.pop.d4 { animation-delay: 0.35s; }
 
 /* ════════════════════════════════════════════════
-   ENVELOPE OVERLAY — REALISTIC 3D STYLE
+   ENVELOPE OVERLAY — Scene-based realistic style
 ════════════════════════════════════════════════ */
 #overlay {
   position: fixed;
   inset: 0;
-  background: radial-gradient(ellipse at 50% 38%, #FAFCFF 0%, #F2F7FD 45%, #E8F0FA 100%);
+  background:
+    radial-gradient(ellipse at 50% 45%, #FAF4EC 0%, #F0E6D4 55%, #E2D4BC 100%);
   z-index: 900;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 32px;
+  gap: 28px;
   overflow: hidden;
   padding: 32px 20px;
   transition: opacity 1s ease, transform 1s ease;
@@ -206,133 +207,225 @@ a { color: inherit; }
   transform: scale(0.97);
 }
 
+/* Scene decorations (dried leaves / florals) */
+.env-deco {
+  position: absolute;
+  pointer-events: none;
+  line-height: 1;
+  user-select: none;
+}
+.env-deco.d-tl { top: 7%;  left: 5%;  font-size: 2.6rem; opacity: 0.22; transform: rotate(-28deg); }
+.env-deco.d-tr { top: 10%; right: 6%; font-size: 2rem;   opacity: 0.28; transform: rotate(18deg); }
+.env-deco.d-bl { bottom: 16%; left: 4%;  font-size: 1.8rem; opacity: 0.18; transform: rotate(-12deg); }
+.env-deco.d-br { bottom: 20%; right: 5%; font-size: 2.2rem; opacity: 0.22; transform: rotate(22deg); }
+.env-deco.d-mm { top: 18%; left: 50%; font-size: 1rem; opacity: 0.14; transform: translateX(-50%) rotate(5deg); }
+
 /* ════════════════════════════════════════════════
-   3D ENVELOPE — classic sealed-back style
+   ENVELOPE — Classic diamond-fold (kraft style)
 ════════════════════════════════════════════════ */
 .env-3d-wrap {
-  width: min(420px, 90vw);
+  width: min(400px, 88vw);
   cursor: pointer;
-  /* NO filter here — interferes with perspective 3D */
-  transition: transform 0.3s ease;
+  filter:
+    drop-shadow(0 20px 40px rgba(60,70,90,0.28))
+    drop-shadow(0 6px 14px rgba(60,70,90,0.16));
+  transition: transform 0.35s ease, filter 0.35s ease;
 }
-.env-3d-wrap:hover { transform: translateY(-4px); }
+.env-3d-wrap:hover {
+  transform: translateY(-6px) rotate(0.4deg);
+  filter:
+    drop-shadow(0 28px 52px rgba(60,70,90,0.32))
+    drop-shadow(0 8px 18px rgba(60,70,90,0.20));
+}
 
-/* The body: sets up 3D perspective for the flap rotation */
 .env-3d {
   position: relative;
   width: 100%;
-  padding-top: 65%;       /* ~1.54:1 — classic letter-envelope ratio */
-  overflow: visible;       /* must NOT be hidden — allows 3D flap to show */
+  padding-top: 68%;        /* ~1.47:1 classic envelope ratio */
+  overflow: visible;
   perspective: 1400px;
 }
 
-/* ── Base layer (solid back of envelope) ── */
+/* ── Base: full envelope back face ── */
 .env-3d-base {
   position: absolute; inset: 0;
-  background: #8BAEC8;
+  background:
+    repeating-linear-gradient(
+      45deg,
+      rgba(255,255,255,0.045) 0, rgba(255,255,255,0.045) 1px,
+      transparent 1px, transparent 5px
+    ),
+    repeating-linear-gradient(
+      -45deg,
+      rgba(255,255,255,0.03) 0, rgba(255,255,255,0.03) 1px,
+      transparent 1px, transparent 5px
+    ),
+    linear-gradient(155deg, #BCCFDF 0%, #A4BECF 55%, #92B0C6 100%);
   box-shadow:
-    0 24px 60px rgba(70,105,150,0.32),
-    0 6px 18px rgba(70,105,150,0.18),
-    inset 0 1px 0 rgba(255,255,255,0.3);
+    inset 0 0 0 1px rgba(255,255,255,0.18);
 }
 
-/* ── Side & bottom fold triangles (body shading) ── */
-.env-tri-bottom {   /* bottom flap — darkest */
-  position: absolute; inset: 0;
-  clip-path: polygon(0 100%, 100% 100%, 50% 55%);
-  background: linear-gradient(355deg, #5E86A6 0%, #72A0BE 100%);
+/* ── Card/letter inside the envelope ── */
+.env-card-inside {
+  position: absolute;
+  bottom: 0; left: 8%; right: 8%;
+  height: 80%;
+  background:
+    linear-gradient(160deg, #FFFDF8 0%, #FFF8EE 100%);
+  border-radius: 3px 3px 2px 2px;
+  border: 1px solid rgba(201,169,110,0.25);
+  box-shadow:
+    0 2px 10px rgba(0,0,0,0.10),
+    inset 0 1px 0 rgba(255,255,255,0.8);
+  z-index: 4;
+  transform: translateY(60%);
+  transition: transform 0.9s cubic-bezier(0.34,1.26,0.64,1);
+  display: flex; align-items: center; justify-content: center;
+  flex-direction: column; gap: 10px;
+  padding: 20px;
+  overflow: hidden;
 }
+.env-card-inside.revealed {
+  transform: translateY(-18%);
+}
+.env-card-divider {
+  width: 55%; height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(201,169,110,0.55), transparent);
+}
+.env-card-text {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(0.78rem, 2.5vw, 0.92rem);
+  color: #9A7848;
+  letter-spacing: 3px;
+  text-align: center;
+  font-style: italic;
+  line-height: 1.6;
+}
+.env-card-names {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(1.1rem, 4vw, 1.5rem);
+  font-style: italic;
+  color: #7A5C38;
+  text-align: center;
+}
+
+/* ── Bottom fold triangle — darkest ── */
+.env-tri-bottom {
+  position: absolute; inset: 0;
+  clip-path: polygon(0 100%, 100% 100%, 50% 50%);
+  background: linear-gradient(175deg, #6C9CB6 0%, #5E8EA8 100%);
+}
+/* ── Left fold ── */
 .env-tri-left {
   position: absolute; inset: 0;
   clip-path: polygon(0 0, 0 100%, 50% 50%);
-  background: linear-gradient(90deg, #80A8C6 0%, #8CB2CC 100%);
+  background: linear-gradient(90deg, #94B8CE 0%, #A2C2D2 100%);
 }
+/* ── Right fold ── */
 .env-tri-right {
   position: absolute; inset: 0;
   clip-path: polygon(100% 0, 100% 100%, 50% 50%);
-  background: linear-gradient(-90deg, #7298B6 0%, #82A8C4 100%);
+  background: linear-gradient(-90deg, #88AEC8 0%, #96B8CC 100%);
 }
 
-/* ── Fold lines (SVG) ── */
+/* ── Fold crease lines (SVG) ── */
 .env-fold-svg {
   position: absolute; inset: 0;
   width: 100%; height: 100%;
   pointer-events: none;
-  z-index: 2;
+  z-index: 6;
 }
 
-/* ── TOP FLAP — the sealed V, rotates open on click ── */
+/* ── TOP FLAP — V-tip reaches CENTER (50%, 50%) ── */
 .env-tri-top {
   position: absolute; inset: 0;
-  /* V-tip at 40% of envelope height */
-  clip-path: polygon(0 0, 100% 0, 50% 40%);
-  background: linear-gradient(175deg, #B0CCDE 0%, #9EBAD4 40%, #8AAEC8 100%);
-  /* Paper texture overlay */
-  background-image:
-    linear-gradient(175deg, #B0CCDE 0%, #9EBAD4 40%, #8AAEC8 100%),
-    repeating-linear-gradient(45deg, rgba(255,255,255,0.03) 0, rgba(255,255,255,0.03) 1px, transparent 1px, transparent 7px),
-    repeating-linear-gradient(-45deg, rgba(255,255,255,0.03) 0, rgba(255,255,255,0.03) 1px, transparent 1px, transparent 7px);
-
-  /* 3D hinge at the TOP edge */
+  clip-path: polygon(0 0, 100% 0, 50% 50%);
+  background:
+    repeating-linear-gradient(
+      45deg,
+      rgba(255,255,255,0.05) 0, rgba(255,255,255,0.05) 1px,
+      transparent 1px, transparent 5px
+    ),
+    linear-gradient(168deg, #CCD8E4 0%, #B8CADE 45%, #A4BCD4 100%);
   transform-origin: top center;
-  transition: transform 1s cubic-bezier(0.4, 0, 0.2, 1);
-  backface-visibility: hidden;   /* hide when fully rotated */
+  transition: transform 1.15s cubic-bezier(0.4, 0, 0.2, 1);
+  backface-visibility: hidden;
   z-index: 10;
 }
-
-/* When opened: fold back 175° (slightly less than 180 looks more natural) */
 .env-tri-top.open {
-  transform: perspective(1400px) rotateX(-175deg);
+  transform: perspective(1400px) rotateX(-178deg);
 }
-
-/* Flap inner face (visible while it rotates past 90°) */
+/* Inner face of flap (shows when rotating past 90°) */
 .env-tri-top::after {
   content: '';
   position: absolute; inset: 0;
-  clip-path: polygon(0 0, 100% 0, 50% 40%);
-  background: linear-gradient(175deg, #7698B2 0%, #6A8CAC 100%);
+  clip-path: polygon(0 0, 100% 0, 50% 50%);
+  background: linear-gradient(168deg, #8AAEC4 0%, #7298B0 100%);
   transform: rotateX(180deg);
   backface-visibility: visible;
 }
 
-/* ── Wax Seal ── */
-/* Sits at the V-tip point (50% across, 40% down) */
+/* ── Wax Seal — at center (where all folds meet) ── */
 .env-seal-3d {
   position: absolute;
-  top: 40%; left: 50%;
+  top: 50%; left: 50%;
   transform: translate(-50%, -50%);
-  width: 88px; height: 88px;
+  width: 76px; height: 76px;
   border-radius: 50%;
-  background: var(--white);
-  border: 2.5px solid var(--gold);
+  background:
+    radial-gradient(circle at 34% 28%, #EEC878 0%, #C9A86C 45%, #A07832 80%, #8A6020 100%);
   box-shadow:
-    0 6px 22px rgba(0,0,0,0.20),
-    0 2px 8px rgba(0,0,0,0.12),
-    inset 0 1px 0 rgba(255,255,255,0.9);
+    0 5px 16px rgba(80,50,10,0.40),
+    0 2px 5px rgba(80,50,10,0.28),
+    inset 0 1.5px 3px rgba(255,255,255,0.55),
+    inset 0 -1px 3px rgba(0,0,0,0.18);
   display: flex; align-items: center; justify-content: center;
+  z-index: 15;
+  transition:
+    transform 0.45s cubic-bezier(0.34,1.26,0.64,1),
+    opacity   0.45s ease;
   overflow: hidden;
-  z-index: 11;   /* above flap */
-  transition: transform 0.3s ease, opacity 0.3s ease;
-  transform-origin: center;
+}
+/* Scalloped outer ring */
+.env-seal-3d::before {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 34% 28%, #D8A84C 0%, #B08830 60%, #8A6820 100%);
+  z-index: -1;
+  clip-path: polygon(
+    50% 0%, 61% 4%, 70% 0%, 76% 7%, 85% 5%, 88% 14%,
+    97% 15%, 97% 25%, 100% 30%, 95% 38%, 100% 45%,
+    95% 52%, 98% 60%, 92% 65%, 93% 74%, 86% 76%,
+    84% 85%, 76% 85%, 72% 94%, 63% 91%, 56% 98%,
+    47% 94%, 39% 97%, 33% 91%, 24% 93%, 20% 85%,
+    12% 84%, 10% 74%, 3% 70%, 5% 61%, 0% 55%,
+    4% 46%, 0% 38%, 5% 31%, 2% 22%, 10% 18%,
+    10% 9%, 19% 7%, 22% -1%, 31% 2%, 38% -2%
+  );
 }
 .env-seal-3d img {
-  width: 66px; height: 66px;
+  width: 50px; height: 50px;
   object-fit: contain; border-radius: 50%;
+  filter: brightness(1.08) contrast(0.82) opacity(0.88);
 }
 
-/* Seal breaking animation states */
+/* Seal animation states */
 .env-seal-3d.crack {
-  transform: translate(-50%, -50%) scale(1.18);
+  transform: translate(-50%, -50%) scale(1.22) rotate(6deg);
 }
 .env-seal-3d.gone {
-  transform: translate(-50%, -50%) scale(0);
+  transform: translate(-30%, -120%) scale(0.3) rotate(28deg);
   opacity: 0;
+  transition: transform 0.55s ease-in, opacity 0.45s ease-in;
 }
 
 /* ── Open button ── */
 .env-open-btn {
   display: flex; align-items: center; gap: 10px;
-  background: #8BAEC8;
+  background: linear-gradient(135deg, #8BAEC8 0%, #7A9EBB 100%);
   color: var(--white);
   border: none;
   padding: 14px 38px;
@@ -342,15 +435,24 @@ a { color: inherit; }
   font-weight: 500;
   cursor: pointer;
   letter-spacing: 1.5px;
-  box-shadow: 0 6px 24px rgba(80,115,160,0.28);
-  transition: transform 0.2s, background 0.2s, box-shadow 0.2s;
+  box-shadow:
+    0 6px 24px rgba(80,115,160,0.30),
+    0 2px 6px rgba(80,115,160,0.18);
+  transition: transform 0.22s, background 0.22s, box-shadow 0.22s;
 }
 .env-open-btn:hover {
-  background: #7A9EBB;
+  background: linear-gradient(135deg, #7A9EBB 0%, #698EAB 100%);
   transform: translateY(-2px);
-  box-shadow: 0 10px 32px rgba(80,115,160,0.38);
+  box-shadow: 0 10px 32px rgba(80,115,160,0.40);
 }
 .env-open-btn:active { transform: scale(0.96); }
+
+/* Pulse animation on button */
+@keyframes btnPulse {
+  0%,100% { box-shadow: 0 6px 24px rgba(80,115,160,0.30), 0 0 0 0 rgba(123,156,191,0.35); }
+  50%      { box-shadow: 0 6px 24px rgba(80,115,160,0.30), 0 0 0 8px rgba(123,156,191,0); }
+}
+.env-open-btn { animation: btnPulse 2.4s ease-in-out infinite; }
 
 /* ── Footer text ── */
 .env-footer {
@@ -1071,31 +1173,55 @@ footer {
 <!-- ══════════════ ENVELOPE OVERLAY ══════════════ -->
 <div id="overlay">
 
-  <!-- 3D Realistic Envelope -->
+  <!-- Scene decorations -->
+  <span class="env-deco d-tl">🍂</span>
+  <span class="env-deco d-tr">🌿</span>
+  <span class="env-deco d-bl">🌾</span>
+  <span class="env-deco d-br">🍁</span>
+  <span class="env-deco d-mm">✦</span>
+
+  <!-- Envelope -->
   <div class="env-3d-wrap" id="env-box" onclick="openEnvelope()">
     <div class="env-3d">
+
+      <!-- Base (back of envelope) -->
       <div class="env-3d-base"></div>
-      <div class="env-tri-top"></div>
+
+      <!-- Card/letter inside (slides up when opened) -->
+      <div class="env-card-inside" id="env-card">
+        <div class="env-card-divider"></div>
+        <div class="env-card-names">เอ็ม &amp; แป้ง</div>
+        <div class="env-card-text">Family Witness Dinner<br>28 · 11 · 2569</div>
+        <div class="env-card-divider"></div>
+      </div>
+
+      <!-- Bottom fold triangle -->
       <div class="env-tri-bottom"></div>
+      <!-- Side fold triangles -->
       <div class="env-tri-left"></div>
       <div class="env-tri-right"></div>
-      <!-- Fold lines -->
-      <!-- fold lines converge at center — updated for 60% height ratio -->
-      <svg class="env-fold-svg" viewBox="0 0 400 240" preserveAspectRatio="none">
-        <line x1="0" y1="0"   x2="200" y2="120" stroke="rgba(255,255,255,0.22)" stroke-width="1.5"/>
-        <line x1="400" y1="0"   x2="200" y2="120" stroke="rgba(255,255,255,0.22)" stroke-width="1.5"/>
-        <line x1="0" y1="240" x2="200" y2="120" stroke="rgba(0,0,0,0.07)" stroke-width="1.5"/>
-        <line x1="400" y1="240" x2="200" y2="120" stroke="rgba(0,0,0,0.07)" stroke-width="1.5"/>
+
+      <!-- Fold crease lines — all 4 diagonals meeting at center -->
+      <svg class="env-fold-svg" viewBox="0 0 400 272" preserveAspectRatio="none">
+        <line x1="0"   y1="0"   x2="200" y2="136" stroke="rgba(255,255,255,0.22)" stroke-width="1.3"/>
+        <line x1="400" y1="0"   x2="200" y2="136" stroke="rgba(255,255,255,0.22)" stroke-width="1.3"/>
+        <line x1="0"   y1="272" x2="200" y2="136" stroke="rgba(0,0,0,0.09)"       stroke-width="1.3"/>
+        <line x1="400" y1="272" x2="200" y2="136" stroke="rgba(0,0,0,0.09)"       stroke-width="1.3"/>
       </svg>
-      <!-- Wax seal -->
-      <div class="env-seal-3d">
+
+      <!-- Top flap (V-tip at center) -->
+      <div class="env-tri-top" id="env-flap"></div>
+
+      <!-- Wax seal — sits exactly at center where all folds meet -->
+      <div class="env-seal-3d" id="env-seal">
         <img src="logo.png" alt="PM" onerror="this.style.display='none'">
       </div>
+
     </div>
   </div>
 
   <!-- Open button -->
-  <button class="env-open-btn" onclick="openEnvelope()">
+  <button class="env-open-btn" id="env-btn" onclick="openEnvelope()">
     <svg width="18" height="14" viewBox="0 0 18 14" fill="none" stroke="white" stroke-width="1.5">
       <rect x="1" y="1" width="16" height="12" rx="2"/>
       <polyline points="1,1 9,8 17,1"/>
@@ -1545,8 +1671,34 @@ function openEnvelope() {
   const box = document.getElementById('env-box');
   if (box.dataset.opening) return;
   box.dataset.opening = '1';
-  box.classList.add('opening');
 
+  const seal = document.getElementById('env-seal');
+  const flap = document.getElementById('env-flap');
+  const card = document.getElementById('env-card');
+  const btn  = document.getElementById('env-btn');
+
+  // Disable button
+  if (btn) { btn.disabled = true; btn.style.opacity = '0.6'; }
+
+  // Step 1: Seal cracks (scale up + slight rotate)
+  seal.classList.add('crack');
+
+  // Step 2: Seal flies away
+  setTimeout(() => {
+    seal.classList.add('gone');
+  }, 350);
+
+  // Step 3: Flap rotates open
+  setTimeout(() => {
+    flap.classList.add('open');
+  }, 560);
+
+  // Step 4: Card rises from inside
+  setTimeout(() => {
+    card.classList.add('revealed');
+  }, 900);
+
+  // Step 5: Brief pause to enjoy the opened envelope, then fade out
   setTimeout(() => {
     const overlay = document.getElementById('overlay');
     overlay.classList.add('hide');
@@ -1556,16 +1708,15 @@ function openEnvelope() {
     startCountdown();
     loadStats();
     triggerVisibleFades();
-    // Spawn floating petals only after entering the main content
     const petalList = ['🌸','🌺','🌷','💐','🌼'];
     for (let i = 0; i < 8; i++) {
       const p = document.createElement('span');
       p.className = 'page-petal';
       p.textContent = petalList[i % petalList.length];
-      p.style.cssText = `left:${5+Math.random()*90}%;animation-duration:${9+Math.random()*8}s;animation-delay:${Math.random()*10}s;font-size:${0.7+Math.random()*0.7}rem;`;
+      p.style.cssText = `left:${5+Math.random()*90}%;animation-duration:${9+Math.random()*8}s;animation-delay:${Math.random()*6}s;font-size:${0.7+Math.random()*0.7}rem;`;
       document.body.appendChild(p);
     }
-  }, 480);
+  }, 1900);
 }
 
 // ── SCROLL PROGRESS BAR ──────────────────────────────────────
