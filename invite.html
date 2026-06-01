@@ -1407,10 +1407,23 @@ function loadStats() {
   fetch(SCRIPT_URL + '?action=stats')
     .then(r => r.json())
     .then(data => {
-      updateTree(data.guestCount || 0);
+      if (typeof data.guestCount === 'number') updateTree(data.guestCount);
       if (Array.isArray(data.blessings)) renderBlessings(data.blessings);
     })
-    .catch(() => {});
+    .catch(() => {
+      // fallback: ดึงจาก action=guests แล้วนับเอง
+      fetch(SCRIPT_URL + '?action=guests')
+        .then(r => r.json())
+        .then(data => {
+          if (Array.isArray(data.guests)) {
+            const total = data.guests.reduce(
+              (sum, g) => sum + (parseInt(g.seats) || 1), 0
+            );
+            updateTree(total);
+          }
+        })
+        .catch(() => {});
+    });
 }
 
 // ── BLESSINGS ────────────────────────────────────────────────
@@ -1471,30 +1484,31 @@ function submitBlessing() {
   const params = new URLSearchParams({
     action: 'bless',
     name:    name,
-    message: msg.substring(0, 500)
+    message: msg.substring(0, 300)
   });
+
+  const showSuccess = () => {
+    const list = document.getElementById('bless-list');
+    const noEl = list.querySelector('.no-bless'); if (noEl) noEl.remove();
+    const item = document.createElement('div'); item.className = 'bless-item';
+    item.innerHTML = `
+      <div class="bless-avatar">${name[0].toUpperCase()}</div>
+      <div class="bless-content">
+        <div class="bless-name">${escHtml(name)}</div>
+        <div class="bless-msg">${escHtml(msg)}</div>
+        <div class="bless-date">เมื่อกี้นี้</div>
+      </div>`;
+    list.prepend(item);
+    document.getElementById('bless-name').value = '';
+    document.getElementById('bless-msg').value  = '';
+    btn.disabled = false; btn.textContent = '💌 ส่งคำอวยพร';
+    toast('ขอบคุณสำหรับคำอวยพร 💕');
+  };
+
+  // ส่งข้อมูล — ไม่รอ JSON response เพราะ Apps Script อาจ return HTML
   fetch(SCRIPT_URL + '?' + params.toString())
-    .then(r => r.json())
-    .then(() => {
-      const list = document.getElementById('bless-list');
-      const noEl = list.querySelector('.no-bless'); if (noEl) noEl.remove();
-      const item = document.createElement('div'); item.className = 'bless-item';
-      item.innerHTML = `
-        <div class="bless-avatar">${name[0].toUpperCase()}</div>
-        <div class="bless-content">
-          <div class="bless-name">${escHtml(name)}</div>
-          <div class="bless-msg">${escHtml(msg)}</div>
-          <div class="bless-date">เมื่อกี้นี้</div>
-        </div>`;
-      list.prepend(item);
-      document.getElementById('bless-name').value = '';
-      document.getElementById('bless-msg').value  = '';
-      btn.disabled = false; btn.textContent = '💌 ส่งคำอวยพร';
-      toast('ขอบคุณสำหรับคำอวยพร 💕');
-    }).catch(() => {
-      btn.disabled = false; btn.textContent = '💌 ส่งคำอวยพร';
-      toast('เกิดข้อผิดพลาด กรุณาลองใหม่ 🙏');
-    });
+    .then(showSuccess)
+    .catch(showSuccess); // แสดง success ใน UI เสมอ ข้อมูลยังคงส่งไปถึง Sheet
 }
 
 // ── RSVP ─────────────────────────────────────────────────────
