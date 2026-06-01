@@ -208,7 +208,7 @@ a { color: inherit; }
 
 /* ── 3D Envelope ── */
 .env-3d-wrap {
-  width: min(360px, 84vw);
+  width: min(400px, 88vw);
   cursor: pointer;
   filter: drop-shadow(0 28px 60px rgba(80,115,160,0.28))
           drop-shadow(0 8px 18px rgba(80,115,160,0.16));
@@ -223,7 +223,7 @@ a { color: inherit; }
 .env-3d {
   position: relative;
   width: 100%;
-  padding-top: 69%;          /* landscape ~1.45:1 */
+  padding-top: 60%;          /* landscape ~1.67:1  ← wider/flatter envelope */
   border-radius: 7px;
   overflow: hidden;
 }
@@ -236,14 +236,14 @@ a { color: inherit; }
 }
 
 /* 4 triangular flaps — each a slightly different shade for 3-D depth */
-.env-tri-top {          /* lightest: faces the light */
+.env-tri-top {          /* lightest: V-flap at 38% — not too deep */
   position: absolute; inset: 0;
-  clip-path: polygon(0 0, 100% 0, 50% 50%);
+  clip-path: polygon(0 0, 100% 0, 50% 38%);
   background: linear-gradient(170deg, #AECCE4 0%, #9CBED8 100%);
 }
 .env-tri-bottom {       /* darkest: in shadow */
   position: absolute; inset: 0;
-  clip-path: polygon(0 100%, 100% 100%, 50% 50%);
+  clip-path: polygon(0 100%, 100% 100%, 50% 62%);
   background: linear-gradient(350deg, #6A90AE 0%, #7AA0BC 100%);
 }
 .env-tri-left {
@@ -498,6 +498,7 @@ h2.sec-title em { font-style: italic; color: var(--blue-dk); }
   gap: 10px;
 }
 .photo-slot {
+  position: relative;          /* needed for absolute img/inner */
   border-radius: 10px;
   overflow: hidden;
   background: linear-gradient(135deg, #EEF4FD, #E4EEF8);
@@ -508,6 +509,13 @@ h2.sec-title em { font-style: italic; color: var(--blue-dk); }
   font-size: 0.82rem;
   gap: 6px;
   border: 2px dashed rgba(123,156,191,0.3);
+}
+.photo-slot img.slot-img {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  object-fit: cover;
+  display: block;
+  border: none;
 }
 .photo-slot.wide { grid-column: 1 / -1; aspect-ratio: 16/7; }
 .photo-slot img { width: 100%; height: 100%; object-fit: cover; }
@@ -1038,11 +1046,12 @@ footer {
       <div class="env-tri-left"></div>
       <div class="env-tri-right"></div>
       <!-- Fold lines -->
-      <svg class="env-fold-svg" viewBox="0 0 380 262" preserveAspectRatio="none">
-        <line x1="0" y1="0"   x2="190" y2="131" stroke="rgba(255,255,255,0.20)" stroke-width="1.5"/>
-        <line x1="380" y1="0"   x2="190" y2="131" stroke="rgba(255,255,255,0.20)" stroke-width="1.5"/>
-        <line x1="0" y1="262" x2="190" y2="131" stroke="rgba(0,0,0,0.07)" stroke-width="1.5"/>
-        <line x1="380" y1="262" x2="190" y2="131" stroke="rgba(0,0,0,0.07)" stroke-width="1.5"/>
+      <!-- fold lines converge at center — updated for 60% height ratio -->
+      <svg class="env-fold-svg" viewBox="0 0 400 240" preserveAspectRatio="none">
+        <line x1="0" y1="0"   x2="200" y2="120" stroke="rgba(255,255,255,0.22)" stroke-width="1.5"/>
+        <line x1="400" y1="0"   x2="200" y2="120" stroke="rgba(255,255,255,0.22)" stroke-width="1.5"/>
+        <line x1="0" y1="240" x2="200" y2="120" stroke="rgba(0,0,0,0.07)" stroke-width="1.5"/>
+        <line x1="400" y1="240" x2="200" y2="120" stroke="rgba(0,0,0,0.07)" stroke-width="1.5"/>
       </svg>
       <!-- Wax seal -->
       <div class="env-seal-3d">
@@ -1115,8 +1124,8 @@ footer {
   <!-- ── PHOTO BREAK 1 · รูปที่ 1 (wide) ── -->
   <div class="photo-break" style="margin-top:4px;">
     <div class="photo-single">
-      <div class="photo-slot anim zoom-in" id="photo-1" style="border-radius:0;aspect-ratio:21/9;max-height:280px;">
-        <div class="photo-inner"><span class="ps-icon">📷</span><span>รูปที่ 1</span></div>
+      <div class="photo-slot anim zoom-in" id="photo-1" style="border-radius:0;aspect-ratio:21/9;max-height:300px;">
+        <img class="slot-img" src="รูปประกอบการ์ดเชิญ/IMG_3686.JPG" alt="เอ็ม & แป้ง">
       </div>
     </div>
   </div>
@@ -1150,10 +1159,10 @@ footer {
   <div class="photo-break" style="margin-top:32px;">
     <div class="photo-pair">
       <div class="photo-slot anim from-left" id="photo-2">
-        <div class="photo-inner"><span class="ps-icon">📷</span><span>รูปที่ 2</span></div>
+        <img class="slot-img" src="รูปประกอบการ์ดเชิญ/IMG_3685.JPG" alt="เอ็ม & แป้ง">
       </div>
       <div class="photo-slot anim from-right" id="photo-3">
-        <div class="photo-inner"><span class="ps-icon">📷</span><span>รูปที่ 3</span></div>
+        <img class="slot-img" src="รูปประกอบการ์ดเชิญ/IMG_3831.JPG" alt="เอ็ม & แป้ง">
       </div>
     </div>
   </div>
@@ -1216,8 +1225,8 @@ footer {
   <!-- ── PHOTO BREAK 3 · รูปที่ 4 (wide) ── -->
   <div class="photo-break" style="margin-top:32px;">
     <div class="photo-single">
-      <div class="photo-slot anim zoom-in" id="photo-4" style="border-radius:0;aspect-ratio:21/9;max-height:280px;">
-        <div class="photo-inner"><span class="ps-icon">📷</span><span>รูปที่ 4</span></div>
+      <div class="photo-slot anim zoom-in" id="photo-4" style="border-radius:0;aspect-ratio:21/9;max-height:300px;">
+        <img class="slot-img" src="รูปประกอบการ์ดเชิญ/IMG_4559.JPG" alt="เอ็ม & แป้ง">
       </div>
     </div>
   </div>
@@ -1331,7 +1340,19 @@ footer {
   <div class="photo-break" style="margin-top:32px;">
     <div class="photo-accent">
       <div class="photo-slot anim zoom-in" id="photo-5">
-        <div class="photo-inner"><span class="ps-icon">📷</span><span>รูปที่ 5</span></div>
+        <img class="slot-img" src="รูปประกอบการ์ดเชิญ/IMG_3824.JPG" alt="เอ็ม & แป้ง" style="object-position: center 30%;">
+      </div>
+    </div>
+  </div>
+
+  <!-- ── PHOTO BREAK 5 · รูปที่ 6+7 (pair new) ── -->
+  <div class="photo-break" style="margin-top:8px;">
+    <div class="photo-pair">
+      <div class="photo-slot anim from-left" id="photo-6">
+        <img class="slot-img" src="รูปประกอบการ์ดเชิญ/IMG_2472.JPG" alt="เอ็ม & แป้ง" style="object-position: center 40%;">
+      </div>
+      <div class="photo-slot anim from-right" id="photo-7">
+        <img class="slot-img" src="รูปประกอบการ์ดเชิญ/IMG_5061.JPG" alt="เอ็ม & แป้ง">
       </div>
     </div>
   </div>
