@@ -184,12 +184,12 @@ a { color: inherit; }
 .cd-box.pop.d4 { animation-delay: 0.35s; }
 
 /* ════════════════════════════════════════════════
-   ENVELOPE OVERLAY
+   ENVELOPE OVERLAY — REALISTIC 3D STYLE
 ════════════════════════════════════════════════ */
 #overlay {
   position: fixed;
   inset: 0;
-  background: linear-gradient(150deg, #FFF6EA 0%, #EEF4FB 60%, #DCE8F5 100%);
+  background: radial-gradient(ellipse at 50% 38%, #FAFCFF 0%, #F2F7FD 45%, #E8F0FA 100%);
   z-index: 900;
   display: flex;
   flex-direction: column;
@@ -197,6 +197,7 @@ a { color: inherit; }
   justify-content: center;
   gap: 32px;
   overflow: hidden;
+  padding: 32px 20px;
   transition: opacity 1s ease, transform 1s ease;
 }
 #overlay.hide {
@@ -205,143 +206,151 @@ a { color: inherit; }
   transform: scale(0.97);
 }
 
-/* Falling petals */
-.petal {
-  position: absolute;
-  font-size: 1.4rem;
-  opacity: 0;
-  pointer-events: none;
-  animation: petalFall linear infinite;
+/* ── 3D Envelope ── */
+.env-3d-wrap {
+  width: min(360px, 84vw);
+  cursor: pointer;
+  filter: drop-shadow(0 28px 60px rgba(80,115,160,0.28))
+          drop-shadow(0 8px 18px rgba(80,115,160,0.16));
+  transition: filter 0.3s ease, transform 0.3s ease;
 }
-@keyframes petalFall {
-  0%   { opacity: 0; transform: translateY(-30px) rotate(0deg); }
-  8%   { opacity: 0.55; }
-  92%  { opacity: 0.55; }
-  100% { opacity: 0; transform: translateY(105vh) rotate(520deg); }
+.env-3d-wrap:hover {
+  transform: translateY(-5px);
+  filter: drop-shadow(0 40px 80px rgba(80,115,160,0.35))
+          drop-shadow(0 12px 24px rgba(80,115,160,0.20));
 }
 
-/* Envelope wrapper with 3-D perspective */
-.env-persp {
-  perspective: 1000px;
-  width: min(320px, 90vw);
-  cursor: pointer;
-}
-.env-box {
+.env-3d {
   position: relative;
   width: 100%;
-  padding-top: 66%;
-  transform-style: preserve-3d;
+  padding-top: 69%;          /* landscape ~1.45:1 */
+  border-radius: 7px;
+  overflow: hidden;
 }
 
-/* Back plate */
-.env-back {
+/* Base envelope body */
+.env-3d-base {
   position: absolute;
   inset: 0;
-  background: linear-gradient(155deg, #F0F6FF 0%, #D8E8F8 100%);
-  border-radius: 8px;
-  box-shadow:
-    0 16px 50px rgba(90,127,168,0.22),
-    0 4px 10px rgba(90,127,168,0.10),
-    inset 0 1px 0 rgba(255,255,255,0.7);
+  background: #8BAEC8;
 }
 
-/* Bottom V-folds */
-.env-fold {
+/* 4 triangular flaps — each a slightly different shade for 3-D depth */
+.env-tri-top {          /* lightest: faces the light */
+  position: absolute; inset: 0;
+  clip-path: polygon(0 0, 100% 0, 50% 50%);
+  background: linear-gradient(170deg, #AECCE4 0%, #9CBED8 100%);
+}
+.env-tri-bottom {       /* darkest: in shadow */
+  position: absolute; inset: 0;
+  clip-path: polygon(0 100%, 100% 100%, 50% 50%);
+  background: linear-gradient(350deg, #6A90AE 0%, #7AA0BC 100%);
+}
+.env-tri-left {
+  position: absolute; inset: 0;
+  clip-path: polygon(0 0, 0 100%, 50% 50%);
+  background: linear-gradient(90deg, #86AACA 0%, #92B2CC 100%);
+}
+.env-tri-right {
+  position: absolute; inset: 0;
+  clip-path: polygon(100% 0, 100% 100%, 50% 50%);
+  background: linear-gradient(-90deg, #7898B8 0%, #88A8C4 100%);
+}
+
+/* Fold lines as SVG overlay */
+.env-fold-svg {
   position: absolute;
-  bottom: 0; left: 0; right: 0;
-  height: 62%;
-  background:
-    linear-gradient(130deg, #C8DCEE 50%, transparent 50%),
-    linear-gradient(-130deg, #C8DCEE 50%, transparent 50%);
-  background-size: 50% 100%;
-  background-position: left, right;
-  background-repeat: no-repeat;
-  border-radius: 0 0 8px 8px;
+  inset: 0;
+  width: 100%; height: 100%;
+  pointer-events: none;
 }
 
-/* Flap (triangle top) */
-.env-flap {
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 58%;
-  background: linear-gradient(160deg, #E8F2FC 0%, #D0E4F4 100%);
-  clip-path: polygon(0 0, 100% 0, 50% 100%);
-  transform-origin: 50% 0%;
-  border-radius: 8px 8px 0 0;
-  z-index: 3;
-  transition: transform 0.75s cubic-bezier(0.25, 0.8, 0.25, 1);
+/* Opening animation */
+@keyframes envOpenAnim {
+  0%   { transform: scale(1) translateY(0); opacity: 1; }
+  40%  { transform: scale(1.05) translateY(-6px); opacity: 0.9; }
+  100% { transform: scale(0.9) translateY(20px); opacity: 0; }
 }
-.env-box.open .env-flap {
-  transform: perspective(1000px) rotateX(-180deg);
-}
+.env-3d-wrap.opening { animation: envOpenAnim 0.65s cubic-bezier(0.4,0,0.2,1) forwards; }
 
-/* Wax seal */
-.env-seal {
+/* ── Wax Seal ── */
+.env-seal-3d {
   position: absolute;
   top: 50%; left: 50%;
-  transform: translate(-50%, -52%);
-  width: 72px; height: 72px;
+  transform: translate(-50%, -50%);
+  width: 90px; height: 90px;
   border-radius: 50%;
   background: var(--white);
   border: 2.5px solid var(--gold);
-  box-shadow: 0 4px 18px rgba(201,169,110,0.45), inset 0 1px 2px rgba(0,0,0,0.04);
+  box-shadow:
+    0 6px 22px rgba(0,0,0,0.18),
+    0 2px 6px rgba(0,0,0,0.10),
+    inset 0 1px 0 rgba(255,255,255,0.9);
   display: flex; align-items: center; justify-content: center;
-  z-index: 4;
-  transition: transform 0.35s ease, box-shadow 0.35s ease;
   overflow: hidden;
+  z-index: 5;
 }
-.env-seal img { width: 54px; height: 54px; object-fit: contain; border-radius: 50%; }
-.env-box.open .env-seal {
-  transform: translate(-50%, -52%) scale(1.08);
-  box-shadow: 0 8px 28px rgba(201,169,110,0.55);
-}
-
-/* Inner text on envelope */
-.env-inner {
-  position: absolute;
-  bottom: 14%; left: 50%;
-  transform: translateX(-50%);
-  text-align: center;
-  z-index: 2;
-  white-space: nowrap;
-}
-.env-inner .env-names {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 1.5rem;
-  font-style: italic;
-  color: var(--blue-dk);
-  letter-spacing: 2px;
-}
-.env-inner .env-sub {
-  font-size: 0.72rem;
-  color: var(--sage);
-  letter-spacing: 3px;
-  text-transform: uppercase;
-  margin-top: 2px;
+.env-seal-3d img {
+  width: 68px; height: 68px;
+  object-fit: contain; border-radius: 50%;
 }
 
-/* Open button */
+/* ── Open button ── */
 .env-open-btn {
-  background: linear-gradient(135deg, var(--blue) 0%, var(--blue-dk) 100%);
+  display: flex; align-items: center; gap: 10px;
+  background: #8BAEC8;
   color: var(--white);
   border: none;
-  padding: 13px 36px;
+  padding: 14px 38px;
   border-radius: 50px;
   font-family: 'Sarabun', sans-serif;
-  font-size: 1rem;
-  font-weight: 600;
+  font-size: 0.98rem;
+  font-weight: 500;
   cursor: pointer;
-  box-shadow: 0 6px 24px rgba(90,127,168,0.38);
-  letter-spacing: 1px;
-  transition: transform 0.2s, box-shadow 0.2s;
+  letter-spacing: 1.5px;
+  box-shadow: 0 6px 24px rgba(80,115,160,0.28);
+  transition: transform 0.2s, background 0.2s, box-shadow 0.2s;
 }
-.env-open-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 32px rgba(90,127,168,0.5); }
+.env-open-btn:hover {
+  background: #7A9EBB;
+  transform: translateY(-2px);
+  box-shadow: 0 10px 32px rgba(80,115,160,0.38);
+}
 .env-open-btn:active { transform: scale(0.96); }
 
-.env-hint {
+/* ── Footer text ── */
+.env-footer {
+  text-align: center;
+  display: flex; flex-direction: column;
+  align-items: center; gap: 7px;
+}
+.env-footer-line {
+  display: flex; align-items: center; gap: 12px;
+}
+.env-footer-rule {
+  width: 38px; height: 1px;
+  background: var(--sage); opacity: 0.45;
+}
+.env-footer-leaf {
+  color: var(--sage); font-size: 0.85rem; opacity: 0.75;
+  line-height: 1;
+}
+.env-event-name {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 0.68rem;
+  letter-spacing: 7px;
+  text-transform: uppercase;
+  color: var(--text-lt);
+  font-weight: 400;
+}
+.env-event-date {
   font-size: 0.78rem;
-  color: var(--sage);
-  letter-spacing: 1px;
+  letter-spacing: 5px;
+  color: var(--text-lt);
+}
+.env-dot { color: var(--sage); opacity: 0.6; font-size: 0.5rem; }
+.env-footer-leaf-btm {
+  color: var(--sage); font-size: 1rem; opacity: 0.65; margin-top: 2px;
 }
 
 /* ════════════════════════════════════════════════
@@ -1019,25 +1028,51 @@ footer {
 
 <!-- ══════════════ ENVELOPE OVERLAY ══════════════ -->
 <div id="overlay">
-  <!-- Petals (generated by JS) -->
 
-  <div class="env-persp" onclick="openEnvelope()">
-    <div class="env-box" id="env-box">
-      <div class="env-back"></div>
-      <div class="env-fold"></div>
-      <div class="env-flap"></div>
-      <div class="env-seal">
+  <!-- 3D Realistic Envelope -->
+  <div class="env-3d-wrap" id="env-box" onclick="openEnvelope()">
+    <div class="env-3d">
+      <div class="env-3d-base"></div>
+      <div class="env-tri-top"></div>
+      <div class="env-tri-bottom"></div>
+      <div class="env-tri-left"></div>
+      <div class="env-tri-right"></div>
+      <!-- Fold lines -->
+      <svg class="env-fold-svg" viewBox="0 0 380 262" preserveAspectRatio="none">
+        <line x1="0" y1="0"   x2="190" y2="131" stroke="rgba(255,255,255,0.20)" stroke-width="1.5"/>
+        <line x1="380" y1="0"   x2="190" y2="131" stroke="rgba(255,255,255,0.20)" stroke-width="1.5"/>
+        <line x1="0" y1="262" x2="190" y2="131" stroke="rgba(0,0,0,0.07)" stroke-width="1.5"/>
+        <line x1="380" y1="262" x2="190" y2="131" stroke="rgba(0,0,0,0.07)" stroke-width="1.5"/>
+      </svg>
+      <!-- Wax seal -->
+      <div class="env-seal-3d">
         <img src="logo.png" alt="PM" onerror="this.style.display='none'">
-      </div>
-      <div class="env-inner">
-        <div class="env-names">เอ็ม &amp; แป้ง</div>
-        <div class="env-sub">Family Witness Dinner</div>
       </div>
     </div>
   </div>
 
-  <button class="env-open-btn" onclick="openEnvelope()">✉️ เปิดการ์ดเชิญ</button>
-  <div class="env-hint">แตะเพื่อเปิด</div>
+  <!-- Open button -->
+  <button class="env-open-btn" onclick="openEnvelope()">
+    <svg width="18" height="14" viewBox="0 0 18 14" fill="none" stroke="white" stroke-width="1.5">
+      <rect x="1" y="1" width="16" height="12" rx="2"/>
+      <polyline points="1,1 9,8 17,1"/>
+    </svg>
+    เปิดการ์ดเชิญ
+  </button>
+
+  <!-- Footer text -->
+  <div class="env-footer">
+    <div class="env-footer-line">
+      <div class="env-footer-rule"></div>
+      <span class="env-footer-leaf">✦</span>
+      <div class="env-footer-rule"></div>
+    </div>
+    <div class="env-event-name">Family Witness Dinner</div>
+    <div class="env-dot">·</div>
+    <div class="env-event-date">28 · 11 · 2026</div>
+    <div class="env-dot">·</div>
+    <div class="env-footer-leaf-btm">🌿</div>
+  </div>
 </div>
 
 <!-- ══════════════ MAIN CONTENT ══════════════ -->
@@ -1469,21 +1504,20 @@ let guestCount     = 0;
 // ── ENVELOPE OPEN ────────────────────────────────────────────
 function openEnvelope() {
   const box = document.getElementById('env-box');
-  if (box.classList.contains('open')) return;
-  box.classList.add('open');
+  if (box.dataset.opening) return;
+  box.dataset.opening = '1';
+  box.classList.add('opening');
+
   setTimeout(() => {
     const overlay = document.getElementById('overlay');
     overlay.classList.add('hide');
     const main = document.getElementById('main-content');
     main.style.opacity = '1';
     setTimeout(() => { overlay.style.display = 'none'; }, 1000);
-    // Start countdown
     startCountdown();
-    // Load stats
     loadStats();
-    // Trigger scroll reveals for visible elements
     triggerVisibleFades();
-  }, 900);
+  }, 480);
 }
 
 // ── SCROLL PROGRESS BAR ──────────────────────────────────────
