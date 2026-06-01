@@ -123,6 +123,34 @@ function doPost(e) {
     .setMimeType(ContentService.MimeType.JSON);
 }
 
+// --- SETUP — รันครั้งเดียวเพื่อสร้าง sheet ที่จำเป็น ----------------
+function doSetup() {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+
+  // สร้าง sheet คำอวยพร
+  if (!ss.getSheetByName('คำอวยพร')) {
+    var s = ss.insertSheet('คำอวยพร');
+    s.getRange(1, 1, 1, 3).setValues([['วันที่', 'ชื่อ', 'ข้อความ']])
+      .setFontWeight('bold').setBackground('#f4d9d0');
+    s.setFrozenRows(1);
+    s.setColumnWidth(1, 150);
+    s.setColumnWidth(2, 160);
+    s.setColumnWidth(3, 420);
+  }
+
+  // สร้าง sheet แขก ถ้ายังไม่มี
+  if (!ss.getSheetByName('แขก')) {
+    var g = ss.insertSheet('แขก');
+    g.getRange(1, 1, 1, 8).setValues([[
+      'ชื่อ', 'ฝั่ง', 'เบอร์โทร', 'ความสัมพันธ์',
+      'ที่นั่ง', 'สถานะ', 'อีเมล', 'หมายเหตุ'
+    ]]).setFontWeight('bold').setBackground('#f4d9d0');
+    g.setFrozenRows(1);
+  }
+
+  SpreadsheetApp.getUi().alert('✅ สร้าง sheet เรียบร้อยแล้ว!\n\nตรวจสอบแท็บ "คำอวยพร" และ "แขก" ใน Spreadsheet');
+}
+
 // --- RSVP (invite page — บันทึกแขกรายบุคคล) -------------------------
 function saveRsvpGuest(ss, body) {
   var sheet = ss.getSheetByName('แขก');
