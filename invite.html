@@ -184,210 +184,6 @@ a { color: inherit; }
 .cd-box.pop.d4 { animation-delay: 0.35s; }
 
 /* ════════════════════════════════════════════════
-   ENVELOPE OVERLAY — REALISTIC 3D STYLE
-════════════════════════════════════════════════ */
-#overlay {
-  position: fixed;
-  inset: 0;
-  background: radial-gradient(ellipse at 50% 38%, #FAFCFF 0%, #F2F7FD 45%, #E8F0FA 100%);
-  z-index: 900;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 32px;
-  overflow: hidden;
-  padding: 32px 20px;
-  transition: opacity 1s ease, transform 1s ease;
-}
-#overlay.hide {
-  opacity: 0;
-  pointer-events: none;
-  transform: scale(0.97);
-}
-
-/* ════════════════════════════════════════════════
-   3D ENVELOPE — classic sealed-back style
-════════════════════════════════════════════════ */
-.env-3d-wrap {
-  width: min(420px, 90vw);
-  cursor: pointer;
-  /* NO filter here — interferes with perspective 3D */
-  transition: transform 0.3s ease;
-}
-.env-3d-wrap:hover { transform: translateY(-4px); }
-
-/* The body: sets up 3D perspective for the flap rotation */
-.env-3d {
-  position: relative;
-  width: 100%;
-  padding-top: 65%;       /* ~1.54:1 — classic letter-envelope ratio */
-  overflow: visible;       /* must NOT be hidden — allows 3D flap to show */
-  perspective: 1400px;
-}
-
-/* ── Base layer (solid back of envelope) ── */
-.env-3d-base {
-  position: absolute; inset: 0;
-  background: #8BAEC8;
-  box-shadow:
-    0 24px 60px rgba(70,105,150,0.32),
-    0 6px 18px rgba(70,105,150,0.18),
-    inset 0 1px 0 rgba(255,255,255,0.3);
-}
-
-/* ── Side & bottom fold triangles (body shading) ── */
-.env-tri-bottom {   /* bottom flap — darkest */
-  position: absolute; inset: 0;
-  clip-path: polygon(0 100%, 100% 100%, 50% 55%);
-  background: linear-gradient(355deg, #5E86A6 0%, #72A0BE 100%);
-}
-.env-tri-left {
-  position: absolute; inset: 0;
-  clip-path: polygon(0 0, 0 100%, 50% 50%);
-  background: linear-gradient(90deg, #80A8C6 0%, #8CB2CC 100%);
-}
-.env-tri-right {
-  position: absolute; inset: 0;
-  clip-path: polygon(100% 0, 100% 100%, 50% 50%);
-  background: linear-gradient(-90deg, #7298B6 0%, #82A8C4 100%);
-}
-
-/* ── Fold lines (SVG) ── */
-.env-fold-svg {
-  position: absolute; inset: 0;
-  width: 100%; height: 100%;
-  pointer-events: none;
-  z-index: 2;
-}
-
-/* ── TOP FLAP — the sealed V, rotates open on click ── */
-.env-tri-top {
-  position: absolute; inset: 0;
-  /* V-tip at 40% of envelope height */
-  clip-path: polygon(0 0, 100% 0, 50% 40%);
-  background: linear-gradient(175deg, #B0CCDE 0%, #9EBAD4 40%, #8AAEC8 100%);
-  /* Paper texture overlay */
-  background-image:
-    linear-gradient(175deg, #B0CCDE 0%, #9EBAD4 40%, #8AAEC8 100%),
-    repeating-linear-gradient(45deg, rgba(255,255,255,0.03) 0, rgba(255,255,255,0.03) 1px, transparent 1px, transparent 7px),
-    repeating-linear-gradient(-45deg, rgba(255,255,255,0.03) 0, rgba(255,255,255,0.03) 1px, transparent 1px, transparent 7px);
-
-  /* 3D hinge at the TOP edge */
-  transform-origin: top center;
-  transition: transform 1s cubic-bezier(0.4, 0, 0.2, 1);
-  backface-visibility: hidden;   /* hide when fully rotated */
-  z-index: 10;
-}
-
-/* When opened: fold back 175° (slightly less than 180 looks more natural) */
-.env-tri-top.open {
-  transform: perspective(1400px) rotateX(-175deg);
-}
-
-/* Flap inner face (visible while it rotates past 90°) */
-.env-tri-top::after {
-  content: '';
-  position: absolute; inset: 0;
-  clip-path: polygon(0 0, 100% 0, 50% 40%);
-  background: linear-gradient(175deg, #7698B2 0%, #6A8CAC 100%);
-  transform: rotateX(180deg);
-  backface-visibility: visible;
-}
-
-/* ── Wax Seal ── */
-/* Sits at the V-tip point (50% across, 40% down) */
-.env-seal-3d {
-  position: absolute;
-  top: 40%; left: 50%;
-  transform: translate(-50%, -50%);
-  width: 88px; height: 88px;
-  border-radius: 50%;
-  background: var(--white);
-  border: 2.5px solid var(--gold);
-  box-shadow:
-    0 6px 22px rgba(0,0,0,0.20),
-    0 2px 8px rgba(0,0,0,0.12),
-    inset 0 1px 0 rgba(255,255,255,0.9);
-  display: flex; align-items: center; justify-content: center;
-  overflow: hidden;
-  z-index: 11;   /* above flap */
-  transition: transform 0.3s ease, opacity 0.3s ease;
-  transform-origin: center;
-}
-.env-seal-3d img {
-  width: 66px; height: 66px;
-  object-fit: contain; border-radius: 50%;
-}
-
-/* Seal breaking animation states */
-.env-seal-3d.crack {
-  transform: translate(-50%, -50%) scale(1.18);
-}
-.env-seal-3d.gone {
-  transform: translate(-50%, -50%) scale(0);
-  opacity: 0;
-}
-
-/* ── Open button ── */
-.env-open-btn {
-  display: flex; align-items: center; gap: 10px;
-  background: #8BAEC8;
-  color: var(--white);
-  border: none;
-  padding: 14px 38px;
-  border-radius: 50px;
-  font-family: 'Sarabun', sans-serif;
-  font-size: 0.98rem;
-  font-weight: 500;
-  cursor: pointer;
-  letter-spacing: 1.5px;
-  box-shadow: 0 6px 24px rgba(80,115,160,0.28);
-  transition: transform 0.2s, background 0.2s, box-shadow 0.2s;
-}
-.env-open-btn:hover {
-  background: #7A9EBB;
-  transform: translateY(-2px);
-  box-shadow: 0 10px 32px rgba(80,115,160,0.38);
-}
-.env-open-btn:active { transform: scale(0.96); }
-
-/* ── Footer text ── */
-.env-footer {
-  text-align: center;
-  display: flex; flex-direction: column;
-  align-items: center; gap: 7px;
-}
-.env-footer-line {
-  display: flex; align-items: center; gap: 12px;
-}
-.env-footer-rule {
-  width: 38px; height: 1px;
-  background: var(--sage); opacity: 0.45;
-}
-.env-footer-leaf {
-  color: var(--sage); font-size: 0.85rem; opacity: 0.75;
-  line-height: 1;
-}
-.env-event-name {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 0.68rem;
-  letter-spacing: 7px;
-  text-transform: uppercase;
-  color: var(--text-lt);
-  font-weight: 400;
-}
-.env-event-date {
-  font-size: 0.78rem;
-  letter-spacing: 5px;
-  color: var(--text-lt);
-}
-.env-dot { color: var(--sage); opacity: 0.6; font-size: 0.5rem; }
-.env-footer-leaf-btm {
-  color: var(--sage); font-size: 1rem; opacity: 0.65; margin-top: 2px;
-}
-
-/* ════════════════════════════════════════════════
    SECTION BASE
 ════════════════════════════════════════════════ */
 section {
@@ -1068,58 +864,8 @@ footer {
 
 <!-- Floating page petals (generated by JS) -->
 
-<!-- ══════════════ ENVELOPE OVERLAY ══════════════ -->
-<div id="overlay">
-
-  <!-- 3D Realistic Envelope -->
-  <div class="env-3d-wrap" id="env-box" onclick="openEnvelope()">
-    <div class="env-3d">
-      <div class="env-3d-base"></div>
-      <div class="env-tri-top"></div>
-      <div class="env-tri-bottom"></div>
-      <div class="env-tri-left"></div>
-      <div class="env-tri-right"></div>
-      <!-- Fold lines -->
-      <!-- fold lines converge at center — updated for 60% height ratio -->
-      <svg class="env-fold-svg" viewBox="0 0 400 240" preserveAspectRatio="none">
-        <line x1="0" y1="0"   x2="200" y2="120" stroke="rgba(255,255,255,0.22)" stroke-width="1.5"/>
-        <line x1="400" y1="0"   x2="200" y2="120" stroke="rgba(255,255,255,0.22)" stroke-width="1.5"/>
-        <line x1="0" y1="240" x2="200" y2="120" stroke="rgba(0,0,0,0.07)" stroke-width="1.5"/>
-        <line x1="400" y1="240" x2="200" y2="120" stroke="rgba(0,0,0,0.07)" stroke-width="1.5"/>
-      </svg>
-      <!-- Wax seal -->
-      <div class="env-seal-3d">
-        <img src="logo.png" alt="PM" onerror="this.style.display='none'">
-      </div>
-    </div>
-  </div>
-
-  <!-- Open button -->
-  <button class="env-open-btn" onclick="openEnvelope()">
-    <svg width="18" height="14" viewBox="0 0 18 14" fill="none" stroke="white" stroke-width="1.5">
-      <rect x="1" y="1" width="16" height="12" rx="2"/>
-      <polyline points="1,1 9,8 17,1"/>
-    </svg>
-    เปิดการ์ดเชิญ
-  </button>
-
-  <!-- Footer text -->
-  <div class="env-footer">
-    <div class="env-footer-line">
-      <div class="env-footer-rule"></div>
-      <span class="env-footer-leaf">✦</span>
-      <div class="env-footer-rule"></div>
-    </div>
-    <div class="env-event-name">Family Witness Dinner</div>
-    <div class="env-dot">·</div>
-    <div class="env-event-date">28 · 11 · 2026</div>
-    <div class="env-dot">·</div>
-    <div class="env-footer-leaf-btm">🌿</div>
-  </div>
-</div>
-
 <!-- ══════════════ MAIN CONTENT ══════════════ -->
-<main id="main-content" style="opacity:0; transition: opacity 0.8s ease;">
+<main id="main-content">
 
   <!-- ── HERO ── -->
   <section id="sec-hero">
@@ -1538,34 +1284,17 @@ let guestCount     = 0;
   }
 })();
 
-// (old overlay petals removed — new design is clean/minimal)
-
-// ── ENVELOPE OPEN ────────────────────────────────────────────
-function openEnvelope() {
-  const box = document.getElementById('env-box');
-  if (box.dataset.opening) return;
-  box.dataset.opening = '1';
-  box.classList.add('opening');
-
-  setTimeout(() => {
-    const overlay = document.getElementById('overlay');
-    overlay.classList.add('hide');
-    const main = document.getElementById('main-content');
-    main.style.opacity = '1';
-    setTimeout(() => { overlay.style.display = 'none'; }, 1000);
-    startCountdown();
-    loadStats();
-    triggerVisibleFades();
-    // Spawn floating petals only after entering the main content
-    const petalList = ['🌸','🌺','🌷','💐','🌼'];
-    for (let i = 0; i < 8; i++) {
-      const p = document.createElement('span');
-      p.className = 'page-petal';
-      p.textContent = petalList[i % petalList.length];
-      p.style.cssText = `left:${5+Math.random()*90}%;animation-duration:${9+Math.random()*8}s;animation-delay:${Math.random()*10}s;font-size:${0.7+Math.random()*0.7}rem;`;
-      document.body.appendChild(p);
-    }
-  }, 480);
+// ── AUTO START (no envelope) ─────────────────────────────────
+startCountdown();
+loadStats();
+triggerVisibleFades();
+const petalList = ['🌸','🌺','🌷','💐','🌼'];
+for (let i = 0; i < 8; i++) {
+  const p = document.createElement('span');
+  p.className = 'page-petal';
+  p.textContent = petalList[i % petalList.length];
+  p.style.cssText = `left:${5+Math.random()*90}%;animation-duration:${9+Math.random()*8}s;animation-delay:${Math.random()*10}s;font-size:${0.7+Math.random()*0.7}rem;`;
+  document.body.appendChild(p);
 }
 
 // ── SCROLL PROGRESS BAR ──────────────────────────────────────
