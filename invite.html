@@ -571,21 +571,26 @@ h2.sec-title em { font-style: italic; color: var(--blue-dk); }
 ════════════════════════════════════════════════ */
 #sec-details {
   background:
-    linear-gradient(145deg, rgba(155,118,92,0.78), rgba(135,100,75,0.75), rgba(160,125,98,0.78)),
-    url('รูปประกอบการ์ดเชิญ/IMG_3686.JPG') center 20% / cover no-repeat;
+    linear-gradient(145deg, rgba(155,118,92,0.72), rgba(135,100,75,0.68), rgba(160,125,98,0.72)),
+    url('รูปประกอบการ์ดเชิญ/IMG_3686.JPG') center 28% / cover no-repeat;
   border-radius: var(--radius);
   color: var(--white);
   text-align: center;
-  padding: 60px 24px;
+  padding: 100px 24px 110px;
   margin: 0 16px;
   max-width: 100%;
   box-shadow: 0 12px 40px rgba(120,85,60,0.30);
 }
 @media(max-width:719px){
-  #sec-details { background-position: 40% 20%; }
+  #sec-details { background-position: 40% 28%; padding: 80px 20px 90px; }
 }
 @media(min-width:720px){
-  #sec-details { max-width: 680px; margin: 0 auto; background-position: center 28%; }
+  #sec-details {
+    max-width: none; margin: 0;
+    border-radius: 0;
+    padding: 120px 24px 130px;
+    background-position: center 32%;
+  }
 }
 .cd-title { font-size: 0.78rem; letter-spacing: 3px; text-transform: uppercase; opacity: 0.75; margin-bottom: 8px; }
 .cd-date-text { font-family: 'Cormorant Garamond', serif; font-size: 1.4rem; font-weight: 600; margin-bottom: 28px; color: rgba(255,240,225,1); }
