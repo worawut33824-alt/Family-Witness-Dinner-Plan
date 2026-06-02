@@ -803,31 +803,109 @@ h2.sec-title em { font-style: italic; color: var(--blue-dk); }
    DRESS CODE
 ════════════════════════════════════════════════ */
 #sec-dresscode {
-  padding: 64px 20px;
-  max-width: 560px;
+  padding: 72px 20px 80px;
+  max-width: 580px;
   margin: 0 auto;
   text-align: center;
 }
 .dresscode-card {
-  background: var(--white);
-  border-radius: 20px;
-  padding: 36px 32px;
+  background: linear-gradient(145deg, #FAFCFF 0%, #F4F8FD 100%);
+  border-radius: 24px;
+  padding: 44px 36px 40px;
   margin-top: 28px;
-  box-shadow: 0 4px 24px rgba(90,127,168,0.10);
-  border: 1px solid rgba(169,201,235,0.25);
+  box-shadow:
+    0 2px 0 rgba(255,255,255,0.9) inset,
+    0 8px 32px rgba(90,127,168,0.10),
+    0 1px 4px rgba(90,127,168,0.08);
+  border: 1px solid rgba(169,201,235,0.30);
+  position: relative;
+  overflow: hidden;
+}
+/* subtle decorative circle */
+.dresscode-card::before {
+  content: '';
+  position: absolute;
+  width: 280px; height: 280px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(169,201,235,0.12) 0%, transparent 70%);
+  top: -80px; right: -80px;
+  pointer-events: none;
+}
+.dresscode-card::after {
+  content: '';
+  position: absolute;
+  width: 200px; height: 200px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(128,150,132,0.09) 0%, transparent 70%);
+  bottom: -60px; left: -60px;
+  pointer-events: none;
+}
+.dresscode-icon {
+  font-size: 2.4rem;
+  margin-bottom: 12px;
+  display: block;
+  line-height: 1;
 }
 .dresscode-tagline {
   font-family: 'Cormorant Garamond', serif;
-  font-size: 1.5rem;
+  font-size: 1.65rem;
   font-style: italic;
   color: var(--blue-dk);
   margin-bottom: 16px;
   line-height: 1.4;
 }
 .dresscode-body {
-  font-size: 0.92rem;
+  font-size: 0.9rem;
   color: var(--text-lt);
   line-height: 2;
+  margin-bottom: 32px;
+}
+/* colour palette swatches */
+.dresscode-palette {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.dresscode-palette-label {
+  font-size: 0.68rem;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: var(--text-lt);
+  opacity: 0.7;
+  width: 100%;
+  margin-bottom: 4px;
+}
+.dc-swatch {
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+  transition: transform 0.2s ease;
+  position: relative;
+}
+.dc-swatch:hover { transform: scale(1.15); }
+.dc-swatch-label {
+  position: absolute;
+  bottom: -18px; left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.58rem;
+  color: var(--text-lt);
+  white-space: nowrap;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+.dc-swatch:hover .dc-swatch-label { opacity: 1; }
+.dc-note {
+  font-size: 0.7rem;
+  color: var(--text-lt);
+  opacity: 0.6;
+  margin-top: 16px;
+  font-style: italic;
+}
+@media(max-width:480px){
+  .dresscode-card { padding: 32px 20px 28px; }
+  .dresscode-tagline { font-size: 1.4rem; }
 }
 
 .venue-photos {
@@ -1481,14 +1559,35 @@ footer {
   <section id="sec-dresscode" class="fade-up">
     <div class="sec-label">การแต่งกาย</div>
     <div class="sec-divider"></div>
-    <h2 class="sec-title gold-shimmer anim from-bottom">👗 <em>Dress Code</em></h2>
+    <h2 class="sec-title gold-shimmer anim from-bottom"><em>Dress Code</em></h2>
     <div class="dresscode-card anim from-bottom d1">
+      <span class="dresscode-icon">👗</span>
       <p class="dresscode-tagline">"แต่งตัวตามสบายใจได้เลยนะ"</p>
       <p class="dresscode-body">
         ทุกท่านคือคนพิเศษในชีวิตของเราสองคน<br>
         เราอยากให้ทุกท่านมาร่วมงานด้วยรอยยิ้มและความสบายใจ<br>
         ใส่อะไรก็ได้ที่รู้สึกดี เพียงคุณมา เราก็มีความสุขแล้ว 🤍
       </p>
+      <!-- optional colour inspiration -->
+      <div class="dresscode-palette">
+        <div class="dresscode-palette-label">แรงบันดาลใจสีงาน · ไม่บังคับ</div>
+        <div class="dc-swatch" style="background:#A9C9EB;" title="dusty blue">
+          <span class="dc-swatch-label">dusty blue</span>
+        </div>
+        <div class="dc-swatch" style="background:#809684;" title="sage">
+          <span class="dc-swatch-label">sage</span>
+        </div>
+        <div class="dc-swatch" style="background:#C9A96E;" title="gold">
+          <span class="dc-swatch-label">gold</span>
+        </div>
+        <div class="dc-swatch" style="background:#E8D5C0;" title="cream">
+          <span class="dc-swatch-label">cream</span>
+        </div>
+        <div class="dc-swatch" style="background:#B8CABC;" title="sage light">
+          <span class="dc-swatch-label">sage lt</span>
+        </div>
+      </div>
+      <p class="dc-note">* สีข้างต้นเป็นเพียงแรงบันดาลใจจากธีมงาน ไม่ได้บังคับแต่อย่างใด</p>
     </div>
   </section>
 
