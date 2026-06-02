@@ -799,6 +799,30 @@ h2.sec-title em { font-style: italic; color: var(--blue-dk); }
   .tl-label { font-size: 0.7rem; }
 }
 
+.venue-photos {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 20px;
+  border-radius: 14px;
+  overflow: hidden;
+}
+.venue-photo {
+  width: 100%; aspect-ratio: 4/3;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.4s ease;
+}
+.venue-photo:first-child {
+  grid-column: 1 / -1;
+  aspect-ratio: 16/7;
+}
+.venue-photo:hover { transform: scale(1.02); }
+@media(max-width:480px){
+  .venue-photos { grid-template-columns: 1fr; }
+  .venue-photo:first-child { aspect-ratio: 16/9; }
+}
+
 .map-embed-wrap {
   width: 100%;
   border-radius: 18px;
@@ -1421,15 +1445,10 @@ footer {
     <h2 class="sec-title gold-shimmer anim from-bottom">Getting <em>Here</em></h2>
     <p style="text-align:center;color:var(--text-lt);font-size:0.88rem;margin:10px 0 24px">ธาราเทอเรส · จังหวัดนครปฐม</p>
 
-    <!-- Google Maps embed (no API key) -->
-    <div class="map-embed-wrap anim zoom-in">
-      <iframe
-        src="https://maps.google.com/maps?q=tara+terrace+%E0%B8%98%E0%B8%B2%E0%B8%A3%E0%B8%B2+%E0%B9%80%E0%B8%97%E0%B8%AD%E0%B8%A3%E0%B9%8C%E0%B9%80%E0%B8%A3%E0%B8%8B+%E0%B8%99%E0%B8%84%E0%B8%A3%E0%B8%9B%E0%B8%90%E0%B8%A1&output=embed&hl=th&z=16"
-        title="ธาราเทอเรส Tara Terrace นครปฐม"
-        allowfullscreen=""
-        loading="lazy"
-        referrerpolicy="no-referrer-when-downgrade">
-      </iframe>
+    <!-- Venue photos -->
+    <div class="venue-photos anim zoom-in">
+      <img src="รูปสถานที่/710298291_1707493166931898_4535512675905232597_n.jpg" alt="ธาราเทอเรส" class="venue-photo">
+      <img src="รูปสถานที่/709134475_2413048042505452_8347293504824554399_n.jpg" alt="ธาราเทอเรส มุมสูง" class="venue-photo">
     </div>
 
     <!-- Venue detail card -->
