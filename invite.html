@@ -800,27 +800,35 @@ h2.sec-title em { font-style: italic; color: var(--blue-dk); }
 }
 
 .venue-photos {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
   margin-bottom: 20px;
   border-radius: 14px;
   overflow: hidden;
 }
-.venue-photo {
+.venue-photo-wide { width: 100%; overflow: hidden; }
+.venue-photo-wide img {
+  width: 100%; aspect-ratio: 16/7;
+  object-fit: cover; display: block;
+  transition: transform 0.5s ease;
+}
+.venue-photo-pair {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.venue-photo-box { overflow: hidden; }
+.venue-photo-box img {
   width: 100%; aspect-ratio: 4/3;
-  object-fit: cover;
-  display: block;
-  transition: transform 0.4s ease;
+  object-fit: cover; display: block;
+  transition: transform 0.5s ease;
 }
-.venue-photo:first-child {
-  grid-column: 1 / -1;
-  aspect-ratio: 16/7;
-}
-.venue-photo:hover { transform: scale(1.02); }
+.venue-photo-wide img:hover,
+.venue-photo-box img:hover { transform: scale(1.04); }
 @media(max-width:480px){
-  .venue-photos { grid-template-columns: 1fr; }
-  .venue-photo:first-child { aspect-ratio: 16/9; }
+  .venue-photo-wide img { aspect-ratio: 16/9; }
+  .venue-photo-box img { aspect-ratio: 1/1; }
 }
 
 .map-embed-wrap {
@@ -1447,8 +1455,17 @@ footer {
 
     <!-- Venue photos -->
     <div class="venue-photos anim zoom-in">
-      <img src="รูปสถานที่/710298291_1707493166931898_4535512675905232597_n.jpg" alt="ธาราเทอเรส" class="venue-photo">
-      <img src="รูปสถานที่/709134475_2413048042505452_8347293504824554399_n.jpg" alt="ธาราเทอเรส มุมสูง" class="venue-photo">
+      <div class="venue-photo-wide">
+        <img src="รูปสถานที่/710298291_1707493166931898_4535512675905232597_n.jpg" alt="ธาราเทอเรส">
+      </div>
+      <div class="venue-photo-pair">
+        <div class="venue-photo-box">
+          <img src="รูปสถานที่/709134475_2413048042505452_8347293504824554399_n.jpg" alt="ธาราเทอเรส มุมสูง">
+        </div>
+        <div class="venue-photo-box">
+          <img src="รูปสถานที่/711708635_1712209976454956_5419472830277624580_n.jpg" alt="ธาราเทอเรส บรรยากาศงาน">
+        </div>
+      </div>
     </div>
 
     <!-- Venue detail card -->
