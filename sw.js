@@ -1,7 +1,7 @@
 // Wedding Planner – Service Worker
 // Caches core assets for offline use
 
-const CACHE = 'wedding-planner-v40';
+const CACHE = 'wedding-planner-v41';
 const ASSETS = [
   './',
   './index.html',
