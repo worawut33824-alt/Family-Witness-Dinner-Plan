@@ -680,6 +680,120 @@ h2.sec-title em { font-style: italic; color: var(--blue-dk); }
 ════════════════════════════════════════════════ */
 #sec-map { padding-top: 80px; }
 
+/* ════════════════════════════════════════════════
+   ITINERARY TIMELINE
+════════════════════════════════════════════════ */
+#sec-itinerary {
+  padding: 72px 20px 64px;
+  max-width: 560px;
+  margin: 0 auto;
+}
+.itinerary-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 2rem;
+  font-style: italic;
+  text-align: center;
+  color: var(--text);
+  margin-bottom: 48px;
+  letter-spacing: 1px;
+}
+.itinerary-title em {
+  color: var(--blue-dk);
+  font-style: italic;
+}
+.timeline {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+/* vertical center line */
+.timeline::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 0; bottom: 0;
+  width: 1.5px;
+  background: linear-gradient(to bottom,
+    transparent 0%,
+    var(--blue-lt) 8%,
+    var(--blue) 50%,
+    var(--blue-lt) 92%,
+    transparent 100%);
+  transform: translateX(-50%);
+}
+.tl-item {
+  display: grid;
+  grid-template-columns: 1fr 48px 1fr;
+  align-items: center;
+  gap: 0;
+  min-height: 90px;
+}
+/* dot */
+.tl-dot {
+  grid-column: 2;
+  width: 14px; height: 14px;
+  border-radius: 50%;
+  background: var(--white);
+  border: 2.5px solid var(--blue);
+  box-shadow: 0 0 0 4px rgba(169,201,235,0.25);
+  justify-self: center;
+  position: relative;
+  z-index: 1;
+  transition: transform 0.3s ease;
+}
+.tl-item:hover .tl-dot {
+  transform: scale(1.35);
+  background: var(--blue-lt);
+}
+/* content left / right */
+.tl-content-left {
+  grid-column: 1;
+  text-align: right;
+  padding-right: 20px;
+}
+.tl-content-right {
+  grid-column: 3;
+  text-align: left;
+  padding-left: 20px;
+}
+.tl-empty { /* placeholder on opposite side */ }
+
+.tl-icon {
+  font-size: 1.8rem;
+  line-height: 1;
+  margin-bottom: 4px;
+  display: block;
+}
+.tl-time {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: var(--blue-dk);
+  letter-spacing: 1px;
+  line-height: 1.1;
+}
+.tl-label {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text);
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  margin-top: 3px;
+  line-height: 1.4;
+}
+.tl-sub {
+  font-size: 0.72rem;
+  color: var(--text-lt);
+  margin-top: 2px;
+}
+@media (max-width: 480px) {
+  #sec-itinerary { max-width: 100%; padding: 56px 16px 48px; }
+  .tl-time { font-size: 1.1rem; }
+  .tl-icon { font-size: 1.5rem; }
+  .tl-label { font-size: 0.7rem; }
+}
+
 .map-embed-wrap {
   width: 100%;
   border-radius: 18px;
@@ -1219,6 +1333,77 @@ footer {
       <div class="cd-box pop d3"><div class="cd-num" id="i-mins">--</div><div class="cd-lbl">นาที</div></div>
       <div class="cd-sep anim from-bottom d4">:</div>
       <div class="cd-box pop d4"><div class="cd-num" id="i-secs">--</div><div class="cd-lbl">วินาที</div></div>
+    </div>
+  </section>
+
+  <!-- ── ITINERARY ── -->
+  <section id="sec-itinerary" class="fade-up">
+    <div class="sec-label">กำหนดการณ์</div>
+    <div class="sec-divider"></div>
+    <h2 class="itinerary-title">Program of <em>the Day</em></h2>
+
+    <div class="timeline">
+
+      <!-- 14:30 ทำบุญ — LEFT -->
+      <div class="tl-item anim from-left">
+        <div class="tl-content-left">
+          <span class="tl-icon">🙏</span>
+          <div class="tl-time">14:30</div>
+          <div class="tl-label">พิธีสงฆ์</div>
+          <div class="tl-sub">ทำบุญ · เอาใจผู้ใหญ่</div>
+        </div>
+        <div class="tl-dot"></div>
+        <div class="tl-empty"></div>
+      </div>
+
+      <!-- 16:00 ลงทะเบียน — RIGHT -->
+      <div class="tl-item anim from-right">
+        <div class="tl-empty"></div>
+        <div class="tl-dot"></div>
+        <div class="tl-content-right">
+          <span class="tl-icon">✍️</span>
+          <div class="tl-time">16:00</div>
+          <div class="tl-label">ลงทะเบียน</div>
+          <div class="tl-sub">ต้อนรับแขกผู้มีเกียรติ</div>
+        </div>
+      </div>
+
+      <!-- 17:00 ค็อกเทล — LEFT -->
+      <div class="tl-item anim from-left">
+        <div class="tl-content-left">
+          <span class="tl-icon">🥂</span>
+          <div class="tl-time">17:00</div>
+          <div class="tl-label">รับประทานอาหาร</div>
+          <div class="tl-sub">Cocktail Reception</div>
+        </div>
+        <div class="tl-dot"></div>
+        <div class="tl-empty"></div>
+      </div>
+
+      <!-- 17:30 Vow Ceremony — RIGHT -->
+      <div class="tl-item anim from-right">
+        <div class="tl-empty"></div>
+        <div class="tl-dot"></div>
+        <div class="tl-content-right">
+          <span class="tl-icon">💍</span>
+          <div class="tl-time">17:30</div>
+          <div class="tl-label">Vow Ceremony</div>
+          <div class="tl-sub">พิธีแลกคำสัญญา</div>
+        </div>
+      </div>
+
+      <!-- 20:00 จบงาน — LEFT -->
+      <div class="tl-item anim from-left">
+        <div class="tl-content-left">
+          <span class="tl-icon">🌙</span>
+          <div class="tl-time">20:00</div>
+          <div class="tl-label">จบงาน</div>
+          <div class="tl-sub">ขอบคุณทุกท่าน 🤍</div>
+        </div>
+        <div class="tl-dot"></div>
+        <div class="tl-empty"></div>
+      </div>
+
     </div>
   </section>
 
