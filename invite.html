@@ -1384,8 +1384,8 @@ footer {
           <div class="form-group">
             <label class="form-label">รู้จักฝั่งไหน <span class="req">*</span></label>
             <div class="side-group">
-              <div class="side-btn" id="side-m" onclick="selectSide('m')">💙 ฝั่งเอ็ม</div>
-              <div class="side-btn" id="side-p" onclick="selectSide('p')">🩷 ฝั่งแป้ง</div>
+              <div class="side-btn" id="side-m" onclick="selectSide('m')">💙 เอ็ม</div>
+              <div class="side-btn" id="side-p" onclick="selectSide('p')">🩷 แป้ง</div>
             </div>
           </div>
           <div class="form-group">
@@ -1840,7 +1840,7 @@ function submitRSVP() {
   const payload = {
     action: 'rsvp',
     name, count, phone, email,
-    side: selectedSide === 'm' ? 'ฝั่งเอ็ม' : 'ฝั่งแป้ง',
+    side: selectedSide === 'm' ? 'เอ็ม' : 'แป้ง',
     relation, note
   };
 
@@ -1875,7 +1875,7 @@ function submitRSVP() {
     count:    String(count),
     phone:    phone,
     email:    email,
-    side:     selectedSide === 'm' ? 'ฝั่งเอ็ม' : 'ฝั่งแป้ง',
+    side:     selectedSide === 'm' ? 'เอ็ม' : 'แป้ง',
     relation: relation,
     note:     note.substring(0, 300)
   });
