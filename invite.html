@@ -538,6 +538,34 @@ h2.sec-title em { font-style: italic; color: var(--blue-dk); }
   flex-shrink: 0;
 }
 
+/* ── Desktop: full-screen 16:9 ── */
+@media (min-width: 768px) {
+  #sec-couple {
+    width: 100vw;
+    max-width: 100vw;
+    margin-left: calc(50% - 50vw);
+    aspect-ratio: 16 / 9;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 0 !important;
+  }
+  #sec-couple .sec-label  { font-size: 1rem; letter-spacing: 5px; }
+  #sec-couple .sec-divider { width: 80px; margin: 16px auto 32px; }
+  #sec-couple h2.sec-title { font-size: 4rem; margin-bottom: 0; }
+  #sec-couple .couple-cards { gap: 80px; margin-top: 56px; }
+  #sec-couple .couple-card  { max-width: 300px; gap: 20px; }
+  #sec-couple .couple-circle {
+    width: 260px;
+    height: 260px;
+    border-width: 3px;
+    box-shadow: 0 12px 48px rgba(90,127,168,0.22);
+  }
+  #sec-couple .couple-name { font-size: 1.1rem; white-space: nowrap; }
+  #sec-couple .couple-sep  { font-size: 3rem; padding-top: 100px; }
+}
+
 /* ════════════════════════════════════════════════
    COUNTDOWN + DETAILS
 ════════════════════════════════════════════════ */
