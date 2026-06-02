@@ -360,100 +360,56 @@ h2.sec-title em { font-style: italic; color: var(--blue-dk); }
   }
 }
 .cover-overlay {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(to top, rgba(0,0,0,0.62) 0%, rgba(0,0,0,0.18) 50%, transparent 100%);
+  position: absolute; inset: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.65) 0%, rgba(0,0,0,0.12) 55%, transparent 100%),
+              linear-gradient(to bottom, rgba(0,0,0,0.35) 0%, transparent 30%);
   display: flex; flex-direction: column;
-  align-items: center; justify-content: flex-end;
-  padding-bottom: 48px; text-align: center; color: #fff;
+  justify-content: space-between; align-items: center;
+  text-align: center; color: #fff;
 }
+.cover-top { padding-top: 32px; }
+.cover-logo {
+  width: 70px; height: 70px;
+  border-radius: 50%; object-fit: contain;
+  background: rgba(255,255,255,0.92);
+  border: 2px solid var(--gold-lt);
+  box-shadow: 0 4px 18px rgba(0,0,0,0.25);
+  padding: 5px;
+}
+.cover-bottom { padding-bottom: 44px; width: 100%; }
 .cover-names {
   font-family: 'Cormorant Garamond', serif;
   font-size: clamp(2.6rem, 10vw, 4.5rem);
   font-style: italic; letter-spacing: 3px; line-height: 1.1;
-  text-shadow: 0 2px 12px rgba(0,0,0,0.4);
+  text-shadow: 0 2px 12px rgba(0,0,0,0.45);
 }
-.cover-amp { color: var(--gold-lt); margin: 0 4px; }
+.cover-amp { color: var(--gold-lt); margin: 0 6px; }
 .cover-event {
-  font-size: clamp(0.85rem, 3vw, 1.1rem);
-  letter-spacing: 2px; text-transform: uppercase;
+  font-size: clamp(0.78rem, 2.5vw, 0.95rem);
+  letter-spacing: 3px; text-transform: uppercase;
   opacity: 0.88; margin-top: 6px;
   text-shadow: 0 1px 6px rgba(0,0,0,0.35);
 }
-.cover-date {
-  font-size: 0.82rem; opacity: 0.75; margin-top: 8px;
-  text-shadow: 0 1px 4px rgba(0,0,0,0.3);
+.cover-chips {
+  display: flex; flex-wrap: wrap; justify-content: center;
+  gap: 8px; margin-top: 14px; padding: 0 16px;
+}
+.cover-chip {
+  background: rgba(255,255,255,0.18);
+  backdrop-filter: blur(6px);
+  border: 1px solid rgba(255,255,255,0.35);
+  border-radius: 50px;
+  padding: 6px 16px;
+  font-size: 0.8rem;
+  color: #fff;
+  display: flex; align-items: center; gap: 5px;
 }
 @keyframes coverBounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(6px)} }
 .cover-scroll {
-  margin-top: 24px; font-size: 0.75rem; opacity: 0.6; letter-spacing: 1px;
+  margin-top: 20px; font-size: 0.75rem; opacity: 0.6; letter-spacing: 1px;
   animation: coverBounce 2s ease-in-out infinite;
 }
 
-/* ════════════════════════════════════════════════
-   HERO
-════════════════════════════════════════════════ */
-#sec-hero {
-  padding-top: 80px;
-  padding-bottom: 60px;
-  text-align: center;
-  position: relative;
-  background: linear-gradient(180deg, #EEF4FB 0%, var(--cream) 100%);
-}
-.hero-logo {
-  width: 90px; height: 90px;
-  border-radius: 50%;
-  object-fit: contain;
-  background: var(--white);
-  border: 3px solid var(--gold-lt);
-  box-shadow: 0 6px 24px rgba(201,169,110,0.25);
-  margin: 0 auto 24px;
-  padding: 6px;
-}
-.hero-names {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: clamp(2.8rem, 10vw, 4.5rem);
-  font-style: italic;
-  color: var(--text);
-  line-height: 1.1;
-  letter-spacing: 2px;
-}
-.hero-amp {
-  color: var(--gold);
-  font-size: 0.7em;
-  margin: 0 8px;
-}
-.hero-event {
-  font-size: 0.9rem;
-  letter-spacing: 4px;
-  color: var(--text-lt);
-  text-transform: uppercase;
-  margin: 14px 0 30px;
-}
-.hero-date-row {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 14px;
-  margin-top: 10px;
-}
-.hero-chip {
-  background: var(--white);
-  border: 1px solid var(--blue-lt);
-  border-radius: 50px;
-  padding: 8px 20px;
-  font-size: 0.88rem;
-  color: var(--text);
-  box-shadow: 0 2px 10px rgba(90,127,168,0.10);
-  display: flex; align-items: center; gap: 7px;
-}
-.scroll-hint {
-  margin-top: 40px;
-  font-size: 0.78rem;
-  color: var(--text-lt);
-  letter-spacing: 2px;
-  animation: bounce 2s ease-in-out infinite;
-}
 @keyframes bounce {
   0%,100% { transform: translateY(0); }
   50% { transform: translateY(5px); }
@@ -1099,30 +1055,24 @@ footer {
 <!-- ══════════════ MAIN CONTENT ══════════════ -->
 <main id="main-content" style="opacity:0;transition:opacity 0.8s ease;">
 
-  <!-- ── COVER PHOTO ── -->
+  <!-- ── COVER PHOTO (merged hero) ── -->
   <section id="sec-cover">
     <img src="รูปประกอบการ์ดเชิญ/IMG_3685.JPG" alt="เอ็ม & แป้ง" class="cover-photo">
     <div class="cover-overlay">
-      <div class="cover-names">เอ็ม<span class="cover-amp">×</span>แป้ง</div>
-      <div class="cover-event">Family Witness Dinner</div>
-      <div class="cover-date">📅 28 พฤศจิกายน 2569 · TARA Terrace</div>
-      <div class="cover-scroll">เลื่อนดูการ์ดเชิญ ↓</div>
+      <div class="cover-top">
+        <img src="logo.png" alt="PM Wedding" class="cover-logo" onerror="this.style.display='none'">
+      </div>
+      <div class="cover-bottom">
+        <div class="cover-names">เอ็ม<span class="cover-amp">×</span>แป้ง</div>
+        <div class="cover-event">Family Witness Dinner</div>
+        <div class="cover-chips">
+          <div class="cover-chip">📅 วันเสาร์ที่ 28 พฤศจิกายน 2569</div>
+          <div class="cover-chip">🕑 14:00 น.</div>
+          <div class="cover-chip">📍 ธาราเทอเรส · นครปฐม</div>
+        </div>
+        <div class="cover-scroll">เลื่อนดูการ์ดเชิญ ↓</div>
+      </div>
     </div>
-  </section>
-
-  <!-- ── HERO ── -->
-  <section id="sec-hero">
-    <img src="logo.png" alt="PM Wedding" class="hero-logo fade-up" onerror="this.style.display='none'">
-    <div class="hero-names fade-up delay-1">
-      เอ็ม<span class="hero-amp">×</span>แป้ง
-    </div>
-    <div class="hero-event fade-up delay-2">Family Witness Dinner</div>
-    <div class="hero-date-row fade-up delay-3">
-      <div class="hero-chip">📅 วันเสาร์ที่ 28 พฤศจิกายน 2569</div>
-      <div class="hero-chip">🕑 14:00 น.</div>
-      <div class="hero-chip">📍 ธาราเทอเรส · นครปฐม</div>
-    </div>
-    <div class="scroll-hint fade-up delay-3">เลื่อนลงเพื่ออ่านต่อ ↓</div>
   </section>
 
   <div class="sec-spacer"></div>
