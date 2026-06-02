@@ -2327,16 +2327,6 @@ updateTree(0);
   rsvp.parentNode.insertBefore(bless, rsvp.nextSibling);
 })();
 
-// ── REORDER: move tree section before story section ──────────
-(function reorder() {
-  const tree  = document.getElementById('sec-tree');
-  const story = document.getElementById('sec-story');
-  if (!tree || !story || !story.parentNode) return;
-  const spacer = document.createElement('div');
-  spacer.className = 'sec-spacer';
-  story.parentNode.insertBefore(spacer, story);
-  story.parentNode.insertBefore(tree, spacer);
-})();
 </script>
 </body>
 </html>
