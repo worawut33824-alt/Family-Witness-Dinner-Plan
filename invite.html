@@ -190,7 +190,7 @@ a { color: inherit; }
 ════════════════════════════════════════════════ */
 #overlay {
   position: fixed; inset: 0;
-  background: radial-gradient(ellipse at 50% 38%, #EEF4FB 0%, #DDE8F4 55%, #CCDAEC 100%);
+  background: radial-gradient(ellipse at 50% 38%, #FAFBFC 0%, #F1F5F8 55%, #E6EDF3 100%);
   z-index: 900;
   display: flex; flex-direction: column;
   align-items: center; justify-content: center;
@@ -200,140 +200,124 @@ a { color: inherit; }
 #overlay.hide { opacity: 0; pointer-events: none; }
 
 .env-wrap {
-  width: min(420px, 88vw); cursor: pointer;
+  width: min(400px, 86vw); cursor: pointer;
   filter:
-    drop-shadow(0 20px 48px rgba(70,110,155,0.30))
-    drop-shadow(0 6px 16px rgba(70,110,155,0.18));
+    drop-shadow(0 18px 50px rgba(90,130,170,0.22))
+    drop-shadow(0 5px 14px rgba(90,130,170,0.14));
   transition: transform 0.32s ease, filter 0.32s ease;
 }
 .env-wrap:hover {
-  transform: translateY(-8px);
+  transform: translateY(-7px);
   filter:
-    drop-shadow(0 28px 58px rgba(70,110,155,0.38))
-    drop-shadow(0 8px 22px rgba(70,110,155,0.22));
+    drop-shadow(0 26px 58px rgba(90,130,170,0.28))
+    drop-shadow(0 7px 18px rgba(90,130,170,0.18));
 }
-
-/* envelope body — landscape, มุมมน */
 .env-body {
-  position: relative; width: 100%; padding-top: 68%;
-  perspective: 1400px;
+  position: relative; width: 100%; padding-top: 70%;
+  perspective: 1200px;
 }
-
-/* ── static parts — ใช้ overflow:hidden เพื่อตัดมุม ── */
+/* ── static parts wrapper — มุมมน ── */
 .env-static {
   position: absolute; inset: 0;
-  border-radius: 5px; overflow: hidden;
+  border-radius: 8px; overflow: hidden;
 }
-
-/* body — solid blue เต็มพื้นที่ */
 .env-base {
   position: absolute; inset: 0;
-  background: linear-gradient(175deg, #7AAEC8 0%, #6698B8 100%);
+  background: #8BAEC4;
 }
-
-/* shadow line at fold crease */
+/* Bottom */
+.env-tri-bot {
+  position: absolute; inset: 0;
+  clip-path: polygon(0 100%, 100% 100%, 50% 52%);
+  background: linear-gradient(178deg, #5E8AA4 0%, #527898 100%);
+}
+/* Left — เกือบเหมือน base ทำให้ดูสะอาด */
+.env-tri-left {
+  position: absolute; inset: 0;
+  clip-path: polygon(0 0, 0 100%, 50% 52%);
+  background: linear-gradient(90deg, #86ACC4 0%, #8CB2C8 100%);
+}
+/* Right */
+.env-tri-right {
+  position: absolute; inset: 0;
+  clip-path: polygon(100% 0, 100% 100%, 50% 52%);
+  background: linear-gradient(-90deg, #80A8C0 0%, #88AEC4 100%);
+}
+/* Fold crease SVG */
 .env-svg {
   position: absolute; inset: 0;
   width: 100%; height: 100%;
   pointer-events: none;
 }
-
-/* ── Curved top flap — arch shape (ฝาเดียว เปิดขึ้น) ── */
+/* ── Top flap — อยู่นอก env-static เพื่อให้ 3D ทำงานได้ ── */
 .env-flap {
-  position: absolute;
-  top: 0; left: 0; width: 100%; height: 52%;
+  position: absolute; inset: 0;
+  clip-path: polygon(0 0, 100% 0, 50% 42%);
+  background: linear-gradient(165deg, #C4D6E4 0%, #B0C8D8 40%, #9EBCCE 100%);
   transform-origin: top center;
-  transition: transform 1.2s cubic-bezier(0.4, 0, 0.2, 1);
-  transform-style: preserve-3d;
-  z-index: 8;
+  transition: transform 1.15s cubic-bezier(0.4, 0, 0.2, 1);
+  backface-visibility: hidden; z-index: 8;
 }
-.env-flap.open { transform: perspective(1400px) rotateX(-178deg); }
-
-/* ด้านนอกฝา — อ่อนกว่า body รับแสงจากบน */
-.env-flap::before {
-  content: '';
-  position: absolute; inset: 0;
-  background: linear-gradient(168deg, #C4D8EE 0%, #AECADF 50%, #98BACF 100%);
-  clip-path: polygon(
-    0% 0%, 100% 0%,
-    98% 10%, 94% 21%, 87% 33%,
-    77% 47%, 64% 63%, 53% 80%, 50% 100%,
-    47% 80%, 36% 63%, 23% 47%,
-    13% 33%, 6% 21%, 2% 10%
-  );
-  backface-visibility: hidden;
-}
-
-/* ด้านในฝา — สว่างกว่า เห็นตอนฝาเปิดขึ้น */
+.env-flap.open { transform: perspective(1200px) rotateX(-176deg); }
 .env-flap::after {
-  content: '';
-  position: absolute; inset: 0;
-  background: linear-gradient(168deg, #DCF0FC 0%, #C6E0F4 50%, #B0CEEC 100%);
-  clip-path: polygon(
-    0% 0%, 100% 0%,
-    98% 10%, 94% 21%, 87% 33%,
-    77% 47%, 64% 63%, 53% 80%, 50% 100%,
-    47% 80%, 36% 63%, 23% 47%,
-    13% 33%, 6% 21%, 2% 10%
-  );
-  transform: rotateX(180deg);
-  backface-visibility: hidden;
+  content: ''; position: absolute; inset: 0;
+  clip-path: polygon(0 0, 100% 0, 50% 42%);
+  background: linear-gradient(165deg, #668CA8 0%, #587E9A 100%);
+  transform: rotateX(180deg); backface-visibility: visible;
 }
-
-/* Seal — ที่จุดปลายฝา */
+/* Seal */
 .env-seal {
-  position: absolute;
-  top: 52%; left: 50%;
+  position: absolute; top: 50%; left: 50%;
   transform: translate(-50%, -50%);
-  width: 80px; height: 80px; border-radius: 50%;
+  width: 82px; height: 82px; border-radius: 50%;
   background: white;
-  border: 2px solid #C9A96E;
+  border: 2.5px solid #C9A96E;
   box-shadow:
-    0 4px 18px rgba(0,0,0,0.16),
+    0 4px 18px rgba(0,0,0,0.14),
     0 1px 4px rgba(0,0,0,0.09),
     inset 0 1px 0 rgba(255,255,255,0.95);
   display: flex; align-items: center; justify-content: center;
   z-index: 12; overflow: hidden;
   transition: transform 0.4s cubic-bezier(.34,1.26,.64,1), opacity 0.4s ease;
 }
-.env-seal img { width: 62px; height: 62px; object-fit: contain; }
+.env-seal img { width: 64px; height: 64px; object-fit: contain; }
 .env-seal.crack { transform: translate(-50%,-50%) scale(1.18) rotate(4deg); }
 .env-seal.gone {
-  transform: translate(-50%,-140%) scale(0.22) rotate(22deg);
+  transform: translate(-50%,-130%) scale(0.25) rotate(22deg);
   opacity: 0;
   transition: transform 0.5s ease-in, opacity 0.4s ease-in;
 }
-
 /* Open button */
 .env-btn {
   display: flex; align-items: center; gap: 11px;
-  background: #5a7fa8; color: white; border: none;
+  background: #8BAEC4; color: white; border: none;
   padding: 14px 42px; border-radius: 50px;
   font-family: 'Sarabun', sans-serif;
   font-size: 1rem; font-weight: 500;
   cursor: pointer; letter-spacing: 1.5px;
-  box-shadow: 0 6px 22px rgba(70,110,155,0.35);
+  box-shadow: 0 6px 22px rgba(100,140,180,0.28);
   transition: transform 0.2s, box-shadow 0.2s;
 }
 .env-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 10px 30px rgba(70,110,155,0.45);
+  box-shadow: 0 10px 30px rgba(100,140,180,0.38);
 }
 .env-btn:active { transform: scale(0.97); }
-
 /* Footer */
 .env-footer {
   display: flex; flex-direction: column;
   align-items: center; gap: 5px; text-align: center;
 }
-.env-footer-row { display: flex; align-items: center; gap: 10px; }
-.env-footer-rule { width: 30px; height: 1px; background: #7090aa; opacity: 0.5; }
+.env-footer-row {
+  display: flex; align-items: center; gap: 10px;
+}
+.env-footer-rule { width: 30px; height: 1px; background: #8a9daa; opacity: 0.4; }
 .env-footer-text {
   font-family: 'Cormorant Garamond', serif;
   font-size: 0.62rem; letter-spacing: 6px;
-  text-transform: uppercase; color: #7090aa; font-weight: 400;
+  text-transform: uppercase; color: #8a9daa; font-weight: 400;
 }
-.env-footer-date { font-size: 0.7rem; letter-spacing: 5px; color: #7090aa; }
+.env-footer-date { font-size: 0.7rem; letter-spacing: 5px; color: #8a9daa; }
 
 /* ════════════════════════════════════════════════
    SECTION BASE
@@ -1031,16 +1015,20 @@ footer {
 
   <div class="env-wrap" id="env-box" onclick="openEnvelope()">
     <div class="env-body">
-      <!-- body — solid blue, มุมมน -->
+      <!-- static parts — มุมมน -->
       <div class="env-static">
         <div class="env-base"></div>
-        <!-- subtle shadow at fold line -->
-        <svg class="env-svg" viewBox="0 0 100 68" preserveAspectRatio="none">
-          <line x1="0" y1="35.4" x2="100" y2="35.4"
-                stroke="rgba(0,0,0,0.10)" stroke-width="0.5"/>
+        <div class="env-tri-bot"></div>
+        <div class="env-tri-left"></div>
+        <div class="env-tri-right"></div>
+        <svg class="env-svg" viewBox="0 0 400 280" preserveAspectRatio="none">
+          <line x1="0"   y1="0"   x2="200" y2="146" stroke="rgba(0,0,0,0.09)"       stroke-width="1.3"/>
+          <line x1="400" y1="0"   x2="200" y2="146" stroke="rgba(0,0,0,0.09)"       stroke-width="1.3"/>
+          <line x1="0"   y1="280" x2="200" y2="146" stroke="rgba(255,255,255,0.10)" stroke-width="1.1"/>
+          <line x1="400" y1="280" x2="200" y2="146" stroke="rgba(255,255,255,0.10)" stroke-width="1.1"/>
         </svg>
       </div>
-      <!-- curved top flap (::before = ด้านนอก, ::after = ด้านใน) -->
+      <!-- flap — แยกออกมาเพื่อให้ 3D rotation ทำงานได้ -->
       <div class="env-flap" id="env-flap"></div>
       <div class="env-seal" id="env-seal">
         <img src="logo.png" alt="PM" onerror="this.style.display='none'">
