@@ -336,6 +336,52 @@ h2.sec-title {
 h2.sec-title em { font-style: italic; color: var(--blue-dk); }
 
 /* ════════════════════════════════════════════════
+   COVER PHOTO
+════════════════════════════════════════════════ */
+#sec-cover {
+  position: relative;
+  width: 100%;
+  height: 100dvh;
+  overflow: hidden;
+}
+.cover-photo {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  object-position: center 15%;
+  display: block;
+}
+.cover-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.62) 0%, rgba(0,0,0,0.18) 50%, transparent 100%);
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: flex-end;
+  padding-bottom: 48px; text-align: center; color: #fff;
+}
+.cover-names {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(2.6rem, 10vw, 4.5rem);
+  font-style: italic; letter-spacing: 3px; line-height: 1.1;
+  text-shadow: 0 2px 12px rgba(0,0,0,0.4);
+}
+.cover-amp { color: var(--gold-lt); margin: 0 4px; }
+.cover-event {
+  font-size: clamp(0.85rem, 3vw, 1.1rem);
+  letter-spacing: 2px; text-transform: uppercase;
+  opacity: 0.88; margin-top: 6px;
+  text-shadow: 0 1px 6px rgba(0,0,0,0.35);
+}
+.cover-date {
+  font-size: 0.82rem; opacity: 0.75; margin-top: 8px;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.3);
+}
+@keyframes coverBounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(6px)} }
+.cover-scroll {
+  margin-top: 24px; font-size: 0.75rem; opacity: 0.6; letter-spacing: 1px;
+  animation: coverBounce 2s ease-in-out infinite;
+}
+
+/* ════════════════════════════════════════════════
    HERO
 ════════════════════════════════════════════════ */
 #sec-hero {
@@ -1043,6 +1089,17 @@ footer {
 
 <!-- ══════════════ MAIN CONTENT ══════════════ -->
 <main id="main-content" style="opacity:0;transition:opacity 0.8s ease;">
+
+  <!-- ── COVER PHOTO ── -->
+  <section id="sec-cover">
+    <img src="รูปประกอบการ์ดเชิญ/IMG_3685.JPG" alt="เอ็ม & แป้ง" class="cover-photo">
+    <div class="cover-overlay">
+      <div class="cover-names">เอ็ม<span class="cover-amp">×</span>แป้ง</div>
+      <div class="cover-event">Family Witness Dinner</div>
+      <div class="cover-date">📅 28 พฤศจิกายน 2569 · TARA Terrace</div>
+      <div class="cover-scroll">เลื่อนดูการ์ดเชิญ ↓</div>
+    </div>
+  </section>
 
   <!-- ── HERO ── -->
   <section id="sec-hero">
