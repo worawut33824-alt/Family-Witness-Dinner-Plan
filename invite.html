@@ -1601,55 +1601,66 @@ function startCountdown() {
 }
 
 // ── TREE UPDATE ──────────────────────────────────────────────
-// --- สร้างตำแหน่งดอกไม้แบบ deterministic ----------------------------
-(function generateFlowerPositions() {
-  // วงกลมพุ่มทั้งหมด [cx, cy, r]
-  const C = [
-    [209,155,54],[160,172,41],[258,169,41],[108,196,35],[310,192,35],
-    [370,198,41],[418,218,31],[60,206,31],[28,232,19],
-    [209,122,48],[172,144,35],[246,141,35],[128,168,31],[290,164,31],
-    [209,94,34],[405,196,29],[448,218,21],
-    [142,258,33],[280,254,33],[209,218,48],[332,244,27],[82,244,23],
-    [155,196,39],[263,193,39],[112,218,31],[306,214,31],[355,224,33]
-  ];
-  const inCanopy = (x,y) => C.some(([cx,cy,r]) => Math.hypot(x-cx,y-cy) < r-3);
+// วงกลมพุ่มแบ่งตาม layer (ตรงกับ SVG data-pct)
+const CANOPY_LAYERS = [
+  { pct: 20, circles: [
+    [209,218,52],[140,258,36],[280,254,36],[168,232,39],[252,229,39],[332,244,30],[82,244,26]
+  ]},
+  { pct: 45, circles: [
+    [155,196,42],[263,193,42],[209,180,50],[112,218,34],[306,214,34],[355,224,36],[65,226,28]
+  ]},
+  { pct: 65, circles: [
+    [209,155,58],[160,172,44],[258,169,44],[108,196,38],[310,192,38],[370,198,44],[60,206,34]
+  ]},
+  { pct: 80, circles: [
+    [209,122,52],[172,144,38],[246,141,38],[128,168,34],[290,164,34],[209,94,38]
+  ]},
+];
 
-  // seeded pseudo-random เพื่อให้ตำแหน่งคงที่ทุก load
-  let s = 42;
+function genFlowerPos(count, seedOffset, circles) {
+  if (!circles.length || count === 0) return [];
+  let s = 42 + seedOffset;
   const rand = () => { s = (s*1664525+1013904223)>>>0; return s/4294967295; };
-
-  function gen(count, xMin, xMax) {
-    const pts = [];
-    let tries = 0;
-    while (pts.length < count && tries < 8000) {
-      tries++;
-      const x = xMin + rand()*(xMax-xMin);
-      const y = 78 + rand()*190;
-      if (inCanopy(x, y)) pts.push([Math.round(x), Math.round(y)]);
-    }
-    return pts;
+  const inC = (x,y) => circles.some(([cx,cy,r]) => Math.hypot(x-cx,y-cy) < r-4);
+  const xs = circles.map(c=>c[0]), ys = circles.map(c=>c[1]);
+  const xMin = Math.min(...xs)-10, xMax = Math.max(...xs)+10;
+  const yMin = Math.min(...ys)-10, yMax = Math.max(...ys)+10;
+  const pts = [];
+  let tries = 0;
+  while (pts.length < count && tries < 15000) {
+    tries++;
+    const x = xMin + rand()*(xMax-xMin);
+    const y = yMin + rand()*(yMax-yMin);
+    if (inC(x,y)) pts.push([Math.round(x), Math.round(y)]);
   }
-
-  window.BLUE_POS = gen(100, 18, 340);  // เอ็ม — ซ้าย+กลาง
-  s = 99;
-  window.PINK_POS = gen(100, 140, 470); // แป้ง — กลาง+ขวา
-})();
+  return pts;
+}
 
 function updateFlowers(sideM, sideP) {
   const blueEl = document.getElementById('flowers-blue');
   const pinkEl = document.getElementById('flowers-pink');
   if (!blueEl || !pinkEl) return;
 
-  const blueCount = Math.min(sideM, 100);
-  const pinkCount = Math.min(sideP, 100);
+  const pct = Math.min((sideM + sideP) / GUEST_GOAL * 100, 100);
+
+  // ดึงเฉพาะวงกลมจาก layer ที่ปรากฏอยู่
+  const vis = [];
+  CANOPY_LAYERS.forEach(l => { if (pct >= l.pct) vis.push(...l.circles); });
+
+  // แบ่งฝั่ง: ซ้าย(cx≤230) สำหรับ เอ็ม · ขวา(cx≥170) สำหรับ แป้ง
+  const leftC  = vis.filter(([cx]) => cx <= 230);
+  const rightC = vis.filter(([cx]) => cx >= 170);
+
+  const bluePos = genFlowerPos(Math.min(sideM, 50), 0,   leftC.length  ? leftC  : vis);
+  const pinkPos = genFlowerPos(Math.min(sideP, 50), 999, rightC.length ? rightC : vis);
 
   const flower = (p, fill, center) =>
     `<circle cx="${p[0]}" cy="${p[1]}" r="7" fill="${fill}" opacity="0.86"/>` +
     `<circle cx="${p[0]}" cy="${p[1]}" r="3.8" fill="${center}" opacity="0.72"/>` +
     `<circle cx="${p[0]-1}" cy="${p[1]-1}" r="1.6" fill="white" opacity="0.5"/>`;
 
-  blueEl.innerHTML = (window.BLUE_POS||[]).slice(0, blueCount).map(p => flower(p,'#B8D4F2','#D8ECFC')).join('');
-  pinkEl.innerHTML = (window.PINK_POS||[]).slice(0, pinkCount).map(p => flower(p,'#FFBCCC','#FFD8E4')).join('');
+  blueEl.innerHTML = bluePos.map(p => flower(p,'#B8D4F2','#D8ECFC')).join('');
+  pinkEl.innerHTML = pinkPos.map(p => flower(p,'#FFBCCC','#FFD8E4')).join('');
 
   const cm = document.getElementById('count-m');
   const cp = document.getElementById('count-p');

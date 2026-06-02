@@ -406,7 +406,7 @@
       <div class="chart-wrap"><canvas id="pieChart"></canvas></div>
     </div>
   </div>
-  <div class="grid-2" style="margin-bottom:8px">
+  <div class="grid-2" style="margin-bottom:20px">
     <div class="card" style="margin-bottom:0">
       <div class="card-title">✅ ความคืบหน้า Checklist</div>
       <div id="dash-checklist"></div>
@@ -414,6 +414,13 @@
     <div class="card" style="margin-bottom:0">
       <div class="card-title">💸 รายการล่าสุด</div>
       <div id="dash-recent"></div>
+    </div>
+  </div>
+  <div class="card" style="margin-bottom:8px">
+    <div class="card-title">👥 สรุปแขก</div>
+    <div style="display:grid;grid-template-columns:160px 1fr;gap:20px;align-items:center">
+      <div class="chart-wrap" style="height:160px"><canvas id="guestChart"></canvas></div>
+      <div id="guest-legend"></div>
     </div>
   </div>
 </div>
@@ -991,6 +998,7 @@ function showPage(id) {
 
 // ─── DASHBOARD ───────────────────────────────────────────────────────────────
 let pieChartInst = null;
+let guestChartInst = null;
 function renderDashboard() {
   const tb = totalBudget(), ts = totalSpent(), rem = tb - ts, pct = ts/tb;
 
@@ -1064,6 +1072,43 @@ function renderDashboard() {
   });
   rHtml += '</tbody></table>';
   document.getElementById('dash-recent').innerHTML = rHtml;
+
+  // guest summary chart
+  const gCon = guests.filter(g=>g.status==='confirmed');
+  const gPen = guests.filter(g=>g.status==='pending');
+  const gDec = guests.filter(g=>g.status==='declined');
+  const totalSeatsG = gCon.reduce((s,g)=>s+(g.seats||1),0);
+  const gM = guests.filter(g=>g.side==='เอ็ม');
+  const gP = guests.filter(g=>g.side==='แป้ง');
+  const seatsM = gM.filter(g=>g.status==='confirmed').reduce((s,g)=>s+(g.seats||1),0);
+  const seatsP = gP.filter(g=>g.status==='confirmed').reduce((s,g)=>s+(g.seats||1),0);
+  const guestCanvas = document.getElementById('guestChart');
+  if(guestCanvas) {
+    if(guestChartInst) guestChartInst.destroy();
+    guestChartInst = new Chart(guestCanvas, {
+      type: 'doughnut',
+      data: {
+        labels: ['ยืนยัน','รอยืนยัน','ไม่มา'],
+        datasets: [{ data: [gCon.length, gPen.length, gDec.length],
+          backgroundColor: ['#5a9e6f','#e67e22','#c0392b'], borderWidth: 2, borderColor: '#fff' }]
+      },
+      options: { responsive:true, maintainAspectRatio:false, cutout:'62%',
+        plugins: { legend: { position:'bottom', labels:{ font:{size:11}, padding:8 } } } }
+    });
+    document.getElementById('guest-legend').innerHTML = `
+      <div style="display:flex;flex-direction:column;gap:7px;font-size:0.82rem">
+        <div style="font-weight:700;color:var(--text)">ที่นั่งยืนยัน: <span style="color:var(--success)">${totalSeatsG} ที่</span></div>
+        <div style="height:1px;background:var(--border);margin:2px 0"></div>
+        <div style="display:flex;align-items:center;gap:6px">
+          <span style="background:#deeaf7;color:#3d6a91;border-radius:12px;padding:2px 10px;font-weight:600;font-size:0.78rem">💙 เอ็ม</span>
+          <span>${gM.length} กลุ่ม · ${seatsM} ที่</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:6px">
+          <span style="background:#fce4f0;color:#c2346a;border-radius:12px;padding:2px 10px;font-weight:600;font-size:0.78rem">🩷 แป้ง</span>
+          <span>${gP.length} กลุ่ม · ${seatsP} ที่</span>
+        </div>
+      </div>`;
+  }
 }
 
 function checkDone() { return checklist.flatMap(p=>p.items).filter(i=>i.status==='done').length; }
@@ -1463,7 +1508,10 @@ function renderGuests() {
       html += `<tr>
         <td style="color:var(--text-light)">${i+1}</td>
         <td><b>${g.name}</b>${g.note?`<br><span style="font-size:0.75rem;color:var(--text-light)">${g.note}</span>`:''}</td>
-        <td><span class="badge badge-neutral" style="${g.side==='แป้ง'?'background:#e8f2fb;color:#5a7fa8':'background:#deeaf7;color:#3d6a91'}">${sideLabel[g.side]||g.side}</span></td>
+        <td>
+  <span class="badge badge-neutral" style="${g.side==='แป้ง'?'background:#fce4f0;color:#c2346a':'background:#deeaf7;color:#3d6a91'}">${sideLabel[g.side]||g.side}</span>
+  <div style="font-size:0.7rem;color:var(--text-light);margin-top:2px;text-align:center">${g.seats||1} ที่</div>
+</td>
         <td>${g.relation||'-'}</td>
         <td>${g.phone?`<a href="tel:${g.phone}" style="color:var(--primary)">${g.phone}</a>`:'-'}</td>
         <td style="text-align:center">${g.seats||1}</td>
