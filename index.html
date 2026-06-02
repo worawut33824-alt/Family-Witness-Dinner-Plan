@@ -336,7 +336,7 @@
       </div>
     </div>
     <div id="nav-sync-indicator" style="display:none;align-items:center;gap:6px;font-size:0.72rem;color:rgba(255,255,255,0.85);padding-right:4px">
-      <span id="nav-sync-icon">⏳</span>
+      <span id="nav-sync-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" style="vertical-align:middle"><path d="M12 2 A10 10 0 1 1 19.07 4.93" stroke="rgba(255,255,255,0.85)" stroke-width="2.5" stroke-linecap="round"/><path d="M7.4 16.6 A6.5 6.5 0 1 1 16.6 7.4" stroke="rgba(255,255,255,0.85)" stroke-width="2.5" stroke-linecap="round"/><path d="M12 15.5C12 15.5 8.5 13 8.5 10.5C8.5 9 9.5 8 10.7 8C11.5 8 12 8.8 12 8.8C12 8.8 12.5 8 13.3 8C14.5 8 15.5 9 15.5 10.5C15.5 13 12 15.5 12 15.5Z" fill="rgba(255,255,255,0.85)"/></svg></span>
       <span id="nav-sync-text">กำลังซิงค์...</span>
     </div>
   </div>
@@ -1652,7 +1652,7 @@ function setNavIndicator(state, text) {
   if (!wrap) return;
   if (state === 'hidden') { wrap.style.display = 'none'; return; }
   wrap.style.display = 'flex';
-  if (state === 'syncing') { icon.innerHTML = '<span class="spin">🔄</span>'; txt.textContent = text || 'กำลังซิงค์...'; }
+  if (state === 'syncing') { icon.innerHTML = '<svg class="spin" width="16" height="16" viewBox="0 0 24 24" fill="none" style="vertical-align:middle"><path d="M12 2 A10 10 0 1 1 19.07 4.93" stroke="rgba(255,255,255,0.85)" stroke-width="2.5" stroke-linecap="round"/><path d="M7.4 16.6 A6.5 6.5 0 1 1 16.6 7.4" stroke="rgba(255,255,255,0.85)" stroke-width="2.5" stroke-linecap="round"/><path d="M12 15.5C12 15.5 8.5 13 8.5 10.5C8.5 9 9.5 8 10.7 8C11.5 8 12 8.8 12 8.8C12 8.8 12.5 8 13.3 8C14.5 8 15.5 9 15.5 10.5C15.5 13 12 15.5 12 15.5Z" fill="rgba(255,255,255,0.85)"/></svg>'; txt.textContent = text || 'กำลังซิงค์...'; }
   if (state === 'ok')      { icon.textContent = '☁️'; txt.textContent = text || 'ซิงค์แล้ว'; setTimeout(()=>setNavIndicator('hidden'), 2500); }
   if (state === 'error')   { icon.textContent = '⚠️'; txt.textContent = text || 'ซิงค์ไม่ได้'; setTimeout(()=>setNavIndicator('hidden'), 4000); }
 }
