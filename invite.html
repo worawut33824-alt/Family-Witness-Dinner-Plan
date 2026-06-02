@@ -347,8 +347,14 @@ h2.sec-title em { font-style: italic; color: var(--blue-dk); }
 .cover-photo {
   width: 100%; height: 100%;
   object-fit: cover;
-  object-position: center 15%;
+  object-position: center 18%; /* desktop: faces visible in 16:9 crop */
   display: block;
+}
+/* Mobile: portrait viewport — crop sides, center the couple */
+@media (max-width: 767px) {
+  .cover-photo {
+    object-position: center center;
+  }
 }
 .cover-overlay {
   position: absolute;
