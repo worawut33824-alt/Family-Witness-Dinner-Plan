@@ -1520,10 +1520,7 @@ function renderGuests() {
       html += `<tr>
         <td style="color:var(--text-light)">${i+1}</td>
         <td><b>${g.name}</b>${g.note?`<br><span style="font-size:0.75rem;color:var(--text-light)">${g.note}</span>`:''}</td>
-        <td>
-  <span class="badge badge-neutral" style="${g.side==='แป้ง'?'background:#fce4f0;color:#c2346a':'background:#deeaf7;color:#3d6a91'}">${sideLabel[g.side]||g.side}</span>
-  <div style="font-size:0.7rem;color:var(--text-light);margin-top:2px;text-align:center">${g.seats||1} ที่</div>
-</td>
+        <td><span class="badge badge-neutral" style="${g.side==='แป้ง'?'background:#fce4f0;color:#c2346a':'background:#deeaf7;color:#3d6a91'}">${sideLabel[g.side]||g.side}</span></td>
         <td>${g.relation||'-'}</td>
         <td>${g.phone?`<a href="tel:${fmtPhone(g.phone)}" style="color:var(--primary)">${fmtPhone(g.phone)}</a>`:'-'}</td>
         <td style="text-align:center">${g.seats||1}</td>
