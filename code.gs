@@ -1259,7 +1259,7 @@ function getGuests(ss) {
     guests.push({
       id:       i + 1,
       name:     String(row[0] || ''),
-      side:     String(row[1] || 'bride'),
+      side:     String(row[1] || 'ฝั่งเอ็ม'),
       phone:    String(row[2] || ''),
       relation: String(row[3] || ''),
       seats:    parseInt(row[4]) || 1,
