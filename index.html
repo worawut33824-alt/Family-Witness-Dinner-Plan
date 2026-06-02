@@ -418,10 +418,8 @@
   </div>
   <div class="card" style="margin-bottom:8px">
     <div class="card-title">👥 สรุปแขก</div>
-    <div style="display:grid;grid-template-columns:160px 1fr;gap:20px;align-items:center">
-      <div class="chart-wrap" style="height:160px"><canvas id="guestChart"></canvas></div>
-      <div id="guest-legend"></div>
-    </div>
+    <div id="guest-person-grid" style="display:flex;flex-wrap:wrap;gap:3px;margin-bottom:10px"></div>
+    <div id="guest-legend"></div>
   </div>
 </div>
 
@@ -1073,47 +1071,55 @@ function renderDashboard() {
   rHtml += '</tbody></table>';
   document.getElementById('dash-recent').innerHTML = rHtml;
 
-  // guest summary chart – full 100-seat circle
+  // guest summary – person emoji grid
+  if(guestChartInst){ guestChartInst.destroy(); guestChartInst=null; }
   const GOAL = 100;
   const gM = guests.filter(g=>g.side==='เอ็ม');
   const gP = guests.filter(g=>g.side==='แป้ง');
+  const gX = guests.filter(g=>g.side!=='เอ็ม'&&g.side!=='แป้ง');
   const seatsM = gM.reduce((s,g)=>s+(g.seats||1),0);
   const seatsP = gP.reduce((s,g)=>s+(g.seats||1),0);
-  const seatsEmpty = Math.max(0, GOAL - seatsM - seatsP);
-  const guestCanvas = document.getElementById('guestChart');
-  if(guestCanvas) {
-    if(guestChartInst) guestChartInst.destroy();
-    guestChartInst = new Chart(guestCanvas, {
-      type: 'doughnut',
-      data: {
-        labels: ['เอ็ม','แป้ง','ที่ว่าง'],
-        datasets: [{ data: [seatsM, seatsP, seatsEmpty],
-          backgroundColor: ['#A9C9EB','#FFBCCC','#e0e0e0'], borderWidth: 2, borderColor: '#fff' }]
-      },
-      options: { responsive:true, maintainAspectRatio:false, cutout:'62%',
-        plugins: { legend: { display:false } } }
-    });
-    document.getElementById('guest-legend').innerHTML = `
-      <div style="display:flex;flex-direction:column;gap:7px;font-size:0.82rem">
-        <div style="font-weight:700;color:var(--text)">เป้าหมาย ${GOAL} ที่นั่ง</div>
-        <div style="height:1px;background:var(--border);margin:2px 0"></div>
-        <div style="display:flex;align-items:center;gap:6px">
-          <span style="display:inline-block;width:12px;height:12px;border-radius:50%;background:#A9C9EB;flex-shrink:0"></span>
-          <span style="background:#deeaf7;color:#3d6a91;border-radius:12px;padding:2px 10px;font-weight:600;font-size:0.78rem">💙 เอ็ม</span>
-          <span>${gM.length} กลุ่ม · ${seatsM} ที่</span>
-        </div>
-        <div style="display:flex;align-items:center;gap:6px">
-          <span style="display:inline-block;width:12px;height:12px;border-radius:50%;background:#FFBCCC;flex-shrink:0"></span>
-          <span style="background:#fce4f0;color:#c2346a;border-radius:12px;padding:2px 10px;font-weight:600;font-size:0.78rem">🩷 แป้ง</span>
-          <span>${gP.length} กลุ่ม · ${seatsP} ที่</span>
-        </div>
-        <div style="display:flex;align-items:center;gap:6px">
-          <span style="display:inline-block;width:12px;height:12px;border-radius:50%;background:#e0e0e0;flex-shrink:0"></span>
-          <span style="color:var(--text-light)">ที่ว่าง</span>
-          <span>${seatsEmpty} ที่</span>
-        </div>
-      </div>`;
-  }
+  const seatsX = gX.reduce((s,g)=>s+(g.seats||1),0);
+  const totalFilled = seatsM + seatsP + seatsX;
+  const totalSlots = Math.max(GOAL, totalFilled);
+  const seatsEmpty = totalSlots - totalFilled;
+
+  const personSVG = (color) =>
+    `<svg width="18" height="22" viewBox="0 0 18 22" style="display:block">
+      <circle cx="9" cy="6" r="5" fill="${color}"/>
+      <path d="M1 22 Q1 13 9 13 Q17 13 17 22Z" fill="${color}"/>
+    </svg>`;
+  const C_M     = '#5B9BD5';
+  const C_P     = '#F48FAD';
+  const C_X     = '#888888';
+  const C_EMPTY = '#DEDEDE';
+
+  const slots = [
+    ...Array(seatsM).fill(C_M),
+    ...Array(seatsP).fill(C_P),
+    ...Array(seatsX).fill(C_X),
+    ...Array(seatsEmpty).fill(C_EMPTY),
+  ];
+  const gridEl = document.getElementById('guest-person-grid');
+  if(gridEl) gridEl.innerHTML = slots.map(c=>`<span title="">${personSVG(c)}</span>`).join('');
+
+  const legendDots = (color,label,groups,seats) =>
+    `<div style="display:flex;align-items:center;gap:6px">
+       <svg width="12" height="12" viewBox="0 0 12 12"><circle cx="6" cy="6" r="6" fill="${color}"/></svg>
+       <span>${label}</span><span style="color:var(--text-light)">${groups} กลุ่ม · ${seats} ที่</span>
+     </div>`;
+  const legendEl = document.getElementById('guest-legend');
+  if(legendEl) legendEl.innerHTML = `
+    <div style="display:flex;flex-wrap:wrap;gap:8px 16px;font-size:0.8rem;margin-top:4px">
+      ${legendDots(C_M,'💙 เอ็ม',gM.length,seatsM)}
+      ${legendDots(C_P,'🩷 แป้ง',gP.length,seatsP)}
+      ${seatsX?legendDots(C_X,'ไม่ระบุ',gX.length,seatsX):''}
+      <div style="display:flex;align-items:center;gap:6px">
+        <svg width="12" height="12" viewBox="0 0 12 12"><circle cx="6" cy="6" r="6" fill="${C_EMPTY}"/></svg>
+        <span style="color:var(--text-light)">ที่ว่าง ${seatsEmpty} ที่</span>
+      </div>
+    </div>`;
+
 }
 
 function checkDone() { return checklist.flatMap(p=>p.items).filter(i=>i.status==='done').length; }
