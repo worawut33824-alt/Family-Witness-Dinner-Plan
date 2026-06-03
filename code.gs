@@ -71,6 +71,9 @@ function doGet(e) {
     } else if (action === 'bless') {
       saveBlessing(ss, e.parameter);
 
+    } else if (action === 'blessings') {
+      result.blessings = getBlessingsForPage(ss);
+
     } else {
       result.message = 'unknown action';
     }
@@ -94,10 +97,10 @@ function doPost(e) {
     // --- invite page actions ---
     if (body.action === 'rsvp') {
       saveRsvpGuest(ss, body);
-      var guests = getGuests(ss);
-      var total = 0;
-      for (var gi = 0; gi < guests.length; gi++) total += (parseInt(guests[gi].seats) || 1);
-      result.guestCount = total;
+      var rc2 = countSeatsBySide(ss);
+      result.guestCount = rc2.total;
+      result.sideM      = rc2.sideM;
+      result.sideP      = rc2.sideP;
     } else if (body.action === 'bless') {
       saveBlessing(ss, body);
 
@@ -144,31 +147,69 @@ function countSeatsBySide(ss) {
 }
 
 // --- SETUP — รันครั้งเดียวเพื่อสร้าง sheet ที่จำเป็น ----------------
+var GUEST_HEADERS = [
+  'ชื่อ','ฝั่ง','เบอร์โทร','ความสัมพันธ์',
+  'ที่นั่ง','สถานะ','อีเมล','คำอวยพร','รูป URL','วันที่','หมายเหตุ'
+];
+var BLESS_HEADERS = ['วันที่','ชื่อ','ข้อความ','รูป URL','สถานะเข้าร่วม'];
+
 function doSetup() {
   var ss = SpreadsheetApp.getActiveSpreadsheet();
 
-  // สร้าง sheet คำอวยพร
-  if (!ss.getSheetByName('คำอวยพร')) {
-    var s = ss.insertSheet('คำอวยพร');
-    s.getRange(1, 1, 1, 3).setValues([['วันที่', 'ชื่อ', 'ข้อความ']])
-      .setFontWeight('bold').setBackground('#f4d9d0');
-    s.setFrozenRows(1);
-    s.setColumnWidth(1, 150);
-    s.setColumnWidth(2, 160);
-    s.setColumnWidth(3, 420);
+  // สร้าง/อัปเดต sheet คำอวยพร
+  var s = ss.getSheetByName('คำอวยพร') || ss.insertSheet('คำอวยพร');
+  s.getRange(1, 1, 1, BLESS_HEADERS.length).setValues([BLESS_HEADERS])
+    .setFontWeight('bold').setBackground('#f4d9d0');
+  s.setFrozenRows(1);
+  [150,160,420,200,140].forEach(function(w,i){ s.setColumnWidth(i+1,w); });
+
+  // สร้าง/อัปเดต sheet แขก
+  var g = ss.getSheetByName('แขก') || ss.insertSheet('แขก');
+  g.getRange(1, 1, 1, GUEST_HEADERS.length).setValues([GUEST_HEADERS])
+    .setFontWeight('bold').setBackground('#f4d9d0');
+  g.setFrozenRows(1);
+
+  // สร้าง folder รูปภาพ ใน Drive
+  var folderName = 'Wedding Photos – Family Witness Dinner';
+  if (!DriveApp.getFoldersByName(folderName).hasNext()) {
+    DriveApp.createFolder(folderName);
   }
 
-  // สร้าง sheet แขก ถ้ายังไม่มี
-  if (!ss.getSheetByName('แขก')) {
-    var g = ss.insertSheet('แขก');
-    g.getRange(1, 1, 1, 8).setValues([[
-      'ชื่อ', 'ฝั่ง', 'เบอร์โทร', 'ความสัมพันธ์',
-      'ที่นั่ง', 'สถานะ', 'อีเมล', 'หมายเหตุ'
-    ]]).setFontWeight('bold').setBackground('#f4d9d0');
-    g.setFrozenRows(1);
-  }
+  SpreadsheetApp.getUi().alert(
+    '✅ Setup เรียบร้อย!\n\n' +
+    '• Sheet "แขก" — ' + GUEST_HEADERS.length + ' คอลัมน์\n' +
+    '• Sheet "คำอวยพร" — ' + BLESS_HEADERS.length + ' คอลัมน์\n' +
+    '• Google Drive folder "' + folderName + '"'
+  );
+}
 
-  SpreadsheetApp.getUi().alert('✅ สร้าง sheet เรียบร้อยแล้ว!\n\nตรวจสอบแท็บ "คำอวยพร" และ "แขก" ใน Spreadsheet');
+// --- PHOTO: บันทึกรูปลง Google Drive → return URL ----------------
+function savePictureToDrive(base64Data, filename) {
+  try {
+    if (!base64Data || base64Data.length < 100) return '';
+    var folderName = 'Wedding Photos – Family Witness Dinner';
+    var folders = DriveApp.getFoldersByName(folderName);
+    var folder = folders.hasNext() ? folders.next() : DriveApp.createFolder(folderName);
+
+    var contentType = 'image/jpeg';
+    var raw = base64Data;
+    if (raw.indexOf(',') >= 0) {
+      var prefix = raw.split(',')[0];
+      raw = raw.split(',')[1];
+      if (prefix.indexOf('png')  >= 0) contentType = 'image/png';
+      if (prefix.indexOf('webp') >= 0) contentType = 'image/webp';
+      if (prefix.indexOf('gif')  >= 0) contentType = 'image/gif';
+    }
+
+    var bytes = Utilities.base64Decode(raw);
+    var blob  = Utilities.newBlob(bytes, contentType, filename || 'photo.jpg');
+    var file  = folder.createFile(blob);
+    file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
+    return 'https://drive.google.com/uc?export=view&id=' + file.getId();
+  } catch(e) {
+    Logger.log('savePictureToDrive error: ' + e);
+    return '';
+  }
 }
 
 // --- RSVP (invite page — บันทึกแขกรายบุคคล) -------------------------
@@ -176,23 +217,41 @@ function saveRsvpGuest(ss, body) {
   var sheet = ss.getSheetByName('แขก');
   if (!sheet) {
     sheet = ss.insertSheet('แขก');
-    sheet.getRange(1, 1, 1, 8).setValues([[
-      'ชื่อ', 'ฝั่ง', 'เบอร์โทร', 'ความสัมพันธ์',
-      'ที่นั่ง', 'สถานะ', 'อาหาร/แพ้อาหาร', 'หมายเหตุ'
-    ]]).setFontWeight('bold');
+    sheet.getRange(1, 1, 1, GUEST_HEADERS.length).setValues([GUEST_HEADERS])
+      .setFontWeight('bold').setBackground('#f4d9d0');
     sheet.setFrozenRows(1);
   }
+
+  // อัปโหลดรูปถ้ามี
+  var photoUrl = '';
+  var photoBase64 = body.photoBase64 || body.photo || '';
+  if (photoBase64 && photoBase64.length > 100) {
+    var ts = Utilities.formatDate(new Date(), 'Asia/Bangkok', 'yyyyMMdd_HHmmss');
+    photoUrl = savePictureToDrive(photoBase64, 'rsvp_' + ts + '.jpg');
+  }
+
+  var dateStr = Utilities.formatDate(new Date(), 'Asia/Bangkok', 'dd/MM/yyyy HH:mm');
   var lastRow = sheet.getLastRow();
-  sheet.getRange(lastRow + 1, 1, 1, 8).setValues([[
-    body.name    || '',
-    body.side    || '',
-    body.phone   || '',
-    body.relation|| '',
+  // ชื่อ | ฝั่ง | เบอร์โทร | ความสัมพันธ์ | ที่นั่ง | สถานะ | อีเมล | คำอวยพร | รูป URL | วันที่ | หมายเหตุ
+  sheet.getRange(lastRow + 1, 1, 1, 11).setValues([[
+    body.name     || '',
+    body.side     || '',
+    body.phone    || '',
+    body.relation || '',
     parseInt(body.count) || 1,
     'confirmed',
-    body.email   || '',
-    body.note    || ''
+    body.email    || '',
+    body.blessing || '',
+    photoUrl,
+    dateStr,
+    body.note     || ''
   ]]);
+
+  // บันทึกคำอวยพรลง sheet คำอวยพร ด้วย (ถ้ามี)
+  var blessingText = String(body.blessing || '').trim();
+  if (blessingText) {
+    saveBlessingRow(ss, body.name, blessingText, photoUrl, 'confirmed');
+  }
 }
 
 // --- BLESSINGS -------------------------------------------------------
@@ -201,35 +260,99 @@ function getBlessings(ss) {
   if (!sheet) return [];
   var lastRow = sheet.getLastRow();
   if (lastRow < 2) return [];
-  var data = sheet.getRange(2, 1, lastRow - 1, 3).getValues();
+  var cols = Math.max(sheet.getLastColumn(), 5);
+  var data = sheet.getRange(2, 1, lastRow - 1, cols).getValues();
   var list = [];
   for (var i = data.length - 1; i >= 0; i--) {
     if (!data[i][1]) continue;
     list.push({
-      date:    String(data[i][0] || ''),
-      name:    String(data[i][1] || ''),
-      message: String(data[i][2] || '')
+      date:       String(data[i][0] || ''),
+      name:       String(data[i][1] || ''),
+      message:    String(data[i][2] || ''),
+      photoUrl:   String(data[i][3] || ''),
+      attendance: String(data[i][4] || '')
     });
   }
   return list.slice(0, 50);
 }
 
-function saveBlessing(ss, body) {
+// คืนข้อมูลทั้งหมดสำหรับหน้า blessings.html (ไม่จำกัด 50)
+function getBlessingsForPage(ss) {
+  var sheet = ss.getSheetByName('คำอวยพร');
+  if (!sheet) return [];
+  var lastRow = sheet.getLastRow();
+  if (lastRow < 2) return [];
+  var cols = Math.max(sheet.getLastColumn(), 5);
+  var data = sheet.getRange(2, 1, lastRow - 1, cols).getValues();
+  var list = [];
+  for (var i = data.length - 1; i >= 0; i--) {
+    if (!data[i][1]) continue;
+    list.push({
+      date:       String(data[i][0] || ''),
+      name:       String(data[i][1] || ''),
+      message:    String(data[i][2] || ''),
+      photoUrl:   String(data[i][3] || ''),
+      attendance: String(data[i][4] || '')
+    });
+  }
+  return list;
+}
+
+// helper: เขียน row ลง sheet คำอวยพร
+function saveBlessingRow(ss, name, message, photoUrl, attendance) {
   var sheet = ss.getSheetByName('คำอวยพร');
   if (!sheet) {
     sheet = ss.insertSheet('คำอวยพร');
-    sheet.getRange(1, 1, 1, 3).setValues([['วันที่', 'ชื่อ', 'ข้อความ']]).setFontWeight('bold');
+    sheet.getRange(1, 1, 1, BLESS_HEADERS.length).setValues([BLESS_HEADERS])
+      .setFontWeight('bold').setBackground('#f4d9d0');
     sheet.setFrozenRows(1);
-    sheet.setColumnWidth(1, 140);
-    sheet.setColumnWidth(2, 150);
-    sheet.setColumnWidth(3, 400);
+    [150,160,420,200,140].forEach(function(w,i){ sheet.setColumnWidth(i+1,w); });
   }
   var dateStr = Utilities.formatDate(new Date(), 'Asia/Bangkok', 'dd/MM/yyyy HH:mm');
   var lastRow = sheet.getLastRow();
-  sheet.getRange(lastRow + 1, 1, 1, 3).setValues([[
+  sheet.getRange(lastRow + 1, 1, 1, 5).setValues([[
     dateStr,
-    String(body.name    || '').substring(0, 80),
-    String(body.message || '').substring(0, 500)
+    String(name    || '').substring(0, 80),
+    String(message || '').substring(0, 500),
+    String(photoUrl || ''),
+    String(attendance || '')
+  ]]);
+}
+
+function saveBlessing(ss, body) {
+  // อัปโหลดรูปถ้ามี
+  var photoUrl = '';
+  var photoBase64 = body.photoBase64 || body.photo || '';
+  if (photoBase64 && photoBase64.length > 100) {
+    var ts = Utilities.formatDate(new Date(), 'Asia/Bangkok', 'yyyyMMdd_HHmmss');
+    photoUrl = savePictureToDrive(photoBase64, 'bless_' + ts + '.jpg');
+  }
+
+  // บันทึกลง sheet คำอวยพร
+  saveBlessingRow(ss, body.name, body.message, photoUrl, 'declined');
+
+  // บันทึกลง sheet แขก ด้วย (สถานะ = declined, ที่นั่ง = 0)
+  var gSheet = ss.getSheetByName('แขก');
+  if (!gSheet) {
+    gSheet = ss.insertSheet('แขก');
+    gSheet.getRange(1, 1, 1, GUEST_HEADERS.length).setValues([GUEST_HEADERS])
+      .setFontWeight('bold').setBackground('#f4d9d0');
+    gSheet.setFrozenRows(1);
+  }
+  var dateStr = Utilities.formatDate(new Date(), 'Asia/Bangkok', 'dd/MM/yyyy HH:mm');
+  var lastRow = gSheet.getLastRow();
+  gSheet.getRange(lastRow + 1, 1, 1, 11).setValues([[
+    String(body.name    || ''),
+    '',   // ฝั่ง (ไม่ทราบ)
+    '',   // เบอร์
+    '',   // ความสัมพันธ์
+    0,    // ที่นั่ง = 0
+    'declined',
+    '',   // อีเมล
+    String(body.message || ''),
+    photoUrl,
+    dateStr,
+    ''
   ]]);
 }
 

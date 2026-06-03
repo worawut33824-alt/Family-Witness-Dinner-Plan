@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>คำอวยพร · Family Witness Dinner</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700&family=Playfair+Display:ital,wght@0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --blue:    #6B9DC2;
+    --blue-dk: #3d6a8a;
+    --cream:   #FAF7F4;
+    --text:    #2c3e50;
+    --text-lt: #6b7c93;
+    --gold:    #c9a84c;
+    --white:   #ffffff;
+    --shadow:  0 4px 24px rgba(0,0,0,.08);
+    --radius:  20px;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Sarabun', sans-serif;
+    background: var(--cream);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  /* ── HEADER ── */
+  .page-header {
+    background: linear-gradient(135deg, #4a7fa5 0%, #2d5a7a 100%);
+    color: #fff;
+    text-align: center;
+    padding: 48px 20px 36px;
+  }
+  .page-header .logo {
+    width: 64px; height: 64px; border-radius: 50%;
+    border: 3px solid rgba(255,255,255,.4);
+    margin: 0 auto 16px;
+    display: block; object-fit: cover;
+  }
+  .page-header h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.8rem; font-weight: 700;
+    margin-bottom: 6px;
+  }
+  .page-header .sub {
+    font-size: 0.9rem; opacity: .8;
+  }
+  .page-header .count-badge {
+    display: inline-block;
+    background: rgba(255,255,255,.2);
+    border-radius: 20px;
+    padding: 4px 16px;
+    font-size: 0.85rem;
+    margin-top: 12px;
+  }
+
+  /* ── TOOLBAR ── */
+  .toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    max-width: 860px;
+    margin: 24px auto 0;
+    padding: 0 20px;
+  }
+  .filter-tabs {
+    display: flex; gap: 8px;
+  }
+  .filter-tab {
+    padding: 6px 14px;
+    border-radius: 20px;
+    border: 1.5px solid #d0dce8;
+    background: #fff;
+    font-size: 0.82rem;
+    cursor: pointer;
+    font-family: 'Sarabun', sans-serif;
+    transition: all .15s;
+  }
+  .filter-tab.active {
+    background: var(--blue);
+    border-color: var(--blue);
+    color: #fff;
+  }
+  .btn-print {
+    display: flex; align-items: center; gap: 6px;
+    padding: 8px 18px;
+    border-radius: 20px;
+    border: none;
+    background: var(--gold);
+    color: #fff;
+    font-size: 0.85rem;
+    font-family: 'Sarabun', sans-serif;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity .15s;
+  }
+  .btn-print:hover { opacity: .85; }
+
+  /* ── GRID ── */
+  .bless-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px;
+    max-width: 860px;
+    margin: 20px auto 40px;
+    padding: 0 20px;
+  }
+
+  /* ── CARD ── */
+  .bless-card {
+    background: #fff;
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: var(--shadow);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+  .bless-card.confirmed { border-top: 3px solid #5a9e6f; }
+  .bless-card.declined  { border-top: 3px solid var(--blue); }
+
+  .card-header {
+    display: flex; align-items: center; gap: 12px;
+  }
+  .card-avatar {
+    width: 52px; height: 52px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
+    border: 2px solid #e8f0f8;
+  }
+  .card-avatar.initial {
+    display: flex; align-items: center; justify-content: center;
+    background: linear-gradient(135deg, var(--blue), var(--blue-dk));
+    color: #fff;
+    font-size: 1.3rem;
+    font-weight: 700;
+  }
+  .card-name { font-weight: 700; font-size: 0.95rem; }
+  .card-badge {
+    display: inline-block;
+    font-size: 0.7rem;
+    padding: 2px 8px;
+    border-radius: 10px;
+    margin-top: 3px;
+  }
+  .card-badge.confirmed {
+    background: #e8f5e9; color: #2e7d32;
+  }
+  .card-badge.declined {
+    background: #e8f0f8; color: #3d6a8a;
+  }
+  .card-msg {
+    font-size: 0.88rem;
+    color: var(--text-lt);
+    line-height: 1.75;
+    flex: 1;
+    font-style: italic;
+  }
+  .card-msg::before { content: '\201C'; }
+  .card-msg::after  { content: '\201D'; }
+  .card-photo {
+    width: 100%; border-radius: 10px;
+    object-fit: cover; max-height: 200px;
+    cursor: pointer;
+  }
+  .card-date {
+    font-size: 0.72rem;
+    color: #bbb;
+    text-align: right;
+  }
+
+  /* ── LOADING / EMPTY ── */
+  .state-msg {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--text-lt);
+    font-size: 0.95rem;
+  }
+
+  /* ── LIGHTBOX ── */
+  #lightbox {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,.85);
+    z-index: 9999;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+  #lightbox.open { display: flex; }
+  #lightbox img {
+    max-width: 100%; max-height: 90vh;
+    border-radius: 8px;
+  }
+
+  /* ── PRINT ── */
+  @media print {
+    .toolbar, .page-header .count-badge { display: none !important; }
+    .page-header {
+      background: none !important;
+      color: var(--text) !important;
+      padding: 20px 0 16px;
+    }
+    .page-header h1 { font-size: 1.4rem; }
+    .bless-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+    .bless-card {
+      box-shadow: none !important;
+      border: 1px solid #ddd !important;
+    }
+    body { background: #fff; }
+  }
+</style>
+</head>
+<body>
+
+<div class="page-header">
+  <img class="logo" src="logo.png" alt="PM" onerror="this.style.display='none'">
+  <h1>กล่องคำอวยพร 💌</h1>
+  <div class="sub">Family Witness Dinner · 28 พฤศจิกายน 2569 · TARA Terrace</div>
+  <div class="count-badge" id="count-badge">กำลังโหลด...</div>
+</div>
+
+<div class="toolbar">
+  <div class="filter-tabs">
+    <button class="filter-tab active" onclick="setFilter('all')">ทั้งหมด</button>
+    <button class="filter-tab" onclick="setFilter('confirmed')">✅ มาร่วมงาน</button>
+    <button class="filter-tab" onclick="setFilter('declined')">💌 ส่งใจมาด้วย</button>
+  </div>
+  <button class="btn-print" onclick="window.print()">🖨️ พิมพ์ / Export PDF</button>
+</div>
+
+<div id="bless-grid" class="bless-grid">
+  <div class="state-msg">⏳ กำลังโหลดคำอวยพร...</div>
+</div>
+
+<!-- Lightbox -->
+<div id="lightbox" onclick="closeLightbox()">
+  <img id="lb-img" src="" alt="">
+</div>
+
+<script>
+// ── CONFIG ──
+let SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyLwJzGtzoM9neuxyWhkWgowB2VTfGJEIMUAFQfzNMoorik8OXdkUHmZn4p04WuL97_7w/exec';
+(function() {
+  try {
+    const p = new URLSearchParams(window.location.search).get('surl');
+    if (p && p.startsWith('https://script.google.com/')) SCRIPT_URL = p;
+    else {
+      const s = localStorage.getItem('invite_script_url');
+      if (s && s.startsWith('https://script.google.com/')) SCRIPT_URL = s;
+    }
+  } catch(e) {}
+})();
+
+let allBlessings = [];
+let currentFilter = 'all';
+
+function escHtml(s) {
+  return String(s||'')
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function setFilter(f) {
+  currentFilter = f;
+  document.querySelectorAll('.filter-tab').forEach((t,i) => {
+    t.classList.toggle('active', ['all','confirmed','declined'][i] === f);
+  });
+  renderCards();
+}
+
+function renderCards() {
+  const grid = document.getElementById('bless-grid');
+  const list = currentFilter === 'all'
+    ? allBlessings
+    : allBlessings.filter(b => b.attendance === currentFilter);
+
+  if (!list.length) {
+    grid.innerHTML = '<div class="state-msg">ยังไม่มีคำอวยพรในหมวดนี้ 🌸</div>';
+    return;
+  }
+
+  grid.innerHTML = list.map(b => {
+    const isConfirmed = b.attendance === 'confirmed';
+    const initial = (b.name || '?')[0].toUpperCase();
+    const avatarHtml = b.photoUrl
+      ? `<img class="card-avatar" src="${escHtml(b.photoUrl)}" alt="${escHtml(b.name)}" onerror="this.outerHTML='<div class=\\'card-avatar initial\\'>${initial}</div>'">`
+      : `<div class="card-avatar initial">${initial}</div>`;
+    const photoHtml = b.photoUrl
+      ? `<img class="card-photo" src="${escHtml(b.photoUrl)}" alt="" loading="lazy" onclick="openLightbox('${escHtml(b.photoUrl)}')">`
+      : '';
+    const badgeText = isConfirmed ? '✅ มาร่วมงาน' : '💌 ส่งใจมาด้วย';
+    const badgeClass = isConfirmed ? 'confirmed' : 'declined';
+
+    return `
+      <div class="bless-card ${badgeClass}">
+        <div class="card-header">
+          ${avatarHtml}
+          <div>
+            <div class="card-name">${escHtml(b.name)}</div>
+            <span class="card-badge ${badgeClass}">${badgeText}</span>
+          </div>
+        </div>
+        ${b.message ? `<div class="card-msg">${escHtml(b.message)}</div>` : ''}
+        ${photoHtml}
+        <div class="card-date">${escHtml(b.date)}</div>
+      </div>`;
+  }).join('');
+}
+
+function openLightbox(src) {
+  document.getElementById('lb-img').src = src;
+  document.getElementById('lightbox').classList.add('open');
+}
+function closeLightbox() {
+  document.getElementById('lightbox').classList.remove('open');
+}
+
+async function loadBlessings() {
+  if (!SCRIPT_URL) {
+    document.getElementById('bless-grid').innerHTML =
+      '<div class="state-msg">⚠️ ยังไม่ได้เชื่อม Apps Script — กรุณาเพิ่ม ?surl= ใน URL</div>';
+    return;
+  }
+  try {
+    const res  = await fetch(SCRIPT_URL + '?action=blessings');
+    const data = await res.json();
+    allBlessings = Array.isArray(data.blessings) ? data.blessings : [];
+    const badge = document.getElementById('count-badge');
+    badge.textContent = allBlessings.length + ' คำอวยพร';
+    renderCards();
+  } catch(e) {
+    document.getElementById('bless-grid').innerHTML =
+      '<div class="state-msg">❌ โหลดข้อมูลไม่สำเร็จ กรุณาลองรีเฟรช</div>';
+  }
+}
+
+loadBlessings();
+</script>
+</body>
+</html>

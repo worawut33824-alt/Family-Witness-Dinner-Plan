@@ -1376,6 +1376,76 @@ footer {
   background: var(--cream);
   padding: 56px 0;
 }
+
+/* ── DECISION SECTION ── */
+#sec-decision {
+  background: linear-gradient(155deg,#EEF5FC 0%,var(--cream) 100%);
+  border-radius: var(--radius);
+  margin: 0 16px;
+  padding: 56px 28px;
+  box-shadow: var(--shadow);
+}
+@media(min-width:720px){ #sec-decision { max-width:680px; margin:0 auto; } }
+.decision-cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-top: 32px;
+}
+@media(max-width:480px){ .decision-cards { grid-template-columns:1fr; } }
+.decision-card {
+  border-radius: 16px;
+  padding: 28px 20px;
+  text-align: center;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: transform .18s, box-shadow .18s, border-color .18s;
+  display: flex; flex-direction: column; align-items: center; gap: 10px;
+}
+.decision-card:hover { transform: translateY(-4px); box-shadow: 0 8px 24px rgba(0,0,0,.12); }
+.decision-card.yes {
+  background: linear-gradient(135deg,#e8f4e8,#d4edda);
+  border-color: #5a9e6f;
+}
+.decision-card.no {
+  background: linear-gradient(135deg,#EEF5FC,#dce8f5);
+  border-color: var(--blue);
+}
+.decision-card .dc-icon { font-size: 2.4rem; }
+.decision-card .dc-title {
+  font-size: 1rem; font-weight: 700;
+  color: var(--text);
+}
+.decision-card .dc-sub {
+  font-size: 0.8rem; color: var(--text-lt); line-height: 1.5;
+}
+
+/* ── PHOTO UPLOAD ── */
+.photo-upload-wrap {
+  border: 2px dashed #b8d0e8;
+  border-radius: 12px;
+  padding: 20px;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color .2s, background .2s;
+  background: #f7fbff;
+  position: relative;
+}
+.photo-upload-wrap:hover { border-color: var(--blue); background: #eef5fc; }
+.photo-upload-wrap input[type=file] {
+  position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%;
+}
+.photo-upload-wrap .pu-icon { font-size: 1.8rem; }
+.photo-upload-wrap .pu-text { font-size: 0.82rem; color: var(--text-lt); margin-top: 4px; }
+.photo-preview {
+  width: 80px; height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid var(--blue);
+  margin: 0 auto 6px;
+  display: block;
+}
+.photo-preview.hidden { display: none; }
 </style>
 </head>
 <body>
@@ -1783,6 +1853,32 @@ footer {
 
   <div class="sec-spacer"></div>
 
+  <!-- ── DECISION ── -->
+  <section id="sec-decision" class="fade-up" style="max-width:none; border-radius:0;">
+    <div style="max-width:640px; margin:0 auto;">
+      <div class="sec-label">ร่วมแจ้งชะตา</div>
+      <div class="sec-divider"></div>
+      <h2 class="sec-title gold-shimmer anim from-bottom">คุณจะมา<em>ร่วมงาน</em>ไหมคะ?</h2>
+      <p style="text-align:center;color:var(--text-lt);font-size:0.9rem;margin:10px 0 8px">
+        บอกให้เราทราบก่อนนะคะ เราตั้งตารอทุกคน 🤍
+      </p>
+      <div class="decision-cards anim from-bottom">
+        <div class="decision-card yes" onclick="goRSVP()">
+          <div class="dc-icon">✅</div>
+          <div class="dc-title">ยืนยันมาร่วมงาน</div>
+          <div class="dc-sub">ลงทะเบียน + ฝากคำอวยพร<br>และอัปโหลดรูปได้เลย</div>
+        </div>
+        <div class="decision-card no" onclick="goBlessing()">
+          <div class="dc-icon">💌</div>
+          <div class="dc-title">ส่งคำอวยพร</div>
+          <div class="dc-sub">ไม่สะดวกมาร่วมงาน<br>แต่ขอส่งกำลังใจมาด้วยใจ</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="sec-spacer"></div>
+
   <!-- ── RSVP ── -->
   <section id="sec-rsvp" class="fade-up" style="max-width:none; border-radius:0;">
     <div style="max-width:640px; margin:0 auto;">
@@ -1829,6 +1925,19 @@ footer {
             <input id="r-relation" class="form-input" placeholder="เช่น ญาติ, เพื่อน, เพื่อนร่วมงาน" maxlength="80">
           </div>
           <div class="form-group">
+            <label class="form-label">คำอวยพร 💌</label>
+            <textarea id="r-blessing" class="form-textarea" placeholder="ฝากคำอวยพรถึงเจ้าบ่าวเจ้าสาวได้เลยนะคะ..." maxlength="400" style="min-height:90px;"></textarea>
+          </div>
+          <div class="form-group">
+            <label class="form-label">อัปโหลดรูปของคุณ 📸 <span style="font-weight:400;color:#aaa">(ไม่บังคับ)</span></label>
+            <div class="photo-upload-wrap" onclick="document.getElementById('r-photo').click()">
+              <img id="r-photo-preview" class="photo-preview hidden" src="" alt="preview">
+              <div class="pu-icon">📷</div>
+              <div class="pu-text">แตะเพื่อเลือกรูป</div>
+              <input type="file" id="r-photo" accept="image/*" style="display:none" onchange="previewPhoto(this,'r-photo-preview')">
+            </div>
+          </div>
+          <div class="form-group">
             <label class="form-label">หมายเหตุ</label>
             <textarea id="r-note" class="form-textarea" placeholder="มีอะไรอยากบอกเพิ่มเติม..." maxlength="300"></textarea>
           </div>
@@ -1872,6 +1981,17 @@ footer {
       <div class="bless-form">
         <input id="bless-name" class="form-input" placeholder="ชื่อของคุณ" maxlength="60">
         <textarea id="bless-msg" placeholder="คำอวยพร..." maxlength="400" style="min-height:90px;border:1.5px solid #dde8f0;border-radius:10px;padding:12px 16px;font-family:'Sarabun',sans-serif;font-size:.95rem;width:100%;resize:none;background:#F9FDFF;"></textarea>
+        <div>
+          <div style="font-size:0.8rem;font-weight:600;color:var(--text-lt);margin-bottom:6px;">
+            อัปโหลดรูปประกอบ 📸 <span style="font-weight:400;color:#aaa">(ไม่บังคับ)</span>
+          </div>
+          <div class="photo-upload-wrap" onclick="document.getElementById('bless-photo').click()">
+            <img id="bless-photo-preview" class="photo-preview hidden" src="" alt="preview">
+            <div class="pu-icon">📷</div>
+            <div class="pu-text">แตะเพื่อเลือกรูป</div>
+            <input type="file" id="bless-photo" accept="image/*" style="display:none" onchange="previewPhoto(this,'bless-photo-preview')">
+          </div>
+        </div>
         <button class="btn btn-primary" onclick="submitBlessing()" id="bless-btn" style="width:100%;padding:13px;justify-content:center;">
           💌 ส่งคำอวยพร
         </button>
@@ -2267,7 +2387,58 @@ function renderBlessings(list) {
   `).join('');
 }
 
-function submitBlessing() {
+// ── DECISION NAVIGATION ──────────────────────────────────────
+function goRSVP() {
+  document.getElementById('sec-rsvp').scrollIntoView({ behavior: 'smooth' });
+}
+function goBlessing() {
+  document.getElementById('sec-bless').scrollIntoView({ behavior: 'smooth' });
+}
+
+// ── PHOTO HELPER ──────────────────────────────────────────────
+function previewPhoto(input, previewId) {
+  const preview = document.getElementById(previewId);
+  const wrap = input.closest('.photo-upload-wrap');
+  if (!input.files || !input.files[0]) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    preview.src = e.target.result;
+    preview.classList.remove('hidden');
+    if (wrap) {
+      wrap.querySelector('.pu-icon').style.display = 'none';
+      wrap.querySelector('.pu-text').textContent = input.files[0].name;
+    }
+  };
+  reader.readAsDataURL(input.files[0]);
+}
+
+function fileToBase64(input) {
+  return new Promise((resolve) => {
+    if (!input || !input.files || !input.files[0]) { resolve(''); return; }
+    const file = input.files[0];
+    // ย่อรูปก่อนส่งถ้าใหญ่เกิน 1MB
+    const MAX = 800;
+    const reader = new FileReader();
+    reader.onload = e => {
+      const img = new Image();
+      img.onload = () => {
+        let w = img.width, h = img.height;
+        if (w > MAX || h > MAX) {
+          const ratio = Math.min(MAX/w, MAX/h);
+          w = Math.round(w * ratio); h = Math.round(h * ratio);
+        }
+        const canvas = document.createElement('canvas');
+        canvas.width = w; canvas.height = h;
+        canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+        resolve(canvas.toDataURL('image/jpeg', 0.75));
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+async function submitBlessing() {
   const name = document.getElementById('bless-name').value.trim();
   const msg  = document.getElementById('bless-msg').value.trim();
   if (!name) { toast('กรุณากรอกชื่อก่อนนะคะ 🌸'); return; }
@@ -2276,44 +2447,15 @@ function submitBlessing() {
   const btn = document.getElementById('bless-btn');
   btn.disabled = true; btn.textContent = '⏳ กำลังส่ง...';
 
-  const payload = { action: 'bless', name, message: msg };
-
-  if (!SCRIPT_URL) {
-    // Demo mode (no backend)
-    setTimeout(() => {
-      const list = document.getElementById('bless-list');
-      const noEl = list.querySelector('.no-bless');
-      if (noEl) noEl.remove();
-      const item = document.createElement('div');
-      item.className = 'bless-item';
-      item.innerHTML = `
-        <div class="bless-avatar">${name[0].toUpperCase()}</div>
-        <div class="bless-content">
-          <div class="bless-name">${escHtml(name)}</div>
-          <div class="bless-msg">${escHtml(msg)}</div>
-          <div class="bless-date">เมื่อกี้นี้</div>
-        </div>`;
-      list.prepend(item);
-      document.getElementById('bless-name').value = '';
-      document.getElementById('bless-msg').value  = '';
-      btn.disabled = false; btn.textContent = '💌 ส่งคำอวยพร';
-      toast('ขอบคุณสำหรับคำอวยพร 💕');
-    }, 600);
-    return;
-  }
-
-  const params = new URLSearchParams({
-    action: 'bless',
-    name:    name,
-    message: msg.substring(0, 300)
-  });
+  const photoBase64 = await fileToBase64(document.getElementById('bless-photo'));
 
   const showSuccess = () => {
     const list = document.getElementById('bless-list');
     const noEl = list.querySelector('.no-bless'); if (noEl) noEl.remove();
+    const photoSrc = document.getElementById('bless-photo-preview').src;
     const item = document.createElement('div'); item.className = 'bless-item';
     item.innerHTML = `
-      <div class="bless-avatar">${name[0].toUpperCase()}</div>
+      ${photoSrc && !photoSrc.endsWith('#') ? `<img class="bless-avatar" src="${photoSrc}" style="border-radius:50%;width:40px;height:40px;object-fit:cover;">` : `<div class="bless-avatar">${name[0].toUpperCase()}</div>`}
       <div class="bless-content">
         <div class="bless-name">${escHtml(name)}</div>
         <div class="bless-msg">${escHtml(msg)}</div>
@@ -2322,14 +2464,19 @@ function submitBlessing() {
     list.prepend(item);
     document.getElementById('bless-name').value = '';
     document.getElementById('bless-msg').value  = '';
+    document.getElementById('bless-photo').value = '';
+    document.getElementById('bless-photo-preview').classList.add('hidden');
     btn.disabled = false; btn.textContent = '💌 ส่งคำอวยพร';
     toast('ขอบคุณสำหรับคำอวยพร 💕');
   };
 
-  // ส่งข้อมูล — ไม่รอ JSON response เพราะ Apps Script อาจ return HTML
-  fetch(SCRIPT_URL + '?' + params.toString())
-    .then(showSuccess)
-    .catch(showSuccess); // แสดง success ใน UI เสมอ ข้อมูลยังคงส่งไปถึง Sheet
+  if (!SCRIPT_URL) { setTimeout(showSuccess, 600); return; }
+
+  fetch(SCRIPT_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ action: 'bless', name, message: msg, photoBase64 })
+  }).then(showSuccess).catch(showSuccess);
 }
 
 // ── RSVP ─────────────────────────────────────────────────────
@@ -2345,12 +2492,13 @@ function toggleCalNotice() {
   if (notice) notice.classList.toggle('show', email.length > 0);
 }
 
-function submitRSVP() {
+async function submitRSVP() {
   const name     = document.getElementById('r-name').value.trim();
   const count    = parseInt(document.getElementById('r-count').value) || 1;
   const phone    = document.getElementById('r-phone').value.trim();
   const email    = document.getElementById('r-email').value.trim();
   const relation = document.getElementById('r-relation').value.trim();
+  const blessing = document.getElementById('r-blessing').value.trim();
   const note     = document.getElementById('r-note').value.trim();
 
   if (!name)         { toast('กรุณากรอกชื่อ-นามสกุล 🙏'); return; }
@@ -2361,19 +2509,14 @@ function submitRSVP() {
   const btnT = document.getElementById('rsvp-btn-text');
   btn.disabled = true; btnT.textContent = '⏳ กำลังบันทึก...';
 
-  const payload = {
-    action: 'rsvp',
-    name, count, phone, email,
-    side: selectedSide === 'm' ? 'เอ็ม' : 'แป้ง',
-    relation, note
-  };
+  const photoBase64 = await fileToBase64(document.getElementById('r-photo'));
 
   const onSuccess = (newCount, sM, sP) => {
     document.getElementById('rsvp-form-wrap').style.display = 'none';
     const sc = document.getElementById('rsvp-success');
     sc.classList.add('show');
     document.getElementById('success-msg-text').innerHTML = `
-      <strong>${escHtml(name)}</strong> และอีก ${count > 1 ? count - 1 + ' คน ' : ''}ได้ยืนยันการมาร่วมงานแล้ว<br><br>
+      <strong>${escHtml(name)}</strong>${count > 1 ? ' และอีก ' + (count-1) + ' คน' : ''} ยืนยันมาร่วมงานแล้ว<br><br>
       เราตั้งตารอพบคุณในวันงาน 🥂<br>
       <strong>วันเสาร์ที่ 28 พฤศจิกายน 2569 · 14:00 น.</strong><br>
       ธาราเทอเรส · นครปฐม
@@ -2382,35 +2525,30 @@ function submitRSVP() {
       const calNote = document.getElementById('success-cal-note');
       if (calNote) calNote.style.display = 'inline-block';
     }
-    // Update tree
     if (newCount !== undefined) updateTree(newCount, sM, sP);
     else updateTree(guestCount + count, sM, sP);
     toast('ยืนยันเรียบร้อยแล้ว ขอบคุณมากเลย 💕');
   };
 
-  if (!SCRIPT_URL) {
-    setTimeout(() => onSuccess(guestCount + count), 800);
-    return;
-  }
+  if (!SCRIPT_URL) { setTimeout(() => onSuccess(guestCount + count), 800); return; }
 
-  const params = new URLSearchParams({
-    action:   'rsvp',
-    name:     name,
-    count:    String(count),
-    phone:    phone,
-    email:    email,
-    side:     selectedSide === 'm' ? 'เอ็ม' : 'แป้ง',
-    relation: relation,
-    note:     note.substring(0, 300)
+  fetch(SCRIPT_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      action: 'rsvp',
+      name, count, phone, email,
+      side: selectedSide === 'm' ? 'เอ็ม' : 'แป้ง',
+      relation, blessing, note, photoBase64
+    })
+  })
+  .then(r => r.json())
+  .then(data => { onSuccess(data.guestCount, data.sideM || 0, data.sideP || 0); })
+  .catch(() => {
+    btn.disabled = false;
+    btnT.textContent = '💌 ยืนยันการร่วมงาน';
+    toast('เกิดข้อผิดพลาด กรุณาลองใหม่ 🙏');
   });
-  fetch(SCRIPT_URL + '?' + params.toString())
-    .then(r => r.json())
-    .then(data => { onSuccess(data.guestCount, data.sideM || 0, data.sideP || 0); })
-    .catch(() => {
-      btn.disabled = false;
-      btnT.textContent = '💌 ยืนยันการร่วมงาน';
-      toast('เกิดข้อผิดพลาด กรุณาลองใหม่ 🙏');
-    });
 }
 
 // ── UTILS ─────────────────────────────────────────────────────
