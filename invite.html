@@ -424,6 +424,30 @@ h2.sec-title em { font-style: italic; color: var(--blue-dk); }
 @media(min-width:720px){
   #sec-story { max-width: 680px; margin: 0 auto; border-radius: var(--radius); }
 }
+.story-text {
+  margin: 0 0 36px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.story-text p {
+  font-size: 0.95rem;
+  color: var(--text-lt);
+  line-height: 1.95;
+  text-align: center;
+}
+.story-text .story-closing {
+  font-size: 0.9rem;
+  color: var(--blue-dk);
+  font-style: italic;
+  margin-top: 8px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(169,201,235,0.3);
+}
+@media(min-width:640px){
+  .story-text p { font-size: 1rem; }
+}
+
 .video-wrap {
   position: relative;
   padding-top: 56.25%;
@@ -1435,7 +1459,14 @@ footer {
     <div class="sec-label">เรื่องราวของเรา</div>
     <div class="sec-divider"></div>
     <h2 class="sec-title gold-shimmer anim from-bottom">Our <em>Love Story</em></h2>
-    <p style="text-align:center;color:var(--text-lt);font-size:0.9rem;margin:12px 0 28px">ทุกเรื่องราวมีจุดเริ่มต้น — นี่คือของเราสองคน</p>
+    <div class="story-text anim from-bottom">
+      <p>บางครั้งเรื่องราวที่สำคัญที่สุดในชีวิตก็เริ่มต้นจากความบังเอิญเล็กๆ</p>
+      <p>เราได้รู้จักกันครั้งแรกผ่านแอปพลิเคชันหาคู่ในปี 2022 ก่อนที่ต่างคนต่างจะกลับไปใช้ชีวิตของตัวเองและไม่ได้คิดว่าวันหนึ่งจะได้พบกันอีก</p>
+      <p>หลายปีต่อมาเราได้กลับมาเจอกันอีกครั้ง ในช่วงเวลาที่ต่างคนต่างเติบโตขึ้นและพร้อมเปิดใจให้กับความสัมพันธ์ที่ดี สิ่งที่เริ่มต้นจากความบังเอิญในวันหนึ่ง จึงค่อยๆ กลายเป็นความตั้งใจในทุกวัน</p>
+      <p>ระหว่างทางเราได้เรียนรู้ว่าความรักที่ดีไม่จำเป็นต้องสมบูรณ์แบบ แต่คือการมีใครสักคนที่พร้อมรับฟัง สนับสนุน และเติบโตไปด้วยกัน</p>
+      <p>และวันนี้เราได้เลือกที่จะก้าวไปสู่บทใหม่ของชีวิตร่วมกัน</p>
+      <p class="story-closing">ขอบคุณทุกคนที่เป็นส่วนหนึ่งของการเดินทางครั้งนี้ และเราหวังเป็นอย่างยิ่งว่าจะได้แบ่งปันความสุขกับทุกท่านในวันสำคัญของเรา 🤍</p>
+    </div>
     <div class="video-wrap anim zoom-in" id="video-wrap">
       <iframe
         src="https://www.youtube.com/embed/UTVP7uBGzGY?rel=0&showinfo=0"
