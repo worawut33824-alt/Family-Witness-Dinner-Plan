@@ -1084,7 +1084,7 @@ async function loadBlessingsPage() {
   const grid = document.getElementById('bless-page-grid');
   if (!grid) return;
   grid.innerHTML = '<div style="text-align:center;padding:40px;color:#999;">⏳ กำลังโหลด...</div>';
-  const url = localStorage.getItem('script_url');
+  const url = localStorage.getItem('apps_script_url');
   if (!url) { grid.innerHTML = '<div style="text-align:center;padding:40px;color:#999;">⚠️ กรุณาเชื่อม Apps Script ก่อนที่หน้าซิงค์</div>'; return; }
   try {
     const res = await fetch(url + '?action=blessings');
