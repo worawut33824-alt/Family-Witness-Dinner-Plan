@@ -205,7 +205,8 @@ function savePictureToDrive(base64Data, filename) {
     var blob  = Utilities.newBlob(bytes, contentType, filename || 'photo.jpg');
     var file  = folder.createFile(blob);
     file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
-    return 'https://drive.google.com/uc?export=view&id=' + file.getId();
+    var id = file.getId();
+    return 'https://drive.google.com/thumbnail?id=' + id + '&sz=w800';
   } catch(e) {
     Logger.log('savePictureToDrive error: ' + e);
     return '';
@@ -310,6 +311,7 @@ function saveBlessingRow(ss, name, message, photoUrl, attendance) {
   }
   var dateStr = Utilities.formatDate(new Date(), 'Asia/Bangkok', 'dd/MM/yyyy HH:mm');
   var lastRow = sheet.getLastRow();
+  sheet.getRange(lastRow + 1, 1).setNumberFormat('@');
   sheet.getRange(lastRow + 1, 1, 1, 5).setValues([[
     dateStr,
     String(name    || '').substring(0, 80),

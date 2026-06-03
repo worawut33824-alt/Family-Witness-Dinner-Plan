@@ -48,6 +48,8 @@
   .tab-btn { background: none; border: none; color: rgba(255,255,255,0.75); padding: 10px 16px; cursor: pointer; font-size: 0.82rem; white-space: nowrap; border-bottom: 3px solid transparent; transition: all 0.2s; }
   .tab-btn:hover { color: white; }
   .tab-btn.active { color: white; border-bottom-color: var(--gold); font-weight: 600; }
+  .bless-ftab { padding:6px 14px;border-radius:20px;border:1.5px solid #d0dce8;background:#fff;font-size:0.82rem;cursor:pointer;font-family:inherit;transition:all .15s; }
+  .bless-ftab.active { background:#6B9DC2;border-color:#6B9DC2;color:#fff; }
 
   /* PAGES */
   .page { display: none; padding: 24px 24px 190px; max-width: 1200px; margin: 0 auto; }
@@ -352,6 +354,7 @@
     <button class="tab-btn" onclick="showPage('checklist')">✅ Checklist</button>
     <button class="tab-btn" onclick="showPage('contacts')">📞 ผู้ติดต่อ</button>
     <button class="tab-btn" onclick="showPage('guests')">👥 แขก</button>
+    <button class="tab-btn" onclick="showPage('blessings')">💌 คำอวยพร</button>
     <button class="tab-btn" onclick="showPage('sync')">☁️ ซิงค์</button>
   </div>
 </nav>
@@ -375,6 +378,7 @@
   <button class="drawer-nav-btn" onclick="showPage('checklist')"><span class="di">✅</span>Checklist</button>
   <button class="drawer-nav-btn" onclick="showPage('contacts')"><span class="di">📞</span>ผู้ติดต่อ</button>
   <button class="drawer-nav-btn" onclick="showPage('guests')"><span class="di">👥</span>แขก</button>
+  <button class="drawer-nav-btn" onclick="showPage('blessings')"><span class="di">💌</span>คำอวยพร</button>
   <button class="drawer-nav-btn" onclick="showPage('sync')"><span class="di">☁️</span>ซิงค์</button>
 </div>
 
@@ -523,6 +527,37 @@
   </div>
   <div class="card" style="padding:0;overflow:hidden;">
     <div style="overflow-x:auto;"><div id="guest-table"></div></div>
+  </div>
+</div>
+
+<!-- BLESSINGS PAGE -->
+<div id="page-blessings" class="page">
+  <div class="section-header">
+    <h2>💌 กล่องคำอวยพร</h2>
+    <span style="font-size:0.8rem;color:var(--text-light)">คำอวยพรจากแขกทุกท่าน</span>
+  </div>
+
+  <!-- Filter + Print -->
+  <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:16px;">
+    <div style="display:flex;gap:8px;flex-wrap:wrap;" id="bless-filter-tabs">
+      <button class="bless-ftab active" onclick="setBlessFilter('all')">ทั้งหมด</button>
+      <button class="bless-ftab" onclick="setBlessFilter('confirmed')">✅ มาร่วมงาน</button>
+      <button class="bless-ftab" onclick="setBlessFilter('declined')">💌 ส่งใจมาด้วย</button>
+    </div>
+    <button onclick="window.print()" style="padding:7px 16px;border-radius:20px;border:none;background:#c9a84c;color:#fff;font-size:0.82rem;font-weight:600;cursor:pointer;font-family:inherit;">🖨️ พิมพ์ / PDF</button>
+  </div>
+
+  <!-- Count badge -->
+  <div style="margin-bottom:16px;">
+    <span id="bless-count-badge" style="background:#e8f0f8;border-radius:20px;padding:4px 14px;font-size:0.82rem;color:#3d6a8a;font-weight:600;">กำลังโหลด...</span>
+  </div>
+
+  <!-- Grid -->
+  <div id="bless-page-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;"></div>
+
+  <!-- Lightbox -->
+  <div id="bless-lightbox" onclick="closeBlessLightbox()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:9999;align-items:center;justify-content:center;padding:20px;">
+    <img id="bless-lb-img" src="" style="max-width:100%;max-height:90vh;border-radius:8px;">
   </div>
 </div>
 
@@ -996,7 +1031,78 @@ function showPage(id) {
   if(id==='checklist') renderChecklist();
   if(id==='contacts') renderContacts();
   if(id==='guests') renderGuests();
+  if(id==='blessings') loadBlessingsPage();
   if(id==='sync') renderSyncPage();
+}
+
+// ─── BLESSINGS PAGE ──────────────────────────────────────────────────────────
+let allBlessData = [];
+let blessFilter = 'all';
+
+function setBlessFilter(f) {
+  blessFilter = f;
+  document.querySelectorAll('.bless-ftab').forEach(t => {
+    t.classList.toggle('active', t.getAttribute('onclick').includes("'"+f+"'"));
+  });
+  renderBlessGrid();
+}
+
+function renderBlessGrid() {
+  const grid = document.getElementById('bless-page-grid');
+  if (!grid) return;
+  const list = blessFilter === 'all' ? allBlessData
+    : allBlessData.filter(b => b.attendance === blessFilter);
+  const badge = document.getElementById('bless-count-badge');
+  if (badge) badge.textContent = allBlessData.length + ' คำอวยพร';
+  if (!list.length) {
+    grid.innerHTML = '<div style="text-align:center;padding:40px;color:#999;">ยังไม่มีคำอวยพรในหมวดนี้ 🌸</div>';
+    return;
+  }
+  function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+  grid.innerHTML = list.map(b => {
+    const isConf = b.attendance === 'confirmed';
+    const initial = (b.name||'?')[0].toUpperCase();
+    const avatar = b.photoUrl
+      ? `<img src="${esc(b.photoUrl)}" style="width:48px;height:48px;border-radius:50%;object-fit:cover;flex-shrink:0;border:2px solid #e8f0f8;" onerror="this.outerHTML='<div style=\\'width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,#6B9DC2,#3d6a8a);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:1.1rem;flex-shrink:0;\\'>${initial}</div>'">`
+      : `<div style="width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,#6B9DC2,#3d6a8a);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:1.1rem;flex-shrink:0;">${initial}</div>`;
+    const badge = isConf
+      ? `<span style="font-size:0.7rem;background:#e8f5e9;color:#2e7d32;padding:2px 8px;border-radius:10px;">✅ มาร่วมงาน</span>`
+      : `<span style="font-size:0.7rem;background:#e8f0f8;color:#3d6a8a;padding:2px 8px;border-radius:10px;">💌 ส่งใจมาด้วย</span>`;
+    const photo = b.photoUrl
+      ? `<img src="${esc(b.photoUrl)}" style="width:100%;border-radius:8px;max-height:180px;object-fit:cover;cursor:pointer;margin-top:4px;" onclick="openBlessLightbox('${esc(b.photoUrl)}')">`
+      : '';
+    return `<div style="background:#fff;border-radius:14px;padding:16px;box-shadow:0 2px 12px rgba(0,0,0,.07);display:flex;flex-direction:column;gap:10px;border-top:3px solid ${isConf?'#5a9e6f':'#6B9DC2'};">
+      <div style="display:flex;align-items:center;gap:10px;">${avatar}<div><div style="font-weight:700;font-size:0.9rem;">${esc(b.name)}</div>${badge}</div></div>
+      ${b.message?`<div style="font-size:0.85rem;color:#6b7c93;line-height:1.7;font-style:italic;">"${esc(b.message)}"</div>`:''}
+      ${photo}
+      <div style="font-size:0.7rem;color:#bbb;text-align:right;">${esc(b.date)}</div>
+    </div>`;
+  }).join('');
+}
+
+async function loadBlessingsPage() {
+  const grid = document.getElementById('bless-page-grid');
+  if (!grid) return;
+  grid.innerHTML = '<div style="text-align:center;padding:40px;color:#999;">⏳ กำลังโหลด...</div>';
+  const url = localStorage.getItem('script_url');
+  if (!url) { grid.innerHTML = '<div style="text-align:center;padding:40px;color:#999;">⚠️ กรุณาเชื่อม Apps Script ก่อนที่หน้าซิงค์</div>'; return; }
+  try {
+    const res = await fetch(url + '?action=blessings');
+    const data = await res.json();
+    allBlessData = Array.isArray(data.blessings) ? data.blessings : [];
+    renderBlessGrid();
+  } catch(e) {
+    grid.innerHTML = '<div style="text-align:center;padding:40px;color:#e74c3c;">❌ โหลดข้อมูลไม่สำเร็จ กรุณาลองรีเฟรช</div>';
+  }
+}
+
+function openBlessLightbox(src) {
+  const lb = document.getElementById('bless-lightbox');
+  document.getElementById('bless-lb-img').src = src;
+  lb.style.display = 'flex';
+}
+function closeBlessLightbox() {
+  document.getElementById('bless-lightbox').style.display = 'none';
 }
 
 // ─── DASHBOARD ───────────────────────────────────────────────────────────────
