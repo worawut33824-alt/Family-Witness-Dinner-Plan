@@ -543,6 +543,8 @@
       <button class="bless-ftab active" onclick="setBlessFilter('all')">ทั้งหมด</button>
       <button class="bless-ftab" onclick="setBlessFilter('confirmed')">✅ มาร่วมงาน</button>
       <button class="bless-ftab" onclick="setBlessFilter('declined')">💌 ส่งใจมาด้วย</button>
+      <button class="bless-ftab" onclick="setBlessFilter('groom')">🤵 ฝั่งเจ้าบ่าว</button>
+      <button class="bless-ftab" onclick="setBlessFilter('bride')">👰 ฝั่งเจ้าสาว</button>
     </div>
     <button onclick="window.print()" style="padding:7px 16px;border-radius:20px;border:none;background:#c9a84c;color:#fff;font-size:0.82rem;font-weight:600;cursor:pointer;font-family:inherit;">🖨️ พิมพ์ / PDF</button>
   </div>
@@ -1051,28 +1053,34 @@ function renderBlessGrid() {
   const grid = document.getElementById('bless-page-grid');
   if (!grid) return;
   const list = blessFilter === 'all' ? allBlessData
-    : allBlessData.filter(b => b.attendance === blessFilter);
-  const badge = document.getElementById('bless-count-badge');
-  if (badge) badge.textContent = allBlessData.length + ' คำอวยพร';
+    : (blessFilter === 'groom' || blessFilter === 'bride')
+      ? allBlessData.filter(b => b.side === blessFilter)
+      : allBlessData.filter(b => b.attendance === blessFilter);
+  const badgeEl = document.getElementById('bless-count-badge');
+  if (badgeEl) badgeEl.textContent = allBlessData.length + ' คำอวยพร';
   if (!list.length) {
     grid.innerHTML = '<div style="text-align:center;padding:40px;color:#999;">ยังไม่มีคำอวยพรในหมวดนี้ 🌸</div>';
     return;
   }
   function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+  const sideLabel = { groom: '🤵 เจ้าบ่าว', bride: '👰 เจ้าสาว' };
   grid.innerHTML = list.map(b => {
     const isConf = b.attendance === 'confirmed';
     const initial = (b.name||'?')[0].toUpperCase();
     const avatar = b.photoUrl
       ? `<img src="${esc(b.photoUrl)}" style="width:48px;height:48px;border-radius:50%;object-fit:cover;flex-shrink:0;border:2px solid #e8f0f8;" onerror="this.outerHTML='<div style=\\'width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,#6B9DC2,#3d6a8a);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:1.1rem;flex-shrink:0;\\'>${initial}</div>'">`
       : `<div style="width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,#6B9DC2,#3d6a8a);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:1.1rem;flex-shrink:0;">${initial}</div>`;
-    const badge = isConf
+    const attendBadge = isConf
       ? `<span style="font-size:0.7rem;background:#e8f5e9;color:#2e7d32;padding:2px 8px;border-radius:10px;">✅ มาร่วมงาน</span>`
       : `<span style="font-size:0.7rem;background:#e8f0f8;color:#3d6a8a;padding:2px 8px;border-radius:10px;">💌 ส่งใจมาด้วย</span>`;
+    const sideBadge = b.side
+      ? `<span style="font-size:0.7rem;background:${b.side==='groom'?'#e8f0fb':'#fde8f2'};color:${b.side==='groom'?'#3d6a8a':'#9b4675'};padding:2px 8px;border-radius:10px;">${sideLabel[b.side]||b.side}</span>`
+      : '';
     const photo = b.photoUrl
       ? `<img src="${esc(b.photoUrl)}" style="width:100%;border-radius:8px;max-height:180px;object-fit:cover;cursor:pointer;margin-top:4px;" onclick="openBlessLightbox('${esc(b.photoUrl)}')">`
       : '';
     return `<div style="background:#fff;border-radius:14px;padding:16px;box-shadow:0 2px 12px rgba(0,0,0,.07);display:flex;flex-direction:column;gap:10px;border-top:3px solid ${isConf?'#5a9e6f':'#6B9DC2'};">
-      <div style="display:flex;align-items:center;gap:10px;">${avatar}<div><div style="font-weight:700;font-size:0.9rem;">${esc(b.name)}</div>${badge}</div></div>
+      <div style="display:flex;align-items:center;gap:10px;">${avatar}<div style="display:flex;flex-direction:column;gap:4px;"><div style="font-weight:700;font-size:0.9rem;">${esc(b.name)}</div><div style="display:flex;gap:5px;flex-wrap:wrap;">${attendBadge}${sideBadge}</div></div></div>
       ${b.message?`<div style="font-size:0.85rem;color:#6b7c93;line-height:1.7;font-style:italic;">"${esc(b.message)}"</div>`:''}
       ${photo}
       <div style="font-size:0.7rem;color:#bbb;text-align:right;">${esc(b.date)}</div>
