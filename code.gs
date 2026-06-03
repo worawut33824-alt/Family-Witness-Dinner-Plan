@@ -266,7 +266,7 @@ function getBlessings(ss) {
   for (var i = data.length - 1; i >= 0; i--) {
     if (!data[i][1]) continue;
     list.push({
-      date:       String(data[i][0] || ''),
+      date:       data[i][0] instanceof Date ? Utilities.formatDate(data[i][0], 'Asia/Bangkok', 'dd/MM/yyyy HH:mm') : String(data[i][0] || ''),
       name:       String(data[i][1] || ''),
       message:    String(data[i][2] || ''),
       photoUrl:   String(data[i][3] || ''),
@@ -288,7 +288,7 @@ function getBlessingsForPage(ss) {
   for (var i = data.length - 1; i >= 0; i--) {
     if (!data[i][1]) continue;
     list.push({
-      date:       String(data[i][0] || ''),
+      date:       data[i][0] instanceof Date ? Utilities.formatDate(data[i][0], 'Asia/Bangkok', 'dd/MM/yyyy HH:mm') : String(data[i][0] || ''),
       name:       String(data[i][1] || ''),
       message:    String(data[i][2] || ''),
       photoUrl:   String(data[i][3] || ''),
