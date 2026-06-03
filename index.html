@@ -543,8 +543,8 @@
       <button class="bless-ftab active" onclick="setBlessFilter('all')">ทั้งหมด</button>
       <button class="bless-ftab" onclick="setBlessFilter('confirmed')">✅ มาร่วมงาน</button>
       <button class="bless-ftab" onclick="setBlessFilter('declined')">💌 ส่งใจมาด้วย</button>
-      <button class="bless-ftab" onclick="setBlessFilter('groom')">🤵 ฝั่งเจ้าบ่าว</button>
-      <button class="bless-ftab" onclick="setBlessFilter('bride')">👰 ฝั่งเจ้าสาว</button>
+      <button class="bless-ftab" onclick="setBlessFilter('เอ็ม')">🤵 ฝั่งเอ็ม</button>
+      <button class="bless-ftab" onclick="setBlessFilter('แป้ง')">👰 ฝั่งแป้ง</button>
     </div>
     <button onclick="window.print()" style="padding:7px 16px;border-radius:20px;border:none;background:#c9a84c;color:#fff;font-size:0.82rem;font-weight:600;cursor:pointer;font-family:inherit;">🖨️ พิมพ์ / PDF</button>
   </div>
@@ -1053,7 +1053,7 @@ function renderBlessGrid() {
   const grid = document.getElementById('bless-page-grid');
   if (!grid) return;
   const list = blessFilter === 'all' ? allBlessData
-    : (blessFilter === 'groom' || blessFilter === 'bride')
+    : (blessFilter === 'เอ็ม' || blessFilter === 'แป้ง')
       ? allBlessData.filter(b => b.side === blessFilter)
       : allBlessData.filter(b => b.attendance === blessFilter);
   const badgeEl = document.getElementById('bless-count-badge');
@@ -1063,7 +1063,7 @@ function renderBlessGrid() {
     return;
   }
   function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
-  const sideLabel = { groom: '🤵 เจ้าบ่าว', bride: '👰 เจ้าสาว' };
+  const sideLabel = { 'เอ็ม': '🤵 เอ็ม', 'แป้ง': '👰 แป้ง' };
   grid.innerHTML = list.map(b => {
     const isConf = b.attendance === 'confirmed';
     const initial = (b.name||'?')[0].toUpperCase();
@@ -1074,7 +1074,7 @@ function renderBlessGrid() {
       ? `<span style="font-size:0.7rem;background:#e8f5e9;color:#2e7d32;padding:2px 8px;border-radius:10px;">✅ มาร่วมงาน</span>`
       : `<span style="font-size:0.7rem;background:#e8f0f8;color:#3d6a8a;padding:2px 8px;border-radius:10px;">💌 ส่งใจมาด้วย</span>`;
     const sideBadge = b.side
-      ? `<span style="font-size:0.7rem;background:${b.side==='groom'?'#e8f0fb':'#fde8f2'};color:${b.side==='groom'?'#3d6a8a':'#9b4675'};padding:2px 8px;border-radius:10px;">${sideLabel[b.side]||b.side}</span>`
+      ? `<span style="font-size:0.7rem;background:${b.side==='เอ็ม'?'#e8f0fb':'#fde8f2'};color:${b.side==='เอ็ม'?'#3d6a8a':'#9b4675'};padding:2px 8px;border-radius:10px;">${sideLabel[b.side]||b.side}</span>`
       : '';
     const photo = b.photoUrl
       ? `<img src="${esc(b.photoUrl)}" style="width:100%;border-radius:8px;max-height:180px;object-fit:cover;cursor:pointer;margin-top:4px;" onclick="openBlessLightbox('${esc(b.photoUrl)}')">`
