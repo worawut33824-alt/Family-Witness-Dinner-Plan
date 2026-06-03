@@ -754,7 +754,7 @@ function formatBudgetSheet(ss) {
 
   // ── 6. Row 1: Title ───────────────────────────────────────────────────────
   sheet.getRange(1, 1, 1, 6).merge()
-    .setValue('💍  งบประมาณการจัดงานแต่งงาน  ·  Family Witness Dinner')
+    .setValue('💍  งบประมาณการจัดงานสักขีพยาน  ·  Family Witness Dinner')
     .setBackground('#7a3f4a').setFontColor('#ffffff')
     .setFontWeight('bold').setFontSize(14)
     .setHorizontalAlignment('center').setVerticalAlignment('middle').setWrap(false);

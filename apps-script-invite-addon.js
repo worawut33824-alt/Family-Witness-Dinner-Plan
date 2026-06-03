@@ -139,9 +139,9 @@ function sendCalendarInvite(email, guestName) {
     'UID:pmwedding-20261128@tara-terrace',
     'DTSTART:20261128T070000Z',   // 14:00 ICT = 07:00 UTC
     'DTEND:20261128T130000Z',     // 20:00 ICT = 13:00 UTC
-    'SUMMARY:💍 งานแต่งงาน Family Witness Dinner – เอ็ม & แป้ง',
+    'SUMMARY:💍 งานสักขีพยาน Family Witness Dinner – เอ็ม & แป้ง',
     'LOCATION:TARA Terrace\\, Nakhon Pathom',
-    'DESCRIPTION:ยินดีต้อนรับสู่งานแต่งงาน Family Witness Dinner\\n'
+    'DESCRIPTION:ยินดีต้อนรับสู่งานสักขีพยาน Family Witness Dinner\\n'
       + 'ลงทะเบียน 13:30 น. · เริ่ม 14:00 น.\\n'
       + 'TARA Terrace · จ.นครปฐม',
     'STATUS:CONFIRMED',
@@ -160,7 +160,7 @@ function sendCalendarInvite(email, guestName) {
       <div style="padding:28px 24px;text-align:center;">
         <p style="font-size:1rem;color:#2c3a4a;">สวัสดีคุณ <strong>${guestName}</strong>,</p>
         <p style="color:#5a7080;font-size:0.9rem;line-height:1.7;">
-          ขอบคุณมากที่ยืนยันร่วมงานแต่งงาน<br>
+          ขอบคุณมากที่ยืนยันร่วมงานสักขีพยาน<br>
           เราตั้งตารอพบคุณในวันงาน 🥂
         </p>
         <div style="background:#EEF5FC;border-radius:10px;padding:16px;margin:20px 0;text-align:left;">
@@ -181,8 +181,8 @@ function sendCalendarInvite(email, guestName) {
 
   GmailApp.sendEmail(
     email,
-    '💍 คุณได้รับเชิญ · งานแต่งงาน เอ็ม & แป้ง · 28 พ.ย. 69',
-    `คุณ ${guestName} ได้รับเชิญร่วมงานแต่งงาน Family Witness Dinner\n28 พฤศจิกายน 2569 · 14:00 น. · TARA Terrace`,
+    '💍 คุณได้รับเชิญ · งานสักขีพยาน เอ็ม & แป้ง · 28 พ.ย. 69',
+    `คุณ ${guestName} ได้รับเชิญร่วมงานสักขีพยาน Family Witness Dinner\n28 พฤศจิกายน 2569 · 14:00 น. · TARA Terrace`,
     {
       htmlBody,
       attachments: [
