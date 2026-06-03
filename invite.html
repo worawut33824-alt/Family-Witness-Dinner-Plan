@@ -2584,13 +2584,8 @@ async function submitRSVP() {
       relation, blessing, note, photoBase64
     })
   })
-  .then(r => r.json())
-  .then(data => { onSuccess(data.guestCount, data.sideM || 0, data.sideP || 0); })
-  .catch(() => {
-    btn.disabled = false;
-    btnT.textContent = '💌 ยืนยันการร่วมงาน';
-    toast('เกิดข้อผิดพลาด กรุณาลองใหม่ 🙏');
-  });
+  .then(() => onSuccess(guestCount + count))
+  .catch(() => onSuccess(guestCount + count));
 }
 
 // ── UTILS ─────────────────────────────────────────────────────
