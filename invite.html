@@ -1866,6 +1866,22 @@ footer {
 
   <div class="sec-spacer"></div>
 
+  <!-- ── BLESSINGS DISPLAY (ใต้ Love Tree) ── -->
+  <section id="sec-bless-display" class="fade-up" style="max-width:none; border-radius:0; box-shadow:none;">
+    <div style="max-width:640px; margin:0 auto;">
+      <div class="sec-label">คำอวยพร</div>
+      <div class="sec-divider"></div>
+      <h2 class="sec-title gold-shimmer anim from-bottom">ความรักจาก<em>ทุกคน</em></h2>
+      <div style="padding-top:8px;">
+        <div id="bless-list" class="bless-list">
+          <div class="no-bless">ยังไม่มีคำอวยพร · เป็นคนแรกได้เลย! 🌸</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="sec-spacer"></div>
+
   <!-- ── DECISION ── -->
   <section id="sec-decision" class="fade-up" style="max-width:none; border-radius:0;">
     <div style="max-width:640px; margin:0 auto;">
@@ -1897,7 +1913,7 @@ footer {
   <div class="sec-spacer"></div>
 
   <!-- ── RSVP ── -->
-  <section id="sec-rsvp" class="fade-up" style="max-width:none; border-radius:0;">
+  <section id="sec-rsvp" class="fade-up" style="max-width:none; border-radius:0; display:none;">
     <div style="max-width:640px; margin:0 auto;">
       <div class="sec-label">ยืนยันร่วมงาน</div>
       <div class="sec-divider"></div>
@@ -1985,8 +2001,8 @@ footer {
 
   <div class="sec-spacer"></div>
 
-  <!-- ── BLESSINGS ── -->
-  <section id="sec-bless" class="fade-up" style="max-width:none; border-radius:0; box-shadow:none;">
+  <!-- ── BLESSINGS FORM ── -->
+  <section id="sec-bless" class="fade-up" style="max-width:none; border-radius:0; box-shadow:none; display:none;">
     <div style="max-width:640px; margin:0 auto;">
       <div class="sec-label">กล่องคำอวยพร</div>
       <div class="sec-divider"></div>
@@ -2021,12 +2037,6 @@ footer {
         </button>
       </div>
 
-      <div style="border-top:1px solid #eee; padding-top:24px; margin-top:8px;">
-        <div style="font-size:0.82rem;color:var(--text-lt);margin-bottom:14px;text-align:center;">คำอวยพรล่าสุด</div>
-        <div id="bless-list" class="bless-list">
-          <div class="no-bless">ยังไม่มีคำอวยพร · เป็นคนแรกได้เลย! 🌸</div>
-        </div>
-      </div>
     </div>
   </section>
 
@@ -2418,10 +2428,16 @@ function renderBlessings(list) {
 
 // ── DECISION NAVIGATION ──────────────────────────────────────
 function goRSVP() {
-  document.getElementById('sec-rsvp').scrollIntoView({ behavior: 'smooth' });
+  const el = document.getElementById('sec-rsvp');
+  el.style.display = 'block';
+  document.getElementById('sec-bless').style.display = 'none';
+  setTimeout(() => el.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50);
 }
 function goBlessing() {
-  document.getElementById('sec-bless').scrollIntoView({ behavior: 'smooth' });
+  const el = document.getElementById('sec-bless');
+  el.style.display = 'block';
+  document.getElementById('sec-rsvp').style.display = 'none';
+  setTimeout(() => el.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50);
 }
 
 // ── PHOTO HELPER ──────────────────────────────────────────────
@@ -2607,13 +2623,6 @@ function toast(msg, dur = 2800) {
 // Init tree at 0
 updateTree(0);
 
-// ── REORDER: bless ย้ายไปอยู่ใต้ rsvp ───────────────────────
-(function reorderBless() {
-  const rsvp  = document.getElementById('sec-rsvp');
-  const bless = document.getElementById('sec-bless');
-  if (!rsvp || !bless || !rsvp.parentNode) return;
-  rsvp.parentNode.insertBefore(bless, rsvp.nextSibling);
-})();
 
 </script>
 
