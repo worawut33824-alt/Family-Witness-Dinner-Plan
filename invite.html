@@ -2474,7 +2474,8 @@ async function submitBlessing() {
 
   fetch(SCRIPT_URL, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    mode: 'no-cors',
+    headers: { 'Content-Type': 'text/plain' },
     body: JSON.stringify({ action: 'bless', name, message: msg, photoBase64 })
   }).then(showSuccess).catch(showSuccess);
 }
@@ -2534,7 +2535,8 @@ async function submitRSVP() {
 
   fetch(SCRIPT_URL, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    mode: 'no-cors',
+    headers: { 'Content-Type': 'text/plain' },
     body: JSON.stringify({
       action: 'rsvp',
       name, count, phone, email,
