@@ -1095,12 +1095,19 @@ async function loadBlessingsPage() {
   const url = scriptUrl || localStorage.getItem('apps_script_url');
   if (!url) { grid.innerHTML = '<div style="text-align:center;padding:40px;color:#999;">⚠️ กรุณาเชื่อม Apps Script ก่อนที่หน้าซิงค์</div>'; return; }
   try {
-    const res = await fetch(url + '?action=blessings');
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 15000);
+    const res = await fetch(url + '?action=blessings', { signal: controller.signal });
+    clearTimeout(timer);
     const data = await res.json();
     allBlessData = Array.isArray(data.blessings) ? data.blessings : [];
+    if (!allBlessData.length && data.message === 'unknown action') {
+      grid.innerHTML = `<div style="text-align:center;padding:40px;color:#e67e22;">⚠️ GAS ยังไม่ได้ deploy เวอร์ชันใหม่<br><small style="color:#999">กรุณา re-deploy Apps Script แล้วกด</small><br><br><button onclick="loadBlessingsPage()" style="padding:8px 20px;border-radius:20px;border:none;background:#6B9DC2;color:#fff;cursor:pointer;font-family:inherit;">🔄 ลองใหม่</button></div>`;
+      return;
+    }
     renderBlessGrid();
   } catch(e) {
-    grid.innerHTML = '<div style="text-align:center;padding:40px;color:#e74c3c;">❌ โหลดข้อมูลไม่สำเร็จ กรุณาลองรีเฟรช</div>';
+    grid.innerHTML = `<div style="text-align:center;padding:40px;color:#e74c3c;">❌ โหลดข้อมูลไม่สำเร็จ<br><br><button onclick="loadBlessingsPage()" style="padding:8px 20px;border-radius:20px;border:none;background:#6B9DC2;color:#fff;cursor:pointer;font-family:inherit;">🔄 ลองใหม่</button></div>`;
   }
 }
 
