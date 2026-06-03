@@ -318,6 +318,8 @@ function sendCalendarInvite(toEmail, guestName, seats) {
     '</table>' +
     '</div>' +
     '<div style="border-top:1px solid #f0ebe5;padding-top:20px;text-align:center;">' +
+    '<img src="https://drive.google.com/thumbnail?id=148E0apdHMhde4NV87DZFym-LutL8Mt3z&sz=w300" ' +
+    'alt="เอ็ม x แป้ง" style="width:180px;height:auto;border-radius:10px;margin-bottom:14px;display:block;margin-left:auto;margin-right:auto;" />' +
     '<p style="color:#bbb;font-size:.8rem;line-height:1.8;">ด้วยความรักและตั้งตารอ<br>' +
     '<strong style="color:#7B9CBF;">เอ็ม &amp; แป้ง</strong></p>' +
     '</div></div></div>';
