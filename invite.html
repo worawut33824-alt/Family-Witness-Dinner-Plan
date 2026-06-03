@@ -1473,7 +1473,8 @@ footer {
     </div>
     <div class="video-wrap anim zoom-in" id="video-wrap">
       <iframe
-        src="https://www.youtube.com/embed/UTVP7uBGzGY?rel=0&showinfo=0"
+        data-src="https://www.youtube.com/embed/UTVP7uBGzGY?rel=0&showinfo=0&autoplay=1&enablejsapi=1"
+        src=""
         title="เรื่องราวของเรา – เอ็ม & แป้ง"
         frameborder="0"
         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
@@ -1900,6 +1901,9 @@ footer {
 
 <div id="inv-toast"></div>
 
+<!-- ── BGM ── -->
+<audio id="bgm" loop preload="auto" src="bgm.mp3"></audio>
+
 <!-- ══════════════ SCRIPT ══════════════ -->
 <script>
 // ── CONFIG ──────────────────────────────────────────────────
@@ -1993,6 +1997,80 @@ const observer = new IntersectionObserver((entries) => {
 }, revealOpts);
 
 document.querySelectorAll('.fade-up, .anim').forEach(el => observer.observe(el));
+
+// ── VIDEO PLAY / PAUSE ตาม VISIBILITY ────────────────────────
+(function() {
+  const wrap = document.getElementById('video-wrap');
+  if (!wrap) return;
+  const iframe = wrap.querySelector('iframe[data-src]');
+  if (!iframe) return;
+  let loaded = false;
+
+  function ytCmd(cmd) {
+    try {
+      iframe.contentWindow.postMessage(
+        JSON.stringify({ event: 'command', func: cmd, args: [] }),
+        '*'
+      );
+    } catch(e) {}
+  }
+
+  const videoObs = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting && e.intersectionRatio >= 0.85) {
+        if (!loaded) {
+          loaded = true;
+          iframe.src = iframe.dataset.src;
+        } else {
+          ytCmd('playVideo');
+        }
+        if (window._bgmSetVideoPlaying) window._bgmSetVideoPlaying(true);
+      } else {
+        if (loaded) ytCmd('pauseVideo');
+        if (window._bgmSetVideoPlaying) window._bgmSetVideoPlaying(false);
+      }
+    });
+  }, { threshold: [0, 0.85, 1.0] });
+
+  videoObs.observe(wrap);
+})();
+
+// ── BGM LOGIC ────────────────────────────────────────────────
+(function() {
+  const bgm = document.getElementById('bgm');
+  if (!bgm) return;
+
+  let videoPlaying = false;
+  bgm.volume = 0.35;
+
+  function syncBgm() {
+    if (videoPlaying) {
+      bgm.pause();
+    } else {
+      bgm.play().catch(() => {});
+    }
+  }
+
+  // เปิด BGM ครั้งแรกเมื่อ user กดเปิดซอง — เริ่มที่วิ 41
+  let bgmStarted = false;
+  const origOpen = window.openEnvelope;
+  window.openEnvelope = function() {
+    if (origOpen) origOpen.apply(this, arguments);
+    setTimeout(() => {
+      if (!bgmStarted) {
+        bgmStarted = true;
+        bgm.currentTime = 41;
+      }
+      bgm.play().catch(() => {});
+    }, 2000);
+  };
+
+  // expose ให้ video observer ใช้งาน
+  window._bgmSetVideoPlaying = function(isPlaying) {
+    videoPlaying = isPlaying;
+    syncBgm();
+  };
+})();
 
 // Also observe the countdown section itself to trigger box pops
 const detailsSection = document.getElementById('sec-details');
@@ -2363,5 +2441,7 @@ updateTree(0);
 })();
 
 </script>
+
+
 </body>
 </html>
