@@ -275,9 +275,9 @@ function sendCalendarInvite(toEmail, guestName, seats) {
   var seatsLabel = seats > 1 ? guestName + ' และอีก ' + (seats - 1) + ' ท่าน' : guestName;
   var description =
     'ยืนยันร่วมงาน: ' + seatsLabel + ' จำนวน ' + seats + ' ท่าน\n' +
-    'ขอบคุณที่ยืนยันมาร่วม Family Witness Dinner ของเรา 💕\n\n' +
-    '📍 ธาราเทอเรส (TARA Terrace) นครปฐม\n' +
-    '🕓 16:00 – 20:00 น.';
+    'ขอบคุณที่ยืนยันมาร่วม Family Witness Dinner ของเรา\n\n' +
+    'สถานที่: ธาราเทอเรส (TARA Terrace) นครปฐม\n' +
+    'เวลา: 16:00 - 20:00 น.';
 
   // สร้าง event ใน Google Calendar และเชิญแขก
   var calendar = CalendarApp.getDefaultCalendar();
@@ -292,35 +292,30 @@ function sendCalendarInvite(toEmail, guestName, seats) {
   var htmlBody =
     '<div style="font-family:Arial,sans-serif;max-width:560px;margin:0 auto;">' +
     '<div style="background:linear-gradient(135deg,#7B9CBF,#5a7fa8);padding:36px 32px;text-align:center;color:#fff;border-radius:16px 16px 0 0;">' +
-    '<div style="font-size:2rem;margin-bottom:8px;">💍</div>' +
-    '<h1 style="margin:0;font-size:1.5rem;font-weight:800;">เอ็ม × แป้ง</h1>' +
+    '<h1 style="margin:0;font-size:1.5rem;font-weight:800;">เอ็ม x แป้ง</h1>' +
     '<p style="margin:6px 0 0;opacity:.8;font-size:.85rem;letter-spacing:1px;">FAMILY WITNESS DINNER</p>' +
     '</div>' +
     '<div style="background:#fff;padding:32px;border-radius:0 0 16px 16px;box-shadow:0 4px 24px rgba(0,0,0,.1);">' +
     '<p style="font-size:1rem;color:#2c3a4a;margin-bottom:8px;">เรียน คุณ<strong>' + seatsLabel + '</strong>,</p>' +
     '<p style="color:#555;line-height:1.8;margin-bottom:24px;font-size:.95rem;">' +
-    'ขอบคุณที่ยืนยันมาร่วม Family Witness Dinner ของเรา 🥂<br>' +
+    'ขอบคุณที่ยืนยันมาร่วม Family Witness Dinner ของเรา<br>' +
     'เราได้ส่ง <strong>นัดหมาย Google Calendar</strong> ไปยัง email ของคุณแล้ว<br>' +
     'กด <strong>"ตอบรับนัดหมาย"</strong> เพื่อบันทึกลงปฏิทินได้เลย' +
     '</p>' +
     '<div style="background:#f8f5f0;border-radius:14px;padding:22px 24px;margin-bottom:24px;">' +
-    '<div style="display:flex;align-items:flex-start;gap:14px;margin-bottom:12px;">' +
-    '<span style="font-size:1.2rem;">📅</span>' +
-    '<div><div style="font-weight:700;color:#2c3a4a;">วันเสาร์ที่ 28 พฤศจิกายน 2569</div>' +
-    '<div style="color:#888;font-size:.82rem;">Saturday, 28 November 2026</div></div></div>' +
-    '<div style="display:flex;align-items:center;gap:14px;margin-bottom:12px;">' +
-    '<span style="font-size:1.2rem;">🕓</span>' +
-    '<div style="color:#555;">16:00 – 20:00 น. <span style="color:#aaa;font-size:.8rem;">(4:00 PM – 8:00 PM)</span></div></div>' +
-    '<div style="display:flex;align-items:flex-start;gap:14px;margin-bottom:12px;">' +
-    '<span style="font-size:1.2rem;">📍</span>' +
-    '<div><div style="color:#555;">ธาราเทอเรส (TARA Terrace)</div>' +
-    '<div style="color:#888;font-size:.82rem;">นครปฐม</div></div></div>' +
-    '<div style="display:flex;align-items:center;gap:14px;">' +
-    '<span style="font-size:1.2rem;">👥</span>' +
-    '<div style="color:#555;">จำนวน <strong>' + seats + ' ท่าน</strong></div></div>' +
+    '<table style="width:100%;border-collapse:collapse;">' +
+    '<tr><td style="padding:8px 0;color:#2c3a4a;font-weight:700;width:90px;">วันที่</td>' +
+    '<td style="padding:8px 0;color:#555;">วันเสาร์ที่ 28 พฤศจิกายน 2569<br><span style="color:#888;font-size:.82rem;">Saturday, 28 November 2026</span></td></tr>' +
+    '<tr><td style="padding:8px 0;color:#2c3a4a;font-weight:700;">เวลา</td>' +
+    '<td style="padding:8px 0;color:#555;">16:00 - 20:00 น. (4:00 PM - 8:00 PM)</td></tr>' +
+    '<tr><td style="padding:8px 0;color:#2c3a4a;font-weight:700;">สถานที่</td>' +
+    '<td style="padding:8px 0;color:#555;">ธาราเทอเรส (TARA Terrace)<br><span style="color:#888;font-size:.82rem;">นครปฐม</span></td></tr>' +
+    '<tr><td style="padding:8px 0;color:#2c3a4a;font-weight:700;">จำนวน</td>' +
+    '<td style="padding:8px 0;color:#555;"><strong>' + seats + ' ท่าน</strong></td></tr>' +
+    '</table>' +
     '</div>' +
     '<div style="border-top:1px solid #f0ebe5;padding-top:20px;text-align:center;">' +
-    '<p style="color:#bbb;font-size:.8rem;line-height:1.8;">ด้วยความรักและตั้งตารอ 💕<br>' +
+    '<p style="color:#bbb;font-size:.8rem;line-height:1.8;">ด้วยความรักและตั้งตารอ<br>' +
     '<strong style="color:#7B9CBF;">เอ็ม &amp; แป้ง</strong></p>' +
     '</div></div></div>';
 
