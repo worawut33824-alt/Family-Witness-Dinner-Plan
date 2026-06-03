@@ -291,10 +291,7 @@ function sendCalendarInvite(toEmail, guestName, seats) {
   // ส่ง email ขอบคุณพร้อมรายละเอียดแยก (HTML)
   var htmlBody =
     '<div style="font-family:Arial,sans-serif;max-width:560px;margin:0 auto;">' +
-    '<img src="https://drive.google.com/thumbnail?id=148E0apdHMhde4NV87DZFym-LutL8Mt3z&sz=w560" ' +
-    'alt="เอ็ม x แป้ง Family Witness Dinner" ' +
-    'style="width:100%;max-width:560px;display:block;border-radius:16px 16px 0 0;" />' +
-    '<div style="background:linear-gradient(135deg,#7B9CBF,#5a7fa8);padding:24px 32px;text-align:center;color:#fff;">' +
+    '<div style="background:linear-gradient(135deg,#7B9CBF,#5a7fa8);padding:24px 32px;text-align:center;color:#fff;border-radius:16px 16px 0 0;">' +
     '<h1 style="margin:0;font-size:1.5rem;font-weight:800;">เอ็ม x แป้ง</h1>' +
     '<p style="margin:6px 0 0;opacity:.8;font-size:.85rem;letter-spacing:1px;">FAMILY WITNESS DINNER</p>' +
     '</div>' +
