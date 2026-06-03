@@ -649,15 +649,19 @@ h2.sec-title em { font-style: italic; color: var(--blue-dk); }
 }
 
 /* ════════════════════════════════════════════════
-   VIDEO — full-bleed on mobile
+   VIDEO — full-bleed on mobile + portrait 9:16
 ════════════════════════════════════════════════ */
 @media(max-width:640px){
   #sec-story { padding-left: 0 !important; padding-right: 0 !important; }
   #sec-story .sec-label,
   #sec-story .sec-divider,
   #sec-story h2.sec-title,
-  #sec-story > p { padding-left: 20px; padding-right: 20px; }
-  .video-wrap { border-radius: 0; }
+  #sec-story .story-text { padding-left: 20px; padding-right: 20px; }
+  .video-wrap {
+    border-radius: 0;
+    padding-top: 177.78%; /* 9:16 portrait */
+    max-height: 100svh;
+  }
 }
 
 /* ════════════════════════════════════════════════
