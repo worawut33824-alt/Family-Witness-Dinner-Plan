@@ -325,7 +325,7 @@ function sendCalendarInvite(toEmail, guestName, seats) {
     '</div></div></div>';
 
   GmailApp.sendEmail(toEmail,
-    '💍 นัดหมาย Family Witness Dinner — เอ็ม × แป้ง',
+    'นัดหมาย Family Witness Dinner — เอ็ม x แป้ง',
     // plain text fallback
     'ขอบคุณที่ยืนยันมาร่วม Family Witness Dinner ของเรา\nวันเสาร์ที่ 28 พ.ย. 2569 | 16:00-20:00 น. | ธาราเทอเรส นครปฐม',
     { htmlBody: htmlBody }
