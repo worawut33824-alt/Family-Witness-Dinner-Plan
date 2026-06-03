@@ -1980,17 +1980,11 @@ footer {
 
       <div class="bless-form">
         <input id="bless-name" class="form-input" placeholder="ชื่อของคุณ" maxlength="60">
-        <div>
-          <div style="font-size:0.8rem;font-weight:600;color:var(--text-lt);margin-bottom:8px;">ฝั่งของคุณ</div>
-          <div style="display:flex;gap:10px;">
-            <button type="button" id="side-groom-btn" onclick="selectBlessSide('เอ็ม')"
-              style="flex:1;padding:10px 8px;border-radius:10px;border:2px solid #dde8f0;background:#fff;font-family:inherit;font-size:0.9rem;cursor:pointer;transition:all .15s;">
-              🤵 ฝั่งเอ็ม
-            </button>
-            <button type="button" id="side-bride-btn" onclick="selectBlessSide('แป้ง')"
-              style="flex:1;padding:10px 8px;border-radius:10px;border:2px solid #dde8f0;background:#fff;font-family:inherit;font-size:0.9rem;cursor:pointer;transition:all .15s;">
-              👰 ฝั่งแป้ง
-            </button>
+        <div class="form-group">
+          <label class="form-label">รู้จักฝั่งไหน <span class="req">*</span></label>
+          <div class="side-group">
+            <div class="side-btn" id="bless-side-m" onclick="selectBlessSide('เอ็ม')">💙 เอ็ม</div>
+            <div class="side-btn" id="bless-side-p" onclick="selectBlessSide('แป้ง')">🩷 แป้ง</div>
           </div>
         </div>
         <textarea id="bless-msg" placeholder="คำอวยพร..." maxlength="400" style="min-height:90px;border:1.5px solid #dde8f0;border-radius:10px;padding:12px 16px;font-family:'Sarabun',sans-serif;font-size:.95rem;width:100%;resize:none;background:#F9FDFF;"></textarea>
@@ -2459,12 +2453,8 @@ function fileToBase64(input) {
 let _blessSide = '';
 function selectBlessSide(side) {
   _blessSide = side;
-  const groomBtn = document.getElementById('side-groom-btn');
-  const brideBtn = document.getElementById('side-bride-btn');
-  const activeStyle = 'border-color:#6B9DC2;background:#eef4fa;font-weight:600;';
-  const inactiveStyle = 'border-color:#dde8f0;background:#fff;font-weight:normal;';
-  if (groomBtn) groomBtn.style.cssText = groomBtn.style.cssText.replace(/border-color:[^;]+;background:[^;]+;font-weight:[^;]+;/g,'') + (side==='groom' ? activeStyle : inactiveStyle);
-  if (brideBtn) brideBtn.style.cssText = brideBtn.style.cssText.replace(/border-color:[^;]+;background:[^;]+;font-weight:[^;]+;/g,'') + (side==='bride' ? activeStyle : inactiveStyle);
+  document.getElementById('bless-side-m').classList.toggle('selected', side === 'เอ็ม');
+  document.getElementById('bless-side-p').classList.toggle('selected', side === 'แป้ง');
 }
 
 async function submitBlessing() {
@@ -2497,7 +2487,8 @@ async function submitBlessing() {
     document.getElementById('bless-photo').value = '';
     document.getElementById('bless-photo-preview').classList.add('hidden');
     _blessSide = '';
-    selectBlessSide('');
+    document.getElementById('bless-side-m').classList.remove('selected');
+    document.getElementById('bless-side-p').classList.remove('selected');
     btn.disabled = false; btn.textContent = '💌 ส่งคำอวยพร';
     toast('ขอบคุณสำหรับคำอวยพร 💕');
   };
