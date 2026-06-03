@@ -151,7 +151,7 @@ var GUEST_HEADERS = [
   'ชื่อ','ฝั่ง','เบอร์โทร','ความสัมพันธ์',
   'ที่นั่ง','สถานะ','อีเมล','คำอวยพร','รูป URL','วันที่','หมายเหตุ'
 ];
-var BLESS_HEADERS = ['วันที่','ชื่อ','ข้อความ','รูป URL','สถานะเข้าร่วม'];
+var BLESS_HEADERS = ['วันที่','ชื่อ','ข้อความ','รูป URL','สถานะเข้าร่วม','ฝั่ง'];
 
 function doSetup() {
   var ss = SpreadsheetApp.getActiveSpreadsheet();
@@ -251,8 +251,85 @@ function saveRsvpGuest(ss, body) {
   // บันทึกคำอวยพรลง sheet คำอวยพร ด้วย (ถ้ามี)
   var blessingText = String(body.blessing || '').trim();
   if (blessingText) {
-    saveBlessingRow(ss, body.name, blessingText, photoUrl, 'confirmed');
+    saveBlessingRow(ss, body.name, blessingText, photoUrl, 'confirmed', body.side || '');
   }
+
+  // ส่ง Google Calendar invite ถ้ามี email
+  var guestEmail = String(body.email || '').trim();
+  if (guestEmail) {
+    try {
+      sendCalendarInvite(guestEmail, body.name || '', parseInt(body.count) || 1);
+    } catch(calErr) {
+      Logger.log('sendCalendarInvite error: ' + calErr);
+    }
+  }
+}
+
+// --- CALENDAR INVITE ---------------------------------------------------------
+function sendCalendarInvite(toEmail, guestName, seats) {
+  var startTime = new Date('2026-11-28T16:00:00+07:00');
+  var endTime   = new Date('2026-11-28T20:00:00+07:00');
+
+  var eventTitle = 'เอ็ม × แป้ง — Family Witness Dinner';
+  var location   = 'ธาราเทอเรส (TARA Terrace), นครปฐม';
+  var seatsLabel = seats > 1 ? guestName + ' และอีก ' + (seats - 1) + ' ท่าน' : guestName;
+  var description =
+    'ยืนยันร่วมงาน: ' + seatsLabel + ' จำนวน ' + seats + ' ท่าน\n' +
+    'ขอบคุณที่ยืนยันมาร่วม Family Witness Dinner ของเรา 💕\n\n' +
+    '📍 ธาราเทอเรส (TARA Terrace) นครปฐม\n' +
+    '🕓 16:00 – 20:00 น.';
+
+  // สร้าง event ใน Google Calendar และเชิญแขก
+  var calendar = CalendarApp.getDefaultCalendar();
+  var event = calendar.createEvent(eventTitle, startTime, endTime, {
+    location:    location,
+    description: description,
+    guests:      toEmail,
+    sendInvites: true
+  });
+
+  // ส่ง email ขอบคุณพร้อมรายละเอียดแยก (HTML)
+  var htmlBody =
+    '<div style="font-family:Arial,sans-serif;max-width:560px;margin:0 auto;">' +
+    '<div style="background:linear-gradient(135deg,#7B9CBF,#5a7fa8);padding:36px 32px;text-align:center;color:#fff;border-radius:16px 16px 0 0;">' +
+    '<div style="font-size:2rem;margin-bottom:8px;">💍</div>' +
+    '<h1 style="margin:0;font-size:1.5rem;font-weight:800;">เอ็ม × แป้ง</h1>' +
+    '<p style="margin:6px 0 0;opacity:.8;font-size:.85rem;letter-spacing:1px;">FAMILY WITNESS DINNER</p>' +
+    '</div>' +
+    '<div style="background:#fff;padding:32px;border-radius:0 0 16px 16px;box-shadow:0 4px 24px rgba(0,0,0,.1);">' +
+    '<p style="font-size:1rem;color:#2c3a4a;margin-bottom:8px;">เรียน คุณ<strong>' + seatsLabel + '</strong>,</p>' +
+    '<p style="color:#555;line-height:1.8;margin-bottom:24px;font-size:.95rem;">' +
+    'ขอบคุณที่ยืนยันมาร่วม Family Witness Dinner ของเรา 🥂<br>' +
+    'เราได้ส่ง <strong>นัดหมาย Google Calendar</strong> ไปยัง email ของคุณแล้ว<br>' +
+    'กด <strong>"ตอบรับนัดหมาย"</strong> เพื่อบันทึกลงปฏิทินได้เลย' +
+    '</p>' +
+    '<div style="background:#f8f5f0;border-radius:14px;padding:22px 24px;margin-bottom:24px;">' +
+    '<div style="display:flex;align-items:flex-start;gap:14px;margin-bottom:12px;">' +
+    '<span style="font-size:1.2rem;">📅</span>' +
+    '<div><div style="font-weight:700;color:#2c3a4a;">วันเสาร์ที่ 28 พฤศจิกายน 2569</div>' +
+    '<div style="color:#888;font-size:.82rem;">Saturday, 28 November 2026</div></div></div>' +
+    '<div style="display:flex;align-items:center;gap:14px;margin-bottom:12px;">' +
+    '<span style="font-size:1.2rem;">🕓</span>' +
+    '<div style="color:#555;">16:00 – 20:00 น. <span style="color:#aaa;font-size:.8rem;">(4:00 PM – 8:00 PM)</span></div></div>' +
+    '<div style="display:flex;align-items:flex-start;gap:14px;margin-bottom:12px;">' +
+    '<span style="font-size:1.2rem;">📍</span>' +
+    '<div><div style="color:#555;">ธาราเทอเรส (TARA Terrace)</div>' +
+    '<div style="color:#888;font-size:.82rem;">นครปฐม</div></div></div>' +
+    '<div style="display:flex;align-items:center;gap:14px;">' +
+    '<span style="font-size:1.2rem;">👥</span>' +
+    '<div style="color:#555;">จำนวน <strong>' + seats + ' ท่าน</strong></div></div>' +
+    '</div>' +
+    '<div style="border-top:1px solid #f0ebe5;padding-top:20px;text-align:center;">' +
+    '<p style="color:#bbb;font-size:.8rem;line-height:1.8;">ด้วยความรักและตั้งตารอ 💕<br>' +
+    '<strong style="color:#7B9CBF;">เอ็ม &amp; แป้ง</strong></p>' +
+    '</div></div></div>';
+
+  GmailApp.sendEmail(toEmail,
+    '💍 นัดหมาย Family Witness Dinner — เอ็ม × แป้ง',
+    // plain text fallback
+    'ขอบคุณที่ยืนยันมาร่วม Family Witness Dinner ของเรา\nวันเสาร์ที่ 28 พ.ย. 2569 | 16:00-20:00 น. | ธาราเทอเรส นครปฐม',
+    { htmlBody: htmlBody }
+  );
 }
 
 // --- BLESSINGS -------------------------------------------------------
@@ -261,7 +338,7 @@ function getBlessings(ss) {
   if (!sheet) return [];
   var lastRow = sheet.getLastRow();
   if (lastRow < 2) return [];
-  var cols = Math.max(sheet.getLastColumn(), 5);
+  var cols = Math.max(sheet.getLastColumn(), 6);
   var data = sheet.getRange(2, 1, lastRow - 1, cols).getValues();
   var list = [];
   for (var i = data.length - 1; i >= 0; i--) {
@@ -271,19 +348,20 @@ function getBlessings(ss) {
       name:       String(data[i][1] || ''),
       message:    String(data[i][2] || ''),
       photoUrl:   String(data[i][3] || ''),
-      attendance: String(data[i][4] || '')
+      attendance: String(data[i][4] || ''),
+      side:       String(data[i][5] || '')
     });
   }
   return list.slice(0, 50);
 }
 
-// คืนข้อมูลทั้งหมดสำหรับหน้า blessings.html (ไม่จำกัด 50)
+// คืนข้อมูลทั้งหมดสำหรับหน้า blessings (ไม่จำกัด 50)
 function getBlessingsForPage(ss) {
   var sheet = ss.getSheetByName('คำอวยพร');
   if (!sheet) return [];
   var lastRow = sheet.getLastRow();
   if (lastRow < 2) return [];
-  var cols = Math.max(sheet.getLastColumn(), 5);
+  var cols = Math.max(sheet.getLastColumn(), 6);
   var data = sheet.getRange(2, 1, lastRow - 1, cols).getValues();
   var list = [];
   for (var i = data.length - 1; i >= 0; i--) {
@@ -293,31 +371,33 @@ function getBlessingsForPage(ss) {
       name:       String(data[i][1] || ''),
       message:    String(data[i][2] || ''),
       photoUrl:   String(data[i][3] || ''),
-      attendance: String(data[i][4] || '')
+      attendance: String(data[i][4] || ''),
+      side:       String(data[i][5] || '')
     });
   }
   return list;
 }
 
 // helper: เขียน row ลง sheet คำอวยพร
-function saveBlessingRow(ss, name, message, photoUrl, attendance) {
+function saveBlessingRow(ss, name, message, photoUrl, attendance, side) {
   var sheet = ss.getSheetByName('คำอวยพร');
   if (!sheet) {
     sheet = ss.insertSheet('คำอวยพร');
     sheet.getRange(1, 1, 1, BLESS_HEADERS.length).setValues([BLESS_HEADERS])
       .setFontWeight('bold').setBackground('#f4d9d0');
     sheet.setFrozenRows(1);
-    [150,160,420,200,140].forEach(function(w,i){ sheet.setColumnWidth(i+1,w); });
+    [150,160,420,200,140,120].forEach(function(w,i){ sheet.setColumnWidth(i+1,w); });
   }
   var dateStr = Utilities.formatDate(new Date(), 'Asia/Bangkok', 'dd/MM/yyyy HH:mm');
   var lastRow = sheet.getLastRow();
   sheet.getRange(lastRow + 1, 1).setNumberFormat('@');
-  sheet.getRange(lastRow + 1, 1, 1, 5).setValues([[
+  sheet.getRange(lastRow + 1, 1, 1, 6).setValues([[
     dateStr,
     String(name    || '').substring(0, 80),
     String(message || '').substring(0, 500),
     String(photoUrl || ''),
-    String(attendance || '')
+    String(attendance || ''),
+    String(side || '')
   ]]);
 }
 
@@ -331,7 +411,7 @@ function saveBlessing(ss, body) {
   }
 
   // บันทึกลง sheet คำอวยพร
-  saveBlessingRow(ss, body.name, body.message, photoUrl, 'declined');
+  saveBlessingRow(ss, body.name, body.message, photoUrl, 'declined', body.side || '');
 
   // บันทึกลง sheet แขก ด้วย (สถานะ = declined, ที่นั่ง = 0)
   var gSheet = ss.getSheetByName('แขก');
@@ -345,7 +425,7 @@ function saveBlessing(ss, body) {
   var lastRow = gSheet.getLastRow();
   gSheet.getRange(lastRow + 1, 1, 1, 11).setValues([[
     String(body.name    || ''),
-    '',   // ฝั่ง (ไม่ทราบ)
+    String(body.side    || ''),   // ฝั่ง
     '',   // เบอร์
     '',   // ความสัมพันธ์
     0,    // ที่นั่ง = 0
@@ -1409,7 +1489,8 @@ function saveGuests(ss, guests) {
   }
 
   var lastRow = sheet.getLastRow();
-  if (lastRow >= 2) sheet.getRange(2, 1, lastRow - 1, 8).clearContent();
+  var lastCol = Math.max(sheet.getLastColumn(), 11);
+  if (lastRow >= 2) sheet.getRange(2, 1, lastRow - 1, lastCol).clearContent();
   if (!guests || !guests.length) return;
 
   var rows = [];
