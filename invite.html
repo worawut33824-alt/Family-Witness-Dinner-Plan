@@ -1394,31 +1394,44 @@ footer {
 }
 @media(max-width:480px){ .decision-cards { grid-template-columns:1fr; } }
 .decision-card {
-  border-radius: 16px;
-  padding: 28px 20px;
+  border-radius: 24px;
+  padding: 40px 24px 32px;
   text-align: center;
   cursor: pointer;
-  border: 2px solid transparent;
-  transition: transform .18s, box-shadow .18s, border-color .18s;
-  display: flex; flex-direction: column; align-items: center; gap: 10px;
+  border: none;
+  transition: transform .22s cubic-bezier(.34,1.56,.64,1), box-shadow .22s;
+  display: flex; flex-direction: column; align-items: center; gap: 0;
+  position: relative; overflow: hidden;
+  box-shadow: 0 4px 28px rgba(0,0,0,.09);
 }
-.decision-card:hover { transform: translateY(-4px); box-shadow: 0 8px 24px rgba(0,0,0,.12); }
-.decision-card.yes {
-  background: linear-gradient(135deg,#e8f4e8,#d4edda);
-  border-color: #5a9e6f;
+.decision-card:hover { transform: translateY(-6px) scale(1.02); box-shadow: 0 14px 40px rgba(0,0,0,.15); }
+.decision-card.yes { background: linear-gradient(155deg,#f2fbf5 0%,#cdebd8 100%); }
+.decision-card.no  { background: linear-gradient(155deg,#eef5fc 0%,#cce0f2 100%); }
+.decision-card::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 5px; border-radius: 24px 24px 0 0;
 }
-.decision-card.no {
-  background: linear-gradient(135deg,#EEF5FC,#dce8f5);
-  border-color: var(--blue);
+.decision-card.yes::before { background: linear-gradient(90deg,#5a9e6f,#85c99e); }
+.decision-card.no::before  { background: linear-gradient(90deg,#6B9DC2,#9dc0e0); }
+.decision-card .dc-icon { display: none; }
+.dc-icon-wrap {
+  width: 76px; height: 76px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 18px; font-size: 2rem;
 }
-.decision-card .dc-icon { font-size: 2.4rem; }
+.decision-card.yes .dc-icon-wrap { background: linear-gradient(135deg,#5a9e6f,#85c99e); box-shadow: 0 8px 22px rgba(90,158,111,.4); }
+.decision-card.no  .dc-icon-wrap { background: linear-gradient(135deg,#6B9DC2,#9dc0e0); box-shadow: 0 8px 22px rgba(107,157,194,.4); }
 .decision-card .dc-title {
-  font-size: 1rem; font-weight: 700;
-  color: var(--text);
+  font-size: 1.1rem; font-weight: 800; margin-bottom: 8px;
 }
-.decision-card .dc-sub {
-  font-size: 0.8rem; color: var(--text-lt); line-height: 1.5;
+.decision-card.yes .dc-title { color: #276040; }
+.decision-card.no  .dc-title { color: #1e5070; }
+.decision-card .dc-sub { font-size: 0.79rem; color: var(--text-lt); line-height: 1.65; }
+.dc-arrow {
+  margin-top: 20px; width: 36px; height: 36px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center; font-size: 1rem; font-weight: 700;
 }
+.decision-card.yes .dc-arrow { background: rgba(90,158,111,.18); color: #5a9e6f; }
+.decision-card.no  .dc-arrow { background: rgba(107,157,194,.18); color: #6B9DC2; }
 
 /* ── PHOTO UPLOAD ── */
 .photo-upload-wrap {
@@ -1864,14 +1877,18 @@ footer {
       </p>
       <div class="decision-cards anim from-bottom">
         <div class="decision-card yes" onclick="goRSVP()">
+          <div class="dc-icon-wrap">✅</div>
           <div class="dc-icon">✅</div>
           <div class="dc-title">ยืนยันมาร่วมงาน</div>
           <div class="dc-sub">ลงทะเบียน + ฝากคำอวยพร<br>และอัปโหลดรูปได้เลย</div>
+          <div class="dc-arrow">→</div>
         </div>
         <div class="decision-card no" onclick="goBlessing()">
+          <div class="dc-icon-wrap">💌</div>
           <div class="dc-icon">💌</div>
           <div class="dc-title">ไม่สะดวกมาร่วมงาน</div>
           <div class="dc-sub">ขอส่งเป็นคำอวยพรมาด้วยใจ</div>
+          <div class="dc-arrow">→</div>
         </div>
       </div>
     </div>
