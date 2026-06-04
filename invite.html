@@ -1054,15 +1054,18 @@ h2.sec-title em { font-style: italic; color: var(--blue-dk); }
   background: linear-gradient(180deg, var(--sage-xlt) 0%, var(--cream) 100%);
   border-radius: var(--radius);
   margin: 0 16px;
-  padding: 16px 8px 8px;
+  padding: 12px 8px 0;
   max-width: 100%;
 }
+#sec-tree .sec-divider { margin: 6px auto 0; }
+#sec-tree h2.sec-title { margin-bottom: 2px; }
+#sec-tree p { margin: 2px 0 0 !important; }
 @media(min-width:720px){ #sec-tree { max-width: 680px; margin: 0 auto; } }
 
 .tree-wrap {
   position: relative;
   width: min(460px, 96vw);
-  margin: 4px auto 0;
+  margin: 0 auto;
   user-select: none; -webkit-user-select: none;
 }
 #img-base {
@@ -1091,7 +1094,8 @@ h2.sec-title em { font-style: italic; color: var(--blue-dk); }
 }
 
 .tree-stats {
-  display: flex; flex-direction: column; align-items: center; gap: 4px;
+  display: flex; flex-direction: column; align-items: center; gap: 2px;
+  margin-top: 0;
 }
 .tree-counter {
   display: flex; align-items: baseline; gap: 4px;
@@ -1756,7 +1760,6 @@ footer {
     <p style="text-align:center;color:var(--text-lt);font-size:0.88rem;margin:10px 0 0">
       ทุกการตอบรับ คือกลีบดอกไม้ที่ช่วยเติมเต็ม<br>ต้นไม้แห่งความทรงจำของเรา 🤍
     </p>
-    <style>#sec-tree p { margin: 6px 0 0; }</style>
 
     <div class="tree-wrap anim zoom-in">
       <img src="Love Tree/ต้น.PNG" id="img-base" alt="ต้นไม้">
