@@ -410,8 +410,8 @@ function addGuestToWeddingEvent_(toEmail) {
       { attendees: attendees },
       WEDDING_CAL_ID,
       eventId,
-      { sendUpdates: 'all' }
-      // 'all' = ส่ง Calendar invite ให้ทุก email ทั้ง Gmail และ email อื่น
+      { sendUpdates: 'none' }
+      // 'none' = ไม่ให้ Calendar ส่ง email ของตัวเอง — ใช้ sendWeddingEmail_ แทน
     );
   }
 }
