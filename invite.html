@@ -2423,21 +2423,31 @@ function renderBlessings(list) {
     container.innerHTML = '<div class="no-bless">ยังไม่มีคำอวยพร · เป็นคนแรกได้เลย! 🌸</div>';
     return;
   }
-  container.innerHTML = list.map(b => {
-    const initial = (b.name||'?')[0].toUpperCase();
-    const avatar = b.photoUrl
-      ? `<img class="bless-avatar" src="${escHtml(b.photoUrl)}" style="border-radius:50%;width:38px;height:38px;object-fit:cover;flex-shrink:0;" onerror="this.outerHTML='<div class=\\'bless-avatar\\'>${initial}</div>'">`
-      : `<div class="bless-avatar">${initial}</div>`;
-    return `
-    <div class="bless-item">
-      ${avatar}
-      <div class="bless-content">
-        <div class="bless-name">${escHtml(b.name || 'ไม่ระบุชื่อ')}</div>
-        <div class="bless-msg">${escHtml(b.message || '')}</div>
-        <div class="bless-date">${escHtml(b.date || '')}</div>
-      </div>
-    </div>`;
-  }).join('');
+  const PAGE = 5;
+  let shown = PAGE;
+  function renderItems() {
+    const items = list.slice(0, shown).map(b => {
+      const initial = (b.name||'?')[0].toUpperCase();
+      const avatar = b.photoUrl
+        ? `<img class="bless-avatar" src="${escHtml(b.photoUrl)}" style="border-radius:50%;width:38px;height:38px;object-fit:cover;flex-shrink:0;" onerror="this.outerHTML='<div class=\\'bless-avatar\\'>${initial}</div>'">`
+        : `<div class="bless-avatar">${initial}</div>`;
+      return `
+      <div class="bless-item">
+        ${avatar}
+        <div class="bless-content">
+          <div class="bless-name">${escHtml(b.name || 'ไม่ระบุชื่อ')}</div>
+          <div class="bless-msg">${escHtml(b.message || '')}</div>
+          <div class="bless-date">${escHtml(b.date || '')}</div>
+        </div>
+      </div>`;
+    }).join('');
+    const btn = shown < list.length
+      ? `<button onclick="showMoreBlessings()" style="margin-top:14px;width:100%;padding:10px;border:1.5px solid var(--blue-lt);background:transparent;border-radius:50px;color:var(--blue-dk);font-family:'Sarabun',sans-serif;font-size:0.88rem;cursor:pointer;">ดูคำอวยพรเพิ่มเติม (${list.length - shown} รายการ)</button>`
+      : '';
+    container.innerHTML = items + btn;
+  }
+  window.showMoreBlessings = function() { shown = Math.min(shown + PAGE, list.length); renderItems(); };
+  renderItems();
 }
 
 // ── DECISION NAVIGATION ──────────────────────────────────────
