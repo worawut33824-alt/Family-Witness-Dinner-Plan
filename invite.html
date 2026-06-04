@@ -322,7 +322,7 @@ section {
 }
 .sec-label {
   font-size: 0.72rem;
-  letter-spacing: 4px;
+  letter-spacing: 0.5px;
   text-transform: uppercase;
   color: var(--gold);
   font-weight: 600;
@@ -337,11 +337,11 @@ section {
 }
 h2.sec-title {
   font-family: 'Cormorant Garamond', serif;
-  font-size: 2.2rem;
+  font-size: clamp(1.7rem, 6vw, 2.2rem);
   font-weight: 400;
   text-align: center;
   color: var(--text);
-  line-height: 1.2;
+  line-height: 1.3;
   margin-bottom: 8px;
 }
 h2.sec-title em { font-style: italic; color: var(--blue-dk); }
@@ -393,7 +393,7 @@ h2.sec-title em { font-style: italic; color: var(--blue-dk); }
 .cover-names {
   font-family: 'Cormorant Garamond', serif;
   font-size: clamp(2.6rem, 10vw, 4.5rem);
-  font-style: italic; letter-spacing: 3px; line-height: 1.1;
+  font-style: italic; letter-spacing: 1px; line-height: 1.1;
   text-shadow: 0 2px 12px rgba(0,0,0,0.45);
 }
 .cover-amp { color: var(--gold-lt); margin: 0 6px; }
@@ -562,7 +562,8 @@ h2.sec-title em { font-style: italic; color: var(--blue-dk); }
   font-weight: 600;
   color: var(--text);
   line-height: 1.5;
-  white-space: nowrap;
+  white-space: normal;
+  word-break: keep-all;
 }
 .couple-sep {
   font-family: 'Cormorant Garamond', serif;
@@ -586,7 +587,7 @@ h2.sec-title em { font-style: italic; color: var(--blue-dk); }
     justify-content: center;
     padding: 0 !important;
   }
-  #sec-couple .sec-label  { font-size: 1rem; letter-spacing: 5px; }
+  #sec-couple .sec-label  { font-size: 1rem; letter-spacing: 0.5px; }
   #sec-couple .sec-divider { width: 80px; margin: 16px auto 32px; }
   #sec-couple h2.sec-title { font-size: 4rem; margin-bottom: 0; }
   #sec-couple .couple-cards { gap: 80px; margin-top: 56px; }
@@ -627,8 +628,8 @@ h2.sec-title em { font-style: italic; color: var(--blue-dk); }
     background-position: center 32%;
   }
 }
-.cd-title { font-size: 0.78rem; letter-spacing: 3px; text-transform: uppercase; opacity: 0.75; margin-bottom: 8px; }
-.cd-date-text { font-family: 'Cormorant Garamond', serif; font-size: 1.4rem; font-weight: 600; margin-bottom: 28px; color: rgba(255,240,225,1); }
+.cd-title { font-size: 0.78rem; letter-spacing: 0.5px; text-transform: uppercase; opacity: 0.75; margin-bottom: 8px; }
+.cd-date-text { font-family: 'Sarabun', sans-serif; font-size: 1.4rem; font-weight: 600; margin-bottom: 28px; color: rgba(255,240,225,1); }
 .cd-boxes { display: flex; justify-content: center; gap: 10px; flex-wrap: nowrap; }
 .cd-box {
   background: rgba(255,255,255,0.13);
@@ -639,7 +640,7 @@ h2.sec-title em { font-style: italic; color: var(--blue-dk); }
   border: 1px solid rgba(255,255,255,0.18);
 }
 .cd-num { font-size: 2.4rem; font-weight: 700; line-height: 1; letter-spacing: -1px; font-variant-numeric: tabular-nums; }
-.cd-lbl { font-size: 0.68rem; opacity: 0.72; margin-top: 4px; letter-spacing: 1px; text-transform: uppercase; }
+.cd-lbl { font-size: 0.68rem; opacity: 0.72; margin-top: 4px; letter-spacing: 0; text-transform: uppercase; }
 .cd-sep { font-size: 2rem; opacity: 0.45; align-self: center; padding-bottom: 16px; }
 
 .venue-card {
@@ -814,14 +815,14 @@ h2.sec-title em { font-style: italic; color: var(--blue-dk); }
   font-size: 1.3rem;
   font-weight: 600;
   color: var(--blue-dk);
-  letter-spacing: 1px;
+  letter-spacing: 0;
   line-height: 1.1;
 }
 .tl-label {
   font-size: 0.78rem;
   font-weight: 600;
   color: var(--text);
-  letter-spacing: 1.5px;
+  letter-spacing: 0;
   text-transform: uppercase;
   margin-top: 3px;
   line-height: 1.4;
@@ -886,12 +887,12 @@ h2.sec-title em { font-style: italic; color: var(--blue-dk); }
   line-height: 1;
 }
 .dresscode-tagline {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 1.65rem;
+  font-family: 'Sarabun', sans-serif;
+  font-size: 1.4rem;
   font-style: italic;
   color: var(--blue-dk);
   margin-bottom: 16px;
-  line-height: 1.4;
+  line-height: 1.6;
 }
 .dresscode-body {
   font-size: 0.9rem;
@@ -909,7 +910,7 @@ h2.sec-title em { font-style: italic; color: var(--blue-dk); }
 }
 .dresscode-palette-label {
   font-size: 0.68rem;
-  letter-spacing: 2.5px;
+  letter-spacing: 0.5px;
   text-transform: uppercase;
   color: var(--text-lt);
   opacity: 0.7;
@@ -1564,7 +1565,7 @@ footer {
       <p>หลายปีต่อมาเราได้กลับมาเจอกันอีกครั้ง ในช่วงเวลาที่ต่างคนต่างเติบโตขึ้นและพร้อมเปิดใจให้กับความสัมพันธ์ที่ดี สิ่งที่เริ่มต้นจากความบังเอิญในวันหนึ่ง จึงค่อยๆ กลายเป็นความตั้งใจในทุกวัน</p>
       <p>ระหว่างทางเราได้เรียนรู้ว่าความรักที่ดีไม่จำเป็นต้องสมบูรณ์แบบ แต่คือการมีใครสักคนที่พร้อมรับฟัง สนับสนุน และเติบโตไปด้วยกัน</p>
       <p>และวันนี้เราได้เลือกที่จะก้าวไปสู่บทใหม่ของชีวิตร่วมกัน</p>
-      <p>28 พฤศจิกายน คือวันเดียวกับที่เราเริ่มต้นรักกันเมื่อ 2 ปีก่อนพอดี วันนี้จึงเป็นทั้งจุดเริ่มต้น และก้าวต่อไปของเราไปพร้อมกัน</p>
+      <p>28 พฤศจิกายน คือวันที่เราเริ่มต้นความรักเมื่อ 2 ปีก่อนและจะเป็นอีกหนึ่งวันสำคัญที่เราจะเริ่มต้นการเดินทางครั้งใหม่ไปพร้อมกัน</p>
       <p class="story-closing">ขอบคุณทุกคนที่เป็นส่วนหนึ่งของการเดินทางครั้งนี้ และเราหวังเป็นอย่างยิ่งว่าจะได้แบ่งปันความสุขกับทุกท่านในวันสำคัญของเรา 🤍</p>
     </div>
     <div class="video-wrap anim zoom-in" id="video-wrap">
@@ -1628,7 +1629,7 @@ footer {
       <div class="tl-item anim from-left">
         <div class="tl-content-left">
           <span class="tl-icon">🙏</span>
-          <div class="tl-time">14:30</div>
+          <div class="tl-time">14:00</div>
           <div class="tl-label">พิธีสงฆ์</div>
           <div class="tl-sub">ทำบุญ · เอาใจผู้ใหญ่</div>
         </div>
@@ -1898,9 +1899,8 @@ footer {
   <!-- ── DECISION ── -->
   <section id="sec-decision" class="fade-up" style="max-width:none; border-radius:0;">
     <div style="max-width:640px; margin:0 auto;">
-      <div class="sec-label">ร่วมแจ้งชะตา</div>
       <div class="sec-divider"></div>
-      <h2 class="sec-title gold-shimmer anim from-bottom">คุณจะมา<em>ร่วมงาน</em>ไหมคะ?</h2>
+      <h2 class="sec-title gold-shimmer anim from-bottom">ตอบรับการ<em>เข้าร่วมงาน</em></h2>
       <p style="text-align:center;color:var(--text-lt);font-size:0.9rem;margin:10px 0 8px">
         บอกให้เราทราบก่อนนะคะ เราตั้งตารอทุกคน 🤍
       </p>
