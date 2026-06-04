@@ -254,13 +254,21 @@ function saveRsvpGuest(ss, body) {
     saveBlessingRow(ss, body.name, blessingText, photoUrl, 'confirmed', body.side || '');
   }
 
-  // ส่ง Google Calendar invite ถ้ามี email
+  // ส่ง Google Calendar invite + Email ถ้ามี email
   var guestEmail = String(body.email || '').trim();
   if (guestEmail) {
+    // Step A: เพิ่มแขกเข้า Calendar event (แยก try-catch เพื่อไม่ให้ block Email)
     try {
-      sendCalendarInvite(guestEmail, body.name || '', parseInt(body.count) || 1);
+      addGuestToWeddingEvent_(guestEmail);
     } catch(calErr) {
-      Logger.log('sendCalendarInvite error: ' + calErr);
+      Logger.log('addGuestToWeddingEvent error: ' + calErr);
+    }
+
+    // Step B: ส่ง HTML Email + .ics แนบ (ทำงานอิสระจาก Calendar)
+    try {
+      sendWeddingEmail_(guestEmail, body.name || '', parseInt(body.count) || 1);
+    } catch(mailErr) {
+      Logger.log('sendWeddingEmail error: ' + mailErr);
     }
   }
 }
@@ -280,22 +288,43 @@ var WEDDING_END_UTC      = '20261128T130000Z'; // 20:00 Bangkok
 var WEDDING_UID          = 'pmwedding-20261128@family-witness-dinner';
 
 // สร้าง event ครั้งแรกหรือดึง event เดิม — คืนค่า eventId
+// ลำดับการค้นหา: 1) Script Property → 2) ค้นหาจากชื่องานใน Calendar → 3) สร้างใหม่
 function getOrCreateWeddingEvent_() {
   var props   = PropertiesService.getScriptProperties();
   var eventId = props.getProperty(WEDDING_EVENT_ID_KEY);
 
-  // ตรวจว่า event ยังอยู่ไหม
+  // 1) ตรวจ Script Property ก่อน
   if (eventId) {
     try {
       Calendar.Events.get(WEDDING_CAL_ID, eventId);
-      return eventId;
+      return eventId; // event ยังอยู่ — ใช้ได้เลย
     } catch(e) {
-      // event ถูกลบไปแล้ว ให้สร้างใหม่
+      Logger.log('getOrCreateWeddingEvent_: stored event not found, searching... ' + e);
       props.deleteProperty(WEDDING_EVENT_ID_KEY);
     }
   }
 
-  // สร้าง event ใหม่ (ไม่ส่ง invite ตอนสร้าง — จะส่งตอน addGuest แทน)
+  // 2) ค้นหา event เดิมจากชื่องานและวันที่ (ป้องกันสร้างซ้ำ)
+  try {
+    var existing = Calendar.Events.list(WEDDING_CAL_ID, {
+      timeMin:      '2026-11-28T00:00:00+07:00',
+      timeMax:      '2026-11-28T23:59:59+07:00',
+      singleEvents: true,
+      maxResults:   20
+    });
+    var items = (existing && existing.items) ? existing.items : [];
+    for (var i = 0; i < items.length; i++) {
+      if (items[i].summary && items[i].summary.indexOf('Family Witness Dinner') >= 0) {
+        Logger.log('getOrCreateWeddingEvent_: found existing event ' + items[i].id);
+        props.setProperty(WEDDING_EVENT_ID_KEY, items[i].id);
+        return items[i].id;
+      }
+    }
+  } catch(searchErr) {
+    Logger.log('getOrCreateWeddingEvent_: search error ' + searchErr);
+  }
+
+  // 3) ไม่พบ event เดิม — สร้างใหม่ครั้งเดียว
   var newEvent = Calendar.Events.insert({
     summary:     'เอ็ม x แป้ง — Family Witness Dinner',
     location:    'ธาราเทอเรส (TARA Terrace), นครปฐม',
@@ -306,7 +335,63 @@ function getOrCreateWeddingEvent_() {
   }, WEDDING_CAL_ID, { sendUpdates: 'none' });
 
   props.setProperty(WEDDING_EVENT_ID_KEY, newEvent.id);
+  Logger.log('getOrCreateWeddingEvent_: created new event ' + newEvent.id);
   return newEvent.id;
+}
+
+// ── ลบ event ซ้ำใน Calendar ของเจ้าของ (รันครั้งเดียวจาก Apps Script Editor) ──
+// เก็บ event ที่มีแขกมากที่สุดไว้ ลบอันที่เหลือ
+function cleanupDuplicateEvents() {
+  try {
+    var existing = Calendar.Events.list(WEDDING_CAL_ID, {
+      timeMin:      '2026-11-28T00:00:00+07:00',
+      timeMax:      '2026-11-28T23:59:59+07:00',
+      singleEvents: true,
+      maxResults:   50
+    });
+    var items = (existing && existing.items) ? existing.items : [];
+    var matches = items.filter(function(ev) {
+      return ev.summary && ev.summary.indexOf('Family Witness Dinner') >= 0;
+    });
+
+    if (matches.length <= 1) {
+      Logger.log('cleanupDuplicateEvents: ไม่มี event ซ้ำ (พบ ' + matches.length + ' event)');
+      SpreadsheetApp.getUi().alert('✅ ไม่มี event ซ้ำ พบ ' + matches.length + ' event เท่านั้น');
+      return;
+    }
+
+    // เรียงให้ event ที่มีแขกมากสุดอยู่ก่อน — เก็บอันนั้นไว้
+    matches.sort(function(a, b) {
+      return ((b.attendees || []).length) - ((a.attendees || []).length);
+    });
+
+    var keepEvent = matches[0];
+    var props     = PropertiesService.getScriptProperties();
+    props.setProperty(WEDDING_EVENT_ID_KEY, keepEvent.id);
+    Logger.log('cleanupDuplicateEvents: เก็บ event ' + keepEvent.id +
+               ' (แขก ' + (keepEvent.attendees || []).length + ' คน)');
+
+    var deleted = [];
+    for (var i = 1; i < matches.length; i++) {
+      try {
+        Calendar.Events.remove(WEDDING_CAL_ID, matches[i].id);
+        deleted.push(matches[i].id);
+        Logger.log('cleanupDuplicateEvents: ลบ event ' + matches[i].id);
+      } catch(delErr) {
+        Logger.log('cleanupDuplicateEvents: ลบไม่ได้ ' + matches[i].id + ' — ' + delErr);
+      }
+    }
+
+    SpreadsheetApp.getUi().alert(
+      '✅ ล้าง event ซ้ำเสร็จ\n\n' +
+      '• เก็บไว้: 1 event (แขก ' + (keepEvent.attendees || []).length + ' คน)\n' +
+      '• ลบออก: ' + deleted.length + ' event\n\n' +
+      'Event ID ที่ใช้งาน:\n' + keepEvent.id
+    );
+  } catch(err) {
+    Logger.log('cleanupDuplicateEvents error: ' + err);
+    SpreadsheetApp.getUi().alert('❌ เกิดข้อผิดพลาด: ' + err);
+  }
 }
 
 // เพิ่มแขกเข้า event เดิม + ส่ง invite อัตโนมัติ (Gmail)
@@ -325,9 +410,8 @@ function addGuestToWeddingEvent_(toEmail) {
       { attendees: attendees },
       WEDDING_CAL_ID,
       eventId,
-      { sendUpdates: 'externalOnly' }
-      // externalOnly = ส่ง invite เฉพาะ email นอก domain เจ้าของ
-      // ใช้ 'all' ถ้าต้องการส่งให้ทุกคนทุกครั้ง
+      { sendUpdates: 'all' }
+      // 'all' = ส่ง Calendar invite ให้ทุก email ทั้ง Gmail และ email อื่น
     );
   }
 }
@@ -367,18 +451,18 @@ function buildGoogleCalLink_() {
     '&sf=true&output=xml';
 }
 
+// sendCalendarInvite ยังคงไว้เพื่อ backward-compat (ไม่มีใครเรียกแล้ว แต่เผื่อ)
 function sendCalendarInvite(toEmail, guestName, seats) {
+  try { addGuestToWeddingEvent_(toEmail); } catch(e) { Logger.log(e); }
+  try { sendWeddingEmail_(toEmail, guestName, seats); } catch(e) { Logger.log(e); }
+}
+
+// ── ส่ง HTML Email + .ics แนบ ────────────────────────────────────────────────
+function sendWeddingEmail_(toEmail, guestName, seats) {
   var seatsLabel   = seats > 1 ? guestName + ' และอีก ' + (seats - 1) + ' ท่าน' : guestName;
   var googleCalUrl = buildGoogleCalLink_();
 
-  // ── Step 1: เพิ่มแขกเข้า event เดียว (Gmail users ได้ invite อัตโนมัติ) ──
-  try {
-    addGuestToWeddingEvent_(toEmail);
-  } catch(calErr) {
-    Logger.log('addGuestToWeddingEvent error: ' + calErr);
-  }
-
-  // ── Step 2: สร้าง .ics สำหรับแนบ email ──────────────────────────────────
+  // ── สร้าง .ics สำหรับแนบ email ───────────────────────────────────────────
   var icsContent = buildIcs_(guestName, seats);
   var icsBlob    = Utilities.newBlob(icsContent, 'text/calendar;method=REQUEST', 'PM_Wedding_Invite.ics');
 
