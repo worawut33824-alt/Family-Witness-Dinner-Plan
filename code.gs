@@ -265,67 +265,210 @@ function saveRsvpGuest(ss, body) {
   }
 }
 
-// --- CALENDAR INVITE ---------------------------------------------------------
+// --- CALENDAR INVITE (Hybrid) ------------------------------------------------
+// ทำงาน 2 ขั้นตอนพร้อมกัน:
+// 1) เพิ่มแขกเข้า event เดียวบนปฏิทินเอ็ม ผ่าน Calendar Advanced Service
+//    → Gmail users ได้รับ invite อัตโนมัติ กด Accept ได้ทันที
+// 2) ส่ง HTML email + .ics แนบ ให้ทุก email client
+//    → มีปุ่ม Google Calendar / Apple Calendar / Outlook ให้กดชัดเจน
+// -----------------------------------------------------------------------------
+
+var WEDDING_EVENT_ID_KEY = 'WEDDING_EVENT_ID';
+var WEDDING_CAL_ID       = 'primary';
+var WEDDING_START_UTC    = '20261128T090000Z'; // 16:00 Bangkok
+var WEDDING_END_UTC      = '20261128T130000Z'; // 20:00 Bangkok
+var WEDDING_UID          = 'pmwedding-20261128@family-witness-dinner';
+
+// สร้าง event ครั้งแรกหรือดึง event เดิม — คืนค่า eventId
+function getOrCreateWeddingEvent_() {
+  var props   = PropertiesService.getScriptProperties();
+  var eventId = props.getProperty(WEDDING_EVENT_ID_KEY);
+
+  // ตรวจว่า event ยังอยู่ไหม
+  if (eventId) {
+    try {
+      Calendar.Events.get(WEDDING_CAL_ID, eventId);
+      return eventId;
+    } catch(e) {
+      // event ถูกลบไปแล้ว ให้สร้างใหม่
+      props.deleteProperty(WEDDING_EVENT_ID_KEY);
+    }
+  }
+
+  // สร้าง event ใหม่ (ไม่ส่ง invite ตอนสร้าง — จะส่งตอน addGuest แทน)
+  var newEvent = Calendar.Events.insert({
+    summary:     'เอ็ม x แป้ง — Family Witness Dinner',
+    location:    'ธาราเทอเรส (TARA Terrace), นครปฐม',
+    description: 'งานสักขีพยาน Family Witness Dinner\nเอ็ม & แป้ง\n28 พฤศจิกายน 2569 16:00-20:00 น.\nธาราเทอเรส นครปฐม',
+    start:       { dateTime: '2026-11-28T16:00:00+07:00', timeZone: 'Asia/Bangkok' },
+    end:         { dateTime: '2026-11-28T20:00:00+07:00', timeZone: 'Asia/Bangkok' },
+    status:      'confirmed'
+  }, WEDDING_CAL_ID, { sendUpdates: 'none' });
+
+  props.setProperty(WEDDING_EVENT_ID_KEY, newEvent.id);
+  return newEvent.id;
+}
+
+// เพิ่มแขกเข้า event เดิม + ส่ง invite อัตโนมัติ (Gmail)
+function addGuestToWeddingEvent_(toEmail) {
+  var eventId = getOrCreateWeddingEvent_();
+
+  // ดึง attendees ปัจจุบัน
+  var ev         = Calendar.Events.get(WEDDING_CAL_ID, eventId);
+  var attendees  = ev.attendees || [];
+
+  // ตรวจไม่ให้ซ้ำ
+  var alreadyIn  = attendees.some(function(a) { return a.email === toEmail; });
+  if (!alreadyIn) {
+    attendees.push({ email: toEmail });
+    Calendar.Events.patch(
+      { attendees: attendees },
+      WEDDING_CAL_ID,
+      eventId,
+      { sendUpdates: 'externalOnly' }
+      // externalOnly = ส่ง invite เฉพาะ email นอก domain เจ้าของ
+      // ใช้ 'all' ถ้าต้องการส่งให้ทุกคนทุกครั้ง
+    );
+  }
+}
+
+// สร้างเนื้อหา .ics — ใช้ UID เดิมเสมอ เพื่อให้บันทึกทับ event เดิมในปฏิทินแขก
+function buildIcs_(guestName, seats) {
+  var seatsLabel = seats > 1 ? guestName + ' +' + (seats - 1) : guestName;
+  return [
+    'BEGIN:VCALENDAR',
+    'VERSION:2.0',
+    'PRODID:-//PM Wedding//Family Witness Dinner//TH',
+    'METHOD:REQUEST',
+    'BEGIN:VEVENT',
+    'UID:' + WEDDING_UID,
+    'DTSTART:' + WEDDING_START_UTC,
+    'DTEND:'   + WEDDING_END_UTC,
+    'SUMMARY:เอ็ม x แป้ง — Family Witness Dinner',
+    'LOCATION:ธาราเทอเรส (TARA Terrace)\\, นครปฐม',
+    'DESCRIPTION:ยินดีต้อนรับคุณ ' + seatsLabel + '\\n' +
+      'งานสักขีพยาน Family Witness Dinner\\n' +
+      'ลงทะเบียน 16:00 น. · เริ่มงาน 16:00-20:00 น.\\n' +
+      'ธาราเทอเรส (TARA Terrace) นครปฐม',
+    'STATUS:CONFIRMED',
+    'SEQUENCE:0',
+    'END:VEVENT',
+    'END:VCALENDAR'
+  ].join('\r\n');
+}
+
+// Google Calendar link (เปิดหน้าเพิ่มลง calendar โดยตรง)
+function buildGoogleCalLink_() {
+  return 'https://calendar.google.com/calendar/render?action=TEMPLATE' +
+    '&text=' + encodeURIComponent('เอ็ม x แป้ง — Family Witness Dinner') +
+    '&dates=' + WEDDING_START_UTC + '/' + WEDDING_END_UTC +
+    '&details=' + encodeURIComponent('งานสักขีพยาน Family Witness Dinner\nเอ็ม & แป้ง\n28 พฤศจิกายน 2569 16:00-20:00 น.\nธาราเทอเรส นครปฐม') +
+    '&location=' + encodeURIComponent('ธาราเทอเรส (TARA Terrace), นครปฐม') +
+    '&sf=true&output=xml';
+}
+
 function sendCalendarInvite(toEmail, guestName, seats) {
-  var startTime = new Date('2026-11-28T16:00:00+07:00');
-  var endTime   = new Date('2026-11-28T20:00:00+07:00');
+  var seatsLabel   = seats > 1 ? guestName + ' และอีก ' + (seats - 1) + ' ท่าน' : guestName;
+  var googleCalUrl = buildGoogleCalLink_();
 
-  var eventTitle = 'เอ็ม × แป้ง — Family Witness Dinner';
-  var location   = 'ธาราเทอเรส (TARA Terrace), นครปฐม';
-  var seatsLabel = seats > 1 ? guestName + ' และอีก ' + (seats - 1) + ' ท่าน' : guestName;
-  var description =
-    'ยืนยันร่วมงาน: ' + seatsLabel + ' จำนวน ' + seats + ' ท่าน\n' +
-    'ขอบคุณที่ยืนยันมาร่วม Family Witness Dinner ของเรา\n\n' +
-    'สถานที่: ธาราเทอเรส (TARA Terrace) นครปฐม\n' +
-    'เวลา: 16:00 - 20:00 น.';
+  // ── Step 1: เพิ่มแขกเข้า event เดียว (Gmail users ได้ invite อัตโนมัติ) ──
+  try {
+    addGuestToWeddingEvent_(toEmail);
+  } catch(calErr) {
+    Logger.log('addGuestToWeddingEvent error: ' + calErr);
+  }
 
-  // สร้าง event ใน Google Calendar และเชิญแขก
-  var calendar = CalendarApp.getDefaultCalendar();
-  var event = calendar.createEvent(eventTitle, startTime, endTime, {
-    location:    location,
-    description: description,
-    guests:      toEmail,
-    sendInvites: true
-  });
+  // ── Step 2: สร้าง .ics สำหรับแนบ email ──────────────────────────────────
+  var icsContent = buildIcs_(guestName, seats);
+  var icsBlob    = Utilities.newBlob(icsContent, 'text/calendar;method=REQUEST', 'PM_Wedding_Invite.ics');
 
-  // ส่ง email ขอบคุณพร้อมรายละเอียดแยก (HTML)
+  // ── Step 3: ส่ง HTML email ──────────────────────────────────────────────
   var htmlBody =
-    '<div style="font-family:Arial,sans-serif;max-width:560px;margin:0 auto;">' +
-    '<div style="background:linear-gradient(135deg,#7B9CBF,#5a7fa8);padding:24px 32px;text-align:center;color:#fff;border-radius:16px 16px 0 0;">' +
-    '<h1 style="margin:0;font-size:1.5rem;font-weight:800;">เอ็ม x แป้ง</h1>' +
-    '<p style="margin:6px 0 0;opacity:.8;font-size:.85rem;letter-spacing:1px;">FAMILY WITNESS DINNER</p>' +
+    '<div style="background:#f4f4f4;padding:24px 0;font-family:Arial,sans-serif;">' +
+    '<div style="background:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.12);max-width:560px;margin:0 auto;">' +
+
+    // Header
+    '<div style="background:linear-gradient(135deg,#4a7fa5 0%,#6b9bbe 50%,#8fb5d0 100%);padding:36px 32px 28px;text-align:center;color:#fff;">' +
+    '<div style="font-family:Georgia,serif;font-size:26px;font-style:italic;font-weight:bold;letter-spacing:1px;margin-bottom:4px;">เอ็ม &amp; แป้ง</div>' +
+    '<div style="font-size:11px;letter-spacing:4px;opacity:0.85;text-transform:uppercase;">Family Witness Dinner</div>' +
+    '<div style="margin-top:16px;background:rgba(255,255,255,0.18);border-radius:20px;display:inline-block;padding:5px 18px;font-size:12px;letter-spacing:1px;">28 พฤศจิกายน 2569</div>' +
     '</div>' +
-    '<div style="background:#fff;padding:32px;border-radius:0 0 16px 16px;box-shadow:0 4px 24px rgba(0,0,0,.1);">' +
-    '<p style="font-size:1rem;color:#2c3a4a;margin-bottom:8px;">เรียน คุณ<strong>' + seatsLabel + '</strong>,</p>' +
-    '<p style="color:#555;line-height:1.8;margin-bottom:24px;font-size:.95rem;">' +
-    'ขอบคุณที่ยืนยันมาร่วม Family Witness Dinner ของเรา<br>' +
-    'เราได้ส่ง <strong>นัดหมาย Google Calendar</strong> ไปยัง email ของคุณแล้ว<br>' +
-    'กด <strong>"ตอบรับนัดหมาย"</strong> เพื่อบันทึกลงปฏิทินได้เลย' +
+
+    // Body
+    '<div style="padding:28px 32px 0;">' +
+    '<p style="font-size:15px;color:#2c3a4a;margin:0 0 6px;">เรียน คุณ <strong>' + seatsLabel + '</strong>,</p>' +
+    '<p style="color:#5a7080;font-size:14px;line-height:1.8;margin:0 0 24px;">' +
+    'ขอบคุณมากที่ยืนยันร่วมงานสักขีพยาน Family Witness Dinner ของเรา<br>' +
+    'เราตั้งตารอพบคุณในวันงานอย่างยิ่งค่ะ' +
     '</p>' +
-    '<div style="background:#f8f5f0;border-radius:14px;padding:22px 24px;margin-bottom:24px;">' +
-    '<table style="width:100%;border-collapse:collapse;">' +
-    '<tr><td style="padding:8px 0;color:#2c3a4a;font-weight:700;width:90px;">วันที่</td>' +
-    '<td style="padding:8px 0;color:#555;">วันเสาร์ที่ 28 พฤศจิกายน 2569<br><span style="color:#888;font-size:.82rem;">Saturday, 28 November 2026</span></td></tr>' +
-    '<tr><td style="padding:8px 0;color:#2c3a4a;font-weight:700;">เวลา</td>' +
-    '<td style="padding:8px 0;color:#555;">16:00 - 20:00 น. (4:00 PM - 8:00 PM)</td></tr>' +
-    '<tr><td style="padding:8px 0;color:#2c3a4a;font-weight:700;">สถานที่</td>' +
-    '<td style="padding:8px 0;color:#555;">ธาราเทอเรส (TARA Terrace)<br><span style="color:#888;font-size:.82rem;">นครปฐม</span></td></tr>' +
-    '<tr><td style="padding:8px 0;color:#2c3a4a;font-weight:700;">จำนวน</td>' +
-    '<td style="padding:8px 0;color:#555;"><strong>' + seats + ' ท่าน</strong></td></tr>' +
+
+    // Event Details
+    '<div style="background:#f0f6fb;border-radius:12px;padding:20px 22px;margin-bottom:22px;border-left:4px solid #4a7fa5;">' +
+    '<div style="font-weight:700;color:#2c3a4a;font-size:14px;margin-bottom:12px;">รายละเอียดงาน</div>' +
+    '<table style="width:100%;border-collapse:collapse;font-size:13.5px;">' +
+    '<tr><td style="padding:5px 0;color:#7a9ab0;width:90px;vertical-align:top;">วันที่</td>' +
+    '<td style="padding:5px 0;color:#2c3a4a;font-weight:600;">วันเสาร์ที่ 28 พฤศจิกายน 2569<br>' +
+    '<span style="font-size:11px;color:#999;font-weight:normal;">Saturday, 28 November 2026</span></td></tr>' +
+    '<tr><td style="padding:5px 0;color:#7a9ab0;vertical-align:top;">เวลา</td>' +
+    '<td style="padding:5px 0;color:#2c3a4a;font-weight:600;">16:00 – 20:00 น.<br>' +
+    '<span style="font-size:11px;color:#999;font-weight:normal;">ลงทะเบียน 16:00 น.</span></td></tr>' +
+    '<tr><td style="padding:5px 0;color:#7a9ab0;vertical-align:top;">สถานที่</td>' +
+    '<td style="padding:5px 0;color:#2c3a4a;font-weight:600;">ธาราเทอเรส (TARA Terrace)<br>' +
+    '<span style="font-size:11px;color:#999;font-weight:normal;">นครปฐม</span></td></tr>' +
+    '<tr><td style="padding:5px 0;color:#7a9ab0;vertical-align:top;">จำนวน</td>' +
+    '<td style="padding:5px 0;color:#2c3a4a;font-weight:600;">' + seats + ' ท่าน</td></tr>' +
     '</table>' +
     '</div>' +
-    '<div style="border-top:1px solid #f0ebe5;padding-top:20px;text-align:center;">' +
-    '<img src="https://drive.google.com/thumbnail?id=148E0apdHMhde4NV87DZFym-LutL8Mt3z&sz=w300" ' +
-    'alt="เอ็ม x แป้ง" style="width:180px;height:auto;border-radius:10px;margin-bottom:14px;display:block;margin-left:auto;margin-right:auto;" />' +
-    '<p style="color:#bbb;font-size:.8rem;line-height:1.8;">ด้วยความรักและตั้งตารอ<br>' +
-    '<strong style="color:#7B9CBF;">เอ็ม &amp; แป้ง</strong></p>' +
-    '</div></div></div>';
 
-  GmailApp.sendEmail(toEmail,
-    'นัดหมาย Family Witness Dinner — เอ็ม x แป้ง',
-    // plain text fallback
-    'ขอบคุณที่ยืนยันมาร่วม Family Witness Dinner ของเรา\nวันเสาร์ที่ 28 พ.ย. 2569 | 16:00-20:00 น. | ธาราเทอเรส นครปฐม',
-    { htmlBody: htmlBody }
+    // Calendar Section
+    '<div style="background:#fff8f0;border:1.5px solid #f0dcc8;border-radius:14px;padding:22px;margin-bottom:24px;text-align:center;">' +
+    '<div style="font-size:13px;color:#7a6050;font-weight:700;margin-bottom:4px;">บันทึกลงปฏิทินของคุณ</div>' +
+    '<div style="font-size:12px;color:#aaa;margin-bottom:18px;">เลือกวิธีที่สะดวกสำหรับคุณได้เลยค่ะ</div>' +
+
+    // Button row: Google + Apple
+    '<table style="width:100%;border-collapse:collapse;margin-bottom:10px;"><tr>' +
+    '<td style="padding:0 5px 0 0;width:50%;">' +
+    '<a href="' + googleCalUrl + '" target="_blank" ' +
+    'style="display:block;background:#4285F4;color:#fff;text-decoration:none;padding:11px 10px;border-radius:8px;font-size:13px;font-weight:600;text-align:center;">' +
+    'Google Calendar</a></td>' +
+    '<td style="padding:0 0 0 5px;width:50%;">' +
+    '<a href="cid:wedding.ics" ' +
+    'style="display:block;background:#1c1c1e;color:#fff;text-decoration:none;padding:11px 10px;border-radius:8px;font-size:13px;font-weight:600;text-align:center;">' +
+    'Apple Calendar</a></td>' +
+    '</tr></table>' +
+
+    // Outlook button
+    '<a href="cid:wedding.ics" ' +
+    'style="display:block;background:#0078d4;color:#fff;text-decoration:none;padding:11px 20px;border-radius:8px;font-size:13px;font-weight:600;text-align:center;max-width:300px;margin:0 auto;">' +
+    'Outlook / ปฏิทินอื่น — เปิดไฟล์แนบ .ics</a>' +
+
+    '<div style="margin-top:14px;font-size:11.5px;color:#bbb;line-height:1.6;">' +
+    'ไฟล์ <strong>PM_Wedding_Invite.ics</strong> แนบมาใน email นี้ด้วยค่ะ<br>' +
+    'เปิดไฟล์แนบเพื่อเพิ่มลงปฏิทินได้เลย' +
+    '</div>' +
+    '</div>' + // end calendar section
+    '</div>' + // end body
+
+    // Footer
+    '<div style="padding:0 32px 28px;text-align:center;border-top:1px solid #f5efe9;padding-top:22px;">' +
+    '<img src="https://drive.google.com/thumbnail?id=148E0apdHMhde4NV87DZFym-LutL8Mt3z&sz=w300" ' +
+    'alt="เอ็ม x แป้ง" style="width:160px;height:auto;border-radius:10px;margin-bottom:16px;display:block;margin-left:auto;margin-right:auto;" />' +
+    '<div style="color:#c9a97a;font-size:15px;margin-bottom:8px;">ด้วยความรักและตั้งตารอ</div>' +
+    '<div style="font-family:Georgia,serif;font-size:20px;font-style:italic;color:#4a7fa5;font-weight:bold;">เอ็ม &amp; แป้ง</div>' +
+    '<div style="font-size:11px;color:#bbb;margin-top:10px;letter-spacing:1px;">FAMILY WITNESS DINNER · 28.11.2569</div>' +
+    '</div>' +
+
+    '</div>' + // end email container
+    '</div>';  // end outer wrapper
+
+  GmailApp.sendEmail(
+    toEmail,
+    'ยืนยันร่วมงาน Family Witness Dinner — เอ็ม x แป้ง',
+    'ขอบคุณที่ยืนยันร่วมงานสักขีพยาน Family Witness Dinner\nวันเสาร์ที่ 28 พ.ย. 2569 | 16:00-20:00 น. | ธาราเทอเรส นครปฐม\nบันทึกลงปฏิทิน: ' + googleCalUrl,
+    {
+      htmlBody:    htmlBody,
+      attachments: [icsBlob]
+    }
   );
 }
 
