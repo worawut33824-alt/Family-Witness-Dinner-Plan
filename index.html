@@ -1134,8 +1134,8 @@ function renderBlessGrid() {
     const isConf = b.attendance === 'confirmed';
     const initial = (b.name||'?')[0].toUpperCase();
     const avatar = b.photoUrl
-      ? `<img src="${esc(b.photoUrl)}" style="width:48px;height:48px;border-radius:50%;object-fit:cover;flex-shrink:0;border:2px solid #e8f0f8;" onerror="this.outerHTML='<div style=\\'width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,#6B9DC2,#3d6a8a);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:1.1rem;flex-shrink:0;\\'>${initial}</div>'">`
-      : `<div style="width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,#6B9DC2,#3d6a8a);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:1.1rem;flex-shrink:0;">${initial}</div>`;
+      ? `<img src="${esc(b.photoUrl)}" style="width:72px;height:72px;border-radius:50%;object-fit:cover;flex-shrink:0;border:2px solid #e8f0f8;" onerror="this.outerHTML='<div style=\\'width:72px;height:72px;border-radius:50%;background:linear-gradient(135deg,#6B9DC2,#3d6a8a);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:1.4rem;flex-shrink:0;\\'>${initial}</div>'">`
+      : `<div style="width:72px;height:72px;border-radius:50%;background:linear-gradient(135deg,#6B9DC2,#3d6a8a);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:1.4rem;flex-shrink:0;">${initial}</div>`;
     const attendBadge = isConf
       ? `<span style="font-size:0.7rem;background:#e8f5e9;color:#2e7d32;padding:2px 8px;border-radius:10px;">✅ มาร่วมงาน</span>`
       : `<span style="font-size:0.7rem;background:#e8f0f8;color:#3d6a8a;padding:2px 8px;border-radius:10px;">💌 ส่งใจมาด้วย</span>`;
