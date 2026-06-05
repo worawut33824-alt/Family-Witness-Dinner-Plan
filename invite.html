@@ -1760,6 +1760,9 @@ footer {
     <p style="text-align:center;color:var(--text-lt);font-size:0.88rem;margin:10px 0 0">
       ต้นไม้ต้นนี้จะเติบโตตามจำนวนผู้ลงทะเบียนเข้าร่วมงาน<br>ยิ่งมีผู้ร่วมงานมาก ใบไม้และดอกไม้ก็จะยิ่งผลิบานมากขึ้น 🌸
     </p>
+    <p style="text-align:center;color:var(--sage);font-size:0.85rem;margin:8px 0 0;font-style:italic;">
+      ✨ มาเป็นส่วนหนึ่งของต้นไม้แห่งความทรงจำของเรานะคะ ✨
+    </p>
 
     <div class="tree-wrap anim zoom-in">
       <img src="Love Tree/ต้น.PNG" id="img-base" alt="ต้นไม้">
@@ -2215,18 +2218,35 @@ function genTreeFlowers(count, seed, clusters) {
   return pts;
 }
 
-function renderFoliage(pct) {
+// ── timers for sequential animation ──
+let _treeAnimTimers = [];
+
+function clearTreeTimers() {
+  _treeAnimTimers.forEach(t => clearTimeout(t));
+  _treeAnimTimers = [];
+}
+
+function renderFoliage(pct, animate) {
   const wrap = document.getElementById('foliage-wrap'); if (!wrap) return;
   const n = Math.round(pct/100*TREE_CLUSTERS.length);
+  // render all clusters — visible ones start hidden if animating
   wrap.innerHTML = TREE_CLUSTERS.map(([l,t,w,f,r],i) =>
     `<img src="Love Tree/ฟุ่ม${f}.PNG" class="foliage"
       style="left:${l}%;top:${t}%;width:${w}%;
              transform:translate(-50%,-50%) rotate(${r}deg);
-             opacity:${i<n?1:0};" alt="">`
+             opacity:${(i<n && !animate)?1:0};" alt="">`
   ).join('');
+  if (!animate) return n;
+  // sequential reveal
+  const imgs = wrap.querySelectorAll('img');
+  for (let i = 0; i < n; i++) {
+    const t = setTimeout(() => { if(imgs[i]) imgs[i].style.opacity = '1'; }, i * 80);
+    _treeAnimTimers.push(t);
+  }
+  return n;
 }
 
-function renderFlowers(sM, sP, pct) {
+function renderFlowers(sM, sP, pct, hidden) {
   const wrap = document.getElementById('flower-wrap'); if (!wrap) return;
   const vis = TREE_CLUSTERS.slice(0, Math.round(pct/100*TREE_CLUSTERS.length));
   const mPos = genTreeFlowers(sM, 0xA1B2C3D4, vis);
@@ -2236,13 +2256,55 @@ function renderFlowers(sM, sP, pct) {
     `<img src="${src}" class="fl" style="left:${x}%;top:${y}%;width:${sz}%;" alt="">`
   ).join('');
   wrap.innerHTML = mk(mPos,'Love Tree/ดอกชาย.PNG') + mk(pPos,'Love Tree/ดอกหญิง.PNG');
+  wrap.style.transition = 'none';
+  wrap.style.opacity = hidden ? '0' : '1';
 }
+
+function animateTreeEntry(pct, sM, sP) {
+  clearTreeTimers();
+  const n = renderFoliage(pct, true);
+  const leafDuration = n * 80 + 200; // wait for all leaves
+  // fade in flowers after leaves done
+  const fwrap = document.getElementById('flower-wrap');
+  renderFlowers(sM, sP, pct, true);
+  const t = setTimeout(() => {
+    if (fwrap) {
+      fwrap.style.transition = 'opacity 1s ease';
+      fwrap.style.opacity = '1';
+    }
+  }, leafDuration);
+  _treeAnimTimers.push(t);
+}
+
+// ── Intersection Observer: replay animation each time tree enters view ──
+let _treeSM = 0, _treeSP = 0;
+(function setupTreeObserver() {
+  const sec = document.getElementById('sec-tree');
+  if (!sec) return;
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        const pct = Math.min(guestCount / GUEST_GOAL * 100, 100);
+        animateTreeEntry(pct, _treeSM, _treeSP);
+      } else {
+        // reset when out of view so animation replays on scroll back
+        clearTreeTimers();
+        const wrap = document.getElementById('foliage-wrap');
+        const fwrap = document.getElementById('flower-wrap');
+        if (wrap) wrap.querySelectorAll('img').forEach(img => img.style.opacity = '0');
+        if (fwrap) { fwrap.style.transition = 'none'; fwrap.style.opacity = '0'; }
+      }
+    });
+  }, { threshold: 0.15 });
+  obs.observe(sec);
+})();
 
 function updateTree(count, sideM, sideP) {
   guestCount = count;
+  _treeSM = sideM || 0; _treeSP = sideP || 0;
   const pct = Math.min(count / GUEST_GOAL * 100, 100);
-  renderFoliage(pct);
-  renderFlowers(sideM||0, sideP||0, pct);
+  renderFoliage(pct, false);
+  renderFlowers(sideM||0, sideP||0, pct, false);
 
   const numEl = document.getElementById('tree-num');
   if (numEl) animateCount(numEl, parseInt(numEl.textContent)||0, count, 1200);
