@@ -2536,61 +2536,98 @@ updateTree(0);
 </script>
 
 <!-- ── LINK GUARD — ตรวจสอบลิงก์เปิด/ปิด ───────────────────────────────── -->
+<style>
+@keyframes closedFadeIn { from{opacity:0;transform:translateY(18px)} to{opacity:1;transform:none} }
+@keyframes shimmerGold  { 0%,100%{opacity:0.6} 50%{opacity:1} }
+@keyframes floatUp      { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
+</style>
+
 <div id="link-closed-overlay" style="
   display:none;position:fixed;inset:0;z-index:99999;
-  background:linear-gradient(160deg,#d6e8f5 0%,#c2d8ed 40%,#b0cce3 100%);
+  background: linear-gradient(160deg,#EEF4FB 0%,#ddeaf6 45%,#c8ddf0 100%);
   align-items:center;justify-content:center;text-align:center;
-  padding:32px 24px;font-family:'Sarabun',sans-serif;
+  padding:32px 20px;font-family:'Sarabun','Helvetica Neue',sans-serif;
 ">
-  <!-- กลีบดอกไม้ลอย -->
-  <div style="position:absolute;inset:0;overflow:hidden;pointer-events:none;opacity:0.2;">
-    <div style="position:absolute;top:10%;left:8%;font-size:1.4rem;animation:floatPetal 6s ease-in-out infinite;">🌸</div>
-    <div style="position:absolute;top:20%;right:10%;font-size:1rem;animation:floatPetal 8s ease-in-out infinite 1s;">🌸</div>
-    <div style="position:absolute;bottom:25%;left:12%;font-size:1.2rem;animation:floatPetal 7s ease-in-out infinite 2s;">🌸</div>
-    <div style="position:absolute;bottom:15%;right:8%;font-size:0.9rem;animation:floatPetal 9s ease-in-out infinite 0.5s;">🌸</div>
-  </div>
+  <!-- ลายดอกไม้มุม -->
+  <div style="position:absolute;top:0;left:0;width:180px;height:180px;opacity:0.12;
+    background:radial-gradient(circle at 0 0,#7B9CBF 0%,transparent 70%);pointer-events:none;"></div>
+  <div style="position:absolute;bottom:0;right:0;width:220px;height:220px;opacity:0.1;
+    background:radial-gradient(circle at 100% 100%,#7B9CBF 0%,transparent 70%);pointer-events:none;"></div>
 
-  <div style="position:relative;max-width:380px;margin:0 auto;">
+  <!-- เส้น border ตกแต่งบนล่าง -->
+  <div style="position:absolute;top:0;left:0;right:0;height:4px;
+    background:linear-gradient(90deg,transparent,#7B9CBF,#C9A96E,#7B9CBF,transparent);"></div>
+  <div style="position:absolute;bottom:0;left:0;right:0;height:4px;
+    background:linear-gradient(90deg,transparent,#7B9CBF,#C9A96E,#7B9CBF,transparent);"></div>
 
-    <!-- Loading state -->
-    <div id="link-loading-msg" style="display:none;color:#9a7a5a;">
-      <div style="font-size:2rem;margin-bottom:12px;opacity:0.6;">✦</div>
-      <div style="font-size:0.95rem;letter-spacing:1px;">กำลังตรวจสอบ...</div>
+  <div style="position:relative;max-width:420px;width:100%;animation:closedFadeIn .6s ease both;">
+
+    <!-- Loading -->
+    <div id="link-loading-msg" style="display:none;color:#7B9CBF;">
+      <div style="font-size:1.6rem;animation:floatUp 2s ease-in-out infinite;">✦</div>
+      <div style="margin-top:10px;font-size:0.9rem;letter-spacing:2px;opacity:0.8;">กำลังตรวจสอบ...</div>
     </div>
 
-    <!-- Closed state -->
+    <!-- Closed content -->
     <div id="link-closed-content" style="display:none;">
-      <!-- Logo/monogram -->
-      <div style="font-family:'Cormorant Garamond',Georgia,serif;font-size:2.6rem;font-style:italic;
-                  color:#9a6b4b;margin-bottom:4px;text-shadow:0 1px 3px rgba(0,0,0,0.08);">
+
+      <!-- Monogram area -->
+      <div style="margin-bottom:6px;">
+        <div style="display:inline-block;width:64px;height:64px;border-radius:50%;
+          background:linear-gradient(135deg,#7B9CBF,#5a82a8);
+          box-shadow:0 4px 20px rgba(123,156,191,0.4);
+          line-height:64px;font-size:1.5rem;color:#fff;margin-bottom:16px;">💌</div>
+      </div>
+
+      <div style="font-family:'Cormorant Garamond',Georgia,serif;
+        font-size:2.8rem;font-style:italic;font-weight:600;
+        background:linear-gradient(135deg,#3d6a91,#7B9CBF);
+        -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+        background-clip:text;line-height:1.1;margin-bottom:6px;">
         เอ็ม &amp; แป้ง
       </div>
-      <div style="font-size:0.72rem;letter-spacing:5px;color:#c49a7a;text-transform:uppercase;margin-bottom:28px;">
+
+      <div style="font-size:0.7rem;letter-spacing:6px;color:#7B9CBF;
+        text-transform:uppercase;margin-bottom:28px;opacity:0.85;">
         Family Witness Dinner
       </div>
 
+      <!-- Gold divider -->
+      <div style="display:flex;align-items:center;gap:10px;margin:0 auto 28px;max-width:260px;">
+        <div style="flex:1;height:1px;background:linear-gradient(90deg,transparent,#C9A96E);"></div>
+        <div style="color:#C9A96E;font-size:0.7rem;animation:shimmerGold 3s ease-in-out infinite;">✦</div>
+        <div style="flex:1;height:1px;background:linear-gradient(90deg,#C9A96E,transparent);"></div>
+      </div>
+
       <!-- Card -->
-      <div style="background:rgba(255,255,255,0.82);backdrop-filter:blur(12px);
-                  border-radius:20px;padding:32px 28px;
-                  box-shadow:0 8px 40px rgba(154,107,75,0.12);
-                  border:1px solid rgba(196,154,122,0.3);">
-        <div style="font-size:2rem;margin-bottom:16px;">🙏</div>
-        <div style="font-family:'Cormorant Garamond',Georgia,serif;font-size:1.25rem;
-                    font-style:italic;color:#7a4f35;margin-bottom:16px;font-weight:600;">
-          ลิงก์นี้ปิดรับลงทะเบียนเรียบร้อยแล้ว
+      <div style="background:rgba(255,255,255,0.75);backdrop-filter:blur(16px);
+        border-radius:24px;padding:36px 32px;
+        border:1px solid rgba(123,156,191,0.25);
+        box-shadow:0 12px 48px rgba(74,127,165,0.12),0 2px 8px rgba(74,127,165,0.08);">
+
+        <div style="font-family:'Cormorant Garamond',Georgia,serif;
+          font-size:1.35rem;font-style:italic;font-weight:700;
+          color:#3d6a91;margin-bottom:20px;line-height:1.5;">
+          ลิงก์นี้ปิดรับลงทะเบียน<br>เรียบร้อยแล้ว
         </div>
-        <div style="width:40px;height:1px;background:linear-gradient(90deg,transparent,#c49a7a,transparent);margin:0 auto 16px;"></div>
-        <div style="font-size:0.9rem;color:#9a7a5a;line-height:2;">
+
+        <div style="width:48px;height:1.5px;margin:0 auto 20px;
+          background:linear-gradient(90deg,transparent,#C9A96E,transparent);"></div>
+
+        <div style="font-size:0.92rem;color:#5a7a9a;line-height:2.2;">
           ขอบคุณที่ให้ความสนใจนะ<br>
-          หากมีข้อสงสัยกรุณาติดต่อ<br>เอ็มและแป้งโดยตรง
+          หากมีข้อสงสัยกรุณาติดต่อ<br>
+          <strong style="color:#3d6a91;">เอ็มและแป้ง</strong>โดยตรง
         </div>
       </div>
 
-      <div style="margin-top:24px;font-size:0.75rem;color:#c49a7a;letter-spacing:2px;">
+      <!-- Footer -->
+      <div style="margin-top:28px;font-size:0.72rem;color:#7B9CBF;
+        letter-spacing:3px;opacity:0.85;">
         28 · 11 · 2569 &nbsp;✦&nbsp; TARA Terrace
       </div>
-    </div>
 
+    </div>
   </div>
 </div>
 
