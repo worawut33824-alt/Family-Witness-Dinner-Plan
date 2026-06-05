@@ -356,6 +356,7 @@
     <button class="tab-btn" onclick="showPage('guests')">👥 แขก</button>
     <button class="tab-btn" onclick="showPage('blessings')">💌 คำอวยพร</button>
     <button class="tab-btn" onclick="showPage('sync')">☁️ ซิงค์</button>
+    <button class="tab-btn" onclick="showPage('links')">🔗 ลิงก์เชิญ</button>
   </div>
 </nav>
 
@@ -380,6 +381,7 @@
   <button class="drawer-nav-btn" onclick="showPage('guests')"><span class="di">👥</span>แขก</button>
   <button class="drawer-nav-btn" onclick="showPage('blessings')"><span class="di">💌</span>คำอวยพร</button>
   <button class="drawer-nav-btn" onclick="showPage('sync')"><span class="di">☁️</span>ซิงค์</button>
+  <button class="drawer-nav-btn" onclick="showPage('links')"><span class="di">🔗</span>ลิงก์เชิญ</button>
 </div>
 
 <!-- DASHBOARD -->
@@ -560,6 +562,68 @@
   <!-- Lightbox -->
   <div id="bless-lightbox" onclick="closeBlessLightbox()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:9999;align-items:center;justify-content:center;padding:20px;">
     <img id="bless-lb-img" src="" style="max-width:100%;max-height:90vh;border-radius:8px;">
+  </div>
+</div>
+
+<!-- LINKS PAGE -->
+<div id="page-links" class="page">
+  <div class="section-header">
+    <h2>🔗 ลิงก์เชิญแขก</h2>
+    <button class="btn btn-primary" onclick="openLinkModal()">+ สร้างลิงก์ใหม่</button>
+  </div>
+
+  <div style="background:#f0f6fb;border-radius:12px;padding:16px 20px;margin-bottom:20px;border-left:4px solid var(--primary);">
+    <div style="font-size:0.85rem;color:var(--text-light);margin-bottom:6px;">📌 วิธีใช้งาน</div>
+    <div style="font-size:0.85rem;color:var(--text);">
+      สร้างลิงก์แยกสำหรับแต่ละกลุ่มแขก — Copy ลิงก์ไปส่งให้แขก
+      เมื่อต้องการปิดรับลงทะเบียนกลุ่มไหน กดปุ่ม <strong>ปิด</strong> ได้ทันทีค่ะ
+    </div>
+  </div>
+
+  <div id="links-empty" style="text-align:center;padding:48px 24px;color:var(--text-light);display:none;">
+    <div style="font-size:2.5rem;margin-bottom:12px;">🔗</div>
+    <div>ยังไม่มีลิงก์เชิญ — กด "สร้างลิงก์ใหม่" เพื่อเริ่มต้นค่ะ</div>
+  </div>
+
+  <div id="links-table-wrap" style="overflow-x:auto;">
+    <table style="width:100%;border-collapse:collapse;font-size:0.88rem;">
+      <thead>
+        <tr style="background:var(--primary);color:#fff;text-align:left;">
+          <th style="padding:10px 14px;border-radius:8px 0 0 0;">ชื่อกลุ่ม</th>
+          <th style="padding:10px 14px;">ลิงก์</th>
+          <th style="padding:10px 14px;text-align:center;">สถานะ</th>
+          <th style="padding:10px 14px;text-align:center;border-radius:0 8px 0 0;">จัดการ</th>
+        </tr>
+      </thead>
+      <tbody id="links-tbody"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Modal สร้างลิงก์ -->
+<div id="link-modal" class="modal-overlay" style="display:none;" onclick="if(event.target===this)closeLinkModal()">
+  <div class="modal-box" style="max-width:460px;">
+    <div class="modal-header">
+      <h3>🔗 สร้างลิงก์เชิญใหม่</h3>
+      <button class="modal-close" onclick="closeLinkModal()">✕</button>
+    </div>
+    <div style="padding:20px 24px;">
+      <div class="form-group" style="margin-bottom:16px;">
+        <label style="font-weight:600;display:block;margin-bottom:6px;">ชื่อกลุ่ม <span style="color:red">*</span></label>
+        <input id="link-name" class="form-input" placeholder="เช่น ครอบครัว, เพื่อนสนิท, เพื่อนร่วมงาน" maxlength="60"
+          style="width:100%;padding:10px 14px;border:1.5px solid #d0dce8;border-radius:8px;font-size:0.95rem;font-family:inherit;">
+      </div>
+      <div class="form-group" style="margin-bottom:6px;">
+        <label style="font-weight:600;display:block;margin-bottom:6px;">Slug (ใช้ใน URL)</label>
+        <input id="link-slug" class="form-input" placeholder="เช่น family, friends, work" maxlength="40"
+          style="width:100%;padding:10px 14px;border:1.5px solid #d0dce8;border-radius:8px;font-size:0.95rem;font-family:inherit;">
+        <div style="font-size:0.78rem;color:var(--text-light);margin-top:4px;">ใช้ตัวอักษรภาษาอังกฤษหรือตัวเลข ไม่มีช่องว่าง (ถ้าว่างระบบจะสร้างให้อัตโนมัติ)</div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeLinkModal()">ยกเลิก</button>
+      <button class="btn btn-primary" onclick="createLink()">สร้างลิงก์</button>
+    </div>
   </div>
 </div>
 
@@ -2023,6 +2087,160 @@ autoLoad(); // ดึงข้อมูลจาก Google Sheets อัตโ�
 
 // ── Auto-refresh ทุก 60 วินาที (ไม่ reload หน้า — คงอยู่ที่หน้าปัจจุบัน) ──
 setInterval(() => { if (!document.hidden) autoLoad(); }, 60000);
+</script>
+
+<!-- ── LINK MANAGER ───────────────────────────────────────────── -->
+<script>
+// ── state ─────────────────────────────────────────────────────────────────────
+var inviteLinks = JSON.parse(localStorage.getItem('wedding_links') || '[]');
+
+// ── base URL ของ invite.html (ปรับตาม GitHub Pages หรือ URL จริง) ─────────────
+function getInviteBase() {
+  var stored = localStorage.getItem('invite_page_url');
+  if (stored) return stored;
+  // default: สมมุติอยู่ใน folder เดียวกัน
+  var base = window.location.href.replace(/index\.html.*$/, '').replace(/\/$/, '');
+  return base + '/invite.html';
+}
+
+// ── render ตาราง ──────────────────────────────────────────────────────────────
+function renderLinks() {
+  var tbody = document.getElementById('links-tbody');
+  var empty = document.getElementById('links-empty');
+  var wrap  = document.getElementById('links-table-wrap');
+
+  if (!inviteLinks.length) {
+    empty.style.display = 'block';
+    wrap.style.display  = 'none';
+    return;
+  }
+  empty.style.display = 'none';
+  wrap.style.display  = 'block';
+
+  var base = getInviteBase();
+  tbody.innerHTML = inviteLinks.map(function(lk, i) {
+    var url     = base + '?link=' + encodeURIComponent(lk.slug);
+    var isOpen  = lk.active;
+    var badge   = isOpen
+      ? '<span style="background:#d4f5e2;color:#1a7a3f;border-radius:20px;padding:3px 12px;font-size:0.78rem;font-weight:600;">🟢 เปิด</span>'
+      : '<span style="background:#fde8e8;color:#b91c1c;border-radius:20px;padding:3px 12px;font-size:0.78rem;font-weight:600;">🔴 ปิด</span>';
+    var toggleLabel = isOpen ? 'ปิดลิงก์' : 'เปิดลิงก์';
+    var toggleStyle = isOpen
+      ? 'background:#fde8e8;color:#b91c1c;border:1.5px solid #fca5a5;'
+      : 'background:#d4f5e2;color:#1a7a3f;border:1.5px solid #86efac;';
+
+    return '<tr style="border-bottom:1px solid #eef2f7;' + (i%2===0?'background:#fff;':'background:#f8fbfe;') + '">' +
+      '<td style="padding:12px 14px;font-weight:600;">' + lk.name + '</td>' +
+      '<td style="padding:12px 14px;">' +
+        '<div style="display:flex;align-items:center;gap:8px;">' +
+        '<span style="font-size:0.8rem;color:var(--text-light);word-break:break-all;max-width:260px;">' + url + '</span>' +
+        '<button onclick="copyLink(' + i + ')" style="flex-shrink:0;padding:4px 10px;border-radius:6px;border:1.5px solid #d0dce8;background:#fff;cursor:pointer;font-size:0.78rem;" title="Copy">📋</button>' +
+        '</div></td>' +
+      '<td style="padding:12px 14px;text-align:center;">' + badge + '</td>' +
+      '<td style="padding:12px 14px;text-align:center;">' +
+        '<div style="display:flex;gap:8px;justify-content:center;">' +
+        '<button onclick="toggleLink(' + i + ')" style="padding:5px 14px;border-radius:6px;cursor:pointer;font-size:0.82rem;font-weight:600;' + toggleStyle + '">' + toggleLabel + '</button>' +
+        '<button onclick="deleteLink(' + i + ')" style="padding:5px 10px;border-radius:6px;border:1.5px solid #fca5a5;background:#fff;color:#b91c1c;cursor:pointer;font-size:0.82rem;" title="ลบ">🗑</button>' +
+        '</div></td>' +
+      '</tr>';
+  }).join('');
+}
+
+// ── สร้าง slug จากชื่อ ────────────────────────────────────────────────────────
+function toSlug(str) {
+  return str.toLowerCase()
+    .replace(/\s+/g, '-')
+    .replace(/[^a-z0-9\-ก-๙]/g, '')
+    .replace(/-+/g, '-')
+    .substring(0, 40) || ('link-' + Date.now());
+}
+
+// ── Modal ─────────────────────────────────────────────────────────────────────
+function openLinkModal() {
+  document.getElementById('link-name').value = '';
+  document.getElementById('link-slug').value = '';
+  document.getElementById('link-modal').style.display = 'flex';
+  setTimeout(function(){ document.getElementById('link-name').focus(); }, 100);
+}
+function closeLinkModal() {
+  document.getElementById('link-modal').style.display = 'none';
+}
+
+// ── auto-fill slug จากชื่อ ────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', function() {
+  var nameEl = document.getElementById('link-name');
+  var slugEl = document.getElementById('link-slug');
+  if (nameEl && slugEl) {
+    nameEl.addEventListener('input', function() {
+      if (!slugEl._touched) slugEl.value = toSlug(nameEl.value);
+    });
+    slugEl.addEventListener('input', function() {
+      slugEl._touched = slugEl.value.length > 0;
+    });
+  }
+  renderLinks();
+});
+
+// ── สร้างลิงก์ ────────────────────────────────────────────────────────────────
+function createLink() {
+  var name = document.getElementById('link-name').value.trim();
+  var slug = document.getElementById('link-slug').value.trim() || toSlug(name);
+  if (!name) { toast('กรุณาใส่ชื่อกลุ่มค่ะ'); return; }
+
+  // ตรวจซ้ำ
+  if (inviteLinks.some(function(lk){ return lk.slug === slug; })) {
+    toast('Slug นี้มีอยู่แล้วค่ะ กรุณาใช้ชื่ออื่น'); return;
+  }
+
+  inviteLinks.push({ name: name, slug: slug, active: true, createdAt: new Date().toISOString() });
+  saveLinks();
+  renderLinks();
+  closeLinkModal();
+  toast('✅ สร้างลิงก์ "' + name + '" เรียบร้อยแล้วค่ะ');
+}
+
+// ── toggle เปิด/ปิด ───────────────────────────────────────────────────────────
+function toggleLink(i) {
+  inviteLinks[i].active = !inviteLinks[i].active;
+  var status = inviteLinks[i].active ? 'เปิด' : 'ปิด';
+  saveLinks();
+  renderLinks();
+  toast((inviteLinks[i].active ? '🟢' : '🔴') + ' ' + inviteLinks[i].name + ' — ' + status + 'แล้วค่ะ');
+}
+
+// ── ลบลิงก์ ───────────────────────────────────────────────────────────────────
+function deleteLink(i) {
+  if (!confirm('ลบลิงก์ "' + inviteLinks[i].name + '" ใช่ไหมคะ?')) return;
+  inviteLinks.splice(i, 1);
+  saveLinks();
+  renderLinks();
+  toast('🗑 ลบลิงก์เรียบร้อยแล้วค่ะ');
+}
+
+// ── copy URL ─────────────────────────────────────────────────────────────────
+function copyLink(i) {
+  var base = getInviteBase();
+  var url  = base + '?link=' + encodeURIComponent(inviteLinks[i].slug);
+  navigator.clipboard.writeText(url).then(function() {
+    toast('📋 Copy ลิงก์ "' + inviteLinks[i].name + '" แล้วค่ะ');
+  }).catch(function() {
+    prompt('Copy ลิงก์นี้ค่ะ:', url);
+  });
+}
+
+// ── บันทึก ────────────────────────────────────────────────────────────────────
+function saveLinks() {
+  localStorage.setItem('wedding_links', JSON.stringify(inviteLinks));
+  // sync ขึ้น Apps Script ด้วย (ถ้ามี)
+  var scriptUrl = localStorage.getItem('script_url');
+  if (scriptUrl) {
+    fetch(scriptUrl, {
+      method: 'POST', mode: 'no-cors',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'links', links: inviteLinks })
+    }).catch(function(){});
+  }
+}
 </script>
 
 <!-- ── PWA Service Worker Registration ───────────────────────── -->

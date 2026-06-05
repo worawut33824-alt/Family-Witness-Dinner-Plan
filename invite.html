@@ -2533,10 +2533,62 @@ function toast(msg, dur = 2800) {
 
 // Init tree at 0
 updateTree(0);
-
-
 </script>
 
+<!-- ── LINK GUARD — ตรวจสอบลิงก์เปิด/ปิด ───────────────────────────────── -->
+<div id="link-closed-overlay" style="
+  display:none;position:fixed;inset:0;z-index:99999;
+  background:linear-gradient(135deg,#f0e6d3 0%,#e8d5c4 100%);
+  align-items:center;justify-content:center;text-align:center;padding:24px;
+  font-family:'Sarabun',sans-serif;
+">
+  <div style="max-width:400px;margin:0 auto;">
+    <div style="font-size:3.5rem;margin-bottom:16px;">🌸</div>
+    <div style="font-family:'Cormorant Garamond',Georgia,serif;font-size:1.8rem;font-style:italic;color:#7a5c3a;margin-bottom:12px;">
+      เอ็ม &amp; แป้ง
+    </div>
+    <div style="font-size:0.85rem;letter-spacing:3px;color:#b5838d;text-transform:uppercase;margin-bottom:24px;">
+      Family Witness Dinner
+    </div>
+    <div style="background:#fff;border-radius:16px;padding:28px 24px;box-shadow:0 4px 24px rgba(0,0,0,0.08);">
+      <div style="font-size:1.8rem;margin-bottom:12px;">🙏</div>
+      <div style="font-size:1.1rem;font-weight:700;color:#3d2c2c;margin-bottom:8px;">
+        ปิดรับลงทะเบียนแล้วค่ะ
+      </div>
+      <div style="font-size:0.9rem;color:#7a6050;line-height:1.8;">
+        ขอบคุณที่ให้ความสนใจนะคะ<br>
+        ลิงก์นี้ปิดรับลงทะเบียนเรียบร้อยแล้วค่ะ<br>
+        หากมีข้อสงสัยกรุณาติดต่อเจ้าบ่าว-เจ้าสาวโดยตรงค่ะ
+      </div>
+    </div>
+    <div style="margin-top:20px;font-size:0.78rem;color:#b5838d;letter-spacing:1px;">
+      28 · 11 · 2569 &nbsp;·&nbsp; TARA Terrace
+    </div>
+  </div>
+</div>
+
+<script>
+(function() {
+  var params = new URLSearchParams(window.location.search);
+  var linkSlug = params.get('link');
+  if (!linkSlug) return; // ไม่มี ?link= ใช้งานปกติ
+
+  // ดึง links จาก localStorage (sync จาก dashboard)
+  var links = [];
+  try { links = JSON.parse(localStorage.getItem('wedding_links') || '[]'); } catch(e) {}
+
+  var found = links.find(function(lk) {
+    return lk.slug === linkSlug;
+  });
+
+  // ถ้าไม่เจอ slug หรือ active = false → แสดงหน้าปิด
+  if (!found || !found.active) {
+    document.getElementById('link-closed-overlay').style.display = 'flex';
+    // ซ่อน content หลักทั้งหมด
+    document.body.style.overflow = 'hidden';
+  }
+})();
+</script>
 
 </body>
 </html>
