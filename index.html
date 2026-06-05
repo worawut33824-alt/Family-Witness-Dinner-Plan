@@ -2233,7 +2233,7 @@ function deleteLink(i) {
 // ── copy URL ─────────────────────────────────────────────────────────────────
 function copyLink(i) {
   var base = getInviteBase();
-  var url  = base + '?link=' + encodeURIComponent(inviteLinks[i].slug);
+  var url  = base + '?link=' + encodeURIComponent(inviteLinks[i].slug) + '&s=' + (inviteLinks[i].active ? '1' : '0');
   navigator.clipboard.writeText(url).then(function() {
     toast('📋 Copy ลิงก์ "' + inviteLinks[i].name + '" แล้วค่ะ');
   }).catch(function() {
