@@ -2637,8 +2637,13 @@ updateTree(0);
   var linkSlug = params.get('link');
   if (!linkSlug) return; // ไม่มี ?link= → ใช้งานปกติ
 
-  var overlay = document.getElementById('link-closed-overlay');
-  var loadEl  = document.getElementById('link-loading-msg');
+  var overlay  = document.getElementById('link-closed-overlay');
+  var loadEl   = document.getElementById('link-loading-msg');
+
+  // แสดง loading ทันที
+  overlay.style.display = 'flex';
+  if (loadEl) loadEl.style.display = 'block';
+  document.body.style.overflow = 'hidden';
 
   function showOpen() {
     overlay.style.display = 'none';
@@ -2646,31 +2651,26 @@ updateTree(0);
   }
 
   function showClosed() {
-    overlay.style.display = 'flex';
     if (loadEl) loadEl.style.display = 'none';
     document.getElementById('link-closed-content').style.display = 'block';
-    document.body.style.overflow = 'hidden';
   }
 
-  // ── Step 1: อ่านจาก ?s= ก่อนเลย (เร็วที่สุด ไม่ต้อง fetch) ───────────────
-  var sParam = params.get('s');
-  if (sParam === '0') { showClosed(); return; }
-  if (sParam === '1') { showOpen();  return; }
-
-  // ── Step 2: ไม่มี ?s= → เรียก Apps Script ───────────────────────────────────
-  overlay.style.display = 'flex';
-  if (loadEl) loadEl.style.display = 'block';
-  document.body.style.overflow = 'hidden';
-
+  // ── เช็ค Apps Script ทุกครั้ง — ปิดจาก dashboard มีผลทันที ─────────────────
   var scriptUrl = SCRIPT_URL;
   if (!scriptUrl) { showOpen(); return; }
 
   fetch(scriptUrl + '?action=check_link&slug=' + encodeURIComponent(linkSlug))
     .then(function(r) { return r.json(); })
     .then(function(data) {
-      data.active === false ? showClosed() : showOpen();
+      if (data.active === false) {
+        showClosed(); // Apps Script ยืนยันว่าปิด
+      } else {
+        showOpen();   // เปิด หรือ Apps Script ยังไม่มี action นี้ (fail open)
+      }
     })
-    .catch(function() { showOpen(); }); // fail open
+    .catch(function() {
+      showOpen(); // เรียกไม่ได้ → fail open ปลอดภัยกว่า
+    });
 })();
 </script>
 
