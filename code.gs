@@ -1818,22 +1818,18 @@ function readAmountFromSlip(base64, mimeType) {
     if (!apiKey || !base64 || base64.length < 100) return '';
 
     var url = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=' + apiKey;
-    var systemPrompt = 'You are an expert OCR and financial data extraction assistant. Your task is to extract transaction details from the provided Thai bank transfer slip image. Strictly return the output as a clean JSON object. Do not include any markdown formatting, and do not include any conversational text. If a field cannot be found, set its value to null.';
-    var userPrompt = 'Extract the following information from this Thai bank slip and format it as a JSON object with these exact keys: {"bank_sender":"Name of the sending bank","bank_receiver":"Name of the receiving bank","sender_name":"Full name of sender","receiver_name":"Full name of receiver","amount":"Transfer amount as a float number (e.g. 1500.00)","date":"Date in YYYY-MM-DD","time":"Time in HH:MM (24h)","transaction_id":"Ref No. or Transaction ID","is_successful":"true if successful transaction"}';
+    var prompt = 'Look at this Thai bank transfer slip image. Find the transfer amount (ยอดโอนเงิน). ' +
+      'It is the large prominent number on the slip (NOT account number, NOT date, NOT reference number). ' +
+      'Reply with ONLY the number in digits, no commas, no "บาท", no spaces. Example: 399';
 
     var payload = {
-      system_instruction: { parts: [{ text: systemPrompt }] },
       contents: [{
         parts: [
-          { text: userPrompt },
-          { inline_data: { mime_type: mimeType, data: base64 } }
+          { inline_data: { mime_type: mimeType, data: base64 } },
+          { text: prompt }
         ]
       }],
-      generationConfig: {
-        temperature: 0,
-        maxOutputTokens: 512,
-        responseMimeType: 'application/json'
-      }
+      generationConfig: { temperature: 0, maxOutputTokens: 32 }
     };
 
     var resp = UrlFetchApp.fetch(url, {
@@ -1843,28 +1839,16 @@ function readAmountFromSlip(base64, mimeType) {
       muteHttpExceptions: true
     });
 
-    var json = JSON.parse(resp.getContentText());
     Logger.log('Gemini HTTP status: ' + resp.getResponseCode());
+    var json = JSON.parse(resp.getContentText());
 
     if (json.candidates && json.candidates[0] && json.candidates[0].content) {
       var text = json.candidates[0].content.parts[0].text.trim();
-      Logger.log('Gemini slip OCR raw: ' + text);
-      try {
-        var parsed = JSON.parse(text);
-        Logger.log('amount field: ' + parsed.amount);
-        if (parsed.amount !== null && parsed.amount !== undefined) {
-          var amt = String(parsed.amount).replace(/,/g, '');
-          var num = parseFloat(amt);
-          return isNaN(num) ? '' : String(Math.round(num));
-        }
-      } catch(parseErr) {
-        Logger.log('JSON parse error: ' + parseErr + ' | raw: ' + text);
-        // fallback: หาตัวเลขจาก raw text
-        var m = text.replace(/,/g, '').match(/\d+(?:\.\d+)?/);
-        return m ? String(Math.round(parseFloat(m[0]))) : '';
-      }
+      Logger.log('Gemini slip OCR raw: [' + text + ']');
+      var m = text.replace(/,/g, '').match(/\d+(?:\.\d+)?/);
+      return m ? String(Math.round(parseFloat(m[0]))) : '';
     } else {
-      Logger.log('Gemini error response: ' + resp.getContentText());
+      Logger.log('Gemini error: ' + resp.getContentText().substring(0, 500));
     }
   } catch(e) {
     Logger.log('readAmountFromSlip error: ' + e);
