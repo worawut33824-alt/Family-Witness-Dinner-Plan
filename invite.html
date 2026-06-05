@@ -2873,19 +2873,31 @@ function onSlipSelected(input) {
     prev.src = e.target.result; prev.style.display = 'block';
 
     // ── auto-OCR ──
-    if (!SCRIPT_URL) return;
     try {
       status.textContent = '⏳ กำลังอ่านยอด...'; status.style.display = 'inline';
+      amtEl.value = '';
       amtEl.placeholder = 'กำลังอ่านยอดจากสลิป...';
       const b64 = e.target.result.split(',')[1];
-      const resp = await fetch(SCRIPT_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'text/plain' },
-        body: JSON.stringify({ action: 'readSlip', slipBase64: b64, slipMime: file.type })
-      });
-      const data = await resp.json();
-      if (data.amount && parseFloat(data.amount) > 0) {
-        amtEl.value = data.amount;
+
+      let amount = '';
+      if (SCRIPT_URL) {
+        // ── production: เรียก Apps Script + Gemini ──
+        const resp = await fetch(SCRIPT_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain' },
+          body: JSON.stringify({ action: 'readSlip', slipBase64: b64, slipMime: file.type })
+        });
+        const data = await resp.json();
+        amount = data.amount || '';
+      } else {
+        // ── TEST MODE: mock OCR delay 2 วินาที ──
+        await new Promise(r => setTimeout(r, 2000));
+        const mockAmounts = ['500', '1000', '1500', '2000', '500'];
+        amount = mockAmounts[Math.floor(Math.random() * mockAmounts.length)];
+      }
+
+      if (amount && parseFloat(amount) > 0) {
+        amtEl.value = amount;
         status.textContent = '✅ อ่านยอดได้';
         status.style.color = '#4a7c59';
       } else {
