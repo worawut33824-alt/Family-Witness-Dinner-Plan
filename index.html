@@ -1824,7 +1824,7 @@ function closeModal(id) { document.getElementById(id).classList.remove('show'); 
 document.querySelectorAll('.modal-overlay').forEach(m => m.addEventListener('click', e => { if(e.target===m) m.classList.remove('show'); }));
 
 // ─── GOOGLE SHEETS SYNC ──────────────────────────────────────────────────────
-let scriptUrl = localStorage.getItem('apps_script_url') || 'https://script.google.com/macros/s/AKfycby83WfEInffbYwVobaefKHXlqpfTMjJq1HZVi3i30cvNtSQ71208NpHVZgwLyXQeQ745w/exec';
+let scriptUrl = localStorage.getItem('apps_script_url') || 'https://script.google.com/macros/s/AKfycbyGS50jFbBmz6nU-o6zPBGZrSokuyxD1TPQMhpfzwbpmzOJSg4emYaXKHv6QB_8Q9wAbg/exec';
 let isSyncing = false;
 
 // ── AbortSignal.timeout polyfill (mobile browsers ที่ไม่รองรับ) ──
