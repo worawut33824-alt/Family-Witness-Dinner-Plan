@@ -2662,14 +2662,15 @@ updateTree(0);
   fetch(scriptUrl + '?action=check_link&slug=' + encodeURIComponent(linkSlug))
     .then(function(r) { return r.json(); })
     .then(function(data) {
-      if (data.active === false) {
-        showClosed(); // Apps Script ยืนยันว่าปิด
+      // ปิดเฉพาะเมื่อ Apps Script ยืนยันชัดเจนว่า active=false และ slug มีอยู่จริง
+      if (data.active === false && data.reason !== 'not_found') {
+        showClosed();
       } else {
-        showOpen();   // เปิด หรือ Apps Script ยังไม่มี action นี้ (fail open)
+        showOpen(); // เปิด, ไม่พบ slug, หรือ Apps Script ไม่รู้จัก action
       }
     })
     .catch(function() {
-      showOpen(); // เรียกไม่ได้ → fail open ปลอดภัยกว่า
+      showOpen(); // เรียกไม่ได้ → fail open
     });
 })();
 </script>
