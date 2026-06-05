@@ -1862,18 +1862,22 @@ function readAmountFromSlip(base64, mimeType) {
 
 // ── บันทึกการโอนเงิน ──────────────────────────────────────────
 function saveDonation(ss, body) {
-  // 1. อัปโหลดสลิปลง Drive
+  // 1. OCR ยอด (ถ้ายังไม่มี) — ทำก่อนเพื่อใช้ตั้งชื่อไฟล์
+  var amount = String(body.amount || '').trim();
+  if (!amount && body.slipBase64 && body.slipBase64.length > 100) {
+    amount = readAmountFromSlip(body.slipBase64, body.slipMime || 'image/jpeg');
+  }
+
+  // 2. อัปโหลดสลิปลง Drive — ตั้งชื่อตามผู้โอน + ยอด + วันที่
   var slipUrl = '';
   if (body.slipBase64 && body.slipBase64.length > 100) {
     var ts  = Utilities.formatDate(new Date(), 'Asia/Bangkok', 'yyyyMMdd_HHmmss');
     var ext = (body.slipMime || '').indexOf('png') >= 0 ? 'png' : 'jpg';
-    slipUrl = savePictureToDrive(body.slipBase64, 'slip_' + ts + '.' + ext);
-  }
-
-  // 2. OCR ยอด (ถ้ายังไม่มี)
-  var amount = String(body.amount || '').trim();
-  if (!amount && body.slipBase64 && body.slipBase64.length > 100) {
-    amount = readAmountFromSlip(body.slipBase64, body.slipMime || 'image/jpeg');
+    // ทำชื่อให้ปลอดภัยสำหรับชื่อไฟล์ (ตัดอักขระต้องห้าม)
+    var safeName = String(body.name || 'ไม่ระบุชื่อ').replace(/[\\\/:*?"<>|]/g, '').trim() || 'ไม่ระบุชื่อ';
+    var amtPart  = amount ? '_' + amount + 'บาท' : '';
+    var fileName = safeName + amtPart + '_' + ts + '.' + ext;
+    slipUrl = savePictureToDrive(body.slipBase64, fileName);
   }
 
   // 3. บันทึกลง sheet "โอนเงิน"
