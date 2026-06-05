@@ -18,6 +18,9 @@ function doGet(e) {
       result.checklist = getChecklist(ss);
       result.guests    = getGuests(ss);
       result.budget    = getBudget(ss);
+      result.donations = getDonations(ss);
+    } else if (action === 'donations') {
+      result.donations = getDonations(ss);
     } else if (action === 'expenses') {
       result.expenses  = getExpenses(ss);
     } else if (action === 'contacts') {
@@ -1909,6 +1912,46 @@ function saveDonation(ss, body) {
   }
 
   return { amount: String(amountNum || ''), slipUrl: slipUrl };
+}
+
+// ── ดึงรายการการโอนเงินทั้งหมด (สำหรับ Dashboard) ─────────────
+function getDonations(ss) {
+  var sheet = ss.getSheetByName('โอนเงิน');
+  if (!sheet) return [];
+  var lastRow = sheet.getLastRow();
+  if (lastRow < 2) return [];
+
+  var values   = sheet.getRange(2, 1, lastRow - 1, 5).getValues();
+  var formulas = sheet.getRange(2, 4, lastRow - 1, 1).getFormulas();
+  var list = [];
+
+  for (var i = 0; i < values.length; i++) {
+    var row = values[i];
+    var name = String(row[1] || '').trim();
+    var amt  = parseFloat(row[2]) || 0;
+    if (!name && !amt) continue;
+
+    // ดึง URL จริงจากสูตร HYPERLINK ถ้ามี
+    var slipUrl = '';
+    var f = formulas[i][0] || '';
+    var mm = f.match(/HYPERLINK\("([^"]+)"/i);
+    if (mm) slipUrl = mm[1];
+    else if (String(row[3] || '').indexOf('http') === 0) slipUrl = String(row[3]);
+
+    var dateVal = row[0];
+    var dateStr = (dateVal instanceof Date)
+      ? Utilities.formatDate(dateVal, 'Asia/Bangkok', 'dd/MM/yyyy HH:mm')
+      : String(dateVal || '');
+
+    list.push({
+      date:    dateStr,
+      name:    name,
+      amount:  amt,
+      slipUrl: slipUrl,
+      note:    String(row[4] || '')
+    });
+  }
+  return list;
 }
 
 // ── ตั้ง Gemini API Key (รันครั้งเดียวจาก Script Editor) ──────

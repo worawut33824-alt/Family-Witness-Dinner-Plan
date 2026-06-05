@@ -34,7 +34,12 @@
     --danger: #c0392b;
     --warning: #e67e22;
     --shadow: 0 2px 12px rgba(123,156,191,0.18);
+    --donate: #5a9e6f; --donate-dark: #3d7a52; --donate-soft: #e3f3e9;
   }
+  .dash-dwidget { background: linear-gradient(135deg,#f3fbf6,#eaf6ee); border:1px solid #cfe7d8; }
+  .don-big { font-size:2.2rem;font-weight:800;color:var(--donate-dark);line-height:1; }
+  .don-chip { display:inline-flex;align-items:center;gap:6px;background:#fff;border:1px solid #cfe7d8;border-radius:20px;padding:5px 12px;font-size:0.8rem;color:#3d7a52;font-weight:600; }
+  .amt-donate { font-weight:700; color:var(--donate-dark); text-align:right; }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
 
@@ -351,6 +356,7 @@
     <button class="tab-btn active" onclick="showPage('dashboard')">📊 Dashboard</button>
     <button class="tab-btn" onclick="showPage('expenses')">💰 ค่าใช้จ่าย</button>
     <button class="tab-btn" onclick="showPage('budget')">📋 งบประมาณ</button>
+    <button class="tab-btn" onclick="showPage('donations')">💝 การสนับสนุน</button>
     <button class="tab-btn" onclick="showPage('checklist')">✅ Checklist</button>
     <button class="tab-btn" onclick="showPage('contacts')">📞 ผู้ติดต่อ</button>
     <button class="tab-btn" onclick="showPage('guests')">👥 แขก</button>
@@ -376,6 +382,7 @@
   <button class="drawer-nav-btn active" onclick="showPage('dashboard')"><span class="di">📊</span>Dashboard</button>
   <button class="drawer-nav-btn" onclick="showPage('expenses')"><span class="di">💰</span>ค่าใช้จ่าย</button>
   <button class="drawer-nav-btn" onclick="showPage('budget')"><span class="di">📋</span>งบประมาณ</button>
+  <button class="drawer-nav-btn" onclick="showPage('donations')"><span class="di">💝</span>การสนับสนุน</button>
   <button class="drawer-nav-btn" onclick="showPage('checklist')"><span class="di">✅</span>Checklist</button>
   <button class="drawer-nav-btn" onclick="showPage('contacts')"><span class="di">📞</span>ผู้ติดต่อ</button>
   <button class="drawer-nav-btn" onclick="showPage('guests')"><span class="di">👥</span>แขก</button>
@@ -426,10 +433,22 @@
       <div id="dash-recent"></div>
     </div>
   </div>
-  <div class="card" style="margin-bottom:8px">
+  <div class="card" style="margin-bottom:28px">
     <div class="card-title">👥 สรุปแขก</div>
     <div id="guest-person-grid" style="display:flex;flex-wrap:wrap;gap:3px;margin-bottom:10px"></div>
     <div id="guest-legend"></div>
+  </div>
+
+  <!-- DONATION SUMMARY WIDGET -->
+  <div class="grid-2" style="margin-bottom:8px">
+    <div class="card dash-dwidget" style="margin-bottom:0">
+      <div class="card-title" style="color:var(--donate-dark)">💝 การสนับสนุน</div>
+      <div id="dash-don-summary"></div>
+    </div>
+    <div class="card" style="margin-bottom:0">
+      <div class="card-title">📊 แนวโน้มการสนับสนุน</div>
+      <div class="chart-wrap" style="height:200px"><canvas id="dashDonChart"></canvas></div>
+    </div>
   </div>
 </div>
 
@@ -475,6 +494,35 @@
   <div class="grid-4" id="budget-summary-cards" style="margin-bottom:24px"></div>
 
   <div id="budget-detail"></div>
+</div>
+
+<!-- DONATIONS / การสนับสนุน -->
+<div id="page-donations" class="page">
+  <div class="section-header">
+    <h2>💝 การสนับสนุน</h2>
+    <span id="don-count-label" style="font-size:0.8rem;color:var(--text-light)"></span>
+  </div>
+
+  <!-- summary cards -->
+  <div class="grid-4" id="don-summary-cards" style="margin-bottom:24px"></div>
+
+  <!-- charts -->
+  <div class="grid-2" style="margin-bottom:24px">
+    <div class="card" style="margin-bottom:0">
+      <div class="card-title">📈 ยอดสะสมรายวัน</div>
+      <div class="chart-wrap"><canvas id="donCumChart"></canvas></div>
+    </div>
+    <div class="card" style="margin-bottom:0">
+      <div class="card-title">🏆 ผู้สนับสนุนสูงสุด (Top 5)</div>
+      <div class="chart-wrap"><canvas id="donTopChart"></canvas></div>
+    </div>
+  </div>
+
+  <!-- table -->
+  <div class="card" style="padding:0;overflow:hidden;">
+    <div class="card-title" style="padding:20px 20px 0;margin-bottom:12px;">🧾 รายการแจ้งโอนทั้งหมด</div>
+    <div style="overflow-x:auto;"><div id="don-table"></div></div>
+  </div>
 </div>
 
 <!-- CHECKLIST -->
@@ -1032,6 +1080,7 @@ let expenses = JSON.parse(localStorage.getItem('wedding_expenses') || 'null') ||
 let checklist = JSON.parse(localStorage.getItem('wedding_checklist') || 'null') || JSON.parse(JSON.stringify(INITIAL_CHECKLIST));
 let contacts = JSON.parse(localStorage.getItem('wedding_contacts') || 'null') || JSON.parse(JSON.stringify(INITIAL_CONTACTS));
 let guests = JSON.parse(localStorage.getItem('wedding_guests') || '[]');
+let donations = JSON.parse(localStorage.getItem('wedding_donations') || '[]');
 const fmtPhone = p => { const s=String(p).trim(); return (s && !s.startsWith('0') && /^[689]\d{8}$/.test(s)) ? '0'+s : s; };
 let budgetPlan = (() => {
   try {
@@ -1096,6 +1145,7 @@ function showPage(id) {
   if(id==='dashboard') renderDashboard();
   if(id==='expenses') renderExpenses();
   if(id==='budget') renderBudgetDetail();
+  if(id==='donations') renderDonations();
   if(id==='checklist') renderChecklist();
   if(id==='contacts') renderContacts();
   if(id==='guests') renderGuests();
@@ -1312,6 +1362,138 @@ function renderDashboard() {
       </div>
     </div>`;
 
+  // donation widget
+  renderDashDonations();
+}
+
+// ─── DONATIONS / การสนับสนุน ─────────────────────────────────────────────────
+let donCumChartInst = null, donTopChartInst = null, dashDonChartInst = null;
+
+function donEsc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function donStats() {
+  const total = donations.reduce((s,d)=>s+(Number(d.amount)||0),0);
+  const count = donations.length;
+  const avg   = count ? Math.round(total/count) : 0;
+  const max   = donations.reduce((m,d)=>Math.max(m,Number(d.amount)||0),0);
+  const top   = donations.find(d=>(Number(d.amount)||0)===max);
+  return { total, count, avg, max, topName: top?top.name:'' };
+}
+// จัดกลุ่มยอดรายวันจาก date string "dd/MM/yyyy HH:mm"
+function donByDay() {
+  const map = {};
+  donations.forEach(d => {
+    const day = String(d.date||'').trim().split(' ')[0] || '—';
+    map[day] = (map[day]||0) + (Number(d.amount)||0);
+  });
+  // เรียงตามวันที่จริง
+  const keys = Object.keys(map).sort((a,b)=>{
+    const pa=a.split('/'), pb=b.split('/');
+    return new Date(pa[2],pa[1]-1,pa[0]) - new Date(pb[2],pb[1]-1,pb[0]);
+  });
+  return { keys, map };
+}
+
+function renderDashDonations() {
+  const s = donStats();
+  const box = document.getElementById('dash-don-summary');
+  if (box) {
+    if (!s.count) {
+      box.innerHTML = `<div style="color:var(--text-light);font-size:0.88rem;padding:8px 0">ยังไม่มีการแจ้งโอนเข้ามา 🌱</div>`;
+    } else {
+      const last = donations[donations.length-1];
+      box.innerHTML = `
+        <div style="display:flex;align-items:flex-end;gap:10px;margin-bottom:14px">
+          <div class="don-big">${fmtB(s.total)}</div>
+          <div style="color:var(--text-light);font-size:0.85rem;padding-bottom:5px">จาก ${s.count} ท่าน</div>
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <span class="don-chip">เฉลี่ย ${fmtB(s.avg)} / คน</span>
+          ${last?`<span class="don-chip">ล่าสุด ${fmtB(Number(last.amount)||0)} · ${donEsc(last.name)}</span>`:''}
+        </div>`;
+    }
+  }
+  // mini chart
+  const { keys, map } = donByDay();
+  if (dashDonChartInst) { dashDonChartInst.destroy(); dashDonChartInst=null; }
+  const cv = document.getElementById('dashDonChart');
+  if (cv) {
+    dashDonChartInst = new Chart(cv, {
+      type:'bar',
+      data:{ labels:keys, datasets:[{ data:keys.map(k=>map[k]), backgroundColor:'#5a9e6f', borderRadius:5 }] },
+      options:{ responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}}, scales:{y:{ticks:{callback:v=>'฿'+Number(v).toLocaleString()}}} }
+    });
+  }
+}
+
+function renderDonations() {
+  const s = donStats();
+  const label = document.getElementById('don-count-label');
+  if (label) label.textContent = s.count ? `${s.count} รายการ · รวม ${fmtB(s.total)}` : '';
+
+  // summary cards
+  document.getElementById('don-summary-cards').innerHTML = `
+    <div class="stat-card">
+      <div class="stat-value" style="color:var(--donate-dark)">${fmtB(s.total)}</div>
+      <div class="stat-label">ยอดสนับสนุนรวม</div>
+      <div class="stat-sub">💚 จากใจทุกท่าน</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">${s.count}</div>
+      <div class="stat-label">จำนวนผู้สนับสนุน</div>
+      <div class="stat-sub">คน</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">${fmtB(s.avg)}</div>
+      <div class="stat-label">ยอดเฉลี่ย / คน</div>
+      <div class="stat-sub">ค่าเฉลี่ย</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value" style="color:var(--gold)">${fmtB(s.max)}</div>
+      <div class="stat-label">ยอดสูงสุด</div>
+      <div class="stat-sub">${s.topName?donEsc(s.topName):'—'}</div>
+    </div>`;
+
+  // cumulative chart
+  const { keys, map } = donByDay();
+  let run = 0; const cum = keys.map(k => run += map[k]);
+  if (donCumChartInst) { donCumChartInst.destroy(); donCumChartInst=null; }
+  const cvCum = document.getElementById('donCumChart');
+  if (cvCum) donCumChartInst = new Chart(cvCum, {
+    type:'line',
+    data:{ labels:keys, datasets:[{ label:'ยอดสะสม', data:cum, borderColor:'#3d7a52', backgroundColor:'rgba(90,158,111,0.15)', fill:true, tension:0.3, pointBackgroundColor:'#3d7a52' }] },
+    options:{ responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}}, scales:{y:{ticks:{callback:v=>'฿'+Number(v).toLocaleString()}}} }
+  });
+
+  // top 5 chart
+  const top = [...donations].sort((a,b)=>(Number(b.amount)||0)-(Number(a.amount)||0)).slice(0,5);
+  if (donTopChartInst) { donTopChartInst.destroy(); donTopChartInst=null; }
+  const cvTop = document.getElementById('donTopChart');
+  if (cvTop) donTopChartInst = new Chart(cvTop, {
+    type:'bar',
+    data:{ labels:top.map(d=>d.name||'—'), datasets:[{ data:top.map(d=>Number(d.amount)||0), backgroundColor:['#3d7a52','#5a9e6f','#7bb88f','#9ccfae','#bfe3cc'], borderRadius:6 }] },
+    options:{ indexAxis:'y', responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}}, scales:{x:{ticks:{callback:v=>'฿'+Number(v).toLocaleString()}}} }
+  });
+
+  // table
+  const tbl = document.getElementById('don-table');
+  if (!s.count) {
+    tbl.innerHTML = `<div style="text-align:center;padding:40px;color:#999;">ยังไม่มีการแจ้งโอนเข้ามา 🌱<br><small style="color:#bbb">เมื่อแขกแจ้งโอนผ่านหน้าเชิญ รายการจะแสดงที่นี่</small></div>`;
+    return;
+  }
+  let html = '<table><thead><tr><th>วันที่</th><th>ชื่อผู้โอน</th><th style="text-align:right">ยอด (บาท)</th><th>สลิป</th></tr></thead><tbody>';
+  [...donations].reverse().forEach(d => {
+    const slip = d.slipUrl
+      ? `<a href="${donEsc(d.slipUrl)}" target="_blank" style="color:var(--primary-dark);text-decoration:none;font-size:0.8rem">🖼️ ดูสลิป</a>`
+      : '<span style="color:#bbb;font-size:0.8rem">—</span>';
+    html += `<tr>
+      <td style="font-size:0.78rem;color:var(--text-light)">${donEsc(d.date)}</td>
+      <td><b>${donEsc(d.name)}</b></td>
+      <td class="amt-donate">${(Number(d.amount)||0).toLocaleString()}</td>
+      <td>${slip}</td>
+    </tr>`;
+  });
+  html += '</tbody></table>';
+  tbl.innerHTML = html;
 }
 
 function checkDone() { return checklist.flatMap(p=>p.items).filter(i=>i.status==='done').length; }
@@ -1947,6 +2129,10 @@ async function autoLoad() {
       guests = data.guests;
       nextGstId = guests.reduce((m,g)=>Math.max(m,g.id),0)+1;
     }
+    if (Array.isArray(data.donations)) {
+      donations = data.donations;
+      localStorage.setItem('wedding_donations', JSON.stringify(donations));
+    }
     mergeBudgetFromSheet(data.budget); // safe-merge: อัปเดตเฉพาะตัวเลข ไม่แทนโครงสร้าง
     save();
     localStorage.setItem('last_sync_time', new Date().toISOString());
@@ -1970,6 +2156,7 @@ function renderActivePage() {
     'page-expenses':  () => renderExpenses(),
     'page-guests':    () => { renderGuests(); renderGuestStats(); },
     'page-budget':    () => renderBudgetDetail(),
+    'page-donations': () => renderDonations(),
     'page-checklist': () => renderChecklist(),
   };
   for (const [id, fn] of Object.entries(pages)) {
