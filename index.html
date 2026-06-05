@@ -2246,11 +2246,14 @@ function saveLinks() {
   localStorage.setItem('wedding_links', JSON.stringify(inviteLinks));
   var url = scriptUrl || localStorage.getItem('apps_script_url') || '';
   if (!url) return;
+  // ใช้ text/plain (simple request) แทน no-cors+json เพื่อให้ body ส่งถึง Apps Script จริง
   fetch(url, {
-    method: 'POST', mode: 'no-cors',
-    headers: { 'Content-Type': 'application/json' },
+    method: 'POST',
+    headers: { 'Content-Type': 'text/plain' },
     body: JSON.stringify({ action: 'links', links: inviteLinks })
-  }).catch(function(){});
+  }).then(function(r) { return r.json(); })
+    .then(function(d) { if (d && d.status === 'ok') console.log('[Links] saved to Sheet ✅'); })
+    .catch(function(err) { console.warn('[Links] sync failed:', err); });
 }
 
 // ── โหลดลิงก์ — localStorage เป็นหลัก, server sync รอง ─────────────────────
