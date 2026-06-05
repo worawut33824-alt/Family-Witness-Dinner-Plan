@@ -585,18 +585,8 @@
     <div>ยังไม่มีลิงก์เชิญ — กด "สร้างลิงก์ใหม่" เพื่อเริ่มต้นค่ะ</div>
   </div>
 
-  <div id="links-table-wrap" style="overflow-x:auto;">
-    <table style="width:100%;border-collapse:collapse;font-size:0.88rem;">
-      <thead>
-        <tr style="background:var(--primary);color:#fff;text-align:left;">
-          <th style="padding:10px 14px;border-radius:8px 0 0 0;color:#fff;">ชื่อกลุ่ม</th>
-          <th style="padding:10px 14px;color:#fff;">ลิงก์</th>
-          <th style="padding:10px 14px;text-align:center;color:#fff;">สถานะ</th>
-          <th style="padding:10px 14px;text-align:center;border-radius:0 8px 0 0;color:#fff;">จัดการ</th>
-        </tr>
-      </thead>
-      <tbody id="links-tbody"></tbody>
-    </table>
+  <div id="links-table-wrap">
+    <div id="links-tbody" style="display:flex;flex-direction:column;gap:12px;"></div>
   </div>
 </div>
 
@@ -2117,7 +2107,7 @@ function getInviteBase() {
 
 // ── render ตาราง ──────────────────────────────────────────────────────────────
 function renderLinks() {
-  var tbody = document.getElementById('links-tbody');
+  var container = document.getElementById('links-tbody');
   var empty = document.getElementById('links-empty');
   var wrap  = document.getElementById('links-table-wrap');
 
@@ -2130,31 +2120,34 @@ function renderLinks() {
   wrap.style.display  = 'block';
 
   var base = getInviteBase();
-  tbody.innerHTML = inviteLinks.map(function(lk, i) {
-    var url     = base + '?link=' + encodeURIComponent(lk.slug);
-    var isOpen  = lk.active;
-    var badge   = isOpen
-      ? '<span style="background:#d4f5e2;color:#1a7a3f;border-radius:20px;padding:3px 12px;font-size:0.78rem;font-weight:600;">🟢 เปิด</span>'
-      : '<span style="background:#fde8e8;color:#b91c1c;border-radius:20px;padding:3px 12px;font-size:0.78rem;font-weight:600;">🔴 ปิด</span>';
+  container.innerHTML = inviteLinks.map(function(lk, i) {
+    var url    = base + '?link=' + encodeURIComponent(lk.slug);
+    var isOpen = lk.active;
+    var badge  = isOpen
+      ? '<span style="background:#d4f5e2;color:#1a7a3f;border-radius:20px;padding:4px 14px;font-size:0.8rem;font-weight:700;white-space:nowrap;">🟢 เปิด</span>'
+      : '<span style="background:#fde8e8;color:#b91c1c;border-radius:20px;padding:4px 14px;font-size:0.8rem;font-weight:700;white-space:nowrap;">🔴 ปิด</span>';
     var toggleLabel = isOpen ? 'ปิดลิงก์' : 'เปิดลิงก์';
     var toggleStyle = isOpen
-      ? 'background:#fde8e8;color:#b91c1c;border:1.5px solid #fca5a5;'
-      : 'background:#d4f5e2;color:#1a7a3f;border:1.5px solid #86efac;';
+      ? 'flex:1;padding:10px;border-radius:10px;cursor:pointer;font-size:0.9rem;font-weight:700;background:#fde8e8;color:#b91c1c;border:1.5px solid #fca5a5;'
+      : 'flex:1;padding:10px;border-radius:10px;cursor:pointer;font-size:0.9rem;font-weight:700;background:#d4f5e2;color:#1a7a3f;border:1.5px solid #86efac;';
 
-    return '<tr style="border-bottom:1px solid #eef2f7;' + (i%2===0?'background:#fff;':'background:#f8fbfe;') + '">' +
-      '<td style="padding:12px 14px;font-weight:600;">' + lk.name + '</td>' +
-      '<td style="padding:12px 14px;">' +
-        '<div style="display:flex;align-items:center;gap:8px;">' +
-        '<span style="font-size:0.8rem;color:var(--text-light);word-break:break-all;max-width:260px;">' + url + '</span>' +
-        '<button onclick="copyLink(' + i + ')" style="flex-shrink:0;padding:4px 10px;border-radius:6px;border:1.5px solid #d0dce8;background:#fff;cursor:pointer;font-size:0.78rem;" title="Copy">📋</button>' +
-        '</div></td>' +
-      '<td style="padding:12px 14px;text-align:center;">' + badge + '</td>' +
-      '<td style="padding:12px 14px;text-align:center;">' +
-        '<div style="display:flex;gap:8px;justify-content:center;">' +
-        '<button onclick="toggleLink(' + i + ')" style="padding:5px 14px;border-radius:6px;cursor:pointer;font-size:0.82rem;font-weight:600;' + toggleStyle + '">' + toggleLabel + '</button>' +
-        '<button onclick="deleteLink(' + i + ')" style="padding:5px 10px;border-radius:6px;border:1.5px solid #fca5a5;background:#fff;color:#b91c1c;cursor:pointer;font-size:0.82rem;" title="ลบ">🗑</button>' +
-        '</div></td>' +
-      '</tr>';
+    return '<div style="background:#fff;border-radius:14px;box-shadow:0 2px 10px rgba(74,127,165,0.10);border:1.5px solid #e4eef6;overflow:hidden;">' +
+      /* header row */
+      '<div style="display:flex;align-items:center;justify-content:space-between;padding:14px 16px 10px;border-bottom:1px solid #eef4fa;">' +
+        '<div style="font-weight:700;font-size:1rem;color:var(--text);">' + lk.name + '</div>' +
+        badge +
+      '</div>' +
+      /* url row */
+      '<div style="display:flex;align-items:center;gap:8px;padding:10px 16px;background:#f6fafd;">' +
+        '<span style="font-size:0.78rem;color:var(--text-light);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">🔗 ?' + 'link=' + encodeURIComponent(lk.slug) + '</span>' +
+        '<button onclick="copyLink(' + i + ')" style="flex-shrink:0;padding:6px 14px;border-radius:8px;border:1.5px solid #c5daea;background:#fff;cursor:pointer;font-size:0.82rem;font-weight:600;color:var(--primary);">📋 Copy</button>' +
+      '</div>' +
+      /* action row */
+      '<div style="display:flex;gap:10px;padding:12px 16px;">' +
+        '<button onclick="toggleLink(' + i + ')" style="' + toggleStyle + '">' + toggleLabel + '</button>' +
+        '<button onclick="deleteLink(' + i + ')" style="padding:10px 14px;border-radius:10px;border:1.5px solid #fca5a5;background:#fff;color:#b91c1c;cursor:pointer;font-size:1rem;" title="ลบ">🗑</button>' +
+      '</div>' +
+    '</div>';
   }).join('');
 }
 
