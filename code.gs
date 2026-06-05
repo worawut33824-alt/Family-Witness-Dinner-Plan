@@ -1829,7 +1829,11 @@ function readAmountFromSlip(base64, mimeType) {
           { text: prompt }
         ]
       }],
-      generationConfig: { temperature: 0, maxOutputTokens: 32 }
+      generationConfig: {
+        temperature: 0,
+        maxOutputTokens: 64,
+        thinkingConfig: { thinkingBudget: 0 }   // ปิด thinking mode ของ 2.5-flash (ไม่งั้นกิน token จนตอบไม่ครบ)
+      }
     };
 
     var resp = UrlFetchApp.fetch(url, {
