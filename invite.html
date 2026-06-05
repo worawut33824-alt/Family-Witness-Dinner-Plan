@@ -2877,7 +2877,20 @@ function onSlipSelected(input) {
       status.textContent = '⏳ กำลังอ่านยอด...'; status.style.display = 'inline';
       amtEl.value = '';
       amtEl.placeholder = 'กำลังอ่านยอดจากสลิป...';
-      const b64 = e.target.result.split(',')[1];
+      // resize ให้ไม่เกิน 1600px สำหรับ OCR (ใหญ่พอให้อ่านตัวเลขได้ชัด)
+      const b64 = await new Promise(res => {
+        const img = new Image();
+        img.onload = () => {
+          const MAX = 1600;
+          let w = img.width, h = img.height;
+          if (w > MAX || h > MAX) { const r = Math.min(MAX/w, MAX/h); w = Math.round(w*r); h = Math.round(h*r); }
+          const cv = document.createElement('canvas');
+          cv.width = w; cv.height = h;
+          cv.getContext('2d').drawImage(img, 0, 0, w, h);
+          res(cv.toDataURL('image/jpeg', 0.92).split(',')[1]);
+        };
+        img.src = e.target.result;
+      });
 
       let amount = '';
       if (SCRIPT_URL) {
@@ -2885,7 +2898,7 @@ function onSlipSelected(input) {
         const resp = await fetch(SCRIPT_URL, {
           method: 'POST',
           headers: { 'Content-Type': 'text/plain' },
-          body: JSON.stringify({ action: 'readSlip', slipBase64: b64, slipMime: file.type })
+          body: JSON.stringify({ action: 'readSlip', slipBase64: b64, slipMime: 'image/jpeg' })
         });
         const data = await resp.json();
         amount = data.amount || '';

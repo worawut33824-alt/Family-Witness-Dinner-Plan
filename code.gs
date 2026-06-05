@@ -1817,11 +1817,11 @@ function readAmountFromSlip(base64, mimeType) {
     var apiKey = PropertiesService.getScriptProperties().getProperty('GEMINI_API_KEY');
     if (!apiKey || !base64 || base64.length < 100) return '';
 
-    var url = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=' + apiKey;
+    var url = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=' + apiKey;
     var payload = {
       contents: [{
         parts: [
-          { text: 'นี่คือสลิปโอนเงิน กรุณาดูยอดโอนแล้วตอบเฉพาะตัวเลขจำนวนเงิน (บาท) เท่านั้น ไม่ต้องมีหน่วย ไม่ต้องมีข้อความอื่น เช่น ถ้าโอน 1,500 บาท ให้ตอบ: 1500' },
+          { text: 'This is a Thai bank transfer slip (สลิปโอนเงิน). Find the transfer amount (ยอดโอน/จำนวนเงิน). The amount is usually the largest number on the slip shown near "บาท" or "THB", NOT the date, NOT the account number, NOT the reference number. Reply with ONLY the numeric amount with no commas and no units. Example: if the slip shows "1,500.00 บาท" reply exactly: 1500' },
           { inline_data: { mime_type: mimeType, data: base64 } }
         ]
       }],
