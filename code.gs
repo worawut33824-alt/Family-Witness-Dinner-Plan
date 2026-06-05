@@ -1821,11 +1821,11 @@ function readAmountFromSlip(base64, mimeType) {
     var payload = {
       contents: [{
         parts: [
-          { text: 'This is a Thai bank transfer slip (สลิปโอนเงิน). Find the transfer amount (ยอดโอน/จำนวนเงิน). The amount is usually the largest number on the slip shown near "บาท" or "THB", NOT the date, NOT the account number, NOT the reference number. Reply with ONLY the numeric amount with no commas and no units. Example: if the slip shows "1,500.00 บาท" reply exactly: 1500' },
+          { text: 'This is a Thai bank transfer slip. Your task: find ONLY the transferred money amount (จำนวนเงินที่โอน). Rules: (1) The amount is shown prominently near the word "บาท" or "THB" (2) It is usually between 1-999999 (3) Do NOT return account numbers, phone numbers, dates, or reference numbers (4) Reply with ONLY the number, no decimals, no commas, no units, no text. Example: slip shows "399.00 บาท" → reply: 399' },
           { inline_data: { mime_type: mimeType, data: base64 } }
         ]
       }],
-      generationConfig: { temperature: 0, maxOutputTokens: 32 }
+      generationConfig: { temperature: 0, maxOutputTokens: 64 }
     };
 
     var resp = UrlFetchApp.fetch(url, {
@@ -1839,8 +1839,12 @@ function readAmountFromSlip(base64, mimeType) {
     if (json.candidates && json.candidates[0] && json.candidates[0].content) {
       var text = json.candidates[0].content.parts[0].text.trim();
       Logger.log('Gemini slip OCR raw: ' + text);
-      var match = text.replace(/,/g, '').match(/\d+\.?\d*/);
-      return match ? match[0] : '';
+      // ลบ comma แล้ว parse ตัวเลขแรกที่ Gemini ตอบมา (prompt สั่งให้ตอบแค่ตัวเลข)
+      var cleaned = text.replace(/,/g, '').trim();
+      var match = cleaned.match(/\d+(?:\.\d+)?/);
+      if (!match) return '';
+      // round เป็น integer (เช่น 399.00 → 399)
+      return String(Math.round(parseFloat(match[0])));
     }
   } catch(e) {
     Logger.log('readAmountFromSlip error: ' + e);
