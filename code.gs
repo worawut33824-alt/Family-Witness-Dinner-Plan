@@ -114,6 +114,15 @@ function doPost(e) {
     } else if (body.action === 'links') {
       saveLinks(ss, body.links || []);
 
+    } else if (body.action === 'donation') {
+      var donResult = saveDonation(ss, body);
+      result.amount  = donResult.amount;
+      result.slipUrl = donResult.slipUrl;
+
+    } else if (body.action === 'readSlip') {
+      // OCR เท่านั้น ไม่บันทึก
+      result.amount = readAmountFromSlip(body.slipBase64 || '', body.slipMime || 'image/jpeg');
+
     // --- planner app actions ---
     } else {
       if (body.expenses  !== undefined) saveExpenses(ss, body.expenses);
@@ -1794,4 +1803,101 @@ function checkLink(ss, slug) {
   if (!found)        return { status: 'ok', active: false, reason: 'not_found' };
   if (!found.active) return { status: 'ok', active: false, reason: 'closed', name: found.name };
   return { status: 'ok', active: true, name: found.name };
+}
+
+// ============================================================
+//  DONATION — รับสลิปโอนเงิน + OCR ด้วย Gemini
+// ============================================================
+
+var DONATE_HEADERS = ['วันที่', 'ชื่อผู้โอน', 'ยอด (บาท)', 'ลิงก์สลิป', 'หมายเหตุ'];
+
+// ── อ่านยอดจากสลิปด้วย Gemini Vision ──────────────────────────
+function readAmountFromSlip(base64, mimeType) {
+  try {
+    var apiKey = PropertiesService.getScriptProperties().getProperty('GEMINI_API_KEY');
+    if (!apiKey || !base64 || base64.length < 100) return '';
+
+    var url = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=' + apiKey;
+    var payload = {
+      contents: [{
+        parts: [
+          { text: 'นี่คือสลิปโอนเงิน กรุณาดูยอดโอนแล้วตอบเฉพาะตัวเลขจำนวนเงิน (บาท) เท่านั้น ไม่ต้องมีหน่วย ไม่ต้องมีข้อความอื่น เช่น ถ้าโอน 1,500 บาท ให้ตอบ: 1500' },
+          { inline_data: { mime_type: mimeType, data: base64 } }
+        ]
+      }],
+      generationConfig: { temperature: 0, maxOutputTokens: 32 }
+    };
+
+    var resp = UrlFetchApp.fetch(url, {
+      method: 'POST',
+      contentType: 'application/json',
+      payload: JSON.stringify(payload),
+      muteHttpExceptions: true
+    });
+
+    var json = JSON.parse(resp.getContentText());
+    if (json.candidates && json.candidates[0] && json.candidates[0].content) {
+      var text = json.candidates[0].content.parts[0].text.trim();
+      Logger.log('Gemini slip OCR raw: ' + text);
+      var match = text.replace(/,/g, '').match(/\d+\.?\d*/);
+      return match ? match[0] : '';
+    }
+  } catch(e) {
+    Logger.log('readAmountFromSlip error: ' + e);
+  }
+  return '';
+}
+
+// ── บันทึกการโอนเงิน ──────────────────────────────────────────
+function saveDonation(ss, body) {
+  // 1. อัปโหลดสลิปลง Drive
+  var slipUrl = '';
+  if (body.slipBase64 && body.slipBase64.length > 100) {
+    var ts  = Utilities.formatDate(new Date(), 'Asia/Bangkok', 'yyyyMMdd_HHmmss');
+    var ext = (body.slipMime || '').indexOf('png') >= 0 ? 'png' : 'jpg';
+    slipUrl = savePictureToDrive(body.slipBase64, 'slip_' + ts + '.' + ext);
+  }
+
+  // 2. OCR ยอด (ถ้ายังไม่มี)
+  var amount = String(body.amount || '').trim();
+  if (!amount && body.slipBase64 && body.slipBase64.length > 100) {
+    amount = readAmountFromSlip(body.slipBase64, body.slipMime || 'image/jpeg');
+  }
+
+  // 3. บันทึกลง sheet "โอนเงิน"
+  var sheet = ss.getSheetByName('โอนเงิน');
+  if (!sheet) {
+    sheet = ss.insertSheet('โอนเงิน');
+    sheet.getRange(1, 1, 1, DONATE_HEADERS.length).setValues([DONATE_HEADERS])
+      .setFontWeight('bold').setBackground('#c8e6d4');
+    sheet.setFrozenRows(1);
+    [160, 200, 120, 340, 200].forEach(function(w, i) { sheet.setColumnWidth(i + 1, w); });
+  }
+
+  var dateStr = Utilities.formatDate(new Date(), 'Asia/Bangkok', 'dd/MM/yyyy HH:mm');
+  var lastRow = sheet.getLastRow();
+  var amountNum = parseFloat(amount) || '';
+
+  sheet.getRange(lastRow + 1, 1, 1, 5).setValues([[
+    dateStr,
+    String(body.name || ''),
+    amountNum,
+    slipUrl,
+    ''
+  ]]);
+
+  // ตั้ง hyperlink สลิป
+  if (slipUrl) {
+    sheet.getRange(lastRow + 1, 4)
+      .setFormula('=HYPERLINK("' + slipUrl + '","ดูสลิป")');
+  }
+
+  return { amount: String(amountNum || ''), slipUrl: slipUrl };
+}
+
+// ── ตั้ง Gemini API Key (รันครั้งเดียวจาก Script Editor) ──────
+function setGeminiApiKey() {
+  var key = 'AIzaSy_REPLACE_WITH_YOUR_KEY'; // ← ใส่ key จริงที่นี่
+  PropertiesService.getScriptProperties().setProperty('GEMINI_API_KEY', key);
+  SpreadsheetApp.getUi().alert('✅ บันทึก Gemini API Key เรียบร้อยแล้ว');
 }

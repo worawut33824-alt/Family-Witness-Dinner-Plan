@@ -1325,6 +1325,160 @@ h2.sec-title em { font-style: italic; color: var(--blue-dk); }
 /* ════════════════════════════════════════════════
    FOOTER
 ════════════════════════════════════════════════ */
+/* ════ DONATION SECTION ════ */
+#sec-donate {
+  text-align: center;
+  background: linear-gradient(160deg,#fdf6f0 0%,#f0f7f0 100%);
+  padding: 20px 16px 24px;
+  max-width: none; border-radius: 0;
+}
+.donate-toggle-btn {
+  display: inline-flex; align-items: center; gap: 10px;
+  padding: 15px 32px; border-radius: 50px;
+  background: linear-gradient(135deg, #e8c4c4, #c8d8e8, #c4dcd0);
+  background-size: 200% 200%;
+  animation: donate-shimmer 4s ease infinite;
+  color: #3a4a5a; font-size: 1rem; font-family: 'Sarabun',sans-serif;
+  font-weight: 700; border: 2px solid rgba(255,255,255,0.85); cursor: pointer;
+  box-shadow: 0 6px 24px rgba(160,185,200,0.45), 0 2px 8px rgba(0,0,0,0.08);
+  transition: transform 0.2s, box-shadow 0.2s;
+  letter-spacing: 0.5px;
+  position: relative;
+}
+.donate-toggle-btn::after {
+  content: '';
+  position: absolute; inset: -3px; border-radius: 52px;
+  background: linear-gradient(135deg, #f5d5c8, #c8daf0, #c4e4d0);
+  background-size: 200% 200%;
+  animation: donate-shimmer 4s ease infinite;
+  opacity: 0.4; z-index: -1; filter: blur(6px);
+}
+@keyframes donate-shimmer {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+.donate-toggle-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 28px rgba(160,185,200,0.55), 0 4px 12px rgba(0,0,0,0.10); }
+.donate-toggle-btn:active { transform: scale(0.97) translateY(0); }
+.donate-toggle-btn .btn-arrow {
+  transition: transform 0.35s ease;
+  font-size: 0.85rem; opacity: 0.7;
+}
+.donate-toggle-btn.open .btn-arrow { transform: rotate(180deg); }
+
+.donate-panel {
+  max-height: 0; overflow: hidden;
+  transition: max-height 0.5s cubic-bezier(0.4,0,0.2,1), opacity 0.4s ease;
+  opacity: 0;
+}
+.donate-panel.open {
+  max-height: 900px; opacity: 1;
+}
+
+.donate-card {
+  max-width: 400px; margin: 20px auto 0;
+  background: #fff;
+  border-radius: 20px;
+  box-shadow: 0 6px 32px rgba(0,0,0,0.08);
+  overflow: hidden;
+}
+.donate-bank-header {
+  background: linear-gradient(135deg,#c8e6d4,#d4e8c8);
+  padding: 16px 20px;
+  display: flex; align-items: center; gap: 12px;
+}
+.donate-bank-logo {
+  width: 52px; height: 52px; border-radius: 12px;
+  object-fit: contain; background: #fff; padding: 4px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+.donate-bank-name {
+  color: #2d5a3a; text-align: left;
+}
+.donate-bank-name .bname { font-size: 1rem; font-weight: 700; }
+.donate-bank-name .bsub  { font-size: 0.78rem; opacity: 0.75; margin-top: 2px; }
+
+.donate-acc-wrap {
+  padding: 18px 20px 14px;
+  text-align: left;
+}
+.donate-acc-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 10px 14px;
+  background: #f7fdf9; border-radius: 12px;
+  margin-bottom: 8px;
+  text-align: left;
+}
+.donate-acc-label { font-size: 0.75rem; color: #888; margin-bottom: 2px; text-align: left; }
+.donate-acc-value { font-size: 1.05rem; font-weight: 700; color: #1a3a2a; letter-spacing: 1px; text-align: left; }
+.donate-copy-btn {
+  background: #ddeee5; border: none; border-radius: 8px;
+  padding: 6px 12px; font-size: 0.78rem; color: #3a6b50;
+  cursor: pointer; font-weight: 600; white-space: nowrap;
+  transition: background 0.2s;
+}
+.donate-copy-btn:active { background: #c2e0d0; }
+
+.donate-qr-wrap {
+  padding: 0 20px 16px;
+  display: flex; flex-direction: column; align-items: center; gap: 8px;
+}
+.donate-qr-img {
+  width: 200px; height: auto; border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.10);
+}
+.donate-qr-label {
+  font-size: 0.8rem; color: #888;
+}
+
+.donate-divider {
+  margin: 0 20px; border: none; border-top: 1px dashed #e0e0e0;
+}
+
+.donate-form-wrap {
+  padding: 16px 20px 20px;
+}
+.donate-form-title {
+  font-size: 0.82rem; font-weight: 700; color: #5a8a70;
+  margin-bottom: 12px; text-align: left;
+  display: flex; align-items: center; gap: 6px;
+}
+.donate-input {
+  width: 100%; box-sizing: border-box;
+  padding: 11px 14px; border-radius: 10px;
+  border: 1.5px solid #d8e8dc; font-size: 0.92rem;
+  font-family: 'Sarabun', sans-serif;
+  background: #f9fdfb; color: #333;
+  margin-bottom: 10px; outline: none;
+  transition: border-color 0.2s;
+}
+.donate-input:focus { border-color: #a0c8b0; }
+
+.donate-slip-wrap {
+  border: 2px dashed #b8d8c0; border-radius: 12px;
+  padding: 18px; text-align: center; cursor: pointer;
+  background: #f4fbf6; margin-bottom: 12px;
+  transition: border-color 0.2s, background 0.2s;
+}
+.donate-slip-wrap:hover { border-color: #a0c8b0; background: #eaf6ee; }
+.donate-slip-wrap.has-file { border-color: #a0c8b0; background: #eaf6ee; }
+.donate-slip-icon { font-size: 1.8rem; margin-bottom: 4px; }
+.donate-slip-text { font-size: 0.82rem; color: #666; }
+.donate-slip-preview {
+  max-width: 100%; max-height: 140px;
+  border-radius: 8px; margin-top: 8px; display: none;
+}
+
+.donate-submit-btn {
+  width: 100%; padding: 13px;
+  background: linear-gradient(135deg,#b8d4c8,#b5c8e0);
+  color: #3a5a4a; border: none; border-radius: 12px;
+  font-size: 1rem; font-weight: 700; font-family: 'Sarabun',sans-serif;
+  cursor: pointer; letter-spacing: 0.3px;
+  transition: opacity 0.2s;
+}
+.donate-submit-btn:disabled { opacity: 0.6; cursor: default; }
+
 footer {
   text-align: center;
   padding: 56px 20px 48px;
@@ -1389,7 +1543,7 @@ footer {
 /* ════════════════════════════════════════════════
    SECTION SPACERS
 ════════════════════════════════════════════════ */
-.sec-spacer { height: 56px; }
+.sec-spacer { height: 28px; }
 
 /* Full-width section wrapper */
 .sec-full {
@@ -1833,7 +1987,7 @@ footer {
     </div>
   </section>
 
-  <div class="sec-spacer"></div>
+  <div class="sec-spacer" id="spacer-before-rsvp" style="display:none;"></div>
 
   <!-- ── RSVP ── -->
   <section id="sec-rsvp" class="fade-up" style="max-width:none; border-radius:0; display:none;">
@@ -1921,7 +2075,7 @@ footer {
     </div>
   </section>
 
-  <div class="sec-spacer"></div>
+  <div class="sec-spacer" id="spacer-before-bless" style="display:none;"></div>
 
   <!-- ── BLESSINGS FORM ── -->
   <section id="sec-bless" class="fade-up" style="max-width:none; border-radius:0; box-shadow:none; display:none;">
@@ -1962,7 +2116,91 @@ footer {
     </div>
   </section>
 
-  <div class="sec-spacer"></div>
+  <!-- ── DONATION ── -->
+  <section id="sec-donate" class="fade-up">
+    <div class="sec-label">สนับสนุน</div>
+    <div class="sec-divider"></div>
+    <h2 class="sec-title anim from-bottom">ร่วม<em>สนับสนุน</em></h2>
+    <p style="color:var(--text-lt);font-size:0.88rem;margin:4px 0 18px">
+      หากต้องการร่วมส่งความปรารถนาดีด้วยใจ 🌿
+    </p>
+
+    <button class="donate-toggle-btn" id="donate-toggle-btn" onclick="toggleDonate()">
+      🌸 ร่วมสนับสนุนการจัดงาน <span class="btn-arrow">▾</span>
+    </button>
+
+    <div class="donate-panel" id="donate-panel">
+      <div class="donate-card">
+
+        <!-- Bank Header -->
+        <div class="donate-bank-header">
+          <img src="Bank Acc/kb.jpg" alt="KBank" class="donate-bank-logo">
+          <div class="donate-bank-name">
+            <div class="bname">ธนาคารกสิกรไทย</div>
+            <div class="bsub">KASIKORNBANK · บัญชีออมทรัพย์</div>
+          </div>
+        </div>
+
+        <!-- Account Info -->
+        <div class="donate-acc-wrap">
+          <div class="donate-acc-row">
+            <div>
+              <div class="donate-acc-label">ชื่อบัญชี</div>
+              <div class="donate-acc-value" style="font-size:0.95rem;">พิชชาอร กายวิภาคบรรยาย</div>
+            </div>
+          </div>
+          <div class="donate-acc-row">
+            <div>
+              <div class="donate-acc-label">เลขที่บัญชี</div>
+              <div class="donate-acc-value" id="acc-number">557-2-01868-9</div>
+            </div>
+            <button class="donate-copy-btn" onclick="copyAccNumber()">📋 คัดลอก</button>
+          </div>
+        </div>
+
+        <!-- QR Code -->
+        <div class="donate-qr-wrap">
+          <div class="donate-qr-label">📱 สแกน QR พร้อมเพย์</div>
+          <img src="Bank Acc/714650384_981195368214788_9033383174462969122_n.jpg"
+               alt="QR PromptPay" class="donate-qr-img">
+        </div>
+
+        <hr class="donate-divider">
+
+        <!-- Slip Upload Form -->
+        <div class="donate-form-wrap">
+          <div class="donate-form-title">📤 แจ้งโอนเงิน (ไม่บังคับ)</div>
+
+          <input type="text" class="donate-input" id="donate-name"
+                 placeholder="ชื่อผู้โอน">
+          <div style="position:relative;">
+            <input type="number" class="donate-input" id="donate-amount"
+                   placeholder="จำนวนเงิน (บาท) — อ่านอัตโนมัติจากสลิป" min="1"
+                   style="padding-right:100px;">
+            <span id="donate-ocr-status" style="
+              position:absolute; right:12px; top:50%; transform:translateY(-50%);
+              font-size:0.75rem; color:#5a8a70; display:none;">
+            </span>
+          </div>
+
+          <div class="donate-slip-wrap" id="donate-slip-zone"
+               onclick="document.getElementById('donate-slip-file').click()">
+            <div class="donate-slip-icon">🧾</div>
+            <div class="donate-slip-text">แตะเพื่ออัปโหลดสลิป</div>
+            <img id="donate-slip-preview" class="donate-slip-preview" src="" alt="slip preview">
+          </div>
+          <input type="file" id="donate-slip-file" accept="image/*"
+                 style="display:none" onchange="onSlipSelected(this)">
+
+          <button class="donate-submit-btn" id="donate-submit-btn"
+                  onclick="submitDonation()">
+            💚 แจ้งโอนเงิน
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </section>
 
 </main>
 
@@ -2403,12 +2641,17 @@ function renderBlessings(list) {
 function goRSVP() {
   const el = document.getElementById('sec-rsvp');
   el.style.display = 'block';
+  document.getElementById('spacer-before-rsvp').style.display = 'block';
   document.getElementById('sec-bless').style.display = 'none';
+  document.getElementById('spacer-before-bless').style.display = 'none';
   setTimeout(() => el.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50);
 }
 function goBlessing() {
   const el = document.getElementById('sec-bless');
   el.style.display = 'block';
+  document.getElementById('spacer-before-bless').style.display = 'block';
+  document.getElementById('sec-rsvp').style.display = 'none';
+  document.getElementById('spacer-before-rsvp').style.display = 'none';
   document.getElementById('sec-rsvp').style.display = 'none';
   setTimeout(() => el.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50);
 }
@@ -2595,6 +2838,109 @@ function toast(msg, dur = 2800) {
 
 // Init tree at 0
 updateTree(0);
+
+// ── DONATION ────────────────────────────────────────────────
+function toggleDonate() {
+  const panel = document.getElementById('donate-panel');
+  const btn   = document.getElementById('donate-toggle-btn');
+  const isOpen = panel.classList.toggle('open');
+  btn.classList.toggle('open', isOpen);
+  if (isOpen) setTimeout(() => panel.scrollIntoView({behavior:'smooth', block:'nearest'}), 50);
+}
+
+function copyAccNumber() {
+  const num = document.getElementById('acc-number').textContent;
+  navigator.clipboard.writeText(num).then(() => toast('คัดลอกเลขบัญชีแล้ว 📋')).catch(() => {
+    const el = document.createElement('textarea');
+    el.value = num; document.body.appendChild(el);
+    el.select(); document.execCommand('copy'); el.remove();
+    toast('คัดลอกเลขบัญชีแล้ว 📋');
+  });
+}
+
+function onSlipSelected(input) {
+  const file = input.files[0]; if (!file) return;
+  const zone   = document.getElementById('donate-slip-zone');
+  const prev   = document.getElementById('donate-slip-preview');
+  const status = document.getElementById('donate-ocr-status');
+  const amtEl  = document.getElementById('donate-amount');
+
+  zone.classList.add('has-file');
+  zone.querySelector('.donate-slip-text').textContent = file.name;
+
+  const reader = new FileReader();
+  reader.onload = async e => {
+    prev.src = e.target.result; prev.style.display = 'block';
+
+    // ── auto-OCR ──
+    if (!SCRIPT_URL) return;
+    try {
+      status.textContent = '⏳ กำลังอ่านยอด...'; status.style.display = 'inline';
+      amtEl.placeholder = 'กำลังอ่านยอดจากสลิป...';
+      const b64 = e.target.result.split(',')[1];
+      const resp = await fetch(SCRIPT_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain' },
+        body: JSON.stringify({ action: 'readSlip', slipBase64: b64, slipMime: file.type })
+      });
+      const data = await resp.json();
+      if (data.amount && parseFloat(data.amount) > 0) {
+        amtEl.value = data.amount;
+        status.textContent = '✅ อ่านยอดได้';
+        status.style.color = '#4a7c59';
+      } else {
+        status.textContent = '⚠️ อ่านไม่ได้ กรอกเอง';
+        status.style.color = '#c07040';
+      }
+      amtEl.placeholder = 'จำนวนเงิน (บาท)';
+    } catch(err) {
+      status.textContent = '';
+      amtEl.placeholder = 'จำนวนเงิน (บาท)';
+    }
+  };
+  reader.readAsDataURL(file);
+}
+
+async function submitDonation() {
+  const name   = document.getElementById('donate-name').value.trim();
+  const amount = document.getElementById('donate-amount').value.trim();
+  const file   = document.getElementById('donate-slip-file').files[0];
+  if (!name) { toast('กรุณากรอกชื่อผู้โอนก่อนนะคะ 🌸'); return; }
+  const btn = document.getElementById('donate-submit-btn');
+  btn.disabled = true; btn.textContent = '⏳ กำลังส่ง...';
+  try {
+    let payload = { action: 'donation', name, amount: amount || '' };
+    if (file) {
+      // convert file to base64
+      const b64 = await new Promise((res, rej) => {
+        const r = new FileReader();
+        r.onload = e => res(e.target.result.split(',')[1]);
+        r.onerror = rej;
+        r.readAsDataURL(file);
+      });
+      payload.slipBase64 = b64;
+      payload.slipMime   = file.type;
+      payload.slipName   = file.name;
+    }
+    if (SCRIPT_URL) {
+      await fetch(SCRIPT_URL, {
+        method: 'POST', mode: 'no-cors',
+        headers: { 'Content-Type': 'text/plain' },
+        body: JSON.stringify(payload)
+      });
+    }
+    toast('ขอบคุณมากเลย! บันทึกการสนับสนุนเรียบร้อยแล้ว 💚');
+    document.getElementById('donate-name').value = '';
+    document.getElementById('donate-amount').value = '';
+    document.getElementById('donate-slip-file').value = '';
+    document.getElementById('donate-slip-preview').style.display = 'none';
+    document.getElementById('donate-slip-zone').classList.remove('has-file');
+    document.getElementById('donate-slip-zone').querySelector('.donate-slip-text').textContent = 'แตะเพื่ออัปโหลดสลิป';
+  } catch(e) {
+    toast('เกิดข้อผิดพลาด กรุณาลองใหม่ครับ');
+  }
+  btn.disabled = false; btn.textContent = '💚 แจ้งโอนเงิน';
+}
 </script>
 
 <!-- ── LINK GUARD — ตรวจสอบลิงก์เปิด/ปิด ───────────────────────────────── -->
