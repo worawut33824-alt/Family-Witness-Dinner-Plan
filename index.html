@@ -2178,7 +2178,8 @@ document.addEventListener('DOMContentLoaded', function() {
       slugEl._touched = slugEl.value.length > 0;
     });
   }
-  renderLinks();
+  // โหลดจาก server ก่อน (fallback เป็น localStorage)
+  loadLinksFromServer();
 });
 
 // ── สร้างลิงก์ ────────────────────────────────────────────────────────────────
@@ -2228,18 +2229,32 @@ function copyLink(i) {
   });
 }
 
-// ── บันทึก ────────────────────────────────────────────────────────────────────
+// ── บันทึก local + sync Apps Script ─────────────────────────────────────────
 function saveLinks() {
   localStorage.setItem('wedding_links', JSON.stringify(inviteLinks));
-  // sync ขึ้น Apps Script ด้วย (ถ้ามี)
-  var scriptUrl = localStorage.getItem('script_url');
-  if (scriptUrl) {
-    fetch(scriptUrl, {
-      method: 'POST', mode: 'no-cors',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ action: 'links', links: inviteLinks })
-    }).catch(function(){});
-  }
+  var scriptUrl = state.scriptUrl || localStorage.getItem('planner_script_url') || '';
+  if (!scriptUrl) return;
+  fetch(scriptUrl, {
+    method: 'POST', mode: 'no-cors',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ action: 'links', links: inviteLinks })
+  }).catch(function(){});
+}
+
+// ── โหลดลิงก์จาก Apps Script ─────────────────────────────────────────────────
+function loadLinksFromServer() {
+  var scriptUrl = state.scriptUrl || localStorage.getItem('planner_script_url') || '';
+  if (!scriptUrl) { renderLinks(); return; }
+  fetch(scriptUrl + '?action=links')
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      if (Array.isArray(data.links) && data.links.length) {
+        inviteLinks = data.links;
+        localStorage.setItem('wedding_links', JSON.stringify(inviteLinks));
+      }
+      renderLinks();
+    })
+    .catch(function() { renderLinks(); });
 }
 </script>
 

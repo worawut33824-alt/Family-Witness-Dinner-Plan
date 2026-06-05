@@ -74,6 +74,13 @@ function doGet(e) {
     } else if (action === 'blessings') {
       result.blessings = getBlessingsForPage(ss);
 
+    } else if (action === 'links') {
+      result.links = getLinks(ss);
+
+    } else if (action === 'check_link') {
+      var slug = e.parameter.slug || '';
+      result   = checkLink(ss, slug);
+
     } else {
       result.message = 'unknown action';
     }
@@ -103,6 +110,9 @@ function doPost(e) {
       result.sideP      = rc2.sideP;
     } else if (body.action === 'bless') {
       saveBlessing(ss, body);
+
+    } else if (body.action === 'links') {
+      saveLinks(ss, body.links || []);
 
     // --- planner app actions ---
     } else {
@@ -1723,4 +1733,65 @@ function saveGuests(ss, guests) {
     rows.push([g.name, g.side, g.phone, g.relation, g.seats, g.status, g.food, g.note]);
   }
   sheet.getRange(2, 1, rows.length, 8).setValues(rows);
+}
+
+// --- INVITE LINKS -------------------------------------------------------
+var LINK_HEADERS = ['slug', 'ชื่อกลุ่ม', 'สถานะ', 'วันที่สร้าง'];
+
+function getLinks(ss) {
+  var sheet = ss.getSheetByName('ลิงก์เชิญ');
+  if (!sheet) return [];
+  var lastRow = sheet.getLastRow();
+  if (lastRow < 2) return [];
+  var data = sheet.getRange(2, 1, lastRow - 1, 4).getValues();
+  var links = [];
+  for (var i = 0; i < data.length; i++) {
+    var row = data[i];
+    if (!row[0]) continue;
+    links.push({
+      slug:      String(row[0] || '').trim(),
+      name:      String(row[1] || '').trim(),
+      active:    String(row[2] || '').trim() === 'open',
+      createdAt: String(row[3] || '')
+    });
+  }
+  return links;
+}
+
+function saveLinks(ss, links) {
+  var sheet = ss.getSheetByName('ลิงก์เชิญ');
+  if (!sheet) {
+    sheet = ss.insertSheet('ลิงก์เชิญ');
+    sheet.getRange(1, 1, 1, LINK_HEADERS.length)
+      .setValues([LINK_HEADERS])
+      .setFontWeight('bold')
+      .setBackground('#f4d9d0');
+    sheet.setFrozenRows(1);
+    [160, 200, 80, 180].forEach(function(w, i) { sheet.setColumnWidth(i + 1, w); });
+  }
+  var lastRow = sheet.getLastRow();
+  if (lastRow >= 2) sheet.getRange(2, 1, lastRow - 1, 4).clearContent();
+  if (!links || !links.length) return;
+  var rows = links.map(function(lk) {
+    return [
+      lk.slug || '',
+      lk.name || '',
+      lk.active ? 'open' : 'closed',
+      lk.createdAt || ''
+    ];
+  });
+  sheet.getRange(2, 1, rows.length, 4).setValues(rows);
+}
+
+// ตรวจสอบ slug เดียว — ใช้จาก invite.html ผ่าน ?action=check_link&slug=xxx
+function checkLink(ss, slug) {
+  if (!slug) return { status: 'ok', active: false, reason: 'no_slug' };
+  var links = getLinks(ss);
+  var found = null;
+  for (var i = 0; i < links.length; i++) {
+    if (links[i].slug === slug) { found = links[i]; break; }
+  }
+  if (!found)        return { status: 'ok', active: false, reason: 'not_found' };
+  if (!found.active) return { status: 'ok', active: false, reason: 'closed', name: found.name };
+  return { status: 'ok', active: true, name: found.name };
 }
