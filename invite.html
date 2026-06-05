@@ -2538,12 +2538,12 @@ updateTree(0);
 <!-- ── LINK GUARD — ตรวจสอบลิงก์เปิด/ปิด ───────────────────────────────── -->
 <div id="link-closed-overlay" style="
   display:none;position:fixed;inset:0;z-index:99999;
-  background:linear-gradient(160deg,#f5ede0 0%,#ede0d0 40%,#e8d8c8 100%);
+  background:linear-gradient(160deg,#d6e8f5 0%,#c2d8ed 40%,#b0cce3 100%);
   align-items:center;justify-content:center;text-align:center;
   padding:32px 24px;font-family:'Sarabun',sans-serif;
 ">
   <!-- กลีบดอกไม้ลอย -->
-  <div style="position:absolute;inset:0;overflow:hidden;pointer-events:none;opacity:0.25;">
+  <div style="position:absolute;inset:0;overflow:hidden;pointer-events:none;opacity:0.2;">
     <div style="position:absolute;top:10%;left:8%;font-size:1.4rem;animation:floatPetal 6s ease-in-out infinite;">🌸</div>
     <div style="position:absolute;top:20%;right:10%;font-size:1rem;animation:floatPetal 8s ease-in-out infinite 1s;">🌸</div>
     <div style="position:absolute;bottom:25%;left:12%;font-size:1.2rem;animation:floatPetal 7s ease-in-out infinite 2s;">🌸</div>
@@ -2602,18 +2602,6 @@ updateTree(0);
 
   var overlay = document.getElementById('link-closed-overlay');
   var loadEl  = document.getElementById('link-loading-msg');
-  overlay.style.display = 'flex';
-  if (loadEl) loadEl.style.display = 'block';
-  document.body.style.overflow = 'hidden';
-
-  // ── ฟังก์ชันตรวจสอบ localStorage (fallback) ────────────────────────────────
-  function checkLocalStorage() {
-    try {
-      var links = JSON.parse(localStorage.getItem('wedding_links') || '[]');
-      var found = links.find(function(lk) { return lk.slug === linkSlug; });
-      return found ? found.active : null; // null = ไม่พบใน localStorage
-    } catch(e) { return null; }
-  }
 
   function showOpen() {
     overlay.style.display = 'none';
@@ -2621,40 +2609,31 @@ updateTree(0);
   }
 
   function showClosed() {
+    overlay.style.display = 'flex';
     if (loadEl) loadEl.style.display = 'none';
     document.getElementById('link-closed-content').style.display = 'block';
+    document.body.style.overflow = 'hidden';
   }
 
-  // ── เรียก Apps Script ────────────────────────────────────────────────────────
+  // ── Step 1: อ่านจาก ?s= ก่อนเลย (เร็วที่สุด ไม่ต้อง fetch) ───────────────
+  var sParam = params.get('s');
+  if (sParam === '0') { showClosed(); return; }
+  if (sParam === '1') { showOpen();  return; }
+
+  // ── Step 2: ไม่มี ?s= → เรียก Apps Script ───────────────────────────────────
+  overlay.style.display = 'flex';
+  if (loadEl) loadEl.style.display = 'block';
+  document.body.style.overflow = 'hidden';
+
   var scriptUrl = SCRIPT_URL;
-  if (!scriptUrl) {
-    // ไม่มี URL → ใช้ localStorage
-    checkLocalStorage() === false ? showClosed() : showOpen();
-    return;
-  }
+  if (!scriptUrl) { showOpen(); return; }
 
-  var checkUrl = scriptUrl + '?action=check_link&slug=' + encodeURIComponent(linkSlug);
-
-  fetch(checkUrl)
+  fetch(scriptUrl + '?action=check_link&slug=' + encodeURIComponent(linkSlug))
     .then(function(r) { return r.json(); })
     .then(function(data) {
-      if (data.active === true) {
-        // Apps Script ยืนยันว่าเปิด
-        showOpen();
-      } else if (data.active === false) {
-        // Apps Script ยืนยันว่าปิด
-        showClosed();
-      } else {
-        // Apps Script ไม่รู้จัก action (old version) → ใช้ localStorage
-        var localActive = checkLocalStorage();
-        localActive === false ? showClosed() : showOpen();
-      }
+      data.active === false ? showClosed() : showOpen();
     })
-    .catch(function() {
-      // fetch ล้มเหลว → ใช้ localStorage
-      var localActive = checkLocalStorage();
-      localActive === false ? showClosed() : showOpen();
-    });
+    .catch(function() { showOpen(); }); // fail open
 })();
 </script>
 
