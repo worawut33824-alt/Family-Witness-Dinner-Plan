@@ -34,11 +34,11 @@
     --danger: #c0392b;
     --warning: #e67e22;
     --shadow: 0 2px 12px rgba(123,156,191,0.18);
-    --donate: #5a9e6f; --donate-dark: #3d7a52; --donate-soft: #e3f3e9;
+    --donate: #a8dcc0; --donate-dark: #6aaf8a; --donate-soft: #eff8f3;
   }
-  .dash-dwidget { background: linear-gradient(135deg,#f3fbf6,#eaf6ee); border:1px solid #cfe7d8; }
+  .dash-dwidget { background: linear-gradient(135deg,#f6fcf9,#eef8f2); border:1px solid #dcefe4; }
   .don-big { font-size:2.2rem;font-weight:800;color:var(--donate-dark);line-height:1; }
-  .don-chip { display:inline-flex;align-items:center;gap:6px;background:#fff;border:1px solid #cfe7d8;border-radius:20px;padding:5px 12px;font-size:0.8rem;color:#3d7a52;font-weight:600; }
+  .don-chip { display:inline-flex;align-items:center;gap:6px;background:#fff;border:1px solid #dcefe4;border-radius:20px;padding:5px 12px;font-size:0.8rem;color:#6aaf8a;font-weight:600; }
   .amt-donate { font-weight:700; color:var(--donate-dark); text-align:right; }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
@@ -1419,7 +1419,7 @@ function renderDashDonations() {
   if (cv) {
     dashDonChartInst = new Chart(cv, {
       type:'bar',
-      data:{ labels:keys, datasets:[{ data:keys.map(k=>map[k]), backgroundColor:'#5a9e6f', borderRadius:5 }] },
+      data:{ labels:keys, datasets:[{ data:keys.map(k=>map[k]), backgroundColor:'#a8dcc0', borderRadius:5 }] },
       options:{ responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}}, scales:{y:{ticks:{callback:v=>'฿'+Number(v).toLocaleString()}}} }
     });
   }
@@ -1460,7 +1460,7 @@ function renderDonations() {
   const cvCum = document.getElementById('donCumChart');
   if (cvCum) donCumChartInst = new Chart(cvCum, {
     type:'line',
-    data:{ labels:keys, datasets:[{ label:'ยอดสะสม', data:cum, borderColor:'#3d7a52', backgroundColor:'rgba(90,158,111,0.15)', fill:true, tension:0.3, pointBackgroundColor:'#3d7a52' }] },
+    data:{ labels:keys, datasets:[{ label:'ยอดสะสม', data:cum, borderColor:'#8ccfaa', backgroundColor:'rgba(168,220,192,0.30)', fill:true, tension:0.3, pointBackgroundColor:'#8ccfaa', pointBorderColor:'#fff', pointRadius:4 }] },
     options:{ responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}}, scales:{y:{ticks:{callback:v=>'฿'+Number(v).toLocaleString()}}} }
   });
 
@@ -1470,7 +1470,7 @@ function renderDonations() {
   const cvTop = document.getElementById('donTopChart');
   if (cvTop) donTopChartInst = new Chart(cvTop, {
     type:'bar',
-    data:{ labels:top.map(d=>d.name||'—'), datasets:[{ data:top.map(d=>Number(d.amount)||0), backgroundColor:['#3d7a52','#5a9e6f','#7bb88f','#9ccfae','#bfe3cc'], borderRadius:6 }] },
+    data:{ labels:top.map(d=>d.name||'—'), datasets:[{ data:top.map(d=>Number(d.amount)||0), backgroundColor:['#8ccfaa','#a8dcc0','#bce6cf','#d2efdf','#e6f6ec'], borderRadius:6 }] },
     options:{ indexAxis:'y', responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}}, scales:{x:{ticks:{callback:v=>'฿'+Number(v).toLocaleString()}}} }
   });
 
