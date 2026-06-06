@@ -1820,7 +1820,7 @@ function readAmountFromSlip(base64, mimeType) {
     var apiKey = PropertiesService.getScriptProperties().getProperty('GEMINI_API_KEY');
     if (!apiKey || !base64 || base64.length < 100) return '';
 
-    var url = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=' + apiKey;
+    var url = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key=' + apiKey;
     var prompt = 'Look at this Thai bank transfer slip image. Find the transfer amount (ยอดโอนเงิน). ' +
       'It is the large prominent number on the slip (NOT account number, NOT date, NOT reference number). ' +
       'Reply with ONLY the number in digits, no commas, no "บาท", no spaces. Example: 399';
