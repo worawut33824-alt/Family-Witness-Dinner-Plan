@@ -1823,7 +1823,9 @@ function readAmountFromSlip(base64, mimeType) {
     var url = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key=' + apiKey;
     var prompt = 'Look at this Thai bank transfer slip image. Find the transfer amount (ยอดโอนเงิน). ' +
       'It is the large prominent number on the slip (NOT account number, NOT date, NOT reference number). ' +
-      'Reply with ONLY the number in digits, no commas, no "บาท", no spaces. Example: 399';
+      'The amount always has 2 decimal places for satang, written as baht.satang (for example 399.00 or 1,500.50). ' +
+      'Reply with ONLY the amount, keeping the decimal point exactly as shown, no commas, no "บาท", no spaces. ' +
+      'Example: if the slip shows "399.00" reply exactly 399.00';
 
     var payload = {
       contents: [{
