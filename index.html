@@ -634,7 +634,7 @@
   </div>
 
   <div id="links-table-wrap">
-    <div id="links-tbody" style="display:flex;flex-direction:column;gap:12px;"></div>
+    <div id="links-tbody" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;"></div>
   </div>
 </div>
 
@@ -2308,31 +2308,34 @@ function renderLinks() {
 
   var base = getInviteBase();
   container.innerHTML = inviteLinks.map(function(lk, i) {
-    var url    = base + '?link=' + encodeURIComponent(lk.slug);
     var isOpen = lk.active;
+    // โทนสีกล่องตามสถานะ
+    var cardBg     = isOpen ? '#f1faf4' : '#fdf3f3';
+    var cardBorder = isOpen ? '#bce6cf' : '#f3cccc';
     var badge  = isOpen
-      ? '<span style="background:#d4f5e2;color:#1a7a3f;border-radius:20px;padding:4px 14px;font-size:0.8rem;font-weight:700;white-space:nowrap;">🟢 เปิด</span>'
-      : '<span style="background:#fde8e8;color:#b91c1c;border-radius:20px;padding:4px 14px;font-size:0.8rem;font-weight:700;white-space:nowrap;">🔴 ปิด</span>';
-    var toggleLabel = isOpen ? 'ปิดลิงก์' : 'เปิดลิงก์';
+      ? '<span style="background:#d4f5e2;color:#1a7a3f;border-radius:20px;padding:2px 10px;font-size:0.72rem;font-weight:700;white-space:nowrap;">🟢 เปิด</span>'
+      : '<span style="background:#fde8e8;color:#b91c1c;border-radius:20px;padding:2px 10px;font-size:0.72rem;font-weight:700;white-space:nowrap;">🔴 ปิด</span>';
+    // ปุ่ม toggle แบบเล็ก ไม่เด่น (ใช้สีตรงข้ามอ่อนๆ)
+    var toggleLabel = isOpen ? 'ปิด' : 'เปิด';
     var toggleStyle = isOpen
-      ? 'flex:1;padding:10px;border-radius:10px;cursor:pointer;font-size:0.9rem;font-weight:700;background:#fde8e8;color:#b91c1c;border:1.5px solid #fca5a5;'
-      : 'flex:1;padding:10px;border-radius:10px;cursor:pointer;font-size:0.9rem;font-weight:700;background:#d4f5e2;color:#1a7a3f;border:1.5px solid #86efac;';
+      ? 'flex:1;padding:6px;border-radius:8px;cursor:pointer;font-size:0.8rem;font-weight:600;background:#fff;color:#b91c1c;border:1px solid #f0bcbc;'
+      : 'flex:1;padding:6px;border-radius:8px;cursor:pointer;font-size:0.8rem;font-weight:600;background:#fff;color:#1a7a3f;border:1px solid #a8dcb8;';
 
-    return '<div style="background:#fff;border-radius:14px;box-shadow:0 2px 10px rgba(74,127,165,0.10);border:1.5px solid #e4eef6;overflow:hidden;">' +
+    return '<div style="background:' + cardBg + ';border-radius:12px;border:1.5px solid ' + cardBorder + ';overflow:hidden;display:flex;flex-direction:column;">' +
       /* header row */
-      '<div style="display:flex;align-items:center;justify-content:space-between;padding:14px 16px 10px;border-bottom:1px solid #eef4fa;">' +
-        '<div style="font-weight:700;font-size:1rem;color:var(--text);">' + lk.name + '</div>' +
+      '<div style="display:flex;align-items:center;justify-content:space-between;gap:8px;padding:10px 12px 6px;">' +
+        '<div style="font-weight:700;font-size:0.92rem;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + lk.name + '</div>' +
         badge +
       '</div>' +
-      /* url row */
-      '<div style="display:flex;align-items:center;gap:8px;padding:10px 16px;background:#f6fafd;">' +
-        '<span style="font-size:0.78rem;color:var(--text-light);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">🔗 ?' + 'link=' + encodeURIComponent(lk.slug) + '</span>' +
-        '<button onclick="copyLink(' + i + ')" style="flex-shrink:0;padding:6px 14px;border-radius:8px;border:1.5px solid #c5daea;background:#fff;cursor:pointer;font-size:0.82rem;font-weight:600;color:var(--primary);">📋 Copy</button>' +
+      /* url + copy row */
+      '<div style="display:flex;align-items:center;gap:6px;padding:0 12px 8px;">' +
+        '<span style="font-size:0.72rem;color:var(--text-light);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">🔗 ?link=' + encodeURIComponent(lk.slug) + '</span>' +
+        '<button onclick="copyLink(' + i + ')" style="flex-shrink:0;padding:4px 10px;border-radius:7px;border:1px solid #c5daea;background:#fff;cursor:pointer;font-size:0.76rem;font-weight:600;color:var(--primary);">📋</button>' +
       '</div>' +
       /* action row */
-      '<div style="display:flex;gap:10px;padding:12px 16px;">' +
+      '<div style="display:flex;gap:6px;padding:0 12px 10px;margin-top:auto;">' +
         '<button onclick="toggleLink(' + i + ')" style="' + toggleStyle + '">' + toggleLabel + '</button>' +
-        '<button onclick="deleteLink(' + i + ')" style="padding:10px 14px;border-radius:10px;border:1.5px solid #fca5a5;background:#fff;color:#b91c1c;cursor:pointer;font-size:1rem;" title="ลบ">🗑</button>' +
+        '<button onclick="deleteLink(' + i + ')" style="padding:6px 10px;border-radius:8px;border:1px solid #f0bcbc;background:#fff;color:#b91c1c;cursor:pointer;font-size:0.9rem;" title="ลบ">🗑</button>' +
       '</div>' +
     '</div>';
   }).join('');
