@@ -2845,7 +2845,20 @@ function toggleDonate() {
   const btn   = document.getElementById('donate-toggle-btn');
   const isOpen = panel.classList.toggle('open');
   btn.classList.toggle('open', isOpen);
-  if (isOpen) setTimeout(() => panel.scrollIntoView({behavior:'smooth', block:'nearest'}), 50);
+  if (isOpen) {
+    prefillDonorName();
+    setTimeout(() => panel.scrollIntoView({behavior:'smooth', block:'nearest'}), 50);
+  }
+}
+
+// ดึงชื่อจากส่วนลงทะเบียน/อวยพร มากรอกรอไว้ในช่องผู้โอน (ถ้ายังว่าง)
+function prefillDonorName() {
+  const donateEl = document.getElementById('donate-name');
+  if (!donateEl || donateEl.value.trim()) return;
+  const reg   = (document.getElementById('r-name')     || {}).value || '';
+  const bless = (document.getElementById('bless-name') || {}).value || '';
+  const name = reg.trim() || bless.trim();
+  if (name) donateEl.value = name;
 }
 
 function copyAccNumber() {
