@@ -1316,9 +1316,11 @@ function renderDashboard() {
   // guest summary – person emoji grid
   if(guestChartInst){ guestChartInst.destroy(); guestChartInst=null; }
   const GOAL = 100;
-  const gM = guests.filter(g=>g.side==='เอ็ม');
-  const gP = guests.filter(g=>g.side==='แป้ง');
-  const gX = guests.filter(g=>g.side!=='เอ็ม'&&g.side!=='แป้ง');
+  // นับเฉพาะแขกที่ยืนยันแล้ว (ไม่รวม รอยืนยัน / ไม่มาร่วมงาน)
+  const confirmedGuests = guests.filter(g=>g.status==='confirmed');
+  const gM = confirmedGuests.filter(g=>g.side==='เอ็ม');
+  const gP = confirmedGuests.filter(g=>g.side==='แป้ง');
+  const gX = confirmedGuests.filter(g=>g.side!=='เอ็ม'&&g.side!=='แป้ง');
   const seatsM = gM.reduce((s,g)=>s+(g.seats||1),0);
   const seatsP = gP.reduce((s,g)=>s+(g.seats||1),0);
   const seatsX = gX.reduce((s,g)=>s+(g.seats||1),0);

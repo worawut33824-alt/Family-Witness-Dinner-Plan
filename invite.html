@@ -2577,6 +2577,8 @@ function loadStats() {
   function countFromGuests(guests) {
     let total = 0, sM = 0, sP = 0;
     guests.forEach(g => {
+      // นับเฉพาะแขกที่ยืนยันแล้ว (ไม่รวม รอยืนยัน / ไม่มาร่วมงาน)
+      if (g.status !== 'confirmed') return;
       const s = parseInt(g.seats) || 1;
       const side = String(g.side || '');
       total += s;
