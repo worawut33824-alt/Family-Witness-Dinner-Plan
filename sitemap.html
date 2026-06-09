@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Site Map — Family Witness Dinner Plan</title>
+<style>
+  :root {
+    --navy: #1a2744;
+    --navy2: #2a3f6e;
+    --gold: #c9a84c;
+    --gold2: #f0d080;
+    --rose: #f5e6e8;
+    --cream: #fdf9f4;
+    --white: #ffffff;
+    --text: #2d2d2d;
+    --textlt: #777;
+    --border: rgba(201,168,76,.22);
+    --card: #ffffff;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--cream); font-family: 'Segoe UI', 'Sarabun', Arial, sans-serif; color: var(--text); }
+
+  /* ──── HEADER ──── */
+  .header {
+    background: linear-gradient(160deg, #0f1a35 0%, var(--navy2) 100%);
+    color: #fff; text-align: center; padding: 52px 24px 44px;
+    position: relative; overflow: hidden;
+  }
+  .header::before {
+    content: ''; position: absolute; inset: 0;
+    background: radial-gradient(ellipse 80% 50% at 50% -10%, rgba(201,168,76,.25) 0%, transparent 70%);
+  }
+  .header .htag {
+    display: inline-block;
+    border: 1px solid rgba(201,168,76,.5); color: var(--gold2);
+    font-size: .68rem; letter-spacing: 3px; text-transform: uppercase;
+    padding: 4px 18px; border-radius: 20px; margin-bottom: 18px;
+    background: rgba(201,168,76,.1);
+  }
+  .header h1 { font-size: clamp(1.7rem,4vw,2.8rem); font-weight: 800; margin-bottom: 8px; }
+  .header h1 em { color: var(--gold2); font-style: normal; }
+  .header p { color: rgba(255,255,255,.6); font-size: .9rem; margin-bottom: 24px; }
+  .pills { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+  .pill {
+    background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.18);
+    color: rgba(255,255,255,.8); font-size: .7rem; padding: 4px 14px; border-radius: 20px;
+  }
+
+  /* ──── SECTION WRAPPER ──── */
+  .wrap { max-width: 1280px; margin: 0 auto; padding: 0 24px; }
+  .section { margin: 36px auto 0; max-width: 1280px; padding: 0 24px; }
+  .sec-title {
+    font-size: 1rem; font-weight: 700; color: var(--navy);
+    display: flex; align-items: center; gap: 10px; margin-bottom: 18px;
+  }
+  .sec-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+  /* ──── ARCH BOX ──── */
+  .arch-box {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 16px; padding: 24px 28px;
+    box-shadow: 0 2px 20px rgba(0,0,0,.05);
+  }
+  .arch-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 14px; }
+  .arch-row:last-child { margin-bottom: 0; }
+  .arch-lbl { font-size: .68rem; font-weight: 700; color: var(--textlt); letter-spacing: 1px; text-transform: uppercase; width: 76px; flex-shrink: 0; }
+  .arch-nodes { display: flex; gap: 8px; flex-wrap: wrap; flex: 1; align-items: center; }
+  .anode {
+    display: flex; align-items: center; gap: 5px;
+    padding: 6px 13px; border-radius: 9px; font-size: .76rem; font-weight: 500;
+    border: 1px solid transparent;
+  }
+  .anode.dark { background: var(--navy); color: #fff; }
+  .anode.gold { background: linear-gradient(135deg,var(--gold2),var(--gold)); color: var(--navy); font-weight: 700; }
+  .anode.blue { background: #e3f2fd; color: #1565c0; border-color: #90caf9; }
+  .anode.green { background: #e8f5e9; color: #2e7d32; border-color: #a5d6a7; }
+  .anode.purple { background: #f3e5f5; color: #6a1b9a; border-color: #ce93d8; }
+  .anode.plain { background: var(--cream); border-color: var(--border); color: var(--navy); }
+  .adiv { height: 1px; background: var(--border); margin: 10px 0; }
+  .arr { color: var(--gold); font-size: 1rem; }
+
+  /* ──── PAGES HERO GRID ──── */
+  .hero-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  @media(max-width:900px){ .hero-grid { grid-template-columns: 1fr; } }
+
+  /* ──── TABS GRID ──── */
+  .tabs-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+  @media(max-width:900px){ .tabs-grid { grid-template-columns: 1fr 1fr; } }
+  @media(max-width:580px){ .tabs-grid { grid-template-columns: 1fr; } }
+
+  /* ──── PAGE CARD ──── */
+  .pcard {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 16px; overflow: hidden;
+    box-shadow: 0 2px 16px rgba(0,0,0,.05);
+    transition: box-shadow .2s, transform .2s;
+  }
+  .pcard:hover { box-shadow: 0 8px 32px rgba(26,39,68,.13); transform: translateY(-2px); }
+
+  .pcard-head {
+    padding: 13px 16px 10px;
+    display: flex; align-items: center; gap: 10px;
+    border-bottom: 1px solid var(--border);
+  }
+  .pcard-num {
+    width: 28px; height: 28px; border-radius: 50%;
+    font-size: .68rem; font-weight: 800;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  .pcard-num.navy { background: var(--navy); color: #fff; }
+  .pcard-num.gold-num { background: linear-gradient(135deg,var(--gold2),var(--gold)); color: var(--navy); }
+  .pcard-info { flex: 1; }
+  .pcard-info h3 { font-size: .86rem; font-weight: 700; color: var(--navy); }
+  .pcard-info p { font-size: .7rem; color: var(--textlt); }
+  .badge {
+    font-size: .62rem; padding: 2px 9px; border-radius: 10px; font-weight: 600; white-space: nowrap;
+  }
+  .b-main { background: #e3f2fd; color: #1565c0; }
+  .b-tab { background: #f3e5f5; color: #6a1b9a; }
+  .b-page { background: #e8f5e9; color: #2e7d32; }
+  .b-link { background: #fff3e0; color: #e65100; }
+
+  /* ──── MOCKUP SCREEN ──── */
+  .mockup {
+    background: #f0f2f7;
+    padding: 10px;
+    display: flex; justify-content: center; align-items: flex-start;
+  }
+  .phone {
+    width: 100%; max-width: 260px;
+    background: #fff;
+    border-radius: 14px;
+    overflow: hidden;
+    border: 2px solid #dde;
+    box-shadow: 0 4px 20px rgba(0,0,0,.12);
+    font-size: 9px;
+  }
+  /* Phone status bar */
+  .ph-bar {
+    background: var(--navy);
+    color: rgba(255,255,255,.7);
+    font-size: 8px;
+    padding: 4px 10px;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  /* App top nav */
+  .ph-nav {
+    background: linear-gradient(135deg,var(--navy),var(--navy2));
+    padding: 10px 12px 8px;
+    color: #fff;
+  }
+  .ph-nav-title { font-size: 10px; font-weight: 700; margin-bottom: 2px; }
+  .ph-nav-sub { font-size: 7.5px; color: rgba(255,255,255,.6); }
+  /* Tab bar */
+  .ph-tabs {
+    display: flex; overflow: hidden;
+    border-bottom: 1px solid #eee;
+  }
+  .ph-tab {
+    flex: 1; text-align: center; padding: 5px 2px;
+    font-size: 7px; color: #aaa; border-bottom: 2px solid transparent;
+  }
+  .ph-tab.active { color: var(--navy); font-weight: 700; border-bottom-color: var(--gold); }
+  /* Content areas */
+  .ph-body { padding: 10px 10px; min-height: 120px; }
+  .ph-row { display: flex; gap: 6px; margin-bottom: 6px; }
+  .ph-card {
+    flex: 1; background: var(--cream);
+    border-radius: 8px; padding: 6px 8px;
+    border: 1px solid #eee;
+  }
+  .ph-card .lbl { font-size: 6.5px; color: var(--textlt); }
+  .ph-card .val { font-size: 10px; font-weight: 700; color: var(--navy); }
+  .ph-card .val.gold { color: var(--gold); }
+  .ph-card .val.green { color: #388e3c; }
+  .ph-table { width: 100%; border-collapse: collapse; margin-top: 4px; }
+  .ph-table th { font-size: 6.5px; color: var(--textlt); text-align: left; padding: 2px 3px; border-bottom: 1px solid #eee; }
+  .ph-table td { font-size: 7px; padding: 3px 3px; border-bottom: 1px solid #f5f5f5; }
+  .ph-bar-chart { display: flex; align-items: flex-end; gap: 3px; height: 40px; margin-top: 6px; }
+  .ph-bar-item { flex: 1; background: var(--navy2); border-radius: 2px 2px 0 0; }
+  .ph-bar-item.gold { background: var(--gold); }
+  .ph-badge { display: inline-block; padding: 1px 5px; border-radius: 4px; font-size: 6.5px; font-weight: 600; }
+  .ph-badge.ok { background: #e8f5e9; color: #388e3c; }
+  .ph-badge.pend { background: #fff3e0; color: #e65100; }
+  .ph-badge.no { background: #ffebee; color: #c62828; }
+  .ph-btn {
+    width: 100%; text-align: center; background: var(--navy);
+    color: #fff; border-radius: 8px; padding: 5px 0;
+    font-size: 7.5px; font-weight: 700; margin-top: 8px;
+  }
+  .ph-btn.gold-btn { background: linear-gradient(135deg,var(--gold2),var(--gold)); color: var(--navy); }
+  .ph-input {
+    width: 100%; background: #f5f6fa; border: 1px solid #dde;
+    border-radius: 6px; padding: 4px 8px; font-size: 7.5px;
+    color: var(--textlt); margin-bottom: 5px;
+  }
+  .ph-link-card {
+    background: var(--cream); border-radius: 8px; padding: 6px 8px;
+    border: 1px solid #eee; margin-bottom: 5px;
+  }
+  .ph-link-card .name { font-size: 8px; font-weight: 700; color: var(--navy); }
+  .ph-link-card .url { font-size: 6.5px; color: var(--textlt); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .ph-link-card .actions { display: flex; gap: 4px; margin-top: 3px; }
+  .ph-link-card .act-btn { font-size: 6.5px; padding: 1px 5px; border-radius: 4px; font-weight: 600; }
+  .ph-link-card .act-btn.on { background: #e8f5e9; color: #388e3c; }
+  .ph-link-card .act-btn.off { background: #ffebee; color: #c62828; }
+  .ph-bless-card {
+    display: flex; gap: 5px; margin-bottom: 5px; align-items: flex-start;
+  }
+  .ph-bless-avatar {
+    width: 18px; height: 18px; border-radius: 50%;
+    background: linear-gradient(135deg,var(--gold2),var(--gold));
+    display: flex; align-items: center; justify-content: center;
+    font-size: 9px; flex-shrink: 0;
+  }
+  .ph-bless-txt { font-size: 7px; color: var(--text); line-height: 1.4; }
+  .ph-bless-name { font-size: 6.5px; font-weight: 700; color: var(--navy); margin-bottom: 1px; }
+  .invite-hero {
+    background: linear-gradient(160deg, var(--navy) 0%, var(--navy2) 100%);
+    padding: 14px 12px; text-align: center; color: #fff;
+  }
+  .invite-hero .inv-title { font-size: 10px; font-weight: 800; color: var(--gold2); margin-bottom: 3px; }
+  .invite-hero .inv-name { font-size: 12px; font-weight: 700; }
+  .invite-hero .inv-date { font-size: 7.5px; color: rgba(255,255,255,.65); margin-top: 3px; }
+  .inv-tree {
+    text-align: center; font-size: 22px; padding: 6px 0; background: #f5f5dc;
+  }
+  .inv-actions { padding: 8px 10px; display: flex; gap: 5px; }
+  .inv-btn {
+    flex: 1; border-radius: 8px; padding: 6px 0; text-align: center;
+    font-size: 7.5px; font-weight: 700;
+  }
+  .inv-btn.yes { background: linear-gradient(135deg,var(--gold2),var(--gold)); color: var(--navy); }
+  .inv-btn.no { background: #ffebee; color: #c62828; }
+  .inv-msg { padding: 0 10px 8px; }
+  .inv-msg textarea {
+    width: 100%; background: #f5f6fa; border: 1px solid #dde;
+    border-radius: 6px; padding: 5px 7px; font-size: 7px; resize: none; height: 30px;
+  }
+  .ph-checklist-item {
+    display: flex; align-items: center; gap: 5px; padding: 4px 0;
+    border-bottom: 1px solid #f0f0f0; font-size: 7.5px;
+  }
+  .ph-check { width: 9px; height: 9px; border-radius: 2px; border: 1.5px solid #ccc; flex-shrink: 0; }
+  .ph-check.done { background: #388e3c; border-color: #388e3c; }
+  .ph-contact { display: flex; gap: 6px; align-items: center; padding: 4px 0; border-bottom: 1px solid #f0f0f0; }
+  .ph-contact-avatar { width: 16px; height: 16px; border-radius: 50%; background: #e3f2fd; font-size: 9px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .ph-contact-name { font-size: 7.5px; font-weight: 700; color: var(--navy); }
+  .ph-contact-role { font-size: 6.5px; color: var(--textlt); }
+  .ph-progress { background: #eee; border-radius: 4px; height: 5px; margin-top: 4px; overflow: hidden; }
+  .ph-progress-fill { height: 100%; border-radius: 4px; background: linear-gradient(90deg,var(--gold),var(--gold2)); }
+
+  /* ──── FEATURES ROW ──── */
+  .feats { padding: 10px 14px 12px; display: flex; flex-wrap: wrap; gap: 5px; }
+  .feat {
+    background: var(--cream); border: 1px solid var(--border);
+    border-radius: 5px; font-size: .65rem; padding: 2px 8px; color: var(--text);
+  }
+  .feat.k { background: rgba(201,168,76,.12); border-color: rgba(201,168,76,.4); color: #6b4e00; font-weight: 600; }
+
+  /* ──── FLOW ──── */
+  .flow-box {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 16px; padding: 24px 20px;
+    box-shadow: 0 2px 20px rgba(0,0,0,.05);
+    display: flex; flex-wrap: wrap; gap: 4px;
+    align-items: center; justify-content: center;
+  }
+  .fstep {
+    display: flex; flex-direction: column; align-items: center;
+    gap: 6px; padding: 10px 14px; text-align: center; min-width: 100px;
+  }
+  .ficon {
+    width: 46px; height: 46px; border-radius: 12px;
+    display: flex; align-items: center; justify-content: center; font-size: 1.3rem;
+  }
+  .fstep h4 { font-size: .78rem; font-weight: 700; color: var(--navy); }
+  .fstep p { font-size: .66rem; color: var(--textlt); line-height: 1.4; }
+  .farr { color: var(--gold); font-size: 1.3rem; font-weight: 700; padding: 0 2px; }
+
+  /* ──── FOOTER ──── */
+  footer {
+    text-align: center; padding: 40px 24px;
+    color: var(--textlt); font-size: .78rem;
+    margin-top: 40px; border-top: 1px solid var(--border);
+  }
+  footer strong { color: var(--navy); }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="htag">Site Map &amp; Screen Preview</div>
+  <h1>💍 Family Witness <em>Dinner Plan</em></h1>
+  <p>แผนผังและตัวอย่างหน้าจอทั้งหมดของระบบวางแผนงานแต่งงาน</p>
+  <div class="pills">
+    <span class="pill">🌐 Progressive Web App</span>
+    <span class="pill">📊 Google Sheets Backend</span>
+    <span class="pill">⚡ Google Apps Script API</span>
+    <span class="pill">🚂 Railway Hosting</span>
+    <span class="pill">📱 Mobile-First</span>
+    <span class="pill">🔔 Service Worker Offline</span>
+  </div>
+</div>
+
+<!-- ARCHITECTURE -->
+<section class="section">
+  <div class="sec-title">🏗️ โครงสร้างระบบ (Architecture)</div>
+  <div class="arch-box">
+    <div class="arch-row">
+      <div class="arch-lbl">👤 ผู้ใช้</div>
+      <div class="arch-nodes">
+        <div class="anode dark">📱 PWA (Install)</div>
+        <div class="anode dark">🖥️ Web Browser</div>
+      </div>
+    </div>
+    <div class="adiv"></div>
+    <div class="arch-row">
+      <div class="arch-lbl">📄 Pages</div>
+      <div class="arch-nodes">
+        <div class="anode gold">🏠 index.html (Dashboard)</div>
+        <div class="arr">+</div>
+        <div class="anode gold">💌 invite.html (บัตรเชิญ)</div>
+      </div>
+    </div>
+    <div class="adiv"></div>
+    <div class="arch-row">
+      <div class="arch-lbl">☁️ Hosting</div>
+      <div class="arch-nodes">
+        <div class="anode blue">🚂 Railway (Production · Auto-deploy)</div>
+        <div class="arr">↔</div>
+        <div class="anode blue">🐙 GitHub Repository</div>
+      </div>
+    </div>
+    <div class="adiv"></div>
+    <div class="arch-row">
+      <div class="arch-lbl">🔌 Backend</div>
+      <div class="arch-nodes">
+        <div class="anode green">⚡ Google Apps Script (Web App · POST)</div>
+        <div class="arr">→</div>
+        <div class="anode green">📊 Google Sheets (แขก / คำอวยพร / ลิงก์)</div>
+      </div>
+    </div>
+    <div class="adiv"></div>
+    <div class="arch-row">
+      <div class="arch-lbl">💾 Storage</div>
+      <div class="arch-nodes">
+        <div class="anode purple">🗄️ localStorage</div>
+        <div class="anode purple">🔔 Service Worker v87</div>
+        <div class="anode purple">📧 Gmail API</div>
+        <div class="anode purple">📅 Google Calendar</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MAIN PAGES -->
+<section class="section">
+  <div class="sec-title">📱 หน้าเว็บหลัก (Main Pages)</div>
+  <div class="hero-grid">
+
+    <!-- index.html -->
+    <div class="pcard">
+      <div class="pcard-head">
+        <div class="pcard-num gold-num">M</div>
+        <div class="pcard-info">
+          <h3>🏠 index.html — Dashboard หลัก</h3>
+          <p>จัดการงานแต่งงานครบวงจร • 9 แท็บ</p>
+        </div>
+        <span class="badge b-main">Main App</span>
+      </div>
+      <div class="mockup" style="padding:14px 0">
+        <div class="phone">
+          <div class="ph-bar"><span>9:41</span><span>📶 🔋</span></div>
+          <div class="ph-nav">
+            <div class="ph-nav-title">💍 Family Witness Dinner Plan</div>
+            <div class="ph-nav-sub">ระบบวางแผนงานแต่งงาน</div>
+          </div>
+          <div class="ph-tabs">
+            <div class="ph-tab active">📊ภาพรวม</div>
+            <div class="ph-tab">💰จ่าย</div>
+            <div class="ph-tab">📋งบ</div>
+            <div class="ph-tab">🎁สนับ</div>
+            <div class="ph-tab">✅ List</div>
+          </div>
+          <div class="ph-body">
+            <div style="font-size:8px;font-weight:700;color:var(--navy);margin-bottom:8px;">⏰ เหลืออีก <span style="color:var(--gold)">45 วัน</span></div>
+            <div class="ph-row">
+              <div class="ph-card"><div class="lbl">แขกทั้งหมด</div><div class="val">48</div></div>
+              <div class="ph-card"><div class="lbl">ยืนยันแล้ว</div><div class="val green">32</div></div>
+              <div class="ph-card"><div class="lbl">งบที่ใช้</div><div class="val gold">68%</div></div>
+            </div>
+            <div class="ph-bar-chart">
+              <div class="ph-bar-item" style="height:60%"></div>
+              <div class="ph-bar-item gold" style="height:80%"></div>
+              <div class="ph-bar-item" style="height:45%"></div>
+              <div class="ph-bar-item gold" style="height:70%"></div>
+              <div class="ph-bar-item" style="height:55%"></div>
+              <div class="ph-bar-item gold" style="height:90%"></div>
+              <div class="ph-bar-item" style="height:40%"></div>
+            </div>
+            <div style="font-size:6.5px;color:var(--textlt);text-align:center;margin-top:3px;">ค่าใช้จ่ายรายหมวด</div>
+          </div>
+        </div>
+      </div>
+      <div class="feats">
+        <span class="feat k">9 แท็บ</span>
+        <span class="feat">localStorage sync</span>
+        <span class="feat">Apps Script API</span>
+        <span class="feat">Chart.js</span>
+        <span class="feat">Export CSV</span>
+        <span class="feat">PWA Install</span>
+      </div>
+    </div>
+
+    <!-- invite.html -->
+    <div class="pcard">
+      <div class="pcard-head">
+        <div class="pcard-num gold-num">I</div>
+        <div class="pcard-info">
+          <h3>💌 invite.html — บัตรเชิญแขก</h3>
+          <p>หน้า RSVP สำหรับแขกแต่ละคน</p>
+        </div>
+        <span class="badge b-page">Invite Page</span>
+      </div>
+      <div class="mockup" style="padding:14px 0">
+        <div class="phone">
+          <div class="ph-bar"><span>9:41</span><span>📶 🔋</span></div>
+          <div class="invite-hero">
+            <div class="inv-title">💍 คำเชิญงานแต่งงาน</div>
+            <div class="inv-name">คุณ วรวุฒิ & คุณ สาวน้อย</div>
+            <div class="inv-date">📅 วันเสาร์ที่ 15 กุมภาพันธ์ 2568 • 17:00 น.</div>
+            <div class="inv-date">📍 โรงแรม The Royal Gems Bangkok</div>
+          </div>
+          <div class="inv-tree">🌳</div>
+          <div class="inv-actions">
+            <div class="inv-btn yes">✅ ยืนยันเข้าร่วม</div>
+            <div class="inv-btn no">❌ ไม่สะดวก</div>
+          </div>
+          <div class="inv-msg">
+            <div style="font-size:7.5px;font-weight:700;color:var(--navy);margin-bottom:3px;">💬 ส่งคำอวยพร</div>
+            <textarea placeholder="ขอให้รักกัน..."></textarea>
+            <div class="ph-btn gold-btn">📤 ส่งคำอวยพร</div>
+          </div>
+        </div>
+      </div>
+      <div class="feats">
+        <span class="feat k">RSVP ยืนยัน/ปฏิเสธ</span>
+        <span class="feat">Google Calendar</span>
+        <span class="feat">คำอวยพร</span>
+        <span class="feat">อัพโหลดรูป</span>
+        <span class="feat">ต้นไม้ Animation</span>
+        <span class="feat">Link Token</span>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- 9 TABS -->
+<section class="section">
+  <div class="sec-title">📂 แท็บใน Dashboard (9 Tabs)</div>
+  <div class="tabs-grid">
+
+    <!-- Tab 1 ภาพรวม -->
+    <div class="pcard">
+      <div class="pcard-head">
+        <div class="pcard-num navy">1</div>
+        <div class="pcard-info"><h3>📊 ภาพรวม</h3><p>Overview & Stats</p></div>
+        <span class="badge b-tab">Tab</span>
+      </div>
+      <div class="mockup">
+        <div class="phone">
+          <div class="ph-bar"><span>9:41</span><span>📶</span></div>
+          <div class="ph-tabs" style="background:var(--navy)">
+            <div class="ph-tab active" style="color:var(--gold2);border-bottom-color:var(--gold)">📊ภาพรวม</div>
+            <div class="ph-tab" style="color:rgba(255,255,255,.4)">💰</div>
+            <div class="ph-tab" style="color:rgba(255,255,255,.4)">📋</div>
+          </div>
+          <div class="ph-body">
+            <div class="ph-row">
+              <div class="ph-card"><div class="lbl">Countdown</div><div class="val">45 <span style="font-size:6.5px">วัน</span></div></div>
+              <div class="ph-card"><div class="lbl">แขก</div><div class="val">48</div></div>
+            </div>
+            <div class="ph-row">
+              <div class="ph-card"><div class="lbl">ยืนยัน</div><div class="val green">32</div></div>
+              <div class="ph-card"><div class="lbl">งบคงเหลือ</div><div class="val gold">32%</div></div>
+            </div>
+            <div class="ph-progress"><div class="ph-progress-fill" style="width:68%"></div></div>
+            <div style="font-size:6.5px;color:var(--textlt);margin-top:2px">งบที่ใช้ไป 68%</div>
+          </div>
+        </div>
+      </div>
+      <div class="feats">
+        <span class="feat k">Countdown</span>
+        <span class="feat">สถิติแขก</span>
+        <span class="feat">Progress งบ</span>
+      </div>
+    </div>
+
+    <!-- Tab 2 ค่าใช้จ่าย -->
+    <div class="pcard">
+      <div class="pcard-head">
+        <div class="pcard-num navy">2</div>
+        <div class="pcard-info"><h3>💰 ค่าใช้จ่าย</h3><p>Expense Tracking</p></div>
+        <span class="badge b-tab">Tab</span>
+      </div>
+      <div class="mockup">
+        <div class="phone">
+          <div class="ph-bar"><span>9:41</span><span>📶</span></div>
+          <div class="ph-body" style="padding-top:12px">
+            <div style="font-size:8px;font-weight:700;color:var(--navy);margin-bottom:7px">+ เพิ่มค่าใช้จ่าย</div>
+            <table class="ph-table">
+              <tr><th>รายการ</th><th>หมวด</th><th>จำนวน</th></tr>
+              <tr><td>ชุดเจ้าสาว</td><td>เสื้อผ้า</td><td>45,000</td></tr>
+              <tr><td>สถานที่จัด</td><td>ห้องงาน</td><td>120,000</td></tr>
+              <tr><td>ช่างภาพ</td><td>บริการ</td><td>35,000</td></tr>
+              <tr><td>ดอกไม้</td><td>ตกแต่ง</td><td>18,000</td></tr>
+            </table>
+            <div class="ph-btn gold-btn" style="margin-top:8px">📤 Export CSV</div>
+          </div>
+        </div>
+      </div>
+      <div class="feats">
+        <span class="feat k">บันทึกรายจ่าย</span>
+        <span class="feat">กราฟ Donut</span>
+        <span class="feat">Export CSV</span>
+      </div>
+    </div>
+
+    <!-- Tab 3 งบประมาณ -->
+    <div class="pcard">
+      <div class="pcard-head">
+        <div class="pcard-num navy">3</div>
+        <div class="pcard-info"><h3>📋 งบประมาณ</h3><p>Budget Planning</p></div>
+        <span class="badge b-tab">Tab</span>
+      </div>
+      <div class="mockup">
+        <div class="phone">
+          <div class="ph-bar"><span>9:41</span><span>📶</span></div>
+          <div class="ph-body" style="padding-top:12px">
+            <div style="font-size:8px;font-weight:700;color:var(--navy);margin-bottom:6px">งบประมาณรวม: 500,000 ฿</div>
+            <div style="margin-bottom:5px">
+              <div style="display:flex;justify-content:space-between;font-size:7px;margin-bottom:2px"><span>ห้องจัดงาน</span><span>120k/150k</span></div>
+              <div class="ph-progress"><div class="ph-progress-fill" style="width:80%"></div></div>
+            </div>
+            <div style="margin-bottom:5px">
+              <div style="display:flex;justify-content:space-between;font-size:7px;margin-bottom:2px"><span>อาหาร</span><span>80k/100k</span></div>
+              <div class="ph-progress"><div class="ph-progress-fill" style="width:80%"></div></div>
+            </div>
+            <div style="margin-bottom:5px">
+              <div style="display:flex;justify-content:space-between;font-size:7px;margin-bottom:2px"><span>ช่างภาพ</span><span>35k/50k</span></div>
+              <div class="ph-progress"><div class="ph-progress-fill" style="width:70%"></div></div>
+            </div>
+            <div style="margin-bottom:5px">
+              <div style="display:flex;justify-content:space-between;font-size:7px;margin-bottom:2px;color:#c62828"><span>⚠️ ชุดแต่งงาน</span><span>55k/50k</span></div>
+              <div class="ph-progress"><div class="ph-progress-fill" style="width:100%;background:linear-gradient(90deg,#ef5350,#e53935)"></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="feats">
+        <span class="feat k">ตั้งงบ</span>
+        <span class="feat">Progress Bar</span>
+        <span class="feat">แจ้งเตือนเกินงบ</span>
+      </div>
+    </div>
+
+    <!-- Tab 4 การสนับสนุน -->
+    <div class="pcard">
+      <div class="pcard-head">
+        <div class="pcard-num navy">4</div>
+        <div class="pcard-info"><h3>🎁 การสนับสนุน</h3><p>Gift & Sponsors</p></div>
+        <span class="badge b-tab">Tab</span>
+      </div>
+      <div class="mockup">
+        <div class="phone">
+          <div class="ph-bar"><span>9:41</span><span>📶</span></div>
+          <div class="ph-body" style="padding-top:12px">
+            <div class="ph-row">
+              <div class="ph-card"><div class="lbl">ของขวัญรวม</div><div class="val gold">12</div></div>
+              <div class="ph-card"><div class="lbl">เงินสดรวม</div><div class="val">85,000</div></div>
+            </div>
+            <table class="ph-table" style="margin-top:6px">
+              <tr><th>ชื่อ</th><th>ของขวัญ</th><th>จำนวน</th></tr>
+              <tr><td>คุณ A</td><td>ซองเงิน</td><td>5,000</td></tr>
+              <tr><td>คุณ B</td><td>ชุดครัว</td><td>—</td></tr>
+              <tr><td>คุณ C</td><td>ซองเงิน</td><td>10,000</td></tr>
+            </table>
+          </div>
+        </div>
+      </div>
+      <div class="feats">
+        <span class="feat k">บันทึกของขวัญ</span>
+        <span class="feat">เงินสด/ของ</span>
+        <span class="feat">ผู้สนับสนุน</span>
+      </div>
+    </div>
+
+    <!-- Tab 5 Checklist -->
+    <div class="pcard">
+      <div class="pcard-head">
+        <div class="pcard-num navy">5</div>
+        <div class="pcard-info"><h3>✅ Checklist</h3><p>To-Do & Planning</p></div>
+        <span class="badge b-tab">Tab</span>
+      </div>
+      <div class="mockup">
+        <div class="phone">
+          <div class="ph-bar"><span>9:41</span><span>📶</span></div>
+          <div class="ph-body" style="padding-top:12px">
+            <div style="font-size:7.5px;font-weight:700;color:var(--navy);margin-bottom:5px">ความคืบหน้า</div>
+            <div class="ph-progress"><div class="ph-progress-fill" style="width:62%"></div></div>
+            <div style="font-size:6.5px;color:var(--textlt);margin-bottom:7px">8/13 รายการเสร็จแล้ว</div>
+            <div class="ph-checklist-item"><div class="ph-check done"></div><span style="text-decoration:line-through;color:#aaa">จองสถานที่จัดงาน</span></div>
+            <div class="ph-checklist-item"><div class="ph-check done"></div><span style="text-decoration:line-through;color:#aaa">เลือกช่างภาพ</span></div>
+            <div class="ph-checklist-item"><div class="ph-check done"></div><span style="text-decoration:line-through;color:#aaa">สั่งชุดเจ้าสาว</span></div>
+            <div class="ph-checklist-item"><div class="ph-check"></div><span>ส่งบัตรเชิญแขก</span></div>
+            <div class="ph-checklist-item"><div class="ph-check"></div><span>ออกแบบโต๊ะจัดเลี้ยง</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="feats">
+        <span class="feat k">รายการ To-Do</span>
+        <span class="feat">Progress %</span>
+        <span class="feat">Deadline</span>
+      </div>
+    </div>
+
+    <!-- Tab 6 ผู้ติดต่อ -->
+    <div class="pcard">
+      <div class="pcard-head">
+        <div class="pcard-num navy">6</div>
+        <div class="pcard-info"><h3>📞 ผู้ติดต่อ</h3><p>Vendor Contacts</p></div>
+        <span class="badge b-tab">Tab</span>
+      </div>
+      <div class="mockup">
+        <div class="phone">
+          <div class="ph-bar"><span>9:41</span><span>📶</span></div>
+          <div class="ph-body" style="padding-top:12px">
+            <div class="ph-contact">
+              <div class="ph-contact-avatar">📸</div>
+              <div><div class="ph-contact-name">ช่างภาพ สมชาย</div><div class="ph-contact-role">📞 081-234-5678 | ช่างภาพ</div></div>
+            </div>
+            <div class="ph-contact">
+              <div class="ph-contact-avatar">🏨</div>
+              <div><div class="ph-contact-name">The Royal Gems</div><div class="ph-contact-role">📞 02-123-4567 | สถานที่</div></div>
+            </div>
+            <div class="ph-contact">
+              <div class="ph-contact-avatar">💐</div>
+              <div><div class="ph-contact-name">ร้านดอกไม้ Rose</div><div class="ph-contact-role">📞 089-876-5432 | ดอกไม้</div></div>
+            </div>
+            <div class="ph-contact">
+              <div class="ph-contact-avatar">🎂</div>
+              <div><div class="ph-contact-name">เค้กแต่งงาน</div><div class="ph-contact-role">📞 062-111-2222 | เบเกอรี่</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="feats">
+        <span class="feat k">ผู้ให้บริการ</span>
+        <span class="feat">โทรด่วน</span>
+        <span class="feat">หมายเหตุ</span>
+      </div>
+    </div>
+
+    <!-- Tab 7 แขก -->
+    <div class="pcard">
+      <div class="pcard-head">
+        <div class="pcard-num navy">7</div>
+        <div class="pcard-info"><h3>👥 แขก</h3><p>Guest Management</p></div>
+        <span class="badge b-tab">Tab</span>
+      </div>
+      <div class="mockup">
+        <div class="phone">
+          <div class="ph-bar"><span>9:41</span><span>📶</span></div>
+          <div class="ph-body" style="padding-top:10px">
+            <div class="ph-input">🔍 ค้นหาชื่อแขก...</div>
+            <table class="ph-table">
+              <tr><th>ชื่อ</th><th>โต๊ะ</th><th>สถานะ</th></tr>
+              <tr><td>คุณ A นามสกุล</td><td>1</td><td><span class="ph-badge ok">ยืนยัน</span></td></tr>
+              <tr><td>คุณ B นามสกุล</td><td>2</td><td><span class="ph-badge pend">รอ</span></td></tr>
+              <tr><td>คุณ C นามสกุล</td><td>1</td><td><span class="ph-badge ok">ยืนยัน</span></td></tr>
+              <tr><td>คุณ D นามสกุล</td><td>3</td><td><span class="ph-badge no">ปฏิเสธ</span></td></tr>
+            </table>
+            <div class="ph-btn" style="margin-top:6px">🔄 Sync Google Sheets</div>
+          </div>
+        </div>
+      </div>
+      <div class="feats">
+        <span class="feat k">รายชื่อแขก</span>
+        <span class="feat">สถานะ RSVP</span>
+        <span class="feat">Sync Sheets</span>
+        <span class="feat">ค้นหา</span>
+      </div>
+    </div>
+
+    <!-- Tab 8 คำอวยพร -->
+    <div class="pcard">
+      <div class="pcard-head">
+        <div class="pcard-num navy">8</div>
+        <div class="pcard-info"><h3>💬 คำอวยพร</h3><p>Blessings Wall</p></div>
+        <span class="badge b-tab">Tab</span>
+      </div>
+      <div class="mockup">
+        <div class="phone">
+          <div class="ph-bar"><span>9:41</span><span>📶</span></div>
+          <div class="ph-body" style="padding-top:12px">
+            <div class="ph-bless-card">
+              <div class="ph-bless-avatar">👩</div>
+              <div><div class="ph-bless-name">คุณ สมหญิง A</div><div class="ph-bless-txt">ขอให้รักกันตลอดไปนะคะ มีความสุขมากๆ เลยค่ะ 💕</div></div>
+            </div>
+            <div class="ph-bless-card">
+              <div class="ph-bless-avatar">👨</div>
+              <div><div class="ph-bless-name">คุณ สมชาย B</div><div class="ph-bless-txt">ยินดีด้วยนะครับ ขอให้ทุกอย่างราบรื่นครับ 🎉</div></div>
+            </div>
+            <div class="ph-bless-card">
+              <div class="ph-bless-avatar">👩</div>
+              <div><div class="ph-bless-name">คุณ สาวน้อย C</div><div class="ph-bless-txt">ดีใจด้วยนะคะ รักคู่นี้มากค่ะ 🌸</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="feats">
+        <span class="feat k">Blessing Wall</span>
+        <span class="feat">Avatar 72px</span>
+        <span class="feat">รูปโปรไฟล์</span>
+        <span class="feat">Sync Sheet</span>
+      </div>
+    </div>
+
+    <!-- Tab 9 ลิงก์เชิญ -->
+    <div class="pcard">
+      <div class="pcard-head">
+        <div class="pcard-num navy">9</div>
+        <div class="pcard-info"><h3>🔗 ลิงก์เชิญ</h3><p>Link Manager</p></div>
+        <span class="badge b-link">Link Mgr</span>
+      </div>
+      <div class="mockup">
+        <div class="phone">
+          <div class="ph-bar"><span>9:41</span><span>📶</span></div>
+          <div class="ph-body" style="padding-top:10px">
+            <div style="font-size:7.5px;font-weight:700;color:var(--navy);margin-bottom:6px">🔗 จัดการลิงก์เชิญ</div>
+            <div class="ph-link-card">
+              <div class="name">คุณ วรวุฒิ</div>
+              <div class="url">https://railway.app/invite.html?token=abc...</div>
+              <div class="actions">
+                <span class="act-btn on">🟢 เปิด</span>
+                <span class="act-btn" style="background:#e3f2fd;color:#1565c0">📋 Copy</span>
+              </div>
+            </div>
+            <div class="ph-link-card">
+              <div class="name">คุณ สมหญิง</div>
+              <div class="url">https://railway.app/invite.html?token=def...</div>
+              <div class="actions">
+                <span class="act-btn off">🔴 ปิด</span>
+                <span class="act-btn" style="background:#e3f2fd;color:#1565c0">📋 Copy</span>
+              </div>
+            </div>
+            <div class="ph-btn gold-btn" style="margin-top:2px">+ สร้างลิงก์ใหม่</div>
+          </div>
+        </div>
+      </div>
+      <div class="feats">
+        <span class="feat k">ลิงก์ต่อแขก</span>
+        <span class="feat">เปิด/ปิด</span>
+        <span class="feat">Copy URL</span>
+        <span class="feat">Sync Sheet</span>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- USER FLOW -->
+<section class="section">
+  <div class="sec-title">🔄 User Flow — เส้นทางการใช้งาน</div>
+  <div class="flow-box">
+    <div class="fstep">
+      <div class="ficon" style="background:#e3f2fd">⚙️</div>
+      <h4>ตั้งค่าระบบ</h4>
+      <p>กรอก Apps Script URL<br>ตั้งชื่องาน วันที่</p>
+    </div>
+    <div class="farr">→</div>
+    <div class="fstep">
+      <div class="ficon" style="background:#f3e5f5">👥</div>
+      <h4>เพิ่มแขก</h4>
+      <p>ชื่อ / อีเมล<br>โต๊ะ / หมวดหมู่</p>
+    </div>
+    <div class="farr">→</div>
+    <div class="fstep">
+      <div class="ficon" style="background:#e8f5e9">🔗</div>
+      <h4>สร้างลิงก์</h4>
+      <p>Link Manager<br>Unique Token URL</p>
+    </div>
+    <div class="farr">→</div>
+    <div class="fstep">
+      <div class="ficon" style="background:#fff3e0">📧</div>
+      <h4>ส่งอีเมล</h4>
+      <p>Gmail API<br>ส่งอัตโนมัติ</p>
+    </div>
+    <div class="farr">→</div>
+    <div class="fstep">
+      <div class="ficon" style="background:#fce4ec">💌</div>
+      <h4>แขก RSVP</h4>
+      <p>invite.html<br>ยืนยัน + Google Cal</p>
+    </div>
+    <div class="farr">→</div>
+    <div class="fstep">
+      <div class="ficon" style="background:#e8eaf6">📊</div>
+      <h4>ติดตาม</h4>
+      <p>Dashboard<br>Sheets Sync</p>
+    </div>
+    <div class="farr">→</div>
+    <div class="fstep">
+      <div class="ficon" style="background:#f9fbe7">💬</div>
+      <h4>คำอวยพร</h4>
+      <p>Blessing Wall<br>รูป + ข้อความ</p>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p>💍 <strong>Family Witness Dinner Plan</strong> — Site Map v1.0</p>
+  <p style="margin-top:4px">Built with Google Apps Script + Railway + PWA • <a href="http://localhost:3456" style="color:var(--gold)">localhost:3456</a></p>
+</footer>
+
+</body>
+</html>
