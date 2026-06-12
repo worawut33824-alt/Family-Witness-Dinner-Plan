@@ -2490,7 +2490,7 @@ function renderFlowers(sM, sP, pct, hidden) {
   const pPos = genTreeFlowers(sP, 0xD4C3B2A1, vis);
   const sz = 4.9;
   const mk = (pts, src) => pts.map(([x,y]) =>
-    `<img src="${src}" class="fl" style="left:${x}%;top:${y}%;width:${sz}%;" alt="">`
+    `<img src="${src}" class="fl" style="left:${x}%;top:${y}%;width:${sz}%;filter:brightness(1.4) contrast(1.1) drop-shadow(0 0 5px rgba(255,255,255,0.95));" alt="">`
   ).join('');
   wrap.innerHTML = mk(mPos,'Love Tree/WhiteRose.PNG') + mk(pPos,'Love Tree/WhiteRose.PNG');
   wrap.style.transition = 'none';
