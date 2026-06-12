@@ -2488,7 +2488,7 @@ function renderFlowers(sM, sP, pct, hidden) {
   const vis = TREE_CLUSTERS.slice(0, Math.round(pct/100*TREE_CLUSTERS.length));
   const mPos = genTreeFlowers(sM, 0xA1B2C3D4, vis);
   const pPos = genTreeFlowers(sP, 0xD4C3B2A1, vis);
-  const sz = 4.9;
+  const sz = 3.43;
   const mk = (pts, src) => pts.map(([x,y]) =>
     `<img src="${src}" class="fl" style="left:${x}%;top:${y}%;width:${sz}%;" alt="">`
   ).join('');
