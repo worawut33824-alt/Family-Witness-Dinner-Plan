@@ -22,9 +22,9 @@
    VARIABLES & RESET
 ════════════════════════════════════════════════ */
 :root {
-  --cream:       #D6E8F5;
-  --cream-mid:   #C4DDEF;        /* blue-cream mid */
-  --cream-warm:  #B8D4EC;        /* light blue tint */
+  --cream:       #FFF8F3;
+  --cream-mid:   #EEF4FB;        /* blue-cream mid */
+  --cream-warm:  #E0ECF8;        /* light blue tint */
   --blue:        #7B9CBF;        /* palette dusty blue */
   --blue-dk:     #5a7fa8;
   --blue-lt:     #A9C9EB;        /* palette light blue */
@@ -2492,7 +2492,7 @@ function renderFlowers(sM, sP, pct, hidden) {
   const mk = (pts, src) => pts.map(([x,y]) =>
     `<img src="${src}" class="fl" style="left:${x}%;top:${y}%;width:${sz}%;" alt="">`
   ).join('');
-  wrap.innerHTML = mk(mPos,'Love Tree/png-clipart-garden-roses-white-gerbera-white-floribunda.png') + mk(pPos,'Love Tree/png-clipart-garden-roses-white-gerbera-white-floribunda.png');
+  wrap.innerHTML = mk(mPos,'Love Tree/WhiteRose.PNG') + mk(pPos,'Love Tree/WhiteRose.PNG');
   wrap.style.transition = 'none';
   wrap.style.opacity = hidden ? '0' : '1';
 }
