@@ -3,333 +3,218 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>แนะนำแอพ · Family Witness Dinner</title>
-<meta name="description" content="Wedding Planner App ครบทุกฟังก์ชัน ตั้งแต่งบประมาณ รายชื่อแขก การ์ดเชิญออนไลน์ และรับเงินสนับสนุน">
-<link href="https://fonts.googleapis.com/css2?family=Sarabun:ital,wght@0,300;0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<title>Wedding Planner App — ฟีเจอร์ทั้งหมด · Family Witness Dinner</title>
+<meta name="description" content="จัดการงานแต่งงานทุกอย่างในที่เดียว — งบ แขก คำอวยพร การ์ดเชิญ และรับเงินของขวัญ">
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth}
-body{font-family:'Sarabun',sans-serif;background:#FBF8F5;color:#3A2A2E;-webkit-font-smoothing:antialiased}
+body{font-family:'Sarabun',sans-serif;background:#FBF8F5;color:#3A2A2E}
 
-/* ─── NAV ─── */
-.nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(251,248,245,0.92);backdrop-filter:blur(12px);border-bottom:1px solid #EDE4DC;padding:0 24px;height:58px;display:flex;align-items:center;justify-content:space-between}
-.nav-logo{display:flex;align-items:center;gap:10px}
-.nav-logo img{width:34px;height:34px;border-radius:50%;object-fit:cover}
-.nav-name{font-size:14px;font-weight:700;color:#3A2A2E;letter-spacing:0.3px}
-.nav-links{display:flex;gap:6px}
-.nav-links a{font-size:13px;color:#8A7378;text-decoration:none;padding:7px 14px;border-radius:20px;transition:background 0.2s,color 0.2s}
-.nav-links a:hover{background:#EDE4DC;color:#3A2A2E}
-.nav-cta{background:#5E2A3B;color:#fff !important;font-weight:600}
-.nav-cta:hover{background:#7A3B4E !important;color:#fff !important}
-
-/* ─── HERO ─── */
-.hero{padding:120px 24px 64px;text-align:center;background:linear-gradient(170deg,#F3EDE8 0%,#FBF8F5 55%)}
-.hero-badge{display:inline-block;background:#EFE4D8;color:#7A4B3A;font-size:11px;font-weight:700;letter-spacing:2px;padding:6px 18px;border-radius:20px;margin-bottom:22px;text-transform:uppercase}
-.hero-title{font-size:clamp(28px,5vw,48px);font-weight:700;color:#3A2A2E;line-height:1.2;margin-bottom:14px}
+.hero{text-align:center;padding:64px 24px 48px;background:linear-gradient(160deg,#F3EDE8 0%,#FBF8F5 70%)}
+.hero-badge{display:inline-block;background:#EFE4D8;color:#7A4B3A;font-size:11px;font-weight:700;letter-spacing:2px;padding:6px 18px;border-radius:20px;margin-bottom:20px;text-transform:uppercase}
+.hero-title{font-size:36px;font-weight:700;color:#3A2A2E;line-height:1.25;margin-bottom:14px}
 .hero-title em{font-style:normal;color:#B07060}
-.hero-sub{font-size:16px;color:#8A7378;max-width:520px;margin:0 auto 32px;line-height:1.8}
-.hero-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-bottom:56px}
-.btn-p{background:#5E2A3B;color:#fff;border:none;padding:14px 32px;border-radius:50px;font-size:15px;font-weight:700;cursor:pointer;text-decoration:none;display:inline-block;transition:background 0.2s,transform 0.15s}
-.btn-p:hover{background:#7A3B4E;transform:translateY(-1px)}
-.btn-s{background:transparent;color:#5E2A3B;border:1.5px solid #C9A66B;padding:13px 28px;border-radius:50px;font-size:15px;font-weight:600;cursor:pointer;text-decoration:none;display:inline-block;transition:background 0.2s}
-.btn-s:hover{background:#F3EDE8}
-.hero-mockups{display:flex;justify-content:center;gap:16px;align-items:flex-end;overflow:hidden;max-height:380px}
-.hero-phone{border-radius:28px;overflow:hidden;box-shadow:0 16px 48px rgba(94,42,59,0.18);flex-shrink:0}
-.hero-phone.center{width:160px;position:relative;bottom:0}
-.hero-phone.side{width:130px;opacity:0.75;filter:blur(0.5px)}
-.hero-phone img{width:100%;display:block;object-fit:cover;object-position:top}
-.hero-phone.center img{height:320px}
-.hero-phone.side img{height:260px}
+.hero-sub{font-size:16px;color:#8A7378;max-width:500px;margin:0 auto 32px;line-height:1.7}
+.hero-btns{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+.btn-p{background:#5E2A3B;color:#fff;border:none;padding:14px 32px;border-radius:50px;font-size:15px;font-weight:700;cursor:pointer;text-decoration:none;display:inline-block}
+.btn-s{background:transparent;color:#5E2A3B;border:2px solid #C9A66B;padding:12px 28px;border-radius:50px;font-size:15px;font-weight:600;cursor:pointer;text-decoration:none;display:inline-block}
+.btn-p:hover{background:#4A1E2D}
+.btn-s:hover{background:#F5EFE8}
 
-/* ─── SECTION HEADER ─── */
-.sec-head{text-align:center;padding:60px 24px 0}
-.sec-tag{font-size:11px;font-weight:700;letter-spacing:2.5px;color:#C9A66B;text-transform:uppercase;margin-bottom:10px}
-.sec-title{font-size:clamp(20px,3.5vw,32px);font-weight:700;color:#3A2A2E;line-height:1.3;margin-bottom:8px}
-.sec-sub{font-size:15px;color:#8A7378;max-width:480px;margin:0 auto}
+.sec-label{text-align:center;padding:56px 16px 8px}
+.sec-label-badge{font-size:11px;font-weight:700;letter-spacing:2.5px;color:#C9A66B;text-transform:uppercase}
+.sec-label-title{font-size:26px;font-weight:700;color:#3A2A2E;margin-top:10px;line-height:1.3}
+.sec-label-sub{font-size:15px;color:#8A7378;margin-top:8px}
 
-/* ─── FEATURE ROWS ─── */
-.features{max-width:900px;margin:0 auto;padding:0 20px 0}
-.feat{display:flex;gap:40px;align-items:center;padding:52px 0;border-bottom:1px solid #EDE4DC}
+.features{max-width:860px;margin:0 auto;padding:8px 20px}
+.feat{display:flex;gap:36px;align-items:flex-start;padding:48px 0;border-bottom:1px solid #EDE4DC}
 .feat:last-child{border-bottom:none}
 .feat.rev{flex-direction:row-reverse}
-.phone-wrap{flex-shrink:0;width:220px}
-.phone-frame{width:220px;background:#1C1C1E;border-radius:36px;padding:9px;box-shadow:0 16px 48px rgba(94,42,59,0.20),0 4px 16px rgba(0,0,0,0.08)}
-.phone-notch{width:80px;height:26px;background:#1C1C1E;border-radius:0 0 18px 18px;margin:0 auto -8px;position:relative;z-index:1}
-.phone-inner{border-radius:28px;overflow:hidden;background:#f0f0f0}
-.phone-inner img{width:100%;display:block;object-fit:cover;object-position:top;max-height:420px}
-.feat-info{flex:1;min-width:0}
-.feat-num{font-size:11px;font-weight:700;letter-spacing:2px;color:#C9A66B;margin-bottom:10px;text-transform:uppercase}
-.feat-title{font-size:clamp(17px,2.5vw,22px);font-weight:700;color:#3A2A2E;margin-bottom:10px;line-height:1.35}
-.feat-desc{font-size:14.5px;color:#6B5558;line-height:1.8;margin-bottom:18px}
-.feat-bullets{list-style:none;display:flex;flex-direction:column;gap:9px}
+.phone-wrap{flex-shrink:0;width:210px}
+.phone-frame{width:210px;background:#111;border-radius:36px;padding:8px;box-shadow:0 16px 48px rgba(94,42,59,0.20),0 4px 12px rgba(0,0,0,0.12)}
+.phone-notch{width:70px;height:10px;background:#111;border-radius:6px;margin:0 auto 6px}
+.phone-inner{border-radius:28px;overflow:hidden;background:#f0f0f0;aspect-ratio:9/19.5;position:relative}
+.phone-inner img{width:100%;height:100%;object-fit:cover;object-position:top;display:block}
+.feat-info{flex:1;padding-top:6px}
+.feat-num{font-size:11px;font-weight:700;letter-spacing:2.5px;color:#C9A66B;margin-bottom:10px;text-transform:uppercase}
+.feat-title{font-size:22px;font-weight:700;color:#3A2A2E;margin-bottom:12px;line-height:1.3}
+.feat-desc{font-size:14.5px;color:#6B5558;line-height:1.75;margin-bottom:18px}
+.feat-bullets{list-style:none;display:flex;flex-direction:column;gap:10px}
 .feat-bullets li{display:flex;align-items:flex-start;gap:10px;font-size:14px;color:#5A4548;line-height:1.55}
 .feat-bullets li::before{content:"";width:7px;height:7px;border-radius:50%;background:#C9A66B;flex-shrink:0;margin-top:5px}
 
-/* ─── INVITE GRID ─── */
-.invite-section{background:linear-gradient(160deg,#F0E8E2 0%,#F8F2EE 100%);padding:60px 20px;margin-top:60px}
-.invite-inner{max-width:900px;margin:0 auto}
-.invite-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:18px;margin-top:36px}
-.inv-card{background:#fff;border-radius:18px;overflow:hidden;box-shadow:0 4px 18px rgba(94,42,59,0.10);transition:transform 0.2s,box-shadow 0.2s}
-.inv-card:hover{transform:translateY(-4px);box-shadow:0 10px 28px rgba(94,42,59,0.16)}
-.inv-img-wrap{width:100%;aspect-ratio:9/16;overflow:hidden;background:#f5f0ec}
-.inv-img-wrap img{width:100%;height:100%;object-fit:cover;object-position:top;display:block;transition:transform 0.3s}
-.inv-card:hover .inv-img-wrap img{transform:scale(1.03)}
+.invite-strip{background:#F0E8E2;padding:56px 20px}
+.invite-inner{max-width:860px;margin:0 auto}
+.invite-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:18px;margin-top:36px}
+.inv-card{background:#fff;border-radius:18px;overflow:hidden;box-shadow:0 6px 18px rgba(94,42,59,0.10)}
+.inv-img{width:100%;aspect-ratio:9/17;object-fit:cover;object-position:top;display:block}
 .inv-info{padding:14px 16px 16px}
-.inv-tag{font-size:10.5px;font-weight:700;letter-spacing:1.5px;color:#C9A66B;text-transform:uppercase;margin-bottom:5px}
-.inv-name{font-size:14.5px;font-weight:700;color:#3A2A2E;margin-bottom:4px;line-height:1.3}
-.inv-desc{font-size:12.5px;color:#8A7378;line-height:1.55}
+.inv-tag{font-size:10px;font-weight:700;letter-spacing:1.5px;color:#C9A66B;text-transform:uppercase}
+.inv-name{font-size:15px;font-weight:700;color:#3A2A2E;margin:5px 0 5px}
+.inv-desc{font-size:13px;color:#8A7378;line-height:1.55}
 
-/* ─── HOW TO USE ─── */
-.how{max-width:720px;margin:0 auto;padding:64px 20px 0}
-.how-steps{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px;margin-top:32px}
-.how-step{background:#fff;border:1px solid #EDE4DC;border-radius:16px;padding:20px;text-align:center}
-.how-num{width:36px;height:36px;background:#5E2A3B;color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;margin:0 auto 12px}
-.how-step-title{font-size:14px;font-weight:700;color:#3A2A2E;margin-bottom:6px}
-.how-step-desc{font-size:12.5px;color:#8A7378;line-height:1.6}
+.other-strip{max-width:860px;margin:0 auto;padding:48px 20px}
+.other-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:24px}
+.other-card{background:#fff;border-radius:18px;overflow:hidden;border:1px solid #EDE4DC;display:flex;align-items:stretch}
+.other-img{width:120px;flex-shrink:0;object-fit:cover;object-position:top}
+.other-text{padding:18px 16px}
+.other-tag{font-size:10px;font-weight:700;letter-spacing:1.5px;color:#C9A66B;text-transform:uppercase}
+.other-title{font-size:15px;font-weight:700;color:#3A2A2E;margin:5px 0 5px}
+.other-desc{font-size:13px;color:#8A7378;line-height:1.55}
 
-/* ─── CLOSING ─── */
-.closing{text-align:center;padding:72px 24px;background:#5E2A3B;margin-top:64px}
-.closing-title{font-size:clamp(22px,4vw,36px);font-weight:700;color:#fff;margin-bottom:10px}
-.closing-sub{font-size:15px;color:#D4B0B8;margin-bottom:30px;line-height:1.7}
-.closing-btn{background:#C9A66B;color:#fff;border:none;padding:15px 40px;border-radius:50px;font-size:16px;font-weight:700;cursor:pointer;text-decoration:none;display:inline-block;transition:background 0.2s,transform 0.15s}
-.closing-btn:hover{background:#D9B87B;transform:translateY(-1px)}
+.closing{text-align:center;padding:64px 24px;background:#5E2A3B}
+.closing-title{font-size:28px;font-weight:700;color:#fff;margin-bottom:10px}
+.closing-sub{font-size:15px;color:#D4B0B8;margin-bottom:28px;line-height:1.6}
+.closing-btn{background:#C9A66B;color:#fff;border:none;padding:16px 40px;border-radius:50px;font-size:16px;font-weight:700;cursor:pointer;text-decoration:none;display:inline-block}
+.closing-btn:hover{background:#B8955A}
 
-/* ─── FOOTER ─── */
-footer{text-align:center;padding:28px 16px;background:#FBF8F5;border-top:1px solid #EDE4DC;font-size:13px;color:#B0A0A4}
-
-/* ─── RESPONSIVE ─── */
 @media(max-width:640px){
-  .nav-links{display:none}
-  .hero-mockups{gap:10px;max-height:280px}
-  .hero-phone.center{width:130px}
-  .hero-phone.center img{height:260px}
-  .hero-phone.side{width:100px}
-  .hero-phone.side img{height:200px}
-  .feat,.feat.rev{flex-direction:column;align-items:center;gap:28px}
-  .phone-wrap,.phone-frame{width:200px}
-  .feat-info{text-align:left;width:100%}
-  .invite-grid{grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px}
+  .hero-title{font-size:26px}
+  .feat,.feat.rev{flex-direction:column;align-items:center}
+  .phone-wrap,.phone-frame{width:180px}
+  .feat-info{text-align:center}
+  .feat-bullets{display:inline-block;text-align:left}
+  .other-grid{grid-template-columns:1fr}
+  .other-card{flex-direction:column}
+  .other-img{width:100%;height:160px}
 }
-
-/* ─── SCROLL ANIMATIONS ─── */
-.anim-up{opacity:0;transform:translateY(28px);transition:opacity 0.6s ease,transform 0.6s ease}
-.anim-up.vis{opacity:1;transform:none}
-.anim-left{opacity:0;transform:translateX(-28px);transition:opacity 0.6s ease,transform 0.6s ease}
-.anim-left.vis{opacity:1;transform:none}
-.anim-right{opacity:0;transform:translateX(28px);transition:opacity 0.6s ease,transform 0.6s ease}
-.anim-right.vis{opacity:1;transform:none}
-.d1{transition-delay:0.08s}.d2{transition-delay:0.16s}.d3{transition-delay:0.24s}
 </style>
 </head>
 <body>
 
-<!-- NAV -->
-<nav class="nav">
-  <div class="nav-logo">
-    <img src="Logo/RM_logo_white_bg.png" onerror="this.style.display='none'" alt="logo">
-    <span class="nav-name">Family Witness Dinner</span>
-  </div>
-  <div class="nav-links">
-    <a href="#dashboard">Dashboard</a>
-    <a href="#invite">การ์ดเชิญ</a>
-    <a href="#how">วิธีใช้งาน</a>
-    <a href="invite" class="nav-cta">เปิดการ์ดเชิญ</a>
-  </div>
-</nav>
-
-<!-- HERO -->
-<section class="hero">
+<div class="hero">
   <div class="hero-badge">Wedding Planner App</div>
   <h1 class="hero-title">จัดการงานแต่งงานทุกอย่าง<br>ในที่<em>เดียว</em></h1>
-  <p class="hero-sub">ตั้งแต่งบประมาณ รายชื่อแขก คำอวยพร ไปจนถึงการ์ดเชิญออนไลน์ และรับเงินของขวัญ — ครบจบในแอพเดียว</p>
+  <p class="hero-sub">ตั้งแต่งบประมาณ รายชื่อแขก คำอวยพร ไปจนถึงการ์ดเชิญออนไลน์และรับเงินของขวัญ — ครบในแอพเดียว</p>
   <div class="hero-btns">
-    <a href="invite" class="btn-p">เปิดการ์ดเชิญ</a>
-    <a href="#dashboard" class="btn-s">ดูฟีเจอร์ทั้งหมด</a>
+    <a class="btn-p" href="invite">เปิดการ์ดเชิญตัวอย่าง</a>
+    <a class="btn-s" href="/">เข้าสู่ Dashboard</a>
   </div>
-  <div class="hero-mockups">
-    <div class="hero-phone side">
-      <img src="docs/screenshots/dash-budget.png" alt="งบประมาณ">
-    </div>
-    <div class="hero-phone center">
-      <img src="docs/screenshots/dash-dashboard.png" alt="Dashboard">
-    </div>
-    <div class="hero-phone side">
-      <img src="docs/screenshots/inv-sec-donate.png" alt="สนับสนุน">
-    </div>
-  </div>
-</section>
+</div>
 
-<!-- DASHBOARD FEATURES -->
-<div id="dashboard"></div>
-<div class="sec-head anim-up">
-  <div class="sec-tag">Dashboard — สำหรับเจ้าภาพ</div>
-  <h2 class="sec-title">บริหารงานแต่งงานแบบมืออาชีพ</h2>
-  <p class="sec-sub">ทุกอย่างที่ต้องรู้ อยู่ในมือตลอดเวลา</p>
+<div class="sec-label">
+  <div class="sec-label-badge">Dashboard — สำหรับเจ้าภาพ</div>
+  <div class="sec-label-title">บริหารงานแต่งงานแบบมืออาชีพ</div>
+  <p class="sec-label-sub">ข้อมูลทุกอย่างซิงค์กับ Google Sheets อัตโนมัติ — เข้าถึงได้ทุกที่</p>
 </div>
 
 <div class="features">
 
-  <div class="feat anim-left">
+  <div class="feat">
     <div class="phone-wrap">
       <div class="phone-frame">
-        <div class="phone-inner">
-          <img src="docs/screenshots/dash-dashboard.png" alt="Dashboard หน้าหลัก">
-        </div>
+        <div class="phone-notch"></div>
+        <div class="phone-inner"><img src="docs/screenshots/dash-dashboard.png" alt="Dashboard หน้าหลัก"></div>
       </div>
     </div>
     <div class="feat-info">
       <div class="feat-num">01 — Overview</div>
-      <h3 class="feat-title">ภาพรวมงานแต่ง ครบทุกอย่างในหน้าเดียว</h3>
-      <p class="feat-desc">นับถอยหลังสู่วันงานแบบเรียลไทม์ พร้อมสรุปทุกตัวเลขสำคัญ ดูได้ด้วยการกวาดตาเดียว</p>
+      <h2 class="feat-title">ภาพรวมงานแต่ง ครบทุกอย่างในหน้าเดียว</h2>
+      <p class="feat-desc">นับถอยหลังสู่วันงานแบบเรียลไทม์ พร้อมสรุปทุกตัวเลขที่สำคัญ ดูสถานะงานได้ด้วยการกวาดตาเดียว</p>
       <ul class="feat-bullets">
         <li>นับถอยหลัง วัน / ชั่วโมง / นาที / วินาที</li>
         <li>การ์ดสรุปงบ · ค่าใช้จ่าย · ตอบรับ (RSVP)</li>
         <li>กราฟค่าใช้จ่ายและความคืบหน้า Checklist</li>
-        <li>รายการชำระเงินที่ใกล้จะถึง</li>
+        <li>รายการชำระเงินที่ใกล้จะถึงกำหนด</li>
+        <li>กราฟยอดสนับสนุนสะสมและผังที่นั่งแขก</li>
       </ul>
     </div>
   </div>
 
-  <div class="feat rev anim-right">
+  <div class="feat rev">
     <div class="phone-wrap">
       <div class="phone-frame">
-        <div class="phone-inner">
-          <img src="docs/screenshots/dash-budget.png" alt="งบประมาณ">
-        </div>
+        <div class="phone-notch"></div>
+        <div class="phone-inner"><img src="docs/screenshots/dash-budget.png" alt="งบประมาณ"></div>
       </div>
     </div>
     <div class="feat-info">
       <div class="feat-num">02 — Budget</div>
-      <h3 class="feat-title">ควบคุมงบให้อยู่มือ ไม่บานปลาย</h3>
-      <p class="feat-desc">ตั้งงบรายหมวด เปรียบเทียบกับค่าใช้จ่ายจริง รู้ทันทีเมื่อใช้เกินงบ</p>
+      <h2 class="feat-title">ควบคุมงบให้อยู่มือ ไม่บานปลาย</h2>
+      <p class="feat-desc">ตั้งงบรายหมวด เปรียบเทียบกับค่าใช้จ่ายจริง รู้ทันทีเมื่อรายการไหนใกล้เกินงบ</p>
       <ul class="feat-bullets">
-        <li>ตั้งงบรวมและงบแยกแต่ละหมวด</li>
-        <li>เทียบ งบ vs ใช้จริง vs คงเหลือ</li>
-        <li>แสดงสีแจ้งเตือนเมื่อใช้เกินงบ</li>
-        <li>ขยายดูรายละเอียดย่อยได้</li>
+        <li>ตั้งงบรวมและงบแยกแต่ละหมวดหมู่</li>
+        <li>เทียบ งบ vs ใช้จริง vs คงเหลือ พร้อม %</li>
+        <li>แสดงสีแจ้งเตือนเมื่อใช้เกินงบที่ตั้งไว้</li>
+        <li>ขยายดูรายการย่อยภายในแต่ละหมวดได้</li>
       </ul>
     </div>
   </div>
 
-  <div class="feat anim-left">
+  <div class="feat">
     <div class="phone-wrap">
       <div class="phone-frame">
-        <div class="phone-inner">
-          <img src="docs/screenshots/dash-expenses.png" alt="ค่าใช้จ่าย">
-        </div>
+        <div class="phone-notch"></div>
+        <div class="phone-inner"><img src="docs/screenshots/dash-guests.png" alt="ระบบแขก"></div>
       </div>
     </div>
     <div class="feat-info">
-      <div class="feat-num">03 — Expenses</div>
-      <h3 class="feat-title">บันทึกทุกบาท ไม่มีตกหล่น</h3>
-      <p class="feat-desc">บันทึกค่าใช้จ่ายทุกรายการ กรองตามหมวด แก้ไข และดูยอดรวมได้ตลอดเวลา</p>
+      <div class="feat-num">03 — Guests</div>
+      <h2 class="feat-title">จัดการรายชื่อแขกได้ทุกขั้นตอน</h2>
+      <p class="feat-desc">ตั้งแต่เพิ่มรายชื่อ ติดตามสถานะตอบรับ จนถึงจัดที่นั่ง — ครบในหน้าเดียว</p>
       <ul class="feat-bullets">
-        <li>บันทึกรายการพร้อมหมวดหมู่และหมายเหตุ</li>
-        <li>กรองตามหมวดหมู่ / ค้นหาชื่อรายการ</li>
-        <li>รองรับยอดติดลบ (เงินคืน / ส่วนลด)</li>
-        <li>รวมยอดใช้จริงให้อัตโนมัติ</li>
-      </ul>
-    </div>
-  </div>
-
-  <div class="feat rev anim-right">
-    <div class="phone-wrap">
-      <div class="phone-frame">
-        <div class="phone-inner">
-          <img src="docs/screenshots/dash-guests.png" alt="ระบบแขก">
-        </div>
-      </div>
-    </div>
-    <div class="feat-info">
-      <div class="feat-num">04 — Guests</div>
-      <h3 class="feat-title">จัดการรายชื่อแขกได้ทุกขั้นตอน</h3>
-      <p class="feat-desc">ตั้งแต่เพิ่มรายชื่อ ติดตามสถานะตอบรับ จนถึงนับที่นั่ง — ในหน้าเดียว</p>
-      <ul class="feat-bullets">
-        <li>สรุปแขก: ทั้งหมด · ยืนยันแล้ว · รอตอบ</li>
+        <li>สรุปแขก: ทั้งหมด · ยืนยันแล้ว · รอตอบ · ที่นั่ง</li>
         <li>กรองตามสถานะและฝั่ง (เอ็ม / แป้ง)</li>
         <li>แตะโทรหาแขกได้ทันที</li>
-        <li>เชื่อมกับการตอบรับจากการ์ดเชิญอัตโนมัติ</li>
+        <li>เชื่อมรับข้อมูลจากการ์ดเชิญออนไลน์อัตโนมัติ</li>
       </ul>
     </div>
   </div>
 
-  <div class="feat anim-left">
+  <div class="feat rev">
     <div class="phone-wrap">
       <div class="phone-frame">
-        <div class="phone-inner">
-          <img src="docs/screenshots/dash-donations.png" alt="การสนับสนุน">
-        </div>
+        <div class="phone-notch"></div>
+        <div class="phone-inner"><img src="docs/screenshots/dash-donations.png" alt="การสนับสนุน"></div>
       </div>
     </div>
     <div class="feat-info">
-      <div class="feat-num">05 — Donations</div>
-      <h3 class="feat-title">ติดตามเงินของขวัญ เรียลไทม์</h3>
-      <p class="feat-desc">เห็นยอดรวมและรายชื่อผู้ร่วมสนับสนุนทันที พร้อมกราฟสะสมรายวัน</p>
+      <div class="feat-num">04 — Donations</div>
+      <h2 class="feat-title">ติดตามเงินของขวัญแบบเรียลไทม์</h2>
+      <p class="feat-desc">เห็นยอดรวมและรายชื่อผู้ร่วมสนับสนุนทันที พร้อมกราฟสะสมรายวันและ Top 5 ผู้สนับสนุน</p>
       <ul class="feat-bullets">
-        <li>ยอดรวม · จำนวนผู้โอน · ยอดเฉลี่ย/คน</li>
-        <li>กราฟยอดสะสมรายวัน + Top 5</li>
-        <li>ตารางรายการพร้อมลิงก์ดูสลิป</li>
-        <li>ข้อมูลเชื่อมจากการ์ดเชิญอัตโนมัติ</li>
+        <li>ยอดรวม · จำนวนผู้โอน · ยอดเฉลี่ย/คน · สูงสุด</li>
+        <li>กราฟยอดสะสมรายวัน</li>
+        <li>Top 5 ผู้สนับสนุน</li>
+        <li>ตารางรายการพร้อมลิงก์เปิดดูสลิปได้</li>
       </ul>
     </div>
   </div>
 
-  <div class="feat rev anim-right">
+  <div class="feat">
     <div class="phone-wrap">
       <div class="phone-frame">
-        <div class="phone-inner">
-          <img src="docs/screenshots/dash-checklist.png" alt="Checklist">
-        </div>
+        <div class="phone-notch"></div>
+        <div class="phone-inner"><img src="docs/screenshots/dash-blessings.png" alt="คำอวยพร"></div>
       </div>
     </div>
     <div class="feat-info">
-      <div class="feat-num">06 — Checklist</div>
-      <h3 class="feat-title">Checklist ครบทุกช่วงเวลา ไม่ลืมแน่</h3>
-      <p class="feat-desc">รายการเตรียมงานแบ่งตามช่วงเวลา ตั้งแต่ 12 เดือนก่อนจนถึงวันงาน</p>
-      <ul class="feat-bullets">
-        <li>แบ่งตามช่วงเวลา 12 เดือน → 1 สัปดาห์</li>
-        <li>แตะติ๊กว่าเสร็จ คำนวณ % ให้อัตโนมัติ</li>
-        <li>เห็นภาพรวมว่าเหลืออะไรต้องทำ</li>
-      </ul>
-    </div>
-  </div>
-
-  <div class="feat anim-left">
-    <div class="phone-wrap">
-      <div class="phone-frame">
-        <div class="phone-inner">
-          <img src="docs/screenshots/dash-blessings.png" alt="คำอวยพร">
-        </div>
-      </div>
-    </div>
-    <div class="feat-info">
-      <div class="feat-num">07 — Blessings</div>
-      <h3 class="feat-title">กล่องคำอวยพรจากทุกคน</h3>
+      <div class="feat-num">05 — Blessings</div>
+      <h2 class="feat-title">กล่องคำอวยพรจากทุกคน</h2>
       <p class="feat-desc">รวมข้อความและรูปภาพจากแขกทุกท่าน กรองตามฝั่ง และพิมพ์เป็น PDF เก็บเป็นที่ระลึกได้</p>
       <ul class="feat-bullets">
-        <li>แสดงรูปโปรไฟล์ · ชื่อ · ข้อความ</li>
+        <li>แสดงรูปโปรไฟล์ · ชื่อ · ข้อความอวยพร</li>
         <li>กรองตามฝั่ง (เอ็ม / แป้ง / ทั้งหมด)</li>
-        <li>บันทึก PDF เก็บความทรงจำ</li>
+        <li>บันทึก PDF เก็บความทรงจำได้</li>
       </ul>
     </div>
   </div>
 
-  <div class="feat rev anim-right">
+  <div class="feat rev">
     <div class="phone-wrap">
       <div class="phone-frame">
-        <div class="phone-inner">
-          <img src="docs/screenshots/dash-links.png" alt="ลิงก์เชิญ">
-        </div>
+        <div class="phone-notch"></div>
+        <div class="phone-inner"><img src="docs/screenshots/dash-links.png" alt="ลิงก์เชิญ"></div>
       </div>
     </div>
     <div class="feat-info">
-      <div class="feat-num">08 — Invite Links</div>
-      <h3 class="feat-title">ลิงก์เชิญแยกรายกลุ่ม ควบคุมได้</h3>
-      <p class="feat-desc">สร้างลิงก์แยกสำหรับแต่ละกลุ่มแขก เปิด-ปิดรับลงทะเบียนได้ทันที</p>
+      <div class="feat-num">06 — Invite Links</div>
+      <h2 class="feat-title">ลิงก์เชิญแยกรายกลุ่ม ควบคุมได้</h2>
+      <p class="feat-desc">สร้างลิงก์แยกสำหรับแต่ละกลุ่มแขก เปิด-ปิดรับลงทะเบียนได้ทันที กล่องเปลี่ยนสีตามสถานะ</p>
       <ul class="feat-bullets">
-        <li>สร้างลิงก์แยกแต่ละกลุ่ม</li>
-        <li>กล่องเขียว = เปิด / แดง = ปิด</li>
-        <li>กดปิดรับสมัครรายกลุ่มได้ทันที</li>
+        <li>สร้างลิงก์แยกแต่ละกลุ่มแขก</li>
+        <li>กล่องเขียว = เปิด / แดง = ปิด ดูสถานะปราดเดียว</li>
+        <li>กดเปิด-ปิดรับลงทะเบียนรายกลุ่มได้ทันที</li>
         <li>Copy ลิงก์ส่งให้แขกได้เลย</li>
       </ul>
     </div>
@@ -337,128 +222,110 @@ footer{text-align:center;padding:28px 16px;background:#FBF8F5;border-top:1px sol
 
 </div>
 
-<!-- INVITE SECTION -->
-<div id="invite"></div>
-<section class="invite-section">
+<div class="other-strip">
+  <div class="sec-label-badge">ฟีเจอร์อื่นๆ</div>
+  <div class="sec-label-title" style="font-size:22px;font-weight:700;color:#3A2A2E;margin-top:8px">ครบทุกสิ่งที่ต้องการ</div>
+  <div class="other-grid">
+    <div class="other-card">
+      <img class="other-img" src="docs/screenshots/dash-checklist.png" alt="Checklist">
+      <div class="other-text">
+        <div class="other-tag">Checklist</div>
+        <div class="other-title">รายการเตรียมงาน</div>
+        <p class="other-desc">แบ่งตามช่วงเวลา ตั้งแต่ 12 เดือนจนถึงสัปดาห์ก่อนงาน ติ๊กเสร็จได้ทันที</p>
+      </div>
+    </div>
+    <div class="other-card">
+      <img class="other-img" src="docs/screenshots/dash-contacts.png" alt="ผู้ติดต่อ">
+      <div class="other-text">
+        <div class="other-tag">Contacts</div>
+        <div class="other-title">สมุดเบอร์ผู้ให้บริการ</div>
+        <p class="other-desc">รวมเบอร์ช่างภาพ สถานที่ ชุด และทีมงาน แตะโทรได้ทันที</p>
+      </div>
+    </div>
+    <div class="other-card">
+      <img class="other-img" src="docs/screenshots/dash-expenses.png" alt="ค่าใช้จ่าย">
+      <div class="other-text">
+        <div class="other-tag">Expenses</div>
+        <div class="other-title">บันทึกค่าใช้จ่ายจริง</div>
+        <p class="other-desc">บันทึกทุกรายการ กรองตามหมวด แก้ไข-ลบได้ รองรับรายการติดลบ</p>
+      </div>
+    </div>
+    <div class="other-card">
+      <img class="other-img" src="docs/screenshots/dash-sync.png" alt="ซิงค์">
+      <div class="other-text">
+        <div class="other-tag">Sync</div>
+        <div class="other-title">ซิงค์กับ Google Sheets</div>
+        <p class="other-desc">ข้อมูลเก็บบน Google Drive ส่วนตัว ดึง-บันทึกได้ตลอดเวลา</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="invite-strip">
   <div class="invite-inner">
-    <div class="sec-head anim-up" style="padding-top:0">
-      <div class="sec-tag">การ์ดเชิญออนไลน์ — สำหรับแขก</div>
-      <h2 class="sec-title">ประสบการณ์ที่แขกจะไม่ลืม</h2>
-      <p class="sec-sub">ทุกอย่างที่แขกต้องการอยู่ในหน้าเดียว — เปิดซองดูงาน ตอบรับ อวยพร และร่วมสนับสนุน</p>
+    <div style="text-align:center">
+      <div class="sec-label-badge">การ์ดเชิญออนไลน์ — สำหรับแขก</div>
+      <div style="font-size:24px;font-weight:700;color:#3A2A2E;margin-top:10px">ประสบการณ์ที่แขกจะไม่ลืม</div>
+      <p style="font-size:15px;color:#8A7378;margin-top:8px">ทุกอย่างที่แขกต้องการอยู่ในหน้าเดียว — เปิดซองดูงาน ตอบรับ อวยพร และร่วมสนับสนุน</p>
     </div>
     <div class="invite-grid">
-      <div class="inv-card anim-up d1">
-        <div class="inv-img-wrap">
-          <img src="docs/screenshots/inv-sec-cover.png" alt="ซองจดหมาย">
-        </div>
+      <div class="inv-card">
+        <img class="inv-img" src="docs/screenshots/inv-sec-cover.png" alt="ซองจดหมาย">
         <div class="inv-info">
           <div class="inv-tag">หน้าปก</div>
           <div class="inv-name">ซองจดหมายดิจิทัล</div>
-          <div class="inv-desc">แตะเปิดซองเพื่อดูการ์ดเชิญ สร้างความตื่นเต้นให้แขก</div>
+          <div class="inv-desc">แตะเปิดซองเพื่อดูการ์ดเชิญ สร้างความประทับใจแรก</div>
         </div>
       </div>
-      <div class="inv-card anim-up d2">
-        <div class="inv-img-wrap">
-          <img src="docs/screenshots/inv-sec-details.png" alt="รายละเอียดงาน">
-        </div>
+      <div class="inv-card">
+        <img class="inv-img" src="docs/screenshots/inv-sec-itinerary.png" alt="กำหนดการ">
         <div class="inv-info">
           <div class="inv-tag">รายละเอียดงาน</div>
-          <div class="inv-name">วัน เวลา สถานที่</div>
-          <div class="inv-desc">ข้อมูลครบ พร้อมแผนที่นำทาง และ Dress Code</div>
+          <div class="inv-name">กำหนดการและแผนที่</div>
+          <div class="inv-desc">ไทม์ไลน์พิธีการ Dress Code และนำทางไปสถานที่</div>
         </div>
       </div>
-      <div class="inv-card anim-up d3">
-        <div class="inv-img-wrap">
-          <img src="docs/screenshots/inv-sec-itinerary.png" alt="กำหนดการ">
-        </div>
-        <div class="inv-info">
-          <div class="inv-tag">กำหนดการ</div>
-          <div class="inv-name">ไทม์ไลน์พิธีการ</div>
-          <div class="inv-desc">ลำดับพิธีและกิจกรรมตลอดงาน อ่านง่าย เข้าใจทันที</div>
-        </div>
-      </div>
-      <div class="inv-card anim-up d1">
-        <div class="inv-img-wrap">
-          <img src="docs/screenshots/inv-sec-rsvp.png" alt="ลงทะเบียน">
-        </div>
+      <div class="inv-card">
+        <img class="inv-img" src="docs/screenshots/inv-sec-rsvp.png" alt="ลงทะเบียน">
         <div class="inv-info">
           <div class="inv-tag">ลงทะเบียน</div>
           <div class="inv-name">ตอบรับเข้าร่วมงาน</div>
           <div class="inv-desc">กรอกชื่อ จำนวนคน และฝากคำอวยพรพร้อมรูปภาพ</div>
         </div>
       </div>
-      <div class="inv-card anim-up d2">
-        <div class="inv-img-wrap">
-          <img src="docs/screenshots/inv-sec-donate.png" alt="ร่วมสนับสนุน">
-        </div>
+      <div class="inv-card">
+        <img class="inv-img" src="docs/screenshots/inv-sec-donate.png" alt="ร่วมสนับสนุน">
         <div class="inv-info">
           <div class="inv-tag">ร่วมสนับสนุน</div>
           <div class="inv-name">โอนเงินและแนบสลิป</div>
           <div class="inv-desc">QR พร้อมเพย์ · OCR อ่านยอดอัตโนมัติ · เติมชื่อให้อัตโนมัติ</div>
         </div>
       </div>
-      <div class="inv-card anim-up d3">
-        <div class="inv-img-wrap">
-          <img src="docs/screenshots/inv-sec-tree.png" alt="ต้นไม้">
-        </div>
+      <div class="inv-card">
+        <img class="inv-img" src="docs/screenshots/inv-sec-tree.png" alt="ต้นไม้">
         <div class="inv-info">
           <div class="inv-tag">ต้นไม้ผู้ร่วมงาน</div>
-          <div class="inv-name">เติบโตตามผู้ลงทะเบียน</div>
-          <div class="inv-desc">ยิ่งมีแขกมาก ดอกไม้ยิ่งผลิบาน สร้างการมีส่วนร่วม</div>
+          <div class="inv-name">เติบโตตามจำนวนแขก</div>
+          <div class="inv-desc">ยิ่งมีแขกมาก ดอกไม้ยิ่งผลิบานสวยงาม</div>
+        </div>
+      </div>
+      <div class="inv-card">
+        <img class="inv-img" src="docs/screenshots/inv-sec-bless-display.png" alt="คำอวยพร">
+        <div class="inv-info">
+          <div class="inv-tag">คำอวยพร</div>
+          <div class="inv-name">ความรักจากทุกคน</div>
+          <div class="inv-desc">แขกเห็นคำอวยพรจากกันและกันแบบเรียลไทม์</div>
         </div>
       </div>
     </div>
   </div>
-</section>
+</div>
 
-<!-- HOW TO USE -->
-<div id="how"></div>
-<section class="how">
-  <div class="sec-head anim-up" style="padding-top:0">
-    <div class="sec-tag">วิธีใช้งาน</div>
-    <h2 class="sec-title">เริ่มต้นง่าย ใช้งานได้ทันที</h2>
-    <p class="sec-sub">ไม่ต้องติดตั้งอะไร เปิดเว็บก็ใช้ได้เลย</p>
-  </div>
-  <div class="how-steps">
-    <div class="how-step anim-up d1">
-      <div class="how-num">1</div>
-      <div class="how-step-title">เปิด Dashboard</div>
-      <div class="how-step-desc">เจ้าภาพเปิดหน้า Dashboard จัดการทุกอย่างในเว็บ ไม่ต้องติดตั้งแอพ</div>
-    </div>
-    <div class="how-step anim-up d2">
-      <div class="how-num">2</div>
-      <div class="how-step-title">สร้างลิงก์เชิญ</div>
-      <div class="how-step-desc">สร้างลิงก์แยกสำหรับแต่ละกลุ่มแขก แล้วส่งผ่าน LINE / SMS</div>
-    </div>
-    <div class="how-step anim-up d3">
-      <div class="how-num">3</div>
-      <div class="how-step-title">แขกตอบรับ</div>
-      <div class="how-step-desc">แขกเปิดการ์ดเชิญ ลงทะเบียน อวยพร และร่วมสนับสนุนได้เลย</div>
-    </div>
-    <div class="how-step anim-up d1">
-      <div class="how-num">4</div>
-      <div class="how-step-title">ข้อมูลอัพเดทอัตโนมัติ</div>
-      <div class="how-step-desc">ทุกอย่างซิงค์เข้า Dashboard และ Google Sheets แบบเรียลไทม์</div>
-    </div>
-  </div>
-</section>
-
-<!-- CLOSING -->
-<section class="closing">
-  <h2 class="closing-title">พร้อมร่วมงานแล้วหรือยัง? 💍</h2>
+<div class="closing">
+  <div class="closing-title">พร้อมเริ่มใช้งานแล้วหรือยัง? 💕</div>
   <p class="closing-sub">Family Witness Dinner · 28 พฤศจิกายน 2569 · TARA Terrace นครปฐม</p>
-  <a href="invite" class="closing-btn">เปิดการ์ดเชิญ</a>
-</section>
+  <a class="closing-btn" href="invite">เปิดการ์ดเชิญ</a>
+</div>
 
-<footer>
-  <p>Family Witness Dinner · แป้ง &amp; เอ็ม · 28 พฤศจิกายน 2569</p>
-</footer>
-
-<script>
-const obs = new IntersectionObserver((entries) => {
-  entries.forEach(e => { if(e.isIntersecting) { e.target.classList.add('vis'); obs.unobserve(e.target); } });
-}, { threshold: 0.12 });
-document.querySelectorAll('.anim-up,.anim-left,.anim-right').forEach(el => obs.observe(el));
-</script>
 </body>
 </html>
