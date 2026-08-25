@@ -128,7 +128,11 @@ function doPost(e) {
       result.amount   = slipRes.amount;
       result.ocrError = slipRes.error;      // ส่งสาเหตุกลับไปให้หน้าเว็บแสดง
       result.ocrModel = slipRes.model;
-      result.ocrHttp  = slipRes.httpCode;
+      result.ocrHttp   = slipRes.httpCode;
+      result.ocrRaw    = slipRes.raw;          // คำตอบดิบจาก Gemini ไว้ debug
+      result.ocrFinish = slipRes.finishReason;
+      result.tokensIn  = slipRes.tokensIn;
+      result.tokensOut = slipRes.tokensOut;
 
     // --- planner app actions ---
     } else {
@@ -1817,33 +1821,84 @@ function checkLink(ss, slug) {
 // ============================================================
 
 var DONATE_HEADERS = ['วันที่', 'ชื่อผู้โอน', 'ยอด (บาท)', 'ลิงก์สลิป', 'หมายเหตุ'];
-
 // ── อ่านยอดจากสลิปด้วย Gemini Vision ──────────────────────────
-// ลำดับ model ที่จะลอง — ตัวแรกคือตัวที่ทดสอบแล้วใช้ได้จริงกับ key ของโปรเจกต์นี้
-// (25 ส.ค. 2569: gemini-2.5-flash-lite และ gemini-2.5-flash เรียกไม่ได้ → 404)
-// ถ้าเปลี่ยน key แล้วอ่านสลิปช้า/ไม่ได้ ให้รันเมนู "📋 ดู model ที่ key นี้ใช้ได้" แล้วสลับตัวแรกให้ตรง
+// ลำดับ model ที่จะลอง (เจอ 404 = ลองตัวถัดไป)
+// 25 ส.ค. 2569: ทดสอบกับ key จริงแล้ว gemini-flash-latest ใช้ได้
+//   ส่วน gemini-2.5-flash-lite / 2.5-flash ถูก Google ปิดสำหรับ user ใหม่
+//   ("no longer available to new users ... use models/gemini-3.5-flash-lite")
+// ถ้าเปลี่ยน key แล้วอ่านไม่ได้ ให้รันเมนู "📋 ดู model ที่ key นี้ใช้ได้"
 var GEMINI_MODELS = [
   'gemini-flash-latest',
-  'gemini-flash-lite-latest',
-  'gemini-2.5-flash',
-  'gemini-2.5-flash-lite'
+  'gemini-3.5-flash-lite',
+  'gemini-3.5-flash',
+  'gemini-flash-lite-latest'
 ];
+
+// model ที่เพิ่งใช้สำเร็จ — จำไว้ลองก่อนเป็นตัวแรก ไม่ต้องเสีย request ไปกับตัวที่ 404
+var GEMINI_MODEL_CACHE_KEY = 'GEMINI_MODEL_OK';
 
 function getGeminiApiKey_() {
   return PropertiesService.getScriptProperties().getProperty('GEMINI_API_KEY') || '';
 }
 
+// เรียง model ให้ตัวที่เคยสำเร็จมาก่อน
+function geminiModelOrder_() {
+  var cached = PropertiesService.getScriptProperties().getProperty(GEMINI_MODEL_CACHE_KEY);
+  if (!cached) return GEMINI_MODELS.slice();
+  var rest = GEMINI_MODELS.filter(function(m) { return m !== cached; });
+  return [cached].concat(rest);
+}
+
 var SLIP_PROMPT =
   'Look at this Thai bank transfer slip image. Find the transfer amount (ยอดโอนเงิน). ' +
-  'It is the large prominent number on the slip (NOT account number, NOT date, NOT reference number). ' +
-  'The amount always has 2 decimal places for satang, written as baht.satang (for example 399.00 or 1,500.50). ' +
-  'Reply with ONLY the amount, keeping the decimal point exactly as shown, no commas, no "บาท", no spaces. ' +
-  'Example: if the slip shows "399.00" reply exactly 399.00';
+  'It is the large prominent number on the slip (NOT account number, NOT date, NOT reference number, ' +
+  'NOT the fee/ค่าธรรมเนียม which is usually 0.00). ' +
+  'Reply with ONLY a plain number using a dot for the decimal point and NO thousands separators. ' +
+  'Do not add currency, words, spaces or commas. ' +
+  'Examples: a slip showing "399.00" -> 399.00 ; a slip showing "2,000.00" -> 2000.00 ; ' +
+  'a slip showing "65.40" -> 65.40';
 
-// คืน { amount: '399.00', error: '', model: '...', httpCode: 200 }
-// ไม่กลืน error เงียบ ๆ อีกแล้ว — ส่งสาเหตุกลับไปให้หน้าเว็บแสดงได้
+// ── แปลงข้อความยอดเป็นตัวเลข รองรับตัวคั่นหลักพันหลายแบบ ─────
+// "2,000.00" | "2 000,00" | "2.000,00" | "1'234.50"  →  2000 / 2000 / 2000 / 1234.5
+function parseSlipAmount_(raw) {
+  if (!raw) return NaN;
+
+  // ตัดตัวคั่นหลักพันที่ไม่ใช่ , และ . ออกก่อน (space, thin space, nbsp, apostrophe)
+  var s = String(raw)
+    .replace(/[\s   '’]/g, '')
+    .replace(/[^\d.,]/g, ' ')
+    .trim();
+
+  // เก็บทุกก้อนตัวเลข แล้วเลือกก้อนที่มีจำนวนหลักมากที่สุด
+  // (ยอดจริงมักยาวกว่าค่าธรรมเนียม 0.00 ที่อาจหลุดมาด้วย)
+  var chunks = s.split(/\s+/).filter(function(c) { return /\d/.test(c); });
+  if (!chunks.length) return NaN;
+
+  var best = NaN, bestLen = -1;
+  for (var i = 0; i < chunks.length; i++) {
+    var c = chunks[i], n = NaN;
+
+    if (/^\d{1,3}(,\d{3})+(\.\d{1,2})?$/.test(c)) {
+      n = parseFloat(c.replace(/,/g, ''));                     // 2,000.00 (คอมมา = หลักพัน)
+    } else if (/^\d{1,3}(\.\d{3})+(,\d{1,2})?$/.test(c)) {
+      n = parseFloat(c.replace(/\./g, '').replace(',', '.'));  // 2.000,00 (แบบยุโรป)
+    } else if (/^\d+,\d{1,2}$/.test(c)) {
+      n = parseFloat(c.replace(',', '.'));                     // 65,40 (คอมมา = ทศนิยม)
+    } else {
+      n = parseFloat(c.replace(/,/g, ''));                     // 2000.00 / 399 / อื่น ๆ
+    }
+
+    var digits = c.replace(/\D/g, '').length;
+    if (isFinite(n) && n > 0 && digits > bestLen) { best = n; bestLen = digits; }
+  }
+  return best;
+}
+
+// คืน { amount, error, model, httpCode, raw, finishReason, tokensIn, tokensOut }
+// ไม่กลืน error เงียบ ๆ — ส่งสาเหตุกลับไปให้หน้าเว็บ/log ได้
 function readSlipDetailed(base64, mimeType) {
-  var out = { amount: '', error: '', model: '', httpCode: 0 };
+  var out = { amount: '', error: '', model: '', httpCode: 0,
+              raw: '', finishReason: '', tokensIn: 0, tokensOut: 0 };
 
   var apiKey = getGeminiApiKey_();
   if (!apiKey) {
@@ -1868,14 +1923,18 @@ function readSlipDetailed(base64, mimeType) {
     }],
     generationConfig: {
       temperature: 0,
-      maxOutputTokens: 64,
-      thinkingConfig: { thinkingBudget: 0 }   // ปิด thinking ของ 2.5 (ไม่งั้นกิน token จนตอบไม่ครบ)
+      // ต้องเผื่อไว้เยอะ — model รุ่นใหม่นับ thinking token รวมในลิมิตนี้ด้วย
+      // ของเดิมตั้ง 64 ทำให้คำตอบถูกตัดกลาง ("2,000.00" กลายเป็น "2,")
+      maxOutputTokens: 1024,
+      thinkingConfig: { thinkingBudget: 0 }   // ขอให้ปิด thinking (บาง model อาจไม่รองรับ)
     }
   };
 
-  var lastErr = '';
-  for (var i = 0; i < GEMINI_MODELS.length; i++) {
-    var model = GEMINI_MODELS[i];
+  var models = geminiModelOrder_();
+  var errs   = [];
+
+  for (var i = 0; i < models.length; i++) {
+    var model = models[i];
     var url = 'https://generativelanguage.googleapis.com/v1beta/models/' +
               model + ':generateContent?key=' + encodeURIComponent(apiKey);
 
@@ -1888,8 +1947,7 @@ function readSlipDetailed(base64, mimeType) {
         muteHttpExceptions: true
       });
     } catch (e) {
-      lastErr = 'เชื่อมต่อ Gemini ไม่ได้: ' + e;
-      Logger.log('[' + model + '] fetch error: ' + e);
+      errs.push(model + ': เชื่อมต่อไม่ได้ (' + e + ')');
       continue;
     }
 
@@ -1902,37 +1960,51 @@ function readSlipDetailed(base64, mimeType) {
     if (code === 200) {
       var json;
       try { json = JSON.parse(text); }
-      catch (e) { lastErr = 'ตอบกลับไม่ใช่ JSON: ' + text.substring(0, 200); continue; }
+      catch (e) { errs.push(model + ': ตอบกลับไม่ใช่ JSON'); continue; }
 
       var cand = json.candidates && json.candidates[0];
-      if (!cand || !cand.content || !cand.content.parts || !cand.content.parts[0]) {
-        // ปกติเกิดจาก safety filter หรือ token หมดก่อนตอบ
-        var reason = (cand && cand.finishReason) ? cand.finishReason : 'ไม่มีคำตอบกลับมา';
-        lastErr = 'Gemini ไม่ตอบยอด (finishReason: ' + reason + ')';
-        Logger.log('no candidate: ' + text.substring(0, 500));
-        continue;
-      }
-
-      var raw = String(cand.content.parts[0].text || '').trim();
-      Logger.log('[' + model + '] raw: [' + raw + ']');
-      var m = raw.replace(/,/g, '').match(/\d+(?:\.\d+)?/);
-      if (!m) {
-        lastErr = 'อ่านตัวเลขจากคำตอบไม่ได้: "' + raw + '"';
-        continue;
-      }
-      // เก็บสตางค์ไว้ ไม่ปัดทิ้งแบบเดิม (399.50 ต้องไม่กลายเป็น 400)
-      var num = parseFloat(m[0]);
-      if (!(num > 0)) { lastErr = 'ยอดที่อ่านได้ไม่ถูกต้อง: ' + m[0]; continue; }
-      out.amount = String(num);
-      out.error  = '';
-      // log token ที่ใช้จริง เพื่อดูค่าใช้จ่ายต่อสลิปได้จาก Executions log
-      var u = json.usageMetadata;
+      var u    = json.usageMetadata;
       if (u) {
         out.tokensIn  = u.promptTokenCount     || 0;
         out.tokensOut = u.candidatesTokenCount || 0;
-        Logger.log('[' + model + '] tokens in=' + out.tokensIn +
-                   ' out=' + out.tokensOut + ' total=' + (u.totalTokenCount || 0));
+        Logger.log('[' + model + '] tokens in=' + out.tokensIn + ' out=' + out.tokensOut +
+                   ' thinking=' + (u.thoughtsTokenCount || 0) +
+                   ' total=' + (u.totalTokenCount || 0));
       }
+
+      out.finishReason = (cand && cand.finishReason) ? cand.finishReason : '';
+
+      var raw = '';
+      if (cand && cand.content && cand.content.parts) {
+        for (var p = 0; p < cand.content.parts.length; p++) {
+          if (cand.content.parts[p].text) raw += cand.content.parts[p].text;
+        }
+      }
+      raw = raw.trim();
+      out.raw = raw;
+      Logger.log('[' + model + '] raw: [' + raw + '] finishReason=' + out.finishReason);
+
+      if (!raw) {
+        errs.push(model + ': ไม่มีข้อความตอบกลับ (finishReason: ' +
+                  (out.finishReason || 'ไม่ทราบ') + ')');
+        continue;
+      }
+      if (out.finishReason === 'MAX_TOKENS') {
+        errs.push(model + ': คำตอบถูกตัดกลาง (MAX_TOKENS) raw="' + raw + '"');
+        continue;                                   // ไม่เอาเลขที่อาจไม่ครบ
+      }
+
+      var num = parseSlipAmount_(raw);
+      if (!(isFinite(num) && num > 0)) {
+        errs.push(model + ': อ่านตัวเลขจากคำตอบไม่ได้ raw="' + raw + '"');
+        continue;
+      }
+
+      // เก็บสตางค์ไว้ ไม่ปัดทิ้ง (399.50 ต้องไม่กลายเป็น 400)
+      out.amount = String(Math.round(num * 100) / 100);
+      out.error  = '';
+      PropertiesService.getScriptProperties()
+        .setProperty(GEMINI_MODEL_CACHE_KEY, model);   // จำไว้ใช้ก่อนรอบหน้า
       return out;
     }
 
@@ -1956,14 +2028,11 @@ function readSlipDetailed(base64, mimeType) {
       out.error = 'โดน rate limit / quota หมดชั่วคราว — รอสักครู่แล้วลองใหม่ (' + msg + ')';
       return out;
     }
-    if (code === 404) {                            // model นี้ใช้ไม่ได้ → ลองตัวถัดไป
-      lastErr = 'model ' + model + ' ใช้ไม่ได้: ' + msg;
-      continue;
-    }
-    lastErr = 'HTTP ' + code + ': ' + msg;
+    errs.push(model + ' (HTTP ' + code + '): ' + msg);
   }
 
-  out.error = lastErr || 'อ่านสลิปไม่สำเร็จ (ไม่ทราบสาเหตุ)';
+  // รวม error ของทุก model ไม่ให้ตัวสุดท้ายกลบสาเหตุจริง
+  out.error = errs.length ? errs.join(' | ') : 'อ่านสลิปไม่สำเร็จ (ไม่ทราบสาเหตุ)';
   return out;
 }
 
@@ -1971,6 +2040,7 @@ function readSlipDetailed(base64, mimeType) {
 function readAmountFromSlip(base64, mimeType) {
   return readSlipDetailed(base64, mimeType).amount;
 }
+
 
 // ── บันทึกการโอนเงิน ──────────────────────────────────────────
 function saveDonation(ss, body) {
