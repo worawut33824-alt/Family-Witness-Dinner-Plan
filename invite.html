@@ -2905,8 +2905,7 @@ function onSlipSelected(input) {
         };
         img.src = e.target.result;
       });
-
-      let amount = '';
+      let amount = '', ocrError = '';
       if (SCRIPT_URL) {
         // ── production: เรียก Apps Script + Gemini ──
         const resp = await fetch(SCRIPT_URL, {
@@ -2915,7 +2914,10 @@ function onSlipSelected(input) {
           body: JSON.stringify({ action: 'readSlip', slipBase64: b64, slipMime: 'image/jpeg' })
         });
         const data = await resp.json();
-        amount = data.amount || '';
+        amount   = data.amount || '';
+        ocrError = data.ocrError || data.error || '';
+        // สาเหตุจริงลง console ไว้ debug — แขกในงานไม่ต้องเห็น error ทางเทคนิค
+        if (ocrError) console.warn('[slip OCR]', ocrError, '| model:', data.ocrModel, '| http:', data.ocrHttp);
       } else {
         // ── TEST MODE: mock OCR delay 2 วินาที ──
         await new Promise(r => setTimeout(r, 2000));
@@ -2930,10 +2932,13 @@ function onSlipSelected(input) {
       } else {
         status.textContent = '⚠️ อ่านไม่ได้ กรอกเอง';
         status.style.color = '#c07040';
+        status.title = ocrError || '';   // hover ดูสาเหตุได้
       }
       amtEl.placeholder = 'จำนวนเงิน (บาท)';
     } catch(err) {
-      status.textContent = '';
+      console.warn('[slip OCR] exception', err);
+      status.textContent = '⚠️ อ่านไม่ได้ กรอกเอง';
+      status.style.color = '#c07040';
       amtEl.placeholder = 'จำนวนเงิน (บาท)';
     }
   };

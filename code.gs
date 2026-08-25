@@ -124,7 +124,11 @@ function doPost(e) {
 
     } else if (body.action === 'readSlip') {
       // OCR เท่านั้น ไม่บันทึก
-      result.amount = readAmountFromSlip(body.slipBase64 || '', body.slipMime || 'image/jpeg');
+      var slipRes = readSlipDetailed(body.slipBase64 || '', body.slipMime || 'image/jpeg');
+      result.amount   = slipRes.amount;
+      result.ocrError = slipRes.error;      // ส่งสาเหตุกลับไปให้หน้าเว็บแสดง
+      result.ocrModel = slipRes.model;
+      result.ocrHttp  = slipRes.httpCode;
 
     // --- planner app actions ---
     } else {
@@ -1815,54 +1819,147 @@ function checkLink(ss, slug) {
 var DONATE_HEADERS = ['วันที่', 'ชื่อผู้โอน', 'ยอด (บาท)', 'ลิงก์สลิป', 'หมายเหตุ'];
 
 // ── อ่านยอดจากสลิปด้วย Gemini Vision ──────────────────────────
-function readAmountFromSlip(base64, mimeType) {
-  try {
-    var apiKey = PropertiesService.getScriptProperties().getProperty('GEMINI_API_KEY');
-    if (!apiKey || !base64 || base64.length < 100) return '';
+// ── OCR สลิปโอนเงินด้วย Gemini ────────────────────────────────
+// ลำดับ model ที่จะลอง (ถ้าตัวแรก 404/ไม่รองรับ จะไล่ตัวถัดไปเอง)
+var GEMINI_MODELS = [
+  'gemini-2.5-flash-lite',
+  'gemini-2.5-flash',
+  'gemini-flash-latest'
+];
 
-    var url = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key=' + apiKey;
-    var prompt = 'Look at this Thai bank transfer slip image. Find the transfer amount (ยอดโอนเงิน). ' +
-      'It is the large prominent number on the slip (NOT account number, NOT date, NOT reference number). ' +
-      'The amount always has 2 decimal places for satang, written as baht.satang (for example 399.00 or 1,500.50). ' +
-      'Reply with ONLY the amount, keeping the decimal point exactly as shown, no commas, no "บาท", no spaces. ' +
-      'Example: if the slip shows "399.00" reply exactly 399.00';
+function getGeminiApiKey_() {
+  return PropertiesService.getScriptProperties().getProperty('GEMINI_API_KEY') || '';
+}
 
-    var payload = {
-      contents: [{
-        parts: [
-          { inline_data: { mime_type: mimeType, data: base64 } },
-          { text: prompt }
-        ]
-      }],
-      generationConfig: {
-        temperature: 0,
-        maxOutputTokens: 64,
-        thinkingConfig: { thinkingBudget: 0 }   // ปิด thinking mode ของ 2.5-flash (ไม่งั้นกิน token จนตอบไม่ครบ)
-      }
-    };
+var SLIP_PROMPT =
+  'Look at this Thai bank transfer slip image. Find the transfer amount (ยอดโอนเงิน). ' +
+  'It is the large prominent number on the slip (NOT account number, NOT date, NOT reference number). ' +
+  'The amount always has 2 decimal places for satang, written as baht.satang (for example 399.00 or 1,500.50). ' +
+  'Reply with ONLY the amount, keeping the decimal point exactly as shown, no commas, no "บาท", no spaces. ' +
+  'Example: if the slip shows "399.00" reply exactly 399.00';
 
-    var resp = UrlFetchApp.fetch(url, {
-      method: 'POST',
-      contentType: 'application/json',
-      payload: JSON.stringify(payload),
-      muteHttpExceptions: true
-    });
+// คืน { amount: '399.00', error: '', model: '...', httpCode: 200 }
+// ไม่กลืน error เงียบ ๆ อีกแล้ว — ส่งสาเหตุกลับไปให้หน้าเว็บแสดงได้
+function readSlipDetailed(base64, mimeType) {
+  var out = { amount: '', error: '', model: '', httpCode: 0 };
 
-    Logger.log('Gemini HTTP status: ' + resp.getResponseCode());
-    var json = JSON.parse(resp.getContentText());
-
-    if (json.candidates && json.candidates[0] && json.candidates[0].content) {
-      var text = json.candidates[0].content.parts[0].text.trim();
-      Logger.log('Gemini slip OCR raw: [' + text + ']');
-      var m = text.replace(/,/g, '').match(/\d+(?:\.\d+)?/);
-      return m ? String(Math.round(parseFloat(m[0]))) : '';
-    } else {
-      Logger.log('Gemini error: ' + resp.getContentText().substring(0, 500));
-    }
-  } catch(e) {
-    Logger.log('readAmountFromSlip error: ' + e);
+  var apiKey = getGeminiApiKey_();
+  if (!apiKey) {
+    out.error = 'ยังไม่ได้ตั้ง GEMINI_API_KEY — เปิดชีต > เมนู "🤖 Gemini" > "ตั้งค่า API Key"';
+    return out;
   }
-  return '';
+  if (apiKey.indexOf('REPLACE_WITH') >= 0) {
+    out.error = 'GEMINI_API_KEY ยังเป็นค่าตัวอย่าง (placeholder) — ตั้งค่า key จริงก่อน';
+    return out;
+  }
+  if (!base64 || base64.length < 100) {
+    out.error = 'ไม่ได้รับไฟล์รูปสลิป หรือรูปเล็กเกินไป';
+    return out;
+  }
+
+  var payload = {
+    contents: [{
+      parts: [
+        { inline_data: { mime_type: mimeType || 'image/jpeg', data: base64 } },
+        { text: SLIP_PROMPT }
+      ]
+    }],
+    generationConfig: {
+      temperature: 0,
+      maxOutputTokens: 64,
+      thinkingConfig: { thinkingBudget: 0 }   // ปิด thinking ของ 2.5 (ไม่งั้นกิน token จนตอบไม่ครบ)
+    }
+  };
+
+  var lastErr = '';
+  for (var i = 0; i < GEMINI_MODELS.length; i++) {
+    var model = GEMINI_MODELS[i];
+    var url = 'https://generativelanguage.googleapis.com/v1beta/models/' +
+              model + ':generateContent?key=' + encodeURIComponent(apiKey);
+
+    var resp;
+    try {
+      resp = UrlFetchApp.fetch(url, {
+        method: 'POST',
+        contentType: 'application/json',
+        payload: JSON.stringify(payload),
+        muteHttpExceptions: true
+      });
+    } catch (e) {
+      lastErr = 'เชื่อมต่อ Gemini ไม่ได้: ' + e;
+      Logger.log('[' + model + '] fetch error: ' + e);
+      continue;
+    }
+
+    var code = resp.getResponseCode();
+    var text = resp.getContentText();
+    out.httpCode = code;
+    out.model    = model;
+    Logger.log('[' + model + '] HTTP ' + code);
+
+    if (code === 200) {
+      var json;
+      try { json = JSON.parse(text); }
+      catch (e) { lastErr = 'ตอบกลับไม่ใช่ JSON: ' + text.substring(0, 200); continue; }
+
+      var cand = json.candidates && json.candidates[0];
+      if (!cand || !cand.content || !cand.content.parts || !cand.content.parts[0]) {
+        // ปกติเกิดจาก safety filter หรือ token หมดก่อนตอบ
+        var reason = (cand && cand.finishReason) ? cand.finishReason : 'ไม่มีคำตอบกลับมา';
+        lastErr = 'Gemini ไม่ตอบยอด (finishReason: ' + reason + ')';
+        Logger.log('no candidate: ' + text.substring(0, 500));
+        continue;
+      }
+
+      var raw = String(cand.content.parts[0].text || '').trim();
+      Logger.log('[' + model + '] raw: [' + raw + ']');
+      var m = raw.replace(/,/g, '').match(/\d+(?:\.\d+)?/);
+      if (!m) {
+        lastErr = 'อ่านตัวเลขจากคำตอบไม่ได้: "' + raw + '"';
+        continue;
+      }
+      // เก็บสตางค์ไว้ ไม่ปัดทิ้งแบบเดิม (399.50 ต้องไม่กลายเป็น 400)
+      var num = parseFloat(m[0]);
+      if (!(num > 0)) { lastErr = 'ยอดที่อ่านได้ไม่ถูกต้อง: ' + m[0]; continue; }
+      out.amount = String(num);
+      out.error  = '';
+      return out;
+    }
+
+    // ── ไม่ใช่ 200 → แปลง error ให้อ่านรู้เรื่อง ──
+    var msg = '';
+    try {
+      var ej = JSON.parse(text);
+      msg = (ej.error && ej.error.message) ? ej.error.message : text.substring(0, 200);
+    } catch (e) { msg = text.substring(0, 200); }
+    Logger.log('[' + model + '] error: ' + msg);
+
+    if (code === 400 && /API key not valid/i.test(msg)) {
+      out.error = 'API key ไม่ถูกต้อง — ตั้งค่า key ใหม่จากเมนู "🤖 Gemini"';
+      return out;                                  // ลอง model อื่นก็ไม่ช่วย
+    }
+    if (code === 403) {
+      out.error = 'key ไม่มีสิทธิ์เรียก Generative Language API — เปิด API ใน Google Cloud project ของ key นี้ก่อน (' + msg + ')';
+      return out;
+    }
+    if (code === 429) {
+      out.error = 'โดน rate limit / quota หมดชั่วคราว — รอสักครู่แล้วลองใหม่ (' + msg + ')';
+      return out;
+    }
+    if (code === 404) {                            // model นี้ใช้ไม่ได้ → ลองตัวถัดไป
+      lastErr = 'model ' + model + ' ใช้ไม่ได้: ' + msg;
+      continue;
+    }
+    lastErr = 'HTTP ' + code + ': ' + msg;
+  }
+
+  out.error = lastErr || 'อ่านสลิปไม่สำเร็จ (ไม่ทราบสาเหตุ)';
+  return out;
+}
+
+// เวอร์ชันเดิม — คืนเฉพาะสตริงยอด เพื่อให้โค้ดเก่าที่เรียกอยู่ยังทำงานได้
+function readAmountFromSlip(base64, mimeType) {
+  return readSlipDetailed(base64, mimeType).amount;
 }
 
 // ── บันทึกการโอนเงิน ──────────────────────────────────────────
@@ -1957,8 +2054,188 @@ function getDonations(ss) {
 }
 
 // ── ตั้ง Gemini API Key (รันครั้งเดียวจาก Script Editor) ──────
+// ── เมนูในชีต ─────────────────────────────────────────────────
+function onOpen() {
+  SpreadsheetApp.getUi()
+    .createMenu('🤖 Gemini')
+    .addItem('🔑 ตั้งค่า API Key', 'setGeminiApiKey')
+    .addItem('🔍 ตรวจสถานะ / ทดสอบการเชื่อมต่อ', 'testGeminiConnection')
+    .addItem('📋 ดู model ที่ key นี้ใช้ได้', 'listGeminiModels')
+    .addSeparator()
+    .addItem('🧾 ทดสอบอ่านสลิปจาก Drive', 'testReadSlipFromDrive')
+    .addItem('🗑️ ลบ API Key ที่เก็บไว้', 'clearGeminiApiKey')
+    .addToUi();
+}
+
+// ── ตั้ง Gemini API Key ───────────────────────────────────────
+// ใส่ผ่านกล่อง prompt ไม่ hardcode ในไฟล์ เพราะ code.gs ถูก push ขึ้น GitHub (public)
 function setGeminiApiKey() {
-  var key = 'AIzaSy_REPLACE_WITH_YOUR_KEY'; // ← ใส่ key จริงที่นี่
+  var ui = SpreadsheetApp.getUi();
+  var cur = getGeminiApiKey_();
+  var hint = cur
+    ? '\n\n(ปัจจุบันเก็บไว้แล้ว: ' + cur.substring(0, 8) + '…' + cur.slice(-4) + ')'
+    : '\n\n(ยังไม่ได้ตั้งค่า)';
+
+  var res = ui.prompt(
+    'ตั้งค่า Gemini API Key',
+    'วาง API Key จาก https://aistudio.google.com/apikey' + hint,
+    ui.ButtonSet.OK_CANCEL);
+
+  if (res.getSelectedButton() !== ui.Button.OK) return;
+
+  var key = String(res.getResponseText() || '').trim();
+  if (!key) { ui.alert('❌ ไม่ได้ใส่ key'); return; }
+  if (key.indexOf('AIza') !== 0) {
+    ui.alert('⚠️ key ปกติขึ้นต้นด้วย "AIza" — ตรวจว่าวางครบไหม\n\nที่ใส่มา: ' + key.substring(0, 12) + '…');
+    return;
+  }
+
   PropertiesService.getScriptProperties().setProperty('GEMINI_API_KEY', key);
-  SpreadsheetApp.getUi().alert('✅ บันทึก Gemini API Key เรียบร้อยแล้ว');
+
+  // ทดสอบทันทีว่า key ใช้ได้จริง ไม่ต้องรอไปเจอปัญหาตอนอัปโหลดสลิป
+  var t = pingGemini_();
+  if (t.ok) {
+    ui.alert('✅ บันทึก key แล้ว และทดสอบเรียก Gemini สำเร็จ\n\nmodel ที่ใช้ได้: ' + t.model);
+  } else {
+    ui.alert('⚠️ บันทึก key แล้ว แต่ทดสอบเรียกไม่ผ่าน\n\n' + t.error);
+  }
+}
+
+function clearGeminiApiKey() {
+  PropertiesService.getScriptProperties().deleteProperty('GEMINI_API_KEY');
+  SpreadsheetApp.getUi().alert('🗑️ ลบ key เรียบร้อย');
+}
+
+// ── ping Gemini ด้วย prompt สั้น ๆ (ไม่เปลืองโควตา) ───────────
+function pingGemini_() {
+  var apiKey = getGeminiApiKey_();
+  if (!apiKey) return { ok: false, error: 'ยังไม่ได้ตั้ง GEMINI_API_KEY' };
+
+  var payload = {
+    contents: [{ parts: [{ text: 'Reply with only: OK' }] }],
+    generationConfig: { temperature: 0, maxOutputTokens: 16, thinkingConfig: { thinkingBudget: 0 } }
+  };
+
+  var lastErr = '';
+  for (var i = 0; i < GEMINI_MODELS.length; i++) {
+    var model = GEMINI_MODELS[i];
+    var resp = UrlFetchApp.fetch(
+      'https://generativelanguage.googleapis.com/v1beta/models/' + model +
+      ':generateContent?key=' + encodeURIComponent(apiKey),
+      { method: 'POST', contentType: 'application/json',
+        payload: JSON.stringify(payload), muteHttpExceptions: true });
+
+    var code = resp.getResponseCode();
+    if (code === 200) return { ok: true, model: model };
+
+    var msg = '';
+    try { var ej = JSON.parse(resp.getContentText());
+          msg = (ej.error && ej.error.message) || ''; } catch (e) {}
+    lastErr = 'HTTP ' + code + ' (' + model + '): ' + msg;
+    if (code === 400 || code === 403 || code === 429) break;  // ปัญหาที่ key ไม่ใช่ที่ model
+  }
+  return { ok: false, error: lastErr };
+}
+
+// ── ตรวจสถานะแบบละเอียด ──────────────────────────────────────
+function testGeminiConnection() {
+  var ui  = SpreadsheetApp.getUi();
+  var key = getGeminiApiKey_();
+
+  var lines = ['── สถานะ Gemini ──', ''];
+  if (!key) {
+    lines.push('❌ GEMINI_API_KEY: ยังไม่ได้ตั้งค่า');
+    lines.push('');
+    lines.push('→ เมนู "🤖 Gemini" > "🔑 ตั้งค่า API Key"');
+    ui.alert(lines.join('\n'));
+    return;
+  }
+
+  lines.push('✅ GEMINI_API_KEY: ' + key.substring(0, 8) + '…' + key.slice(-4) + ' (ยาว ' + key.length + ' ตัว)');
+  if (key.indexOf('REPLACE_WITH') >= 0) {
+    lines.push('❌ ยังเป็นค่าตัวอย่าง (placeholder) — ต้องตั้ง key จริง');
+    ui.alert(lines.join('\n'));
+    return;
+  }
+
+  var t = pingGemini_();
+  lines.push('');
+  if (t.ok) {
+    lines.push('✅ เรียก Gemini สำเร็จ — model: ' + t.model);
+    lines.push('');
+    lines.push('ตัวอ่านสลิปพร้อมใช้งาน 🎉');
+  } else {
+    lines.push('❌ เรียก Gemini ไม่ผ่าน');
+    lines.push('');
+    lines.push(t.error);
+    lines.push('');
+    lines.push('วิธีแก้ที่พบบ่อย:');
+    lines.push('• API key not valid → key ผิด/วางไม่ครบ ตั้งใหม่');
+    lines.push('• 403 → เปิด "Generative Language API" ใน Cloud project ของ key นี้');
+    lines.push('• 429 → quota หมดชั่วคราว รอแล้วลองใหม่');
+    lines.push('• 404 ทุก model → ดูเมนู "📋 ดู model ที่ key นี้ใช้ได้"');
+  }
+  ui.alert(lines.join('\n'));
+}
+
+// ── list model ที่ key นี้เรียกได้จริง ────────────────────────
+function listGeminiModels() {
+  var ui  = SpreadsheetApp.getUi();
+  var key = getGeminiApiKey_();
+  if (!key) { ui.alert('❌ ยังไม่ได้ตั้ง GEMINI_API_KEY'); return; }
+
+  var resp = UrlFetchApp.fetch(
+    'https://generativelanguage.googleapis.com/v1beta/models?key=' + encodeURIComponent(key),
+    { muteHttpExceptions: true });
+
+  if (resp.getResponseCode() !== 200) {
+    ui.alert('❌ HTTP ' + resp.getResponseCode() + '\n\n' + resp.getContentText().substring(0, 500));
+    return;
+  }
+
+  var models = (JSON.parse(resp.getContentText()).models || [])
+    .filter(function(m) {
+      return (m.supportedGenerationMethods || []).indexOf('generateContent') >= 0;
+    })
+    .map(function(m) { return '• ' + String(m.name).replace('models/', ''); });
+
+  Logger.log(models.join('\n'));
+  ui.alert('model ที่รองรับ generateContent (' + models.length + ' ตัว):\n\n' +
+           models.slice(0, 30).join('\n') +
+           (models.length > 30 ? '\n… (ดูทั้งหมดใน Executions log)' : ''));
+}
+
+// ── ทดสอบอ่านสลิปจริงจากไฟล์ใน Drive ─────────────────────────
+// วาง URL หรือ File ID ของรูปสลิปที่อัปโหลดไว้แล้ว เพื่อทดสอบ end-to-end
+function testReadSlipFromDrive() {
+  var ui  = SpreadsheetApp.getUi();
+  var res = ui.prompt('ทดสอบอ่านสลิป',
+    'วาง URL หรือ File ID ของรูปสลิปใน Drive', ui.ButtonSet.OK_CANCEL);
+  if (res.getSelectedButton() !== ui.Button.OK) return;
+
+  var input = String(res.getResponseText() || '').trim();
+  if (!input) return;
+
+  var m  = input.match(/[-\w]{25,}/);
+  var id = m ? m[0] : input;
+
+  var file, blob;
+  try {
+    file = DriveApp.getFileById(id);
+    blob = file.getBlob();
+  } catch (e) {
+    ui.alert('❌ เปิดไฟล์ไม่ได้: ' + e);
+    return;
+  }
+
+  var b64 = Utilities.base64Encode(blob.getBytes());
+  var r   = readSlipDetailed(b64, blob.getContentType());
+
+  if (r.amount) {
+    ui.alert('✅ อ่านยอดได้: ' + r.amount + ' บาท\n\n' +
+             'ไฟล์: ' + file.getName() + '\nmodel: ' + r.model);
+  } else {
+    ui.alert('❌ อ่านไม่ได้\n\nไฟล์: ' + file.getName() +
+             '\nHTTP: ' + r.httpCode + '\n\n' + r.error);
+  }
 }
