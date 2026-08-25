@@ -1819,12 +1819,14 @@ function checkLink(ss, slug) {
 var DONATE_HEADERS = ['วันที่', 'ชื่อผู้โอน', 'ยอด (บาท)', 'ลิงก์สลิป', 'หมายเหตุ'];
 
 // ── อ่านยอดจากสลิปด้วย Gemini Vision ──────────────────────────
-// ── OCR สลิปโอนเงินด้วย Gemini ────────────────────────────────
-// ลำดับ model ที่จะลอง (ถ้าตัวแรก 404/ไม่รองรับ จะไล่ตัวถัดไปเอง)
+// ลำดับ model ที่จะลอง — ตัวแรกคือตัวที่ทดสอบแล้วใช้ได้จริงกับ key ของโปรเจกต์นี้
+// (25 ส.ค. 2569: gemini-2.5-flash-lite และ gemini-2.5-flash เรียกไม่ได้ → 404)
+// ถ้าเปลี่ยน key แล้วอ่านสลิปช้า/ไม่ได้ ให้รันเมนู "📋 ดู model ที่ key นี้ใช้ได้" แล้วสลับตัวแรกให้ตรง
 var GEMINI_MODELS = [
-  'gemini-2.5-flash-lite',
+  'gemini-flash-latest',
+  'gemini-flash-lite-latest',
   'gemini-2.5-flash',
-  'gemini-flash-latest'
+  'gemini-2.5-flash-lite'
 ];
 
 function getGeminiApiKey_() {
@@ -1923,6 +1925,14 @@ function readSlipDetailed(base64, mimeType) {
       if (!(num > 0)) { lastErr = 'ยอดที่อ่านได้ไม่ถูกต้อง: ' + m[0]; continue; }
       out.amount = String(num);
       out.error  = '';
+      // log token ที่ใช้จริง เพื่อดูค่าใช้จ่ายต่อสลิปได้จาก Executions log
+      var u = json.usageMetadata;
+      if (u) {
+        out.tokensIn  = u.promptTokenCount     || 0;
+        out.tokensOut = u.candidatesTokenCount || 0;
+        Logger.log('[' + model + '] tokens in=' + out.tokensIn +
+                   ' out=' + out.tokensOut + ' total=' + (u.totalTokenCount || 0));
+      }
       return out;
     }
 
