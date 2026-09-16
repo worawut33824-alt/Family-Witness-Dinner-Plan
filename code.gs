@@ -57,8 +57,13 @@ function doGet(e) {
       result.ok            = rfixed.ok;
       result.summary_msg   = rfixed.msg;
       result.dashboard_msg = rfixed.msg;
+    } else if (action === 'fix_overview_time') {
+      // แก้เฉพาะข้อความเวลา 14:00 -> 16:00 ในชีต Summary/Dashboard (คงหน้าตาเดิม)
+      var rft = fixOverviewTime_(ss);
+      result.ok  = rft.ok;
+      result.msg = rft.msg;
     } else if (action === 'rebuild_overview') {
-      // สร้างชีต Summary + Dashboard ใหม่ทั้งหมด (KPI + ตารางแยกหมวด + SUMIF)
+      // ⚠️ สร้างชีต Summary + Dashboard ใหม่ทั้งหมด — ทับ layout เดิม
       var rov1 = updateSummarySheetGS(ss);
       var rov2 = updateDashboardSheetGS(ss);
       result.ok            = (rov1.ok !== false) && (rov2.ok !== false);
@@ -2156,16 +2161,42 @@ function onOpen() {
   SpreadsheetApp.getUi()
     .createMenu('📊 ชีตสรุป')
     .addItem('🎨 จัดรูปแบบ งบประมาณ + สรุปภาพรวม', 'doFormatAll')
-    .addItem('🔄 สร้าง Summary + Dashboard ใหม่', 'doRebuildOverview')
+    .addItem('🕑 แก้เวลาในชีต Summary/Dashboard → 16:00 (คงหน้าตาเดิม)', 'doFixOverviewTime')
+    .addSeparator()
+    .addItem('⚠️ สร้าง Summary + Dashboard ใหม่ (ทับหน้าตาเดิม)', 'doRebuildOverview')
     .addToUi();
 }
 
-// สร้างชีต Summary + Dashboard ใหม่ (รันจากเมนู) — ใช้ layout/สูตรเดียวกับ web action rebuild_overview
+// แก้เฉพาะ "ข้อความเวลา" ในชีต Summary/Dashboard โดยไม่แตะ layout/สี/สูตร
+// ใช้ TextFinder แทนที่ 14:00 -> 16:00 ในเซลล์ (คงหน้าตาเดิมทุกอย่าง)
+function fixOverviewTime_(ss) {
+  var out = [];
+  ['Summary', 'Dashboard'].forEach(function(name) {
+    var sh = ss.getSheetByName(name);
+    if (!sh) { out.push(name + ': ไม่พบชีต'); return; }
+    var n = sh.createTextFinder('14:00').matchEntireCell(false).replaceAllWith('16:00');
+    out.push(name + ': แก้ ' + n + ' จุด');
+  });
+  return { ok: true, msg: out.join('  |  ') };
+}
+
+function doFixOverviewTime() {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var r  = fixOverviewTime_(ss);
+  SpreadsheetApp.getUi().alert('🕑 แก้เวลาในชีตสรุป (คงหน้าตาเดิม)\n\n' + r.msg);
+}
+
+// ⚠️ สร้างใหม่ทั้งชีต — ทับ layout เดิม (ใช้เมื่อชีตพังหรือยังไม่เคยมี เท่านั้น)
 function doRebuildOverview() {
   var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var ui = SpreadsheetApp.getUi();
+  var ok = ui.alert('⚠️ ยืนยัน',
+    'จะลบหน้าตาเดิมของชีต Summary + Dashboard แล้วสร้างใหม่ทั้งหมด\nถ้าอยากแก้แค่เวลาให้ใช้ "🕑 แก้เวลา..." แทน\n\nยืนยันสร้างใหม่?',
+    ui.ButtonSet.YES_NO);
+  if (ok !== ui.Button.YES) return;
   var r1 = updateSummarySheetGS(ss);
   var r2 = updateDashboardSheetGS(ss);
-  SpreadsheetApp.getUi().alert((r1.msg || 'Summary: -') + '\n' + (r2.msg || 'Dashboard: -'));
+  ui.alert((r1.msg || 'Summary: -') + '\n' + (r2.msg || 'Dashboard: -'));
 }
 
 // ── ตั้ง Gemini API Key ───────────────────────────────────────
