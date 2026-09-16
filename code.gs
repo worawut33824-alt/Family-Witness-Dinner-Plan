@@ -57,6 +57,13 @@ function doGet(e) {
       result.ok            = rfixed.ok;
       result.summary_msg   = rfixed.msg;
       result.dashboard_msg = rfixed.msg;
+    } else if (action === 'rebuild_overview') {
+      // สร้างชีต Summary + Dashboard ใหม่ทั้งหมด (KPI + ตารางแยกหมวด + SUMIF)
+      var rov1 = updateSummarySheetGS(ss);
+      var rov2 = updateDashboardSheetGS(ss);
+      result.ok            = (rov1.ok !== false) && (rov2.ok !== false);
+      result.summary_msg   = rov1.msg;
+      result.dashboard_msg = rov2.msg;
     } else if (action === 'stats') {
       var sc = countSeatsBySide(ss);
       result.guestCount = sc.total;
@@ -2145,6 +2152,20 @@ function onOpen() {
     .addItem('🧾 ทดสอบอ่านสลิปจาก Drive', 'testReadSlipFromDrive')
     .addItem('🗑️ ลบ API Key ที่เก็บไว้', 'clearGeminiApiKey')
     .addToUi();
+
+  SpreadsheetApp.getUi()
+    .createMenu('📊 ชีตสรุป')
+    .addItem('🎨 จัดรูปแบบ งบประมาณ + สรุปภาพรวม', 'doFormatAll')
+    .addItem('🔄 สร้าง Summary + Dashboard ใหม่', 'doRebuildOverview')
+    .addToUi();
+}
+
+// สร้างชีต Summary + Dashboard ใหม่ (รันจากเมนู) — ใช้ layout/สูตรเดียวกับ web action rebuild_overview
+function doRebuildOverview() {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var r1 = updateSummarySheetGS(ss);
+  var r2 = updateDashboardSheetGS(ss);
+  SpreadsheetApp.getUi().alert((r1.msg || 'Summary: -') + '\n' + (r2.msg || 'Dashboard: -'));
 }
 
 // ── ตั้ง Gemini API Key ───────────────────────────────────────
