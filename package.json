@@ -1,0 +1,9 @@
+{
+  "devDependencies": {
+    "@google/clasp": "^3.4.1"
+  },
+  "scripts": {
+    "deploy:gs": "node scripts/deploy-gs.mjs",
+    "pull:gs": "clasp pull"
+  }
+}

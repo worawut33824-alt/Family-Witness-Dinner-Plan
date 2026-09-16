@@ -2,3 +2,13 @@
 # สลิปทดสอบ/ส่วนตัว — ไม่ push ขึ้น GitHub
 New folder/
 tryout/
+
+node_modules/
+docs/qa/
+
+# clasp — credential/token ห้าม push ขึ้น public repo เด็ดขาด
+.clasprc.json
+.clasp.json
+
+# clasp working dir (สำเนา code.gs — source จริงคือ code.gs)
+.appsscript/
