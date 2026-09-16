@@ -13,7 +13,7 @@
  * ต้อง login ครั้งเดียวก่อน:  npx clasp login
  * (credential อยู่ใน ~/.clasprc.json — gitignore ไว้แล้ว ห้าม push ขึ้น public repo)
  */
-import { execFileSync } from 'node:child_process';
+import { execSync } from 'node:child_process';
 import { copyFileSync, existsSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
@@ -27,9 +27,8 @@ const DEPLOYMENT_ID =
 const SRC  = join(root, 'code.gs');
 const DEST = join(root, '.appsscript', 'รหัส.js'); // ชื่อไฟล์ที่โปรเจกต์ใช้ (locale ไทย = "รหัส")
 
-const npx = process.platform === 'win32' ? 'npx.cmd' : 'npx';
-const run = (args) =>
-  execFileSync(npx, args, { cwd: root, stdio: 'inherit', shell: false });
+// ใช้ shell ของ OS (execSync default) — เลี่ยงปัญหา spawn npx.cmd ตรง ๆ บน Windows (EINVAL)
+const run = (cmd) => execSync(cmd, { cwd: root, stdio: 'inherit' });
 
 if (!existsSync(join(root, '.appsscript'))) {
   console.error('❌ ยังไม่มีโฟลเดอร์ .appsscript — รัน `npx clasp pull` ก่อนหนึ่งครั้ง');
@@ -42,10 +41,11 @@ console.log('1/3  copy code.gs -> .appsscript/รหัส.js');
 copyFileSync(SRC, DEST);
 
 console.log('2/3  clasp push');
-run(['clasp', 'push', '-f']);
+run('npx clasp push -f');
 
-console.log(`3/3  clasp deploy (คง URL เดิม) — "${label}"`);
-run(['clasp', 'deploy', '-i', DEPLOYMENT_ID, '-d', label]);
+const safeLabel = label.replace(/"/g, '');
+console.log(`3/3  clasp deploy (คง URL เดิม) — "${safeLabel}"`);
+run(`npx clasp deploy -i ${DEPLOYMENT_ID} -d "${safeLabel}"`);
 
 console.log('\n✅ deploy เสร็จ — /exec URL เดิมรันโค้ดล่าสุดแล้ว');
 console.log('   ⚠️  ถ้าแก้ข้อความในชีต (เช่น หัวตาราง) ต้องยิง action format ซ้ำ');
