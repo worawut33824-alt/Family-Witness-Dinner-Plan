@@ -1020,7 +1020,7 @@ function formatBudgetSheet(ss) {
   var totalBudget = 0;
   for (var ti = 0; ti < cats.length; ti++) totalBudget += cats[ti].budget;
   sheet.getRange(2, 1, 1, 6).merge()
-    .setValue('📅  28 พฤศจิกายน 2569  ·  TARA Terrace  ·  14:00 น.  ·  งบรวม ' +
+    .setValue('📅  28 พฤศจิกายน 2569  ·  TARA Terrace  ·  16:00 น.  ·  งบรวม ' +
               totalBudget.toLocaleString() + ' บาท')
     .setBackground('#b5838d').setFontColor('#ffffff')
     .setFontSize(11).setHorizontalAlignment('center').setVerticalAlignment('middle').setWrap(false);
@@ -1191,7 +1191,7 @@ function formatSummarySheet(ss) {
   // ── Row 2: Event info ─────────────────────────────────────────────────────
   sheet.setRowHeight(2, 32);
   sheet.getRange(2, 1, 1, 6).merge()
-    .setValue('📅  28 พฤศจิกายน 2569  ·  TARA Terrace  ·  14:00 น.')
+    .setValue('📅  28 พฤศจิกายน 2569  ·  TARA Terrace  ·  16:00 น.')
     .setBackground('#b5838d').setFontColor('#ffffff')
     .setFontSize(11).setHorizontalAlignment('center').setVerticalAlignment('middle');
 
@@ -1385,7 +1385,7 @@ function rebuildOverviewSheet(ss, sheetName, title) {
   // ── Row 2: Event info ─────────────────────────────────────────────────────
   sheet.setRowHeight(2, 32);
   sheet.getRange(2, 1, 1, 6).merge()
-    .setValue('📅  28 พฤศจิกายน 2569  ·  TARA Terrace  ·  14:00 น.  ·  งบรวม ' +
+    .setValue('📅  28 พฤศจิกายน 2569  ·  TARA Terrace  ·  16:00 น.  ·  งบรวม ' +
               totalBudget.toLocaleString() + ' บาท')
     .setBackground('#b5838d').setFontColor('#ffffff')
     .setFontSize(11).setHorizontalAlignment('center').setVerticalAlignment('middle');

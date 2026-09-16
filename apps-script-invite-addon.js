@@ -128,7 +128,7 @@ function getLatestBlessings(n) {
 // ═══════════════════════════════════════════════════════════════════
 function sendCalendarInvite(email, guestName) {
   // ── ปรับเวลาเริ่ม/จบตามที่ต้องการ ──
-  // DTSTART = 2026-11-28 14:00 (Bangkok UTC+7 = 07:00 UTC)
+  // DTSTART = 2026-11-28 16:00 (Bangkok UTC+7 = 09:00 UTC)
   // DTEND   = 2026-11-28 20:00 (Bangkok UTC+7 = 13:00 UTC)
   const ics = [
     'BEGIN:VCALENDAR',
@@ -137,12 +137,12 @@ function sendCalendarInvite(email, guestName) {
     'METHOD:REQUEST',
     'BEGIN:VEVENT',
     'UID:pmwedding-20261128@tara-terrace',
-    'DTSTART:20261128T070000Z',   // 14:00 ICT = 07:00 UTC
+    'DTSTART:20261128T090000Z',   // 16:00 ICT = 09:00 UTC
     'DTEND:20261128T130000Z',     // 20:00 ICT = 13:00 UTC
     'SUMMARY:💍 งานสักขีพยาน Family Witness Dinner – เอ็ม & แป้ง',
     'LOCATION:TARA Terrace\\, Nakhon Pathom',
     'DESCRIPTION:ยินดีต้อนรับสู่งานสักขีพยาน Family Witness Dinner\\n'
-      + 'ลงทะเบียน 13:30 น. · เริ่ม 14:00 น.\\n'
+      + 'ลงทะเบียนและเริ่มงาน 16:00 น.\\n'
       + 'TARA Terrace · จ.นครปฐม',
     'STATUS:CONFIRMED',
     'SEQUENCE:0',
@@ -167,7 +167,7 @@ function sendCalendarInvite(email, guestName) {
           <div style="font-weight:700;color:#2c3a4a;margin-bottom:8px;">📅 รายละเอียดงาน</div>
           <div style="color:#5a7080;font-size:0.9rem;line-height:1.8;">
             วันเสาร์ที่ 28 พฤศจิกายน 2569<br>
-            ลงทะเบียน 13:30 น. · เริ่ม 14:00 น.<br>
+            ลงทะเบียนและเริ่มงาน 16:00 น.<br>
             TARA Terrace · จ.นครปฐม
           </div>
         </div>
@@ -182,7 +182,7 @@ function sendCalendarInvite(email, guestName) {
   GmailApp.sendEmail(
     email,
     '💍 คุณได้รับเชิญ · งานสักขีพยาน เอ็ม & แป้ง · 28 พ.ย. 69',
-    `คุณ ${guestName} ได้รับเชิญร่วมงานสักขีพยาน Family Witness Dinner\n28 พฤศจิกายน 2569 · 14:00 น. · TARA Terrace`,
+    `คุณ ${guestName} ได้รับเชิญร่วมงานสักขีพยาน Family Witness Dinner\n28 พฤศจิกายน 2569 · 16:00 น. · TARA Terrace`,
     {
       htmlBody,
       attachments: [
