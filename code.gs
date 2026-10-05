@@ -96,6 +96,10 @@ function doGet(e) {
       var slug = e.parameter.slug || '';
       result   = checkLink(ss, slug);
 
+    } else if (action === 'card_settings') {
+      result.sections = getCardSettings(ss);
+      result.meta     = CARD_SECTIONS;
+
     } else {
       result.message = 'unknown action';
     }
@@ -128,6 +132,25 @@ function doPost(e) {
 
     } else if (body.action === 'links') {
       saveLinks(ss, body.links || []);
+
+    } else if (body.action === 'card_settings') {
+      saveCardSettings(ss, body.sections || {});
+      result.sections = getCardSettings(ss);
+
+    } else if (body.action === 'set_bless_photo') {
+      var bp = setBlessingPhoto(ss, body.row, body.photoBase64 || '');
+      result.ok       = bp.ok;
+      result.photoUrl = bp.photoUrl;
+      if (bp.error) result.error = bp.error;
+
+    } else if (body.action === 'update_donation') {
+      var ud = updateDonation(ss, body.row, {
+        name:   body.name,
+        amount: body.amount,
+        note:   body.note
+      });
+      result.ok = ud.ok;
+      if (ud.error) result.error = ud.error;
 
     } else if (body.action === 'donation') {
       var donResult = saveDonation(ss, body);
@@ -194,6 +217,23 @@ var GUEST_HEADERS = [
   'ที่นั่ง','สถานะ','อีเมล','คำอวยพร','รูป URL','วันที่','หมายเหตุ'
 ];
 var BLESS_HEADERS = ['วันที่','ชื่อ','ข้อความ','รูป URL','สถานะเข้าร่วม','ฝั่ง'];
+
+// section ของการ์ดเชิญที่เปิด/ปิดได้จากหลังบ้าน (ไม่รวม sec-cover = ซองจดหมาย/จำเป็น)
+// key ตรงกับ id ของ <section> ใน invite.html · label = ชื่อที่โชว์ในหน้าตั้งค่า
+var CARD_SECTIONS = [
+  { key: 'sec-story',         label: 'เรื่องราวของเรา' },
+  { key: 'sec-couple',        label: 'คู่บ่าวสาว' },
+  { key: 'sec-details',       label: 'นับถอยหลัง / รายละเอียดงาน' },
+  { key: 'sec-itinerary',     label: 'กำหนดการ' },
+  { key: 'sec-dresscode',     label: 'การแต่งกาย (Dress code)' },
+  { key: 'sec-map',           label: 'แผนที่ / การเดินทาง' },
+  { key: 'sec-tree',          label: 'ต้นไม้ผู้ร่วมงาน' },
+  { key: 'sec-bless-display', label: 'โชว์คำอวยพร' },
+  { key: 'sec-decision',      label: 'ตอบรับการเข้าร่วม (ปุ่มเลือก)' },
+  { key: 'sec-rsvp',          label: 'ฟอร์มลงทะเบียน (RSVP)' },
+  { key: 'sec-bless',         label: 'ฟอร์มส่งคำอวยพร' },
+  { key: 'sec-donate',        label: 'ส่วนสนับสนุน (donate)' }
+];
 
 function doSetup() {
   var ss = SpreadsheetApp.getActiveSpreadsheet();
@@ -633,6 +673,7 @@ function getBlessingsForPage(ss) {
   for (var i = data.length - 1; i >= 0; i--) {
     if (!data[i][1]) continue;
     list.push({
+      row:        i + 2,   // แถวจริงใน sheet (ใช้อ้างอิงตอนอัป/แก้รูปจากหลังบ้าน)
       date:       data[i][0] instanceof Date ? Utilities.formatDate(data[i][0], 'Asia/Bangkok', 'dd/MM/yyyy HH:mm') : String(data[i][0] || ''),
       name:       String(data[i][1] || ''),
       message:    String(data[i][2] || ''),
@@ -642,6 +683,25 @@ function getBlessingsForPage(ss) {
     });
   }
   return list;
+}
+
+// อัป/เปลี่ยน/ลบรูปของคำอวยพรแถวที่ระบุ (ใช้จากหลังบ้าน index.html)
+// photoBase64 ว่าง = ลบรูป · มีค่า = อัปขึ้น Drive แล้วเขียน URL ลงคอลัมน์ 4
+function setBlessingPhoto(ss, row, photoBase64) {
+  var sheet = ss.getSheetByName('คำอวยพร');
+  if (!sheet) return { ok: false, photoUrl: '', error: 'ไม่พบ sheet คำอวยพร' };
+  var r = parseInt(row, 10);
+  var lastRow = sheet.getLastRow();
+  if (!(r >= 2 && r <= lastRow)) return { ok: false, photoUrl: '', error: 'แถวไม่ถูกต้อง: ' + row };
+
+  var photoUrl = '';
+  if (photoBase64 && String(photoBase64).length > 100) {
+    var ts = Utilities.formatDate(new Date(), 'Asia/Bangkok', 'yyyyMMdd_HHmmss');
+    photoUrl = savePictureToDrive(photoBase64, 'bless_admin_' + ts + '.jpg');
+    if (!photoUrl) return { ok: false, photoUrl: '', error: 'อัปโหลดรูปไม่สำเร็จ' };
+  }
+  sheet.getRange(r, 4).setValue(photoUrl);   // '' = ลบรูป
+  return { ok: true, photoUrl: photoUrl };
 }
 
 // helper: เขียน row ลง sheet คำอวยพร
@@ -2135,6 +2195,7 @@ function getDonations(ss) {
       : String(dateVal || '');
 
     list.push({
+      row:     i + 2,   // แถวจริงใน sheet (getDonations ข้ามบางแถว index≠row)
       date:    dateStr,
       name:    name,
       amount:  amt,
@@ -2143,6 +2204,72 @@ function getDonations(ss) {
     });
   }
   return list;
+}
+
+// แก้ไขรายการแจ้งโอนแถวที่ระบุ (ชื่อ/ยอด/หมายเหตุ) — ไม่แตะคอลัมน์ 4 (สลิป=สูตร HYPERLINK)
+function updateDonation(ss, row, fields) {
+  var sheet = ss.getSheetByName('โอนเงิน');
+  if (!sheet) return { ok: false, error: 'ไม่พบ sheet โอนเงิน' };
+  var r = parseInt(row, 10);
+  var lastRow = sheet.getLastRow();
+  if (!(r >= 2 && r <= lastRow)) return { ok: false, error: 'แถวไม่ถูกต้อง: ' + row };
+
+  fields = fields || {};
+  if (fields.name !== undefined)   sheet.getRange(r, 2).setValue(String(fields.name || ''));
+  if (fields.amount !== undefined) {
+    var amt = parseFloat(String(fields.amount).replace(/,/g, ''));
+    sheet.getRange(r, 3).setValue(isFinite(amt) ? amt : '');
+  }
+  if (fields.note !== undefined)   sheet.getRange(r, 5).setValue(String(fields.note || ''));
+  return { ok: true };
+}
+
+// ── ตั้งค่าการ์ดเชิญ (เปิด/ปิด section) ────────────────────────
+// เก็บใน sheet "ตั้งค่าการ์ด" : [คีย์, ชื่อ section, แสดง]  (แสดง = TRUE/FALSE)
+function getCardSettingsSheet_(ss) {
+  var sheet = ss.getSheetByName('ตั้งค่าการ์ด');
+  if (!sheet) {
+    sheet = ss.insertSheet('ตั้งค่าการ์ด');
+    sheet.getRange(1, 1, 1, 3).setValues([['คีย์', 'ชื่อ section', 'แสดง']])
+      .setFontWeight('bold').setBackground('#f4d9d0');
+    sheet.setFrozenRows(1);
+    sheet.setColumnWidth(1, 160); sheet.setColumnWidth(2, 260); sheet.setColumnWidth(3, 90);
+    var rows = CARD_SECTIONS.map(function(s) { return [s.key, s.label, true]; });
+    sheet.getRange(2, 1, rows.length, 3).setValues(rows);
+  }
+  return sheet;
+}
+
+function getCardSettings(ss) {
+  var sheet = getCardSettingsSheet_(ss);
+  var map = {};
+  CARD_SECTIONS.forEach(function(s) { map[s.key] = true; });  // default ทุกอัน = เปิด
+  var lastRow = sheet.getLastRow();
+  if (lastRow >= 2) {
+    var data = sheet.getRange(2, 1, lastRow - 1, 3).getValues();
+    data.forEach(function(r) {
+      var key = String(r[0] || '').trim();
+      if (!key) return;
+      map[key] = (r[2] === true || String(r[2]).toUpperCase() === 'TRUE');
+    });
+  }
+  return map;
+}
+
+function saveCardSettings(ss, settings) {
+  var sheet = getCardSettingsSheet_(ss);
+  settings = settings || {};
+  // เขียนใหม่ทั้งตารางตามลำดับ CARD_SECTIONS (เผื่อ key เพิ่ม/ลด)
+  var rows = CARD_SECTIONS.map(function(s) {
+    var v = settings[s.key];
+    var on = (v === undefined) ? true : (v === true || String(v).toUpperCase() === 'TRUE');
+    return [s.key, s.label, on];
+  });
+  if (sheet.getLastRow() > 1) {
+    sheet.getRange(2, 1, sheet.getLastRow() - 1, 3).clearContent();
+  }
+  sheet.getRange(2, 1, rows.length, 3).setValues(rows);
+  return { ok: true };
 }
 
 // ── ตั้ง Gemini API Key (รันครั้งเดียวจาก Script Editor) ──────

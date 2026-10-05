@@ -2213,6 +2213,7 @@ const WEDDING_DATE = new Date('2026-11-28T16:00:00+07:00');
 const GUEST_GOAL   = 100;
 let selectedSide   = '';
 let guestCount     = 0;
+let cardSettings   = {};   // เปิด/ปิด section จากหลังบ้าน (key: 'sec-xxx' => bool)
 
 // Read surl from URL params or localStorage (hardcoded URL is fallback)
 (function() {
@@ -2235,6 +2236,44 @@ let guestCount     = 0;
     if (rb) rb.style.display = 'block';
   }
 })();
+
+// ── CARD SECTION VISIBILITY (เปิด/ปิดจากหลังบ้าน) ──────────────
+function applyCardSettings(map) {
+  cardSettings = map || {};
+  // section ปกติ: ปิด = ซ่อนทันที (sec-rsvp/sec-bless เป็น display:none อยู่แล้ว
+  //  คุมผ่าน gate ใน goRSVP/goBlessing — ไม่ต้องแตะที่นี่)
+  Object.keys(cardSettings).forEach(key => {
+    if (key === 'sec-rsvp' || key === 'sec-bless') return;
+    const el = document.getElementById(key);
+    if (el && cardSettings[key] === false) el.style.display = 'none';
+  });
+  // ถ้าปิด RSVP/อวยพร → ซ่อนการ์ดปุ่มเลือกที่คู่กันในส่วน decision
+  if (cardSettings['sec-rsvp'] === false) {
+    const c = document.querySelector('#sec-decision .decision-card.yes');
+    if (c) c.style.display = 'none';
+  }
+  if (cardSettings['sec-bless'] === false) {
+    const c = document.querySelector('#sec-decision .decision-card.no');
+    if (c) c.style.display = 'none';
+  }
+}
+async function loadCardSettings(tries) {
+  if (!SCRIPT_URL) return;
+  tries = tries || 3;
+  for (let i = 0; i < tries; i++) {
+    try {
+      const res = await fetch(SCRIPT_URL + '?action=card_settings');
+      const txt = await res.text();
+      const d = JSON.parse(txt);   // cold-start 404 echo = non-JSON → throw → retry
+      if (d && d.sections) { applyCardSettings(d.sections); return; }
+      return;
+    } catch (e) {
+      if (i < tries - 1) await new Promise(r => setTimeout(r, 1500 * (i + 1)));
+    }
+  }
+  // ถ้าโหลดไม่ได้เลย: ปล่อยทุก section แสดงตามปกติ (ค่า default ปลอดภัย)
+}
+loadCardSettings();   // โหลดทันที ให้ section ถูกซ่อนก่อนผู้ใช้เลื่อนถึง
 
 // ── ENVELOPE OPEN ────────────────────────────────────────────
 function openEnvelope() {
@@ -2628,6 +2667,7 @@ function renderBlessings(list) {
 
 // ── DECISION NAVIGATION ──────────────────────────────────────
 function goRSVP() {
+  if (cardSettings['sec-rsvp'] === false) return;   // ปิดจากหลังบ้าน
   const el = document.getElementById('sec-rsvp');
   el.style.display = 'block';
   document.getElementById('spacer-before-rsvp').style.display = 'block';
@@ -2636,6 +2676,7 @@ function goRSVP() {
   setTimeout(() => el.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50);
 }
 function goBlessing() {
+  if (cardSettings['sec-bless'] === false) return;   // ปิดจากหลังบ้าน
   const el = document.getElementById('sec-bless');
   el.style.display = 'block';
   document.getElementById('spacer-before-bless').style.display = 'block';
