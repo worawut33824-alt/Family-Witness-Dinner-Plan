@@ -1,63 +1,59 @@
 // Wedding Planner – Service Worker
-// Caches core assets for offline use
+// กลยุทธ์: NETWORK-FIRST — ดึงของใหม่จากเน็ตก่อนเสมอ แล้วค่อย fallback cache ตอนออฟไลน์
+// => อัปเดตหน้าเว็บ/รูป ขึ้นเองทุกครั้ง ไม่ต้องลบแคช/บั๊มเวอร์ชันทุกครั้ง
+// (ของเดิมเป็น cache-first จึงค้างรูป/หน้าเก่า)
 
-const CACHE = 'wedding-planner-v89';
-const ASSETS = [
+const CACHE = 'wedding-planner-v90';
+const CORE = [
   './',
   './index.html',
   './invite.html',
   './logo.png',
-  './Gif1.png',
   './icon-192.png',
   './icon-512.png',
-  './apple-touch-icon.png',
-  'https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js'
+  './apple-touch-icon.png'
 ];
 
-// ── Install: cache all core assets ──────────────────────────────
+// ── Install: เก็บ core ไว้ให้เปิดออฟไลน์ได้ แล้วข้ามไปทำงานทันที ──
 self.addEventListener('install', e => {
   e.waitUntil(
-    caches.open(CACHE).then(cache => cache.addAll(ASSETS))
+    caches.open(CACHE).then(c => c.addAll(CORE)).catch(() => {})
   );
   self.skipWaiting();
 });
 
-// ── Activate: remove old caches ─────────────────────────────────
+// ── Activate: ลบ cache เก่าทุกเวอร์ชัน + เข้าควบคุมหน้าเปิดอยู่ทันที ──
 self.addEventListener('activate', e => {
   e.waitUntil(
-    caches.keys().then(keys =>
-      Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k)))
-    )
+    caches.keys()
+      .then(keys => Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k))))
+      .then(() => self.clients.claim())
   );
-  self.clients.claim();
 });
 
-// ── Fetch: cache-first for assets, network-first for API calls ──
+// ── Fetch: NETWORK-FIRST ──
+// เน็ตก่อนเสมอ → ได้ของล่าสุด; สำเนาลง cache ไว้เผื่อออฟไลน์; เน็ตล่ม → ใช้ cache
 self.addEventListener('fetch', e => {
-  const url = e.request.url;
+  const req = e.request;
+  if (req.method !== 'GET') return;
 
-  // Let Google Apps Script calls go straight to network
-  if (url.includes('script.google.com')) {
-    e.respondWith(fetch(e.request).catch(() => new Response('offline', { status: 503 })));
+  const url = req.url;
+  // เรียก Google Apps Script / รูป Drive → เน็ตล้วน ไม่แคช
+  if (url.includes('script.google.com') || url.includes('googleusercontent.com') || url.includes('drive.google.com')) {
+    e.respondWith(fetch(req).catch(() => new Response('offline', { status: 503 })));
     return;
   }
 
   e.respondWith(
-    caches.match(e.request).then(cached => {
-      if (cached) return cached;
-      return fetch(e.request).then(response => {
-        // Cache successful GET responses for html/js/css/images
-        if (
-          e.request.method === 'GET' &&
-          response.status === 200 &&
-          (url.endsWith('.html') || url.endsWith('.js') || url.endsWith('.css') ||
-           url.endsWith('.png') || url.endsWith('.jpg') || url.endsWith('.webp'))
-        ) {
-          const clone = response.clone();
-          caches.open(CACHE).then(c => c.put(e.request, clone));
+    fetch(req)
+      .then(res => {
+        // เก็บสำเนา response ที่ดีไว้ใช้ตอนออฟไลน์
+        if (res && res.status === 200 && (res.type === 'basic' || res.type === 'cors')) {
+          const clone = res.clone();
+          caches.open(CACHE).then(c => c.put(req, clone)).catch(() => {});
         }
-        return response;
-      }).catch(() => caches.match('./index.html'));
-    })
+        return res;
+      })
+      .catch(() => caches.match(req).then(c => c || caches.match('./index.html')))
   );
 });

@@ -25,8 +25,10 @@
   .toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:14px;}
   .btn{padding:9px 18px;border-radius:22px;border:none;font-family:inherit;font-size:.88rem;font-weight:600;cursor:pointer;}
   .btn-main{background:var(--accent);color:#fff;}
+  .btn-gold{background:#c9a24a;color:#fff;}
   .btn-ghost{background:#fff;border:1px solid var(--line);color:var(--ink);}
   .btn:disabled{opacity:.45;cursor:not-allowed;}
+  .save-status{font-size:.82rem;margin:-6px 0 12px;min-height:1.1em;font-weight:600;}
   .pos-readout{font-size:.82rem;color:var(--muted);font-variant-numeric:tabular-nums;}
   .frames{display:flex;gap:18px;flex-wrap:wrap;}
   .frame-wrap{display:flex;flex-direction:column;gap:6px;}
@@ -71,11 +73,12 @@
   <div class="sub">แป้ง × เอ็ม · Family Witness Dinner — เลือกรูป แล้วลากจุดสีทองไปที่ใบหน้า/จุดที่อยากให้เห็น</div>
 
   <div class="steps">
-    <b>วิธีใช้:</b><br>
+    <b>วิธีใช้ (ง่ายสุด):</b><br>
     1. กด <b>📷 เลือกรูป</b> ของแต่ละส่วน (รองรับไฟล์จากมือถือ)<br>
-    2. <b>ลากจุดสีทอง</b> บน preview ให้ใบหน้าอยู่ในกรอบสวยทั้งจอคอมและมือถือ (ปกหน้าปกมี 2 กรอบให้ดู)<br>
-    3. กด <b>⬇️ ดาวน์โหลดรูป</b> ทั้ง 2 ส่วน (ค่าตำแหน่งฝังในชื่อไฟล์ให้แล้ว)<br>
-    4. <b>แนบไฟล์ที่ดาวน์โหลดทั้ง 2 รูปในแชทส่งให้ Claude</b> → เดี๋ยวผมฝังลงการ์ดจริง + push ให้
+    2. <b>ลากจุดสีทอง</b> บน preview ให้ใบหน้าอยู่ในกรอบสวยทั้งจอคอมและมือถือ (หน้าปกมี 2 กรอบให้ดู)<br>
+    3. กด <b style="color:#c9a24a">💾 เซฟ & อัปขึ้นการ์ด</b> → <b>รูปขึ้นการ์ดจริงทันทีตามที่เห็น</b> ไม่ต้องส่งใคร 🎉<br>
+    <span style="color:var(--muted);font-size:.84rem">(ครั้งแรกอาจช้า ~1 นาที เพราะเซิร์ฟเวอร์ตื่น — รอขึ้น ✅ ได้เลย)</span><br>
+    <span style="color:var(--muted);font-size:.84rem">· ปุ่ม ⬇️ ดาวน์โหลดรูป ไว้เก็บไฟล์ที่ปรับแล้ว (ไม่บังคับ)</span>
   </div>
 
   <!-- ░░ COVER ░░ -->
@@ -84,9 +87,11 @@
     <div class="hint">รูปแนวตั้งคู่บ่าวสาว — ใบหน้าควรอยู่ค่อนไปทางบน ไม่โดนตัวอักษรด้านล่างบัง</div>
     <div class="toolbar">
       <label class="btn btn-main">📷 เลือกรูป<input type="file" accept="image/*" hidden onchange="pickImage(this,'cover')"></label>
+      <button class="btn btn-gold" id="save-cover" onclick="saveToCard('cover')">💾 เซฟ & อัปขึ้นการ์ด</button>
       <button class="btn btn-ghost" id="dl-cover" onclick="downloadImage('cover')" disabled>⬇️ ดาวน์โหลดรูป</button>
       <span class="pos-readout" id="pos-cover">ตำแหน่ง: 50% 18%</span>
     </div>
+    <div class="save-status" id="save-status-cover"></div>
     <div class="frames">
       <div class="frame-wrap">
         <div class="frame-label">จอคอม (แนวนอน)</div>
@@ -125,9 +130,11 @@
     <div class="hint">รูปนี้จะมีสีน้ำตาลคลุมทับ + กล่องนับถอยหลังอยู่ตรงกลาง</div>
     <div class="toolbar">
       <label class="btn btn-main">📷 เลือกรูป<input type="file" accept="image/*" hidden onchange="pickImage(this,'details')"></label>
+      <button class="btn btn-gold" id="save-details" onclick="saveToCard('details')">💾 เซฟ & อัปขึ้นการ์ด</button>
       <button class="btn btn-ghost" id="dl-details" onclick="downloadImage('details')" disabled>⬇️ ดาวน์โหลดรูป</button>
       <span class="pos-readout" id="pos-details">ตำแหน่ง: 50% 28%</span>
     </div>
+    <div class="save-status" id="save-status-details"></div>
     <div class="frames">
       <div class="frame-wrap" style="width:100%">
         <div class="frame-label">แถบนับถอยหลัง</div>
@@ -162,6 +169,7 @@ const S = {
   details: { url:null, file:null, pos:{x:50,y:28}, frames:['details-d'] }
 };
 const downloaded = {};
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyGS50jFbBmz6nU-o6zPBGZrSokuyxD1TPQMhpfzwbpmzOJSg4emYaXKHv6QB_8Q9wAbg/exec';
 
 function pickImage(input, key){
   const f = input.files && input.files[0];
@@ -218,23 +226,30 @@ document.querySelectorAll('.frame').forEach(frame=>{
 });
 window.addEventListener('pointerup', ()=>{ if(drag){ drag.frame.classList.remove('dragging'); drag=null; } });
 
-// ── download: แก้ EXIF หมุน + ย่อ ≤2000px + ฝังตำแหน่งในชื่อไฟล์ ──
+// ── ประมวลผลรูป: แก้ EXIF หมุน + ย่อ ≤2000px → คืน {blob, dataURL} ──
+async function processImage(file){
+  let bmp;
+  try { bmp = await createImageBitmap(file, {imageOrientation:'from-image'}); }
+  catch(_) { bmp = await createImageBitmap(file); }
+  const MAX = 2000;
+  let w = bmp.width, h = bmp.height;
+  if(w>MAX || h>MAX){ const r = Math.min(MAX/w, MAX/h); w=Math.round(w*r); h=Math.round(h*r); }
+  const cv = document.createElement('canvas');
+  cv.width=w; cv.height=h;
+  cv.getContext('2d').drawImage(bmp, 0, 0, w, h);
+  const blob = await new Promise(res=> cv.toBlob(res,'image/jpeg',0.92));
+  const dataURL = cv.toDataURL('image/jpeg', 0.92);
+  return { blob, dataURL };
+}
+
+// ── ดาวน์โหลดรูป (ฝังตำแหน่งในชื่อไฟล์) ──
 async function downloadImage(key){
   const st = S[key];
   if(!st.file) return;
   const btn = document.getElementById('dl-'+key);
   btn.disabled = true; btn.textContent = '⏳ กำลังประมวลผล...';
   try{
-    let bmp;
-    try { bmp = await createImageBitmap(st.file, {imageOrientation:'from-image'}); }
-    catch(_) { bmp = await createImageBitmap(st.file); }
-    const MAX = 2000;
-    let w = bmp.width, h = bmp.height;
-    if(w>MAX || h>MAX){ const r = Math.min(MAX/w, MAX/h); w=Math.round(w*r); h=Math.round(h*r); }
-    const cv = document.createElement('canvas');
-    cv.width=w; cv.height=h;
-    cv.getContext('2d').drawImage(bmp, 0, 0, w, h);
-    const blob = await new Promise(res=> cv.toBlob(res,'image/jpeg',0.92));
+    const { blob } = await processImage(st.file);
     const x = Math.round(st.pos.x), y = Math.round(st.pos.y);
     const name = (key==='cover'?'cover':'countdown')+'__pos-'+x+'x'+y+'.jpg';
     const a = document.createElement('a');
@@ -245,6 +260,34 @@ async function downloadImage(key){
     updateFinal();
   }catch(e){ alert('ประมวลผลรูปไม่สำเร็จ: '+e.message); }
   btn.disabled=false; btn.textContent='⬇️ ดาวน์โหลดรูป';
+}
+
+// ── 💾 เซฟ & อัปขึ้นการ์ดตรงๆ (ส่งรูป + ตำแหน่งเป๊ะตามพรีวิว) ──
+async function saveToCard(key){
+  const st = S[key];
+  const stt = document.getElementById('save-status-'+key);
+  if(!st.file){ stt.textContent='⚠️ ยังไม่ได้เลือกรูป'; stt.style.color='#c0392b'; return; }
+  const btn = document.getElementById('save-'+key);
+  btn.disabled=true; btn.textContent='⏳ กำลังอัป...'; stt.textContent='';
+  try{
+    const { dataURL } = await processImage(st.file);
+    const b64 = dataURL.split(',')[1];
+    const pos = Math.round(st.pos.x)+'% '+Math.round(st.pos.y)+'%';
+    const backendKey = (key === 'details') ? 'countdown' : 'cover';   // S ใช้ 'details' แต่ backend ใช้ 'countdown'
+    // retry รองรับ cold start
+    let ok=false, lastErr='';
+    for(let i=0;i<3 && !ok;i++){
+      try{
+        const res = await fetch(SCRIPT_URL, { method:'POST', headers:{'Content-Type':'text/plain'},
+          body: JSON.stringify({ action:'set_card_image', key:backendKey, photoBase64:b64, pos }) });
+        const d = JSON.parse(await res.text());
+        if(d && d.ok){ ok=true; } else { lastErr = (d && d.error) || 'ไม่สำเร็จ'; }
+      }catch(e){ lastErr = 'เชื่อมต่อไม่ได้ (เซิร์ฟเวอร์กำลังตื่น)'; if(i<2) await new Promise(r=>setTimeout(r,1500*(i+1))); }
+    }
+    if(ok){ stt.textContent='✅ อัปขึ้นการ์ดแล้ว ('+pos+')'; stt.style.color='#2e7d32'; }
+    else { stt.textContent='❌ '+lastErr; stt.style.color='#c0392b'; }
+  }catch(e){ stt.textContent='❌ '+e.message; stt.style.color='#c0392b'; }
+  btn.disabled=false; btn.textContent='💾 เซฟ & อัปขึ้นการ์ด';
 }
 function updateFinal(){
   const keys = Object.keys(downloaded);

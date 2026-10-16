@@ -100,6 +100,9 @@ function doGet(e) {
       result.sections = getCardSettings(ss);
       result.meta     = CARD_SECTIONS;
 
+    } else if (action === 'card_images') {
+      result.images = getCardImages(ss);
+
     } else {
       result.message = 'unknown action';
     }
@@ -136,6 +139,13 @@ function doPost(e) {
     } else if (body.action === 'card_settings') {
       saveCardSettings(ss, body.sections || {});
       result.sections = getCardSettings(ss);
+
+    } else if (body.action === 'set_card_image') {
+      var ci = setCardImage(ss, body.key, body.photoBase64 || '', body.pos);
+      result.ok  = ci.ok;
+      result.url = ci.url;
+      result.pos = ci.pos;
+      if (ci.error) result.error = ci.error;
 
     } else if (body.action === 'set_bless_photo') {
       var bp = setBlessingPhoto(ss, body.row, body.photoBase64 || '');
@@ -266,7 +276,7 @@ function doSetup() {
 }
 
 // --- PHOTO: บันทึกรูปลง Google Drive → return URL ----------------
-function savePictureToDrive(base64Data, filename) {
+function savePictureToDrive(base64Data, filename, size) {
   try {
     if (!base64Data || base64Data.length < 100) return '';
     var folderName = 'Wedding Photos – Family Witness Dinner';
@@ -288,7 +298,7 @@ function savePictureToDrive(base64Data, filename) {
     var file  = folder.createFile(blob);
     file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
     var id = file.getId();
-    return 'https://drive.google.com/thumbnail?id=' + id + '&sz=w800';
+    return 'https://drive.google.com/thumbnail?id=' + id + '&sz=' + (size || 'w800');
   } catch(e) {
     Logger.log('savePictureToDrive error: ' + e);
     return '';
@@ -2270,6 +2280,74 @@ function saveCardSettings(ss, settings) {
   }
   sheet.getRange(2, 1, rows.length, 3).setValues(rows);
   return { ok: true };
+}
+
+// ── รูปพื้นหลังการ์ด (cover/countdown) — อัปจาก bg-editor ตรงขึ้นการ์ด ──
+// เก็บใน sheet "ตั้งค่ารูปการ์ด": [key, url, ตำแหน่ง]  (key = cover | countdown)
+// invite.html อ่านแล้วใส่แทนรูป default ใน repo (ถ้าไม่มี = ใช้ default)
+var CARD_IMAGE_KEYS = ['cover', 'countdown'];
+function getCardImagesSheet_(ss) {
+  var sheet = ss.getSheetByName('ตั้งค่ารูปการ์ด');
+  if (!sheet) {
+    sheet = ss.insertSheet('ตั้งค่ารูปการ์ด');
+    sheet.getRange(1, 1, 1, 3).setValues([['key', 'url', 'ตำแหน่ง']])
+      .setFontWeight('bold').setBackground('#f4d9d0');
+    sheet.setFrozenRows(1);
+    sheet.setColumnWidth(1, 120); sheet.setColumnWidth(2, 420); sheet.setColumnWidth(3, 120);
+  }
+  return sheet;
+}
+function getCardImages(ss) {
+  var sheet = getCardImagesSheet_(ss);
+  var out = {};
+  var lastRow = sheet.getLastRow();
+  if (lastRow >= 2) {
+    var data = sheet.getRange(2, 1, lastRow - 1, 3).getValues();
+    data.forEach(function(r) {
+      var key = String(r[0] || '').trim();
+      if (!key) return;
+      out[key] = { url: String(r[1] || ''), pos: String(r[2] || '') };
+    });
+  }
+  return out;
+}
+// upsert รูป 1 ช่อง — ถ้ามี base64 อัปใหม่ (w1600) ไม่งั้นคงรูปเดิม อัปเดตแค่ตำแหน่ง
+function setCardImage(ss, key, photoBase64, pos) {
+  key = String(key || '').trim();
+  if (CARD_IMAGE_KEYS.indexOf(key) < 0) return { ok: false, error: 'key ไม่ถูกต้อง: ' + key };
+  var sheet = getCardImagesSheet_(ss);
+  var cur = getCardImages(ss)[key] || { url: '', pos: '' };
+
+  // CLEAR = ลบ override กลับไปใช้รูป default ใน repo
+  if (String(photoBase64) === 'CLEAR') {
+    var lr0 = sheet.getLastRow();
+    if (lr0 >= 2) {
+      var ks = sheet.getRange(2, 1, lr0 - 1, 1).getValues();
+      for (var j = 0; j < ks.length; j++) {
+        if (String(ks[j][0]).trim() === key) { sheet.getRange(j + 2, 1, 1, 3).setValues([[key, '', '']]); break; }
+      }
+    }
+    return { ok: true, url: '', pos: '' };
+  }
+
+  var url = cur.url;
+  if (photoBase64 && String(photoBase64).length > 100) {
+    var ts = Utilities.formatDate(new Date(), 'Asia/Bangkok', 'yyyyMMdd_HHmmss');
+    url = savePictureToDrive(photoBase64, 'card_' + key + '_' + ts + '.jpg', 'w1600');
+    if (!url) return { ok: false, error: 'อัปโหลดรูปไม่สำเร็จ' };
+  }
+  var newPos = (pos !== undefined && pos !== null && String(pos) !== '') ? String(pos) : cur.pos;
+
+  // หาแถวเดิมของ key นี้
+  var lastRow = sheet.getLastRow();
+  var rowIdx = -1;
+  if (lastRow >= 2) {
+    var keys = sheet.getRange(2, 1, lastRow - 1, 1).getValues();
+    for (var i = 0; i < keys.length; i++) { if (String(keys[i][0]).trim() === key) { rowIdx = i + 2; break; } }
+  }
+  if (rowIdx < 0) rowIdx = lastRow + 1;
+  sheet.getRange(rowIdx, 1, 1, 3).setValues([[key, url, newPos]]);
+  return { ok: true, url: url, pos: newPos };
 }
 
 // ── ตั้ง Gemini API Key (รันครั้งเดียวจาก Script Editor) ──────

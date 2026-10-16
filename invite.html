@@ -2275,6 +2275,41 @@ async function loadCardSettings(tries) {
 }
 loadCardSettings();   // โหลดทันที ให้ section ถูกซ่อนก่อนผู้ใช้เลื่อนถึง
 
+// ── รูปพื้นหลังที่อัปจาก bg-editor (ถ้ามี ใช้แทนรูป default ใน repo) ──
+function applyCardImages(images) {
+  if (!images) return;
+  const DETAILS_GRADIENT = 'linear-gradient(145deg, rgba(155,118,92,0.72), rgba(135,100,75,0.68), rgba(160,125,98,0.72))';
+  if (images.cover && images.cover.url) {
+    const img = document.querySelector('.cover-photo');
+    if (img) {
+      img.src = images.cover.url;
+      if (images.cover.pos) img.style.objectPosition = images.cover.pos;
+    }
+  }
+  if (images.countdown && images.countdown.url) {
+    const el = document.getElementById('sec-details');
+    if (el) {
+      const pos = images.countdown.pos || 'center 28%';
+      el.style.background = DETAILS_GRADIENT + ", url('" + images.countdown.url + "') " + pos + " / cover no-repeat";
+    }
+  }
+}
+async function loadCardImages(tries) {
+  if (!SCRIPT_URL) return;
+  tries = tries || 3;
+  for (let i = 0; i < tries; i++) {
+    try {
+      const res = await fetch(SCRIPT_URL + '?action=card_images');
+      const d = JSON.parse(await res.text());
+      if (d && d.images) { applyCardImages(d.images); return; }
+      return;
+    } catch (e) {
+      if (i < tries - 1) await new Promise(r => setTimeout(r, 1500 * (i + 1)));
+    }
+  }
+}
+loadCardImages();
+
 // ── ENVELOPE OPEN ────────────────────────────────────────────
 function openEnvelope() {
   const box = document.getElementById('env-box');
