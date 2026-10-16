@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>จัดรูปพื้นหลังการ์ดเชิญ · แป้ง × เอ็ม</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400;1,600&family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --gold-lt:#e3c493; --ink:#3a2f28; --muted:#8a7d72;
+    --paper:#fbf6ef; --card:#ffffff; --line:#eadfd1; --accent:#809684;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:'Sarabun',sans-serif;background:var(--paper);color:var(--ink);padding:18px;}
+  .wrap{max-width:1000px;margin:0 auto;}
+  h1{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.9rem;margin:0 0 2px;}
+  .sub{color:var(--muted);font-size:.9rem;margin-bottom:18px;}
+  .steps{background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px 18px;margin-bottom:22px;font-size:.9rem;line-height:1.8;}
+  .steps b{color:var(--accent);}
+  .composer{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px;margin-bottom:26px;box-shadow:0 2px 14px rgba(120,90,60,.06);}
+  .composer h2{font-family:'Cormorant Garamond',serif;font-size:1.35rem;margin:0 0 2px;}
+  .composer .hint{color:var(--muted);font-size:.82rem;margin-bottom:14px;}
+  .toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:14px;}
+  .btn{padding:9px 18px;border-radius:22px;border:none;font-family:inherit;font-size:.88rem;font-weight:600;cursor:pointer;}
+  .btn-main{background:var(--accent);color:#fff;}
+  .btn-ghost{background:#fff;border:1px solid var(--line);color:var(--ink);}
+  .btn:disabled{opacity:.45;cursor:not-allowed;}
+  .pos-readout{font-size:.82rem;color:var(--muted);font-variant-numeric:tabular-nums;}
+  .frames{display:flex;gap:18px;flex-wrap:wrap;}
+  .frame-wrap{display:flex;flex-direction:column;gap:6px;}
+  .frame-label{font-size:.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:1px;}
+  /* preview frame */
+  .frame{position:relative;overflow:hidden;border-radius:12px;background:#d8cfc6 url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg"/>');cursor:grab;user-select:none;box-shadow:inset 0 0 0 1px rgba(0,0,0,.06);touch-action:none;}
+  .frame.dragging{cursor:grabbing;}
+  .frame-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 50%;pointer-events:none;}
+  .frame-empty{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#8a7d72;font-size:.85rem;text-align:center;padding:10px;}
+  .focal{position:absolute;width:26px;height:26px;margin:-13px 0 0 -13px;border:2px solid #fff;border-radius:50%;box-shadow:0 0 0 2px rgba(0,0,0,.35),0 2px 6px rgba(0,0,0,.4);background:rgba(227,196,147,.5);pointer-events:none;display:none;}
+  .frame.has-img .focal{display:block;}
+  /* cover frames */
+  .f-cover-desktop{width:440px;max-width:100%;aspect-ratio:2/1;}
+  .f-cover-mobile{width:180px;aspect-ratio:9/16;}
+  .f-details{width:100%;aspect-ratio:1920/560;}
+  /* ---- overlay replicas (WYSIWYG) ---- */
+  .ov{position:absolute;inset:0;pointer-events:none;color:#fff;}
+  .cover-ov{background:linear-gradient(to top,rgba(0,0,0,.65) 0%,rgba(0,0,0,.12) 55%,transparent 100%),linear-gradient(to bottom,rgba(0,0,0,.35) 0%,transparent 30%);display:flex;flex-direction:column;justify-content:flex-end;align-items:center;text-align:center;padding-bottom:7%;}
+  .cover-ov .lg{width:14%;aspect-ratio:1;border-radius:50%;background:rgba(255,255,255,.92);border:2px solid var(--gold-lt);margin-bottom:5%;}
+  .cover-ov .nm{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:clamp(1rem,7.5%,2.4rem);line-height:1.1;text-shadow:0 2px 12px rgba(0,0,0,.45);}
+  .cover-ov .nm i{color:var(--gold-lt);font-style:normal;margin:0 .15em;}
+  .cover-ov .ev{font-size:.5rem;letter-spacing:2px;text-transform:uppercase;opacity:.88;margin-top:3px;}
+  .cover-ov .chips{display:flex;gap:4px;flex-wrap:wrap;justify-content:center;margin-top:6px;}
+  .cover-ov .chip{background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.35);border-radius:40px;padding:2px 7px;font-size:.5rem;}
+  .f-cover-mobile .cover-ov .ev,.f-cover-mobile .cover-ov .chip{font-size:.42rem;}
+  .details-ov{background:linear-gradient(145deg,rgba(155,118,92,.72),rgba(135,100,75,.68),rgba(160,125,98,.72));display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;}
+  .details-ov .t{font-size:.6rem;letter-spacing:.5px;text-transform:uppercase;opacity:.75;}
+  .details-ov .d{font-weight:600;font-size:clamp(.7rem,2.2%,1.2rem);margin:4px 0 10px;color:rgba(255,240,225,1);}
+  .details-ov .boxes{display:flex;gap:8px;}
+  .details-ov .bx{background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.18);border-radius:8px;padding:8px 12px;min-width:48px;text-align:center;}
+  .details-ov .bx b{display:block;font-size:1.4rem;line-height:1;font-weight:700;}
+  .details-ov .bx span{font-size:.5rem;opacity:.72;text-transform:uppercase;}
+  .details-ov .sep{align-self:center;font-size:1.1rem;opacity:.45;}
+  .ready{display:inline-flex;align-items:center;gap:6px;color:var(--accent);font-size:.82rem;font-weight:600;}
+  .final{background:#fff;border:1px dashed var(--accent);border-radius:14px;padding:16px 18px;font-size:.88rem;line-height:1.8;}
+  .final b{color:var(--accent);}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>จัดรูปพื้นหลังการ์ดเชิญ</h1>
+  <div class="sub">แป้ง × เอ็ม · Family Witness Dinner — เลือกรูป แล้วลากจุดสีทองไปที่ใบหน้า/จุดที่อยากให้เห็น</div>
+
+  <div class="steps">
+    <b>วิธีใช้:</b><br>
+    1. กด <b>📷 เลือกรูป</b> ของแต่ละส่วน (รองรับไฟล์จากมือถือ)<br>
+    2. <b>ลากจุดสีทอง</b> บน preview ให้ใบหน้าอยู่ในกรอบสวยทั้งจอคอมและมือถือ (ปกหน้าปกมี 2 กรอบให้ดู)<br>
+    3. กด <b>⬇️ ดาวน์โหลดรูป</b> ทั้ง 2 ส่วน (ค่าตำแหน่งฝังในชื่อไฟล์ให้แล้ว)<br>
+    4. <b>แนบไฟล์ที่ดาวน์โหลดทั้ง 2 รูปในแชทส่งให้ Claude</b> → เดี๋ยวผมฝังลงการ์ดจริง + push ให้
+  </div>
+
+  <!-- ░░ COVER ░░ -->
+  <div class="composer" id="c-cover">
+    <h2>1 · รูปพื้นหลังหน้าปก (Cover)</h2>
+    <div class="hint">รูปแนวตั้งคู่บ่าวสาว — ใบหน้าควรอยู่ค่อนไปทางบน ไม่โดนตัวอักษรด้านล่างบัง</div>
+    <div class="toolbar">
+      <label class="btn btn-main">📷 เลือกรูป<input type="file" accept="image/*" hidden onchange="pickImage(this,'cover')"></label>
+      <button class="btn btn-ghost" id="dl-cover" onclick="downloadImage('cover')" disabled>⬇️ ดาวน์โหลดรูป</button>
+      <span class="pos-readout" id="pos-cover">ตำแหน่ง: 50% 18%</span>
+    </div>
+    <div class="frames">
+      <div class="frame-wrap">
+        <div class="frame-label">จอคอม (แนวนอน)</div>
+        <div class="frame f-cover-desktop has-focal" data-key="cover">
+          <img class="frame-img" id="img-cover-d">
+          <div class="frame-empty" id="empty-cover-d">ยังไม่ได้เลือกรูป</div>
+          <div class="ov cover-ov">
+            <div class="lg"></div>
+            <div class="nm">แป้ง<i>×</i>เอ็ม</div>
+            <div class="ev">Family Witness Dinner</div>
+            <div class="chips"><span class="chip">📅 28 พ.ย. 2569</span><span class="chip">🕑 16:00 น.</span><span class="chip">📍 ธาราเทอเรส</span></div>
+          </div>
+          <div class="focal" id="focal-cover-d"></div>
+        </div>
+      </div>
+      <div class="frame-wrap">
+        <div class="frame-label">มือถือ (แนวตั้ง)</div>
+        <div class="frame f-cover-mobile" data-key="cover">
+          <img class="frame-img" id="img-cover-m">
+          <div class="frame-empty" id="empty-cover-m">—</div>
+          <div class="ov cover-ov">
+            <div class="lg"></div>
+            <div class="nm">แป้ง<i>×</i>เอ็ม</div>
+            <div class="ev">Family Witness Dinner</div>
+            <div class="chips"><span class="chip">📅 28 พ.ย.</span><span class="chip">🕑 16:00</span></div>
+          </div>
+          <div class="focal" id="focal-cover-m"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ░░ COUNTDOWN ░░ -->
+  <div class="composer" id="c-details">
+    <h2>2 · รูปพื้นหลังนับถอยหลัง (Countdown)</h2>
+    <div class="hint">รูปนี้จะมีสีน้ำตาลคลุมทับ + กล่องนับถอยหลังอยู่ตรงกลาง</div>
+    <div class="toolbar">
+      <label class="btn btn-main">📷 เลือกรูป<input type="file" accept="image/*" hidden onchange="pickImage(this,'details')"></label>
+      <button class="btn btn-ghost" id="dl-details" onclick="downloadImage('details')" disabled>⬇️ ดาวน์โหลดรูป</button>
+      <span class="pos-readout" id="pos-details">ตำแหน่ง: 50% 28%</span>
+    </div>
+    <div class="frames">
+      <div class="frame-wrap" style="width:100%">
+        <div class="frame-label">แถบนับถอยหลัง</div>
+        <div class="frame f-details" data-key="details">
+          <img class="frame-img" id="img-details-d">
+          <div class="frame-empty" id="empty-details-d">ยังไม่ได้เลือกรูป</div>
+          <div class="ov details-ov">
+            <div class="t">นับถอยหลังสู่ Family Witness Dinner</div>
+            <div class="d">วันเสาร์ที่ 28 พฤศจิกายน 2569 · เวลา 16:00 น.</div>
+            <div class="boxes">
+              <div class="bx"><b>42</b><span>วัน</span></div><div class="sep">:</div>
+              <div class="bx"><b>16</b><span>ชม.</span></div><div class="sep">:</div>
+              <div class="bx"><b>36</b><span>นาที</span></div><div class="sep">:</div>
+              <div class="bx"><b>14</b><span>วิ</span></div>
+            </div>
+          </div>
+          <div class="focal" id="focal-details-d"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="final" id="final-note" hidden>
+    <b>พร้อมส่งแล้ว ✅</b> — แนบ 2 ไฟล์ที่ดาวน์โหลด (<span id="fn-list"></span>) ในแชทส่งให้ Claude ได้เลย ค่าตำแหน่งฝังในชื่อไฟล์แล้ว
+  </div>
+</div>
+
+<script>
+// state: แต่ละ key เก็บ { file, bitmap(url), pos:{x,y} }
+const S = {
+  cover:   { url:null, file:null, pos:{x:50,y:18}, frames:['cover-d','cover-m'] },
+  details: { url:null, file:null, pos:{x:50,y:28}, frames:['details-d'] }
+};
+const downloaded = {};
+
+function pickImage(input, key){
+  const f = input.files && input.files[0];
+  if(!f) return;
+  const url = URL.createObjectURL(f);
+  S[key].file = f;
+  if(S[key].url) URL.revokeObjectURL(S[key].url);
+  S[key].url = url;
+  // ใส่รูปลงทุก frame ของ key นี้
+  S[key].frames.forEach(fid=>{
+    const img = document.getElementById('img-'+fid);
+    img.src = url;
+    const empty = document.getElementById('empty-'+fid);
+    if(empty) empty.style.display='none';
+    img.closest('.frame').classList.add('has-img');
+  });
+  document.getElementById('dl-'+key).disabled = false;
+  applyPos(key);
+}
+
+function applyPos(key){
+  const {x,y} = S[key].pos;
+  S[key].frames.forEach(fid=>{
+    const img = document.getElementById('img-'+fid);
+    img.style.objectPosition = x+'% '+y+'%';
+    const dot = document.getElementById('focal-'+fid);
+    if(dot){ dot.style.left = x+'%'; dot.style.top = y+'%'; }
+  });
+  document.getElementById('pos-'+key).textContent = 'ตำแหน่ง: '+Math.round(x)+'% '+Math.round(y)+'%';
+}
+
+// ── drag focal point บน frame ──
+let drag = null;
+function frameXY(frame, ev){
+  const r = frame.getBoundingClientRect();
+  const cx = (ev.touches?ev.touches[0].clientX:ev.clientX) - r.left;
+  const cy = (ev.touches?ev.touches[0].clientY:ev.clientY) - r.top;
+  return { x: Math.max(0,Math.min(100, cx/r.width*100)), y: Math.max(0,Math.min(100, cy/r.height*100)) };
+}
+document.querySelectorAll('.frame').forEach(frame=>{
+  const key = frame.dataset.key;
+  const start = ev=>{
+    if(!S[key].url) return;
+    drag = {frame,key}; frame.classList.add('dragging');
+    move(ev); ev.preventDefault();
+  };
+  const move = ev=>{
+    if(!drag || drag.frame!==frame) return;
+    const p = frameXY(frame, ev);
+    S[key].pos = p; applyPos(key);
+  };
+  frame.addEventListener('pointerdown', start);
+  frame.addEventListener('pointermove', ev=>{ if(drag&&drag.frame===frame) move(ev); });
+});
+window.addEventListener('pointerup', ()=>{ if(drag){ drag.frame.classList.remove('dragging'); drag=null; } });
+
+// ── download: แก้ EXIF หมุน + ย่อ ≤2000px + ฝังตำแหน่งในชื่อไฟล์ ──
+async function downloadImage(key){
+  const st = S[key];
+  if(!st.file) return;
+  const btn = document.getElementById('dl-'+key);
+  btn.disabled = true; btn.textContent = '⏳ กำลังประมวลผล...';
+  try{
+    let bmp;
+    try { bmp = await createImageBitmap(st.file, {imageOrientation:'from-image'}); }
+    catch(_) { bmp = await createImageBitmap(st.file); }
+    const MAX = 2000;
+    let w = bmp.width, h = bmp.height;
+    if(w>MAX || h>MAX){ const r = Math.min(MAX/w, MAX/h); w=Math.round(w*r); h=Math.round(h*r); }
+    const cv = document.createElement('canvas');
+    cv.width=w; cv.height=h;
+    cv.getContext('2d').drawImage(bmp, 0, 0, w, h);
+    const blob = await new Promise(res=> cv.toBlob(res,'image/jpeg',0.92));
+    const x = Math.round(st.pos.x), y = Math.round(st.pos.y);
+    const name = (key==='cover'?'cover':'countdown')+'__pos-'+x+'x'+y+'.jpg';
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob); a.download = name;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(()=>URL.revokeObjectURL(a.href), 4000);
+    downloaded[key] = name;
+    updateFinal();
+  }catch(e){ alert('ประมวลผลรูปไม่สำเร็จ: '+e.message); }
+  btn.disabled=false; btn.textContent='⬇️ ดาวน์โหลดรูป';
+}
+function updateFinal(){
+  const keys = Object.keys(downloaded);
+  if(keys.length){
+    document.getElementById('final-note').hidden = false;
+    document.getElementById('fn-list').textContent = keys.map(k=>downloaded[k]).join(' , ');
+  }
+}
+
+// init readouts
+applyPos('cover'); applyPos('details');
+</script>
+</body>
+</html>
