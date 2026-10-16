@@ -365,13 +365,13 @@ h2.sec-title em { font-style: italic; color: var(--blue-dk); }
 .cover-photo {
   width: 100%; height: 100%;
   object-fit: cover;
-  object-position: center 18%; /* desktop: faces visible in 16:9 crop */
+  object-position: 68% 61%; /* ตำแหน่งที่ผู้ใช้จัดจาก bg-editor (รูปนั่งโต๊ะ) */
   display: block;
 }
-/* Mobile: portrait viewport — crop sides, center the couple */
+/* Mobile: portrait viewport — ใช้ตำแหน่งเดียวกับ desktop ตามที่ผู้ใช้จัด */
 @media (max-width: 767px) {
   .cover-photo {
-    object-position: 40% center;
+    object-position: 68% 61%;
   }
 }
 .cover-overlay {
@@ -612,7 +612,7 @@ h2.sec-title em { font-style: italic; color: var(--blue-dk); }
 #sec-details {
   background:
     linear-gradient(145deg, rgba(155,118,92,0.72), rgba(135,100,75,0.68), rgba(160,125,98,0.72)),
-    url('รูปประกอบการ์ดเชิญ/IMG_3686.JPG') center 28% / cover no-repeat;
+    url('รูปประกอบการ์ดเชิญ/countdown.jpg') 78% 58% / cover no-repeat;
   border-radius: var(--radius);
   color: var(--white);
   text-align: center;
@@ -622,14 +622,14 @@ h2.sec-title em { font-style: italic; color: var(--blue-dk); }
   box-shadow: 0 12px 40px rgba(120,85,60,0.30);
 }
 @media(max-width:719px){
-  #sec-details { background-position: 40% 28%; padding: 80px 20px 90px; }
+  #sec-details { background-position: 78% 58%; padding: 80px 20px 90px; }
 }
 @media(min-width:720px){
   #sec-details {
     max-width: none; margin: 0;
     border-radius: 0;
     padding: 120px 24px 130px;
-    background-position: center 32%;
+    background-position: 78% 58%;
   }
 }
 .cd-title { font-size: 0.78rem; letter-spacing: 0.5px; text-transform: uppercase; opacity: 0.75; margin-bottom: 8px; }
@@ -1697,7 +1697,7 @@ footer {
 
   <!-- ── COVER PHOTO (merged hero) ── -->
   <section id="sec-cover">
-    <img src="รูปประกอบการ์ดเชิญ/IMG_3685.JPG" alt="แป้ง & เอ็ม" class="cover-photo">
+    <img src="รูปประกอบการ์ดเชิญ/cover.jpg" alt="แป้ง & เอ็ม" class="cover-photo">
     <div class="cover-overlay">
       <div class="cover-top"></div>
       <div class="cover-bottom">
