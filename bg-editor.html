@@ -30,6 +30,8 @@
   .btn:disabled{opacity:.45;cursor:not-allowed;}
   .save-status{font-size:.82rem;margin:-6px 0 12px;min-height:1.1em;font-weight:600;}
   .pos-readout{font-size:.82rem;color:var(--muted);font-variant-numeric:tabular-nums;}
+  .zoom-ctl{display:inline-flex;align-items:center;gap:6px;font-size:.82rem;color:var(--muted);}
+  .zoom-ctl input[type=range]{width:120px;accent-color:var(--accent);cursor:pointer;}
   .frames{display:flex;gap:18px;flex-wrap:wrap;}
   .frame-wrap{display:flex;flex-direction:column;gap:6px;}
   .frame-label{font-size:.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:1px;}
@@ -91,6 +93,7 @@
       <button class="btn btn-gold" id="save-cover" onclick="saveToCard('cover')">💾 เซฟ & อัปขึ้นการ์ด</button>
       <button class="btn btn-ghost" id="dl-cover" onclick="downloadImage('cover')" disabled>⬇️ ดาวน์โหลดรูป</button>
       <span class="pos-readout" id="pos-cover">ตำแหน่ง: 50% 18%</span>
+      <label class="zoom-ctl">🔍 <input type="range" id="zoom-cover" min="1" max="3" step="0.1" value="1" oninput="setZoom('cover', this.value)"></label>
     </div>
     <div class="save-status" id="save-status-cover"></div>
     <div class="frames">
@@ -134,6 +137,7 @@
       <button class="btn btn-gold" id="save-details" onclick="saveToCard('details')">💾 เซฟ & อัปขึ้นการ์ด</button>
       <button class="btn btn-ghost" id="dl-details" onclick="downloadImage('details')" disabled>⬇️ ดาวน์โหลดรูป</button>
       <span class="pos-readout" id="pos-details">ตำแหน่ง: 50% 28%</span>
+      <label class="zoom-ctl">🔍 <input type="range" id="zoom-details" min="1" max="3" step="0.1" value="1" oninput="setZoom('details', this.value)"></label>
     </div>
     <div class="save-status" id="save-status-details"></div>
     <div class="frames">
@@ -167,6 +171,7 @@
       <button class="btn btn-gold" id="save-groom" onclick="saveToCard('groom')">💾 เซฟ & อัปขึ้นการ์ด</button>
       <button class="btn btn-ghost" id="dl-groom" onclick="downloadImage('groom')" disabled>⬇️ ดาวน์โหลดรูป</button>
       <span class="pos-readout" id="pos-groom">ตำแหน่ง: 50% 30%</span>
+      <label class="zoom-ctl">🔍 <input type="range" id="zoom-groom" min="1" max="3" step="0.1" value="1" oninput="setZoom('groom', this.value)"></label>
     </div>
     <div class="save-status" id="save-status-groom"></div>
     <div class="frames">
@@ -190,6 +195,7 @@
       <button class="btn btn-gold" id="save-bride" onclick="saveToCard('bride')">💾 เซฟ & อัปขึ้นการ์ด</button>
       <button class="btn btn-ghost" id="dl-bride" onclick="downloadImage('bride')" disabled>⬇️ ดาวน์โหลดรูป</button>
       <span class="pos-readout" id="pos-bride">ตำแหน่ง: 50% 30%</span>
+      <label class="zoom-ctl">🔍 <input type="range" id="zoom-bride" min="1" max="3" step="0.1" value="1" oninput="setZoom('bride', this.value)"></label>
     </div>
     <div class="save-status" id="save-status-bride"></div>
     <div class="frames">
@@ -212,10 +218,10 @@
 <script>
 // state: แต่ละ key เก็บ { file, bitmap(url), pos:{x,y} }
 const S = {
-  cover:   { url:null, file:null, pos:{x:50,y:18}, frames:['cover-d','cover-m'] },
-  details: { url:null, file:null, pos:{x:50,y:28}, frames:['details-d'] },
-  groom:   { url:null, file:null, pos:{x:50,y:30}, frames:['groom-c'] },
-  bride:   { url:null, file:null, pos:{x:50,y:30}, frames:['bride-c'] }
+  cover:   { url:null, file:null, pos:{x:50,y:18}, zoom:1, frames:['cover-d','cover-m'] },
+  details: { url:null, file:null, pos:{x:50,y:28}, zoom:1, frames:['details-d'] },
+  groom:   { url:null, file:null, pos:{x:50,y:30}, zoom:1, frames:['groom-c'] },
+  bride:   { url:null, file:null, pos:{x:50,y:30}, zoom:1, frames:['bride-c'] }
 };
 // S key → key ที่ backend/การ์ดใช้
 const KEYMAP = { cover:'cover', details:'countdown', groom:'groom', bride:'bride' };
@@ -243,13 +249,23 @@ function pickImage(input, key){
 
 function applyPos(key){
   const {x,y} = S[key].pos;
+  const z = S[key].zoom || 1;
   S[key].frames.forEach(fid=>{
     const img = document.getElementById('img-'+fid);
     img.style.objectPosition = x+'% '+y+'%';
+    img.style.transform = z>1 ? ('scale('+z+')') : '';
+    img.style.transformOrigin = x+'% '+y+'%';
     const dot = document.getElementById('focal-'+fid);
     if(dot){ dot.style.left = x+'%'; dot.style.top = y+'%'; }
   });
-  document.getElementById('pos-'+key).textContent = 'ตำแหน่ง: '+Math.round(x)+'% '+Math.round(y)+'%';
+  document.getElementById('pos-'+key).textContent = 'ตำแหน่ง: '+Math.round(x)+'% '+Math.round(y)+'%  ·  ซูม '+z.toFixed(1)+'x';
+  const sl = document.getElementById('zoom-'+key);
+  if(sl && Math.abs(parseFloat(sl.value)-z)>0.001) sl.value = z;
+}
+function setZoom(key, val){
+  let z = parseFloat(val); if(!isFinite(z)) z=1;
+  S[key].zoom = Math.max(1, Math.min(3, z));
+  applyPos(key);
 }
 
 // ── drag focal point บน frame ──
@@ -274,6 +290,12 @@ document.querySelectorAll('.frame').forEach(frame=>{
   };
   frame.addEventListener('pointerdown', start);
   frame.addEventListener('pointermove', ev=>{ if(drag&&drag.frame===frame) move(ev); });
+  // หมุนล้อเมาส์ = ซูมเข้า/ออก
+  frame.addEventListener('wheel', ev=>{
+    if(!S[key].url) return;
+    ev.preventDefault();
+    setZoom(key, (S[key].zoom||1) + (ev.deltaY < 0 ? 0.1 : -0.1));
+  }, {passive:false});
 });
 window.addEventListener('pointerup', ()=>{ if(drag){ drag.frame.classList.remove('dragging'); drag=null; } });
 
@@ -330,7 +352,7 @@ async function saveToCard(key){
     for(let i=0;i<3 && !ok;i++){
       try{
         const res = await fetch(SCRIPT_URL, { method:'POST', headers:{'Content-Type':'text/plain'},
-          body: JSON.stringify({ action:'set_card_image', key:backendKey, photoBase64:b64, pos }) });
+          body: JSON.stringify({ action:'set_card_image', key:backendKey, photoBase64:b64, pos, zoom:(S[key].zoom||1) }) });
         const d = JSON.parse(await res.text());
         if(d && d.ok){ ok=true; } else { lastErr = (d && d.error) || 'ไม่สำเร็จ'; }
       }catch(e){ lastErr = 'เชื่อมต่อไม่ได้ (เซิร์ฟเวอร์กำลังตื่น)'; if(i<2) await new Promise(r=>setTimeout(r,1500*(i+1))); }

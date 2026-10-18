@@ -610,9 +610,9 @@ h2.sec-title em { font-style: italic; color: var(--blue-dk); }
    COUNTDOWN + DETAILS
 ════════════════════════════════════════════════ */
 #sec-details {
-  background:
-    linear-gradient(145deg, rgba(155,118,92,0.72), rgba(135,100,75,0.68), rgba(160,125,98,0.72)),
-    url('รูปประกอบการ์ดเชิญ/countdown.jpg?v=2') 78% 58% / cover no-repeat;
+  position: relative;
+  overflow: hidden;
+  background: none;
   border-radius: var(--radius);
   color: var(--white);
   text-align: center;
@@ -621,15 +621,32 @@ h2.sec-title em { font-style: italic; color: var(--blue-dk); }
   max-width: 100%;
   box-shadow: 0 12px 40px rgba(120,85,60,0.30);
 }
+/* รูปพื้นหลัง countdown (เป็น img layer เพื่อให้ zoom/pan ได้เหมือนรูปอื่น) */
+#sec-details .details-bg {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  object-fit: cover; object-position: 78% 58%;
+  z-index: 0;
+}
+/* สีน้ำตาลคลุมทับ */
+#sec-details::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(145deg, rgba(155,118,92,0.72), rgba(135,100,75,0.68), rgba(160,125,98,0.72));
+  z-index: 1;
+}
+/* เนื้อหา (หัวข้อ/วันที่/กล่องนับถอยหลัง) ต้องอยู่เหนือรูป+สีคลุม */
+#sec-details > .cd-title,
+#sec-details > .cd-date-text,
+#sec-details > .cd-boxes { position: relative; z-index: 2; }
 @media(max-width:719px){
-  #sec-details { background-position: 78% 58%; padding: 80px 20px 90px; }
+  #sec-details { padding: 80px 20px 90px; }
 }
 @media(min-width:720px){
   #sec-details {
     max-width: none; margin: 0;
     border-radius: 0;
     padding: 120px 24px 130px;
-    background-position: 78% 58%;
   }
 }
 .cd-title { font-size: 0.78rem; letter-spacing: 0.5px; text-transform: uppercase; opacity: 0.75; margin-bottom: 8px; }
@@ -1765,6 +1782,7 @@ footer {
 
   <!-- ── DETAILS + COUNTDOWN ── -->
   <section id="sec-details" class="fade-up" style="max-width:none; border-radius: 0;">
+    <img class="details-bg" id="sec-details-bg" src="รูปประกอบการ์ดเชิญ/countdown.jpg?v=2" alt="">
     <div class="cd-title">นับถอยหลังสู่ Family Witness Dinner</div>
     <div class="cd-date-text">วันเสาร์ที่ 28 พฤศจิกายน 2569 · เวลา 16:00 น.</div>
     <div class="cd-boxes">
@@ -2276,33 +2294,26 @@ async function loadCardSettings(tries) {
 loadCardSettings();   // โหลดทันที ให้ section ถูกซ่อนก่อนผู้ใช้เลื่อนถึง
 
 // ── รูปพื้นหลังที่อัปจาก bg-editor (ถ้ามี ใช้แทนรูป default ใน repo) ──
+// ทุกรูปเป็น <img object-fit:cover> → ปรับตำแหน่งด้วย object-position + ซูมด้วย transform scale
+function applyOne(im, data) {
+  if (!im || !data || !data.url) return;
+  im.src = data.url;
+  const pos = data.pos || '';
+  if (pos) im.style.objectPosition = pos;
+  const z = parseFloat(data.zoom);
+  if (isFinite(z) && z > 1) {
+    im.style.transform = 'scale(' + z + ')';
+    im.style.transformOrigin = pos || 'center';
+  } else {
+    im.style.transform = '';
+  }
+}
 function applyCardImages(images) {
   if (!images) return;
-  const DETAILS_GRADIENT = 'linear-gradient(145deg, rgba(155,118,92,0.72), rgba(135,100,75,0.68), rgba(160,125,98,0.72))';
-  if (images.cover && images.cover.url) {
-    const img = document.querySelector('.cover-photo');
-    if (img) {
-      img.src = images.cover.url;
-      if (images.cover.pos) img.style.objectPosition = images.cover.pos;
-    }
-  }
-  if (images.countdown && images.countdown.url) {
-    const el = document.getElementById('sec-details');
-    if (el) {
-      const pos = images.countdown.pos || 'center 28%';
-      el.style.background = DETAILS_GRADIENT + ", url('" + images.countdown.url + "') " + pos + " / cover no-repeat";
-    }
-  }
-  // รูปคู่บ่าวสาว (วงกลม) — เจ้าบ่าว/เจ้าสาว
-  [['groom','couple-groom-img'], ['bride','couple-bride-img']].forEach(([key, id]) => {
-    if (images[key] && images[key].url) {
-      const im = document.getElementById(id);
-      if (im) {
-        im.src = images[key].url;
-        if (images[key].pos) im.style.objectPosition = images[key].pos;
-      }
-    }
-  });
+  applyOne(document.querySelector('.cover-photo'), images.cover);
+  applyOne(document.getElementById('sec-details-bg'), images.countdown);
+  applyOne(document.getElementById('couple-groom-img'), images.groom);
+  applyOne(document.getElementById('couple-bride-img'), images.bride);
 }
 async function loadCardImages(tries) {
   if (!SCRIPT_URL) return;

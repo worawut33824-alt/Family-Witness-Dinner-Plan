@@ -141,10 +141,11 @@ function doPost(e) {
       result.sections = getCardSettings(ss);
 
     } else if (body.action === 'set_card_image') {
-      var ci = setCardImage(ss, body.key, body.photoBase64 || '', body.pos);
-      result.ok  = ci.ok;
-      result.url = ci.url;
-      result.pos = ci.pos;
+      var ci = setCardImage(ss, body.key, body.photoBase64 || '', body.pos, body.zoom);
+      result.ok   = ci.ok;
+      result.url  = ci.url;
+      result.pos  = ci.pos;
+      result.zoom = ci.zoom;
       if (ci.error) result.error = ci.error;
 
     } else if (body.action === 'set_bless_photo') {
@@ -2290,10 +2291,10 @@ function getCardImagesSheet_(ss) {
   var sheet = ss.getSheetByName('ตั้งค่ารูปการ์ด');
   if (!sheet) {
     sheet = ss.insertSheet('ตั้งค่ารูปการ์ด');
-    sheet.getRange(1, 1, 1, 3).setValues([['key', 'url', 'ตำแหน่ง']])
+    sheet.getRange(1, 1, 1, 4).setValues([['key', 'url', 'ตำแหน่ง', 'zoom']])
       .setFontWeight('bold').setBackground('#f4d9d0');
     sheet.setFrozenRows(1);
-    sheet.setColumnWidth(1, 120); sheet.setColumnWidth(2, 420); sheet.setColumnWidth(3, 120);
+    sheet.setColumnWidth(1, 120); sheet.setColumnWidth(2, 420); sheet.setColumnWidth(3, 120); sheet.setColumnWidth(4, 80);
   }
   return sheet;
 }
@@ -2302,21 +2303,22 @@ function getCardImages(ss) {
   var out = {};
   var lastRow = sheet.getLastRow();
   if (lastRow >= 2) {
-    var data = sheet.getRange(2, 1, lastRow - 1, 3).getValues();
+    var data = sheet.getRange(2, 1, lastRow - 1, Math.max(sheet.getLastColumn(), 4)).getValues();
     data.forEach(function(r) {
       var key = String(r[0] || '').trim();
       if (!key) return;
-      out[key] = { url: String(r[1] || ''), pos: String(r[2] || '') };
+      var z = parseFloat(r[3]);
+      out[key] = { url: String(r[1] || ''), pos: String(r[2] || ''), zoom: (isFinite(z) && z > 0) ? z : 1 };
     });
   }
   return out;
 }
 // upsert รูป 1 ช่อง — ถ้ามี base64 อัปใหม่ (w1600) ไม่งั้นคงรูปเดิม อัปเดตแค่ตำแหน่ง
-function setCardImage(ss, key, photoBase64, pos) {
+function setCardImage(ss, key, photoBase64, pos, zoom) {
   key = String(key || '').trim();
   if (CARD_IMAGE_KEYS.indexOf(key) < 0) return { ok: false, error: 'key ไม่ถูกต้อง: ' + key };
   var sheet = getCardImagesSheet_(ss);
-  var cur = getCardImages(ss)[key] || { url: '', pos: '' };
+  var cur = getCardImages(ss)[key] || { url: '', pos: '', zoom: 1 };
 
   // CLEAR = ลบ override กลับไปใช้รูป default ใน repo
   if (String(photoBase64) === 'CLEAR') {
@@ -2324,10 +2326,10 @@ function setCardImage(ss, key, photoBase64, pos) {
     if (lr0 >= 2) {
       var ks = sheet.getRange(2, 1, lr0 - 1, 1).getValues();
       for (var j = 0; j < ks.length; j++) {
-        if (String(ks[j][0]).trim() === key) { sheet.getRange(j + 2, 1, 1, 3).setValues([[key, '', '']]); break; }
+        if (String(ks[j][0]).trim() === key) { sheet.getRange(j + 2, 1, 1, 4).setValues([[key, '', '', '']]); break; }
       }
     }
-    return { ok: true, url: '', pos: '' };
+    return { ok: true, url: '', pos: '', zoom: 1 };
   }
 
   var url = cur.url;
@@ -2337,6 +2339,8 @@ function setCardImage(ss, key, photoBase64, pos) {
     if (!url) return { ok: false, error: 'อัปโหลดรูปไม่สำเร็จ' };
   }
   var newPos = (pos !== undefined && pos !== null && String(pos) !== '') ? String(pos) : cur.pos;
+  var zn = parseFloat(zoom);
+  var newZoom = (isFinite(zn) && zn > 0) ? zn : (cur.zoom || 1);
 
   // หาแถวเดิมของ key นี้
   var lastRow = sheet.getLastRow();
@@ -2346,8 +2350,8 @@ function setCardImage(ss, key, photoBase64, pos) {
     for (var i = 0; i < keys.length; i++) { if (String(keys[i][0]).trim() === key) { rowIdx = i + 2; break; } }
   }
   if (rowIdx < 0) rowIdx = lastRow + 1;
-  sheet.getRange(rowIdx, 1, 1, 3).setValues([[key, url, newPos]]);
-  return { ok: true, url: url, pos: newPos };
+  sheet.getRange(rowIdx, 1, 1, 4).setValues([[key, url, newPos, newZoom]]);
+  return { ok: true, url: url, pos: newPos, zoom: newZoom };
 }
 
 // ── ตั้ง Gemini API Key (รันครั้งเดียวจาก Script Editor) ──────
