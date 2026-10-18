@@ -44,6 +44,7 @@
   .f-cover-desktop{width:440px;max-width:100%;aspect-ratio:2/1;}
   .f-cover-mobile{width:180px;aspect-ratio:9/16;}
   .f-details{width:100%;aspect-ratio:1920/560;}
+  .f-circle{width:200px;height:200px;border-radius:50%;border:3px solid rgba(201,169,110,.5);}
   /* ---- overlay replicas (WYSIWYG) ---- */
   .ov{position:absolute;inset:0;pointer-events:none;color:#fff;}
   .cover-ov{background:linear-gradient(to top,rgba(0,0,0,.65) 0%,rgba(0,0,0,.12) 55%,transparent 100%),linear-gradient(to bottom,rgba(0,0,0,.35) 0%,transparent 30%);display:flex;flex-direction:column;justify-content:flex-end;align-items:center;text-align:center;padding-bottom:7%;}
@@ -70,7 +71,7 @@
 <body>
 <div class="wrap">
   <h1>จัดรูปพื้นหลังการ์ดเชิญ</h1>
-  <div class="sub">แป้ง × เอ็ม · Family Witness Dinner — เลือกรูป แล้วลากจุดสีทองไปที่ใบหน้า/จุดที่อยากให้เห็น</div>
+  <div class="sub">แป้ง × เอ็ม · Family Witness Dinner — เลือกรูป แล้วลากจุดสีทองไปที่ใบหน้า/จุดที่อยากให้เห็น (4 ส่วน: ปก · นับถอยหลัง · เจ้าบ่าว · เจ้าสาว)</div>
 
   <div class="steps">
     <b>วิธีใช้ (ง่ายสุด):</b><br>
@@ -157,6 +158,52 @@
     </div>
   </div>
 
+  <!-- ░░ GROOM ░░ -->
+  <div class="composer" id="c-groom">
+    <h2>3 · รูปเจ้าบ่าว (วงกลม)</h2>
+    <div class="hint">วรวุฒิ โพธิ์ถาวร — ลากให้ใบหน้าอยู่กลางวง</div>
+    <div class="toolbar">
+      <label class="btn btn-main">📷 เลือกรูป<input type="file" accept="image/*" hidden onchange="pickImage(this,'groom')"></label>
+      <button class="btn btn-gold" id="save-groom" onclick="saveToCard('groom')">💾 เซฟ & อัปขึ้นการ์ด</button>
+      <button class="btn btn-ghost" id="dl-groom" onclick="downloadImage('groom')" disabled>⬇️ ดาวน์โหลดรูป</button>
+      <span class="pos-readout" id="pos-groom">ตำแหน่ง: 50% 30%</span>
+    </div>
+    <div class="save-status" id="save-status-groom"></div>
+    <div class="frames">
+      <div class="frame-wrap">
+        <div class="frame-label">วงกลมเจ้าบ่าว</div>
+        <div class="frame f-circle" data-key="groom">
+          <img class="frame-img" id="img-groom-c">
+          <div class="frame-empty" id="empty-groom-c">เลือกรูป</div>
+          <div class="focal" id="focal-groom-c"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ░░ BRIDE ░░ -->
+  <div class="composer" id="c-bride">
+    <h2>4 · รูปเจ้าสาว (วงกลม)</h2>
+    <div class="hint">พิชชาอร กายวิภาคบรรยาย — ลากให้ใบหน้าอยู่กลางวง</div>
+    <div class="toolbar">
+      <label class="btn btn-main">📷 เลือกรูป<input type="file" accept="image/*" hidden onchange="pickImage(this,'bride')"></label>
+      <button class="btn btn-gold" id="save-bride" onclick="saveToCard('bride')">💾 เซฟ & อัปขึ้นการ์ด</button>
+      <button class="btn btn-ghost" id="dl-bride" onclick="downloadImage('bride')" disabled>⬇️ ดาวน์โหลดรูป</button>
+      <span class="pos-readout" id="pos-bride">ตำแหน่ง: 50% 30%</span>
+    </div>
+    <div class="save-status" id="save-status-bride"></div>
+    <div class="frames">
+      <div class="frame-wrap">
+        <div class="frame-label">วงกลมเจ้าสาว</div>
+        <div class="frame f-circle" data-key="bride">
+          <img class="frame-img" id="img-bride-c">
+          <div class="frame-empty" id="empty-bride-c">เลือกรูป</div>
+          <div class="focal" id="focal-bride-c"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div class="final" id="final-note" hidden>
     <b>พร้อมส่งแล้ว ✅</b> — แนบ 2 ไฟล์ที่ดาวน์โหลด (<span id="fn-list"></span>) ในแชทส่งให้ Claude ได้เลย ค่าตำแหน่งฝังในชื่อไฟล์แล้ว
   </div>
@@ -166,8 +213,12 @@
 // state: แต่ละ key เก็บ { file, bitmap(url), pos:{x,y} }
 const S = {
   cover:   { url:null, file:null, pos:{x:50,y:18}, frames:['cover-d','cover-m'] },
-  details: { url:null, file:null, pos:{x:50,y:28}, frames:['details-d'] }
+  details: { url:null, file:null, pos:{x:50,y:28}, frames:['details-d'] },
+  groom:   { url:null, file:null, pos:{x:50,y:30}, frames:['groom-c'] },
+  bride:   { url:null, file:null, pos:{x:50,y:30}, frames:['bride-c'] }
 };
+// S key → key ที่ backend/การ์ดใช้
+const KEYMAP = { cover:'cover', details:'countdown', groom:'groom', bride:'bride' };
 const downloaded = {};
 const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyGS50jFbBmz6nU-o6zPBGZrSokuyxD1TPQMhpfzwbpmzOJSg4emYaXKHv6QB_8Q9wAbg/exec';
 
@@ -251,7 +302,7 @@ async function downloadImage(key){
   try{
     const { blob } = await processImage(st.file);
     const x = Math.round(st.pos.x), y = Math.round(st.pos.y);
-    const name = (key==='cover'?'cover':'countdown')+'__pos-'+x+'x'+y+'.jpg';
+    const name = (KEYMAP[key]||key)+'__pos-'+x+'x'+y+'.jpg';
     const a = document.createElement('a');
     a.href = URL.createObjectURL(blob); a.download = name;
     document.body.appendChild(a); a.click(); a.remove();
@@ -273,7 +324,7 @@ async function saveToCard(key){
     const { dataURL } = await processImage(st.file);
     const b64 = dataURL.split(',')[1];
     const pos = Math.round(st.pos.x)+'% '+Math.round(st.pos.y)+'%';
-    const backendKey = (key === 'details') ? 'countdown' : 'cover';   // S ใช้ 'details' แต่ backend ใช้ 'countdown'
+    const backendKey = KEYMAP[key] || key;   // map S key → key ของ backend
     // retry รองรับ cold start
     let ok=false, lastErr='';
     for(let i=0;i<3 && !ok;i++){
@@ -298,7 +349,7 @@ function updateFinal(){
 }
 
 // init readouts
-applyPos('cover'); applyPos('details');
+applyPos('cover'); applyPos('details'); applyPos('groom'); applyPos('bride');
 </script>
 </body>
 </html>

@@ -2285,7 +2285,7 @@ function saveCardSettings(ss, settings) {
 // ── รูปพื้นหลังการ์ด (cover/countdown) — อัปจาก bg-editor ตรงขึ้นการ์ด ──
 // เก็บใน sheet "ตั้งค่ารูปการ์ด": [key, url, ตำแหน่ง]  (key = cover | countdown)
 // invite.html อ่านแล้วใส่แทนรูป default ใน repo (ถ้าไม่มี = ใช้ default)
-var CARD_IMAGE_KEYS = ['cover', 'countdown'];
+var CARD_IMAGE_KEYS = ['cover', 'countdown', 'groom', 'bride'];
 function getCardImagesSheet_(ss) {
   var sheet = ss.getSheetByName('ตั้งค่ารูปการ์ด');
   if (!sheet) {
