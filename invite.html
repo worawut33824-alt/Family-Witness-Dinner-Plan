@@ -329,7 +329,7 @@ section {
   font-size: 0.72rem;
   letter-spacing: 0.5px;
   text-transform: uppercase;
-  color: var(--gold);
+  color: #a07c38;              /* gold เข้มขึ้นให้คอนทราสต์ผ่าน WCAG AA */
   font-weight: 600;
   margin-bottom: 10px;
   text-align: center;
@@ -1586,44 +1586,50 @@ footer {
 }
 @media(max-width:480px){ .decision-cards { grid-template-columns:1fr; } }
 .decision-card {
-  border-radius: 24px;
-  padding: 40px 24px 32px;
+  border-radius: 20px;
+  padding: 34px 22px 26px;
   text-align: center;
   cursor: pointer;
-  border: none;
-  transition: transform .22s cubic-bezier(.34,1.56,.64,1), box-shadow .22s;
+  background: #fff;
+  border: 1px solid var(--gold-lt);
+  transition: transform .25s cubic-bezier(.34,1.4,.64,1), box-shadow .25s, border-color .25s;
   display: flex; flex-direction: column; align-items: center; gap: 0;
   position: relative; overflow: hidden;
-  box-shadow: 0 4px 28px rgba(0,0,0,.09);
+  box-shadow: 0 6px 24px rgba(90,127,168,.1);
+  outline: none;
 }
-.decision-card:hover { transform: translateY(-6px) scale(1.02); box-shadow: 0 14px 40px rgba(0,0,0,.15); }
-.decision-card.yes { background: linear-gradient(155deg,#f2fbf5 0%,#cdebd8 100%); }
-.decision-card.no  { background: linear-gradient(155deg,#eef5fc 0%,#cce0f2 100%); }
+.decision-card:hover, .decision-card:focus-visible { transform: translateY(-6px); box-shadow: 0 16px 42px rgba(90,127,168,.2); }
+.decision-card.yes { background: linear-gradient(170deg,#ffffff 0%,#eef4ef 100%); }
+.decision-card.no  { background: linear-gradient(170deg,#ffffff 0%,#eef3f9 100%); }
+.decision-card.yes:hover, .decision-card.yes:focus-visible { border-color: var(--sage); }
+.decision-card.no:hover,  .decision-card.no:focus-visible  { border-color: var(--blue); }
 .decision-card::before {
-  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 5px; border-radius: 24px 24px 0 0;
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px;
 }
-.decision-card.yes::before { background: linear-gradient(90deg,#5a9e6f,#85c99e); }
-.decision-card.no::before  { background: linear-gradient(90deg,#6B9DC2,#9dc0e0); }
+.decision-card.yes::before { background: linear-gradient(90deg,#809684,#a7bca9); }
+.decision-card.no::before  { background: linear-gradient(90deg,#7B9CBF,#a9c9eb); }
 .decision-card .dc-icon { display: none; }
 .dc-icon-wrap {
-  width: 76px; height: 76px; border-radius: 50%;
+  width: 72px; height: 72px; border-radius: 50%;
   display: flex; align-items: center; justify-content: center;
-  margin-bottom: 18px; font-size: 2rem;
+  margin-bottom: 16px; font-size: 1.9rem; border: 3px solid #fff;
 }
-.decision-card.yes .dc-icon-wrap { background: linear-gradient(135deg,#5a9e6f,#85c99e); box-shadow: 0 8px 22px rgba(90,158,111,.4); }
-.decision-card.no  .dc-icon-wrap { background: linear-gradient(135deg,#6B9DC2,#9dc0e0); box-shadow: 0 8px 22px rgba(107,157,194,.4); }
+.decision-card.yes .dc-icon-wrap { background: linear-gradient(135deg,#809684,#9fb6a2); box-shadow: 0 8px 20px rgba(128,150,132,.35); }
+.decision-card.no  .dc-icon-wrap { background: linear-gradient(135deg,#7B9CBF,#a9c9eb); box-shadow: 0 8px 20px rgba(123,156,191,.35); }
 .decision-card .dc-title {
-  font-size: 1.1rem; font-weight: 800; margin-bottom: 8px;
+  font-size: 1.12rem; font-weight: 700; margin-bottom: 7px; letter-spacing: .2px;
 }
-.decision-card.yes .dc-title { color: #276040; }
-.decision-card.no  .dc-title { color: #1e5070; }
-.decision-card .dc-sub { font-size: 0.79rem; color: var(--text-lt); line-height: 1.65; }
+.decision-card.yes .dc-title { color: #4a6a54; }
+.decision-card.no  .dc-title { color: #3d6a91; }
+.decision-card .dc-sub { font-size: 0.8rem; color: var(--text-lt); line-height: 1.6; }
 .dc-arrow {
-  margin-top: 20px; width: 36px; height: 36px; border-radius: 50%;
-  display: flex; align-items: center; justify-content: center; font-size: 1rem; font-weight: 700;
+  margin-top: 18px; width: 40px; height: 40px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center; font-size: 1.05rem; font-weight: 700;
+  transition: transform .2s, background .2s;
 }
-.decision-card.yes .dc-arrow { background: rgba(90,158,111,.18); color: #5a9e6f; }
-.decision-card.no  .dc-arrow { background: rgba(107,157,194,.18); color: #6B9DC2; }
+.decision-card.yes .dc-arrow { background: rgba(128,150,132,.16); color: #5c7a66; }
+.decision-card.no  .dc-arrow { background: rgba(123,156,191,.18); color: #5a7fa8; }
+.decision-card:hover .dc-arrow, .decision-card:focus-visible .dc-arrow { transform: translateX(3px); }
 
 /* ── PHOTO UPLOAD ── */
 .photo-upload-wrap {
@@ -1986,14 +1992,14 @@ footer {
         บอกให้เราทราบก่อนนะคะ เราตั้งตารอทุกท่าน 🤍
       </p>
       <div class="decision-cards anim from-bottom">
-        <div class="decision-card yes" onclick="goRSVP()">
+        <div class="decision-card yes" role="button" tabindex="0" onclick="goRSVP()">
           <div class="dc-icon-wrap">✅</div>
           <div class="dc-icon">✅</div>
           <div class="dc-title">ยืนยันมาร่วมงาน</div>
           <div class="dc-sub">ลงทะเบียน + ฝากคำอวยพร</div>
           <div class="dc-arrow">→</div>
         </div>
-        <div class="decision-card no" onclick="goBlessing()">
+        <div class="decision-card no" role="button" tabindex="0" onclick="goBlessing()">
           <div class="dc-icon-wrap">💌</div>
           <div class="dc-icon">💌</div>
           <div class="dc-title">ไม่สะดวกมาร่วมงาน</div>
@@ -2021,37 +2027,37 @@ footer {
         <div class="rsvp-form">
           <div class="form-row">
             <div class="form-group">
-              <label class="form-label">ชื่อของคุณ <span class="req">*</span></label>
+              <label class="form-label" for="r-name">ชื่อของคุณ <span class="req">*</span></label>
               <input id="r-name" class="form-input" placeholder="กรอกชื่อของคุณ" maxlength="80">
             </div>
             <div class="form-group">
-              <label class="form-label">จำนวนคนที่มา <span class="req">*</span></label>
+              <label class="form-label" for="r-count">จำนวนคนที่มา <span class="req">*</span></label>
               <input id="r-count" class="form-input" type="number" min="1" max="20" value="1" placeholder="1">
             </div>
           </div>
           <div class="form-row">
             <div class="form-group">
-              <label class="form-label">เบอร์โทรศัพท์</label>
+              <label class="form-label" for="r-phone">เบอร์โทรศัพท์</label>
               <input id="r-phone" class="form-input" placeholder="08X-XXX-XXXX" maxlength="20">
             </div>
             <div class="form-group">
-              <label class="form-label">E-mail</label>
+              <label class="form-label" for="r-email">E-mail</label>
               <input id="r-email" class="form-input" type="email" placeholder="email@example.com" oninput="toggleCalNotice()">
             </div>
           </div>
           <div class="form-group">
             <label class="form-label">รู้จักฝั่งไหน <span class="req">*</span></label>
             <div class="side-group">
-              <div class="side-btn" id="side-m" onclick="selectSide('m')">💙 เอ็ม</div>
-              <div class="side-btn" id="side-p" onclick="selectSide('p')">🩷 แป้ง</div>
+              <div class="side-btn" id="side-m" role="button" tabindex="0" onclick="selectSide('m')">💙 เอ็ม</div>
+              <div class="side-btn" id="side-p" role="button" tabindex="0" onclick="selectSide('p')">🩷 แป้ง</div>
             </div>
           </div>
           <div class="form-group">
-            <label class="form-label">ความสัมพันธ์</label>
+            <label class="form-label" for="r-relation">ความสัมพันธ์</label>
             <input id="r-relation" class="form-input" placeholder="เช่น ญาติ, เพื่อน, เพื่อนร่วมงาน" maxlength="80">
           </div>
           <div class="form-group">
-            <label class="form-label">คำอวยพร 💌</label>
+            <label class="form-label" for="r-blessing">คำอวยพร 💌</label>
             <textarea id="r-blessing" class="form-textarea" placeholder="ฝากคำอวยพรถึงเจ้าบ่าวเจ้าสาวได้เลยนะคะ..." maxlength="400" style="min-height:90px;"></textarea>
           </div>
           <div class="form-group">
@@ -2064,7 +2070,7 @@ footer {
             </div>
           </div>
           <div class="form-group">
-            <label class="form-label">หมายเหตุ</label>
+            <label class="form-label" for="r-note">หมายเหตุ</label>
             <textarea id="r-note" class="form-textarea" placeholder="มีอะไรอยากบอกเพิ่มเติม..." maxlength="300"></textarea>
           </div>
           <div class="calendar-notice" id="cal-notice">
@@ -2109,8 +2115,8 @@ footer {
         <div class="form-group">
           <label class="form-label">รู้จักฝั่งไหน <span class="req">*</span></label>
           <div class="side-group">
-            <div class="side-btn" id="bless-side-m" onclick="selectBlessSide('เอ็ม')">💙 เอ็ม</div>
-            <div class="side-btn" id="bless-side-p" onclick="selectBlessSide('แป้ง')">🩷 แป้ง</div>
+            <div class="side-btn" id="bless-side-m" role="button" tabindex="0" onclick="selectBlessSide('เอ็ม')">💙 เอ็ม</div>
+            <div class="side-btn" id="bless-side-p" role="button" tabindex="0" onclick="selectBlessSide('แป้ง')">🩷 แป้ง</div>
           </div>
         </div>
         <textarea id="bless-msg" placeholder="คำอวยพร..." maxlength="400" style="min-height:90px;border:1.5px solid #dde8f0;border-radius:10px;padding:12px 16px;font-family:'Sarabun',sans-serif;font-size:.95rem;width:100%;resize:none;background:#F9FDFF;"></textarea>
@@ -2381,12 +2387,26 @@ function openEnvelope() {
   }, 1800);
 }
 
-// ── SCROLL PROGRESS BAR ──────────────────────────────────────
+// ── SCROLL PROGRESS BAR (throttle ด้วย rAF — ลด reflow ต่อ event) ──
+let _spTicking = false;
 window.addEventListener('scroll', () => {
-  const scrolled = window.scrollY / (document.body.scrollHeight - window.innerHeight) * 100;
-  const bar = document.getElementById('scroll-progress');
-  if (bar) bar.style.width = Math.min(scrolled, 100) + '%';
+  if (_spTicking) return;
+  _spTicking = true;
+  requestAnimationFrame(() => {
+    const bar = document.getElementById('scroll-progress');
+    const max = (document.body.scrollHeight - window.innerHeight) || 1;
+    if (bar) bar.style.width = Math.min(window.scrollY / max * 100, 100) + '%';
+    _spTicking = false;
+  });
 }, { passive: true });
+
+// ── ให้ปุ่มที่ทำจาก <div role="button"> กดด้วย Enter/Space ได้ (คีย์บอร์ด/screen reader) ──
+document.addEventListener('keydown', (e) => {
+  if ((e.key === 'Enter' || e.key === ' ') && e.target.getAttribute && e.target.getAttribute('role') === 'button') {
+    e.preventDefault();
+    e.target.click();
+  }
+});
 
 // Page petals are spawned after the envelope is opened (see openEnvelope)
 
