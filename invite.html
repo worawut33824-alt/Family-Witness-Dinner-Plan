@@ -2,7 +2,7 @@
 <html lang="th">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>คุณได้รับเชิญ · Family Witness Dinner · แป้ง x เอ็ม</title>
 <meta name="description" content="Family Witness Dinner · แป้ง & เอ็ม · 28 พฤศจิกายน 2569 · ธาราเทอเรส นครปฐม">
 <meta property="og:title" content="คุณได้รับเชิญ · Family Witness Dinner · แป้ง x เอ็ม">
@@ -13,9 +13,10 @@
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://worawut33824-alt.github.io/Family-Witness-Dinner-Plan/preview.jpg">
 <link rel="icon" href="icon-192.png">
+<link rel="preload" as="image" href="รูปประกอบการ์ดเชิญ/cover.jpg?v=2" fetchpriority="high">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400;1,600&family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400;1,600&family=Sarabun:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
 <style>
 /* ════════════════════════════════════════════════
@@ -1650,6 +1651,17 @@ footer {
   display: block;
 }
 .photo-preview.hidden { display: none; }
+
+/* ── เคารพการตั้งค่า "ลดการเคลื่อนไหว" (accessibility + ประหยัดแบต) ── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+  .fade-up, .anim { opacity: 1 !important; transform: none !important; }
+}
 </style>
 </head>
 <body>
@@ -1714,7 +1726,7 @@ footer {
 
   <!-- ── COVER PHOTO (merged hero) ── -->
   <section id="sec-cover">
-    <img src="รูปประกอบการ์ดเชิญ/cover.jpg?v=2" alt="แป้ง & เอ็ม" class="cover-photo">
+    <img src="รูปประกอบการ์ดเชิญ/cover.jpg?v=2" alt="แป้ง & เอ็ม" class="cover-photo" fetchpriority="high" decoding="async">
     <div class="cover-overlay">
       <div class="cover-top"></div>
       <div class="cover-bottom">
@@ -1766,14 +1778,14 @@ footer {
     <div class="couple-cards">
       <div class="couple-card anim from-left">
         <div class="couple-circle">
-          <img id="couple-groom-img" src="รูปประกอบการ์ดเชิญ/groom-em-crop.jpg" alt="เอ็ม">
+          <img id="couple-groom-img" src="รูปประกอบการ์ดเชิญ/groom-em-crop.jpg" alt="เอ็ม" loading="lazy" decoding="async">
         </div>
         <div class="couple-name">วรวุฒิ โพธิ์ถาวร</div>
       </div>
       <div class="couple-sep anim from-bottom">×</div>
       <div class="couple-card anim from-right">
         <div class="couple-circle">
-          <img id="couple-bride-img" src="รูปประกอบการ์ดเชิญ/bride-paeng.jpg" alt="แป้ง" style="object-position:75% center;">
+          <img id="couple-bride-img" src="รูปประกอบการ์ดเชิญ/bride-paeng.jpg" alt="แป้ง" loading="lazy" decoding="async" style="object-position:75% center;">
         </div>
         <div class="couple-name">พิชชาอร กายวิภาคบรรยาย</div>
       </div>
@@ -1782,7 +1794,7 @@ footer {
 
   <!-- ── DETAILS + COUNTDOWN ── -->
   <section id="sec-details" class="fade-up" style="max-width:none; border-radius: 0;">
-    <img class="details-bg" id="sec-details-bg" src="รูปประกอบการ์ดเชิญ/countdown.jpg?v=2" alt="">
+    <img class="details-bg" id="sec-details-bg" src="รูปประกอบการ์ดเชิญ/countdown.jpg?v=2" alt="" loading="lazy" decoding="async">
     <div class="cd-title">นับถอยหลังสู่ Family Witness Dinner</div>
     <div class="cd-date-text">วันเสาร์ที่ 28 พฤศจิกายน 2569 · เวลา 16:00 น.</div>
     <div class="cd-boxes">
@@ -1881,14 +1893,14 @@ footer {
     <!-- Venue photos -->
     <div class="venue-photos anim zoom-in">
       <div class="venue-photo-wide">
-        <img src="รูปสถานที่/710298291_1707493166931898_4535512675905232597_n.jpg" alt="ธาราเทอเรส">
+        <img src="รูปสถานที่/710298291_1707493166931898_4535512675905232597_n.jpg" alt="ธาราเทอเรส" loading="lazy" decoding="async">
       </div>
       <div class="venue-photo-pair">
         <div class="venue-photo-box">
-          <img src="รูปสถานที่/709134475_2413048042505452_8347293504824554399_n.jpg" alt="ธาราเทอเรส มุมสูง">
+          <img src="รูปสถานที่/709134475_2413048042505452_8347293504824554399_n.jpg" alt="ธาราเทอเรส มุมสูง" loading="lazy" decoding="async">
         </div>
         <div class="venue-photo-box">
-          <img src="รูปสถานที่/711708635_1712209976454956_5419472830277624580_n.jpg" alt="ธาราเทอเรส บรรยากาศงาน">
+          <img src="รูปสถานที่/711708635_1712209976454956_5419472830277624580_n.jpg" alt="ธาราเทอเรส บรรยากาศงาน" loading="lazy" decoding="async">
         </div>
       </div>
     </div>
@@ -1924,10 +1936,10 @@ footer {
     </p>
 
     <div class="tree-wrap anim zoom-in">
-      <img src="Love Tree/ต้น.PNG" id="img-base" alt="ต้นไม้">
+      <img src="Love Tree/ต้น.PNG" id="img-base" alt="ต้นไม้" loading="lazy" decoding="async">
       <div id="foliage-wrap"></div>
       <div id="flower-wrap"></div>
-      <img src="Love Tree/รูปคู่รัก.PNG" id="tree-couple" alt="คู่บ่าวสาว"
+      <img src="Love Tree/รูปคู่รัก.PNG" id="tree-couple" alt="คู่บ่าวสาว" loading="lazy" decoding="async"
            onerror="this.style.display='none'">
     </div>
 
@@ -2221,7 +2233,7 @@ footer {
 <div id="inv-toast"></div>
 
 <!-- ── BGM ── -->
-<audio id="bgm" loop preload="metadata" src="bgm.mp3"></audio>
+<audio id="bgm" loop preload="none" src="bgm.mp3"></audio>
 
 <!-- ══════════════ SCRIPT ══════════════ -->
 <script>
@@ -2551,7 +2563,7 @@ function renderFoliage(pct, animate) {
   const n = Math.round(pct/100*TREE_CLUSTERS.length);
   // render all clusters — visible ones start hidden if animating
   wrap.innerHTML = TREE_CLUSTERS.map(([l,t,w,f,r],i) =>
-    `<img src="Love Tree/ฟุ่ม${f}.PNG" class="foliage"
+    `<img src="Love Tree/ฟุ่ม${f}.PNG" class="foliage" loading="lazy" decoding="async"
       style="left:${l}%;top:${t}%;width:${w}%;
              transform:translate(-50%,-50%) rotate(${r}deg);
              opacity:${(i<n && !animate)?1:0};" alt="">`
@@ -2573,7 +2585,7 @@ function renderFlowers(sM, sP, pct, hidden) {
   const pPos = genTreeFlowers(sP, 0xD4C3B2A1, vis);
   const sz = 3.43;
   const mk = (pts, src) => pts.map(([x,y]) =>
-    `<img src="${src}" class="fl" style="left:${x}%;top:${y}%;width:${sz}%;" alt="">`
+    `<img src="${src}" class="fl" loading="lazy" decoding="async" style="left:${x}%;top:${y}%;width:${sz}%;" alt="">`
   ).join('');
   wrap.innerHTML = mk(mPos,'Love Tree/canva-watercolor-rose-flower-MAHABloemX4.png') + mk(pPos,'Love Tree/canva-watercolor-rose-flower-MAHABloemX4.png');
   wrap.style.transition = 'none';
