@@ -50,6 +50,9 @@ npm run deploy:gs  # ใช้ clasp (ต้อง clasp login + มี .clasp.j
 - ⚡ **ความเร็ว (หน้าเว็บ)** — auto-refresh วาดใหม่เฉพาะหน้าที่เปิด + เฉพาะเมื่อข้อมูลเปลี่ยนจริง · bump SW cache v92
 - ⚙️ **Backend `code.gs`** — ใส่ **LockService** ครอบทุกการเขียน (กันข้อมูลชนกัน/หายตอนส่ง RSVP/สลิปพร้อมกัน) · `saveDonation` strip comma · `getChecklist` อ่านคอลัมน์ทีเดียว (เลิก N+1)
 - 👥 **แก้ schema แขกชนกัน** — ตัดช่อง "อาหาร" (ไม่ใช้แล้ว), `getGuests`/`saveGuests` ใช้ 11 คอลัมน์ให้ตรงกับ RSVP — ไม่ทับ/ล้าง อีเมล/คำอวยพร/รูป/วันที่ อีกต่อไป (มีผลเต็มเมื่อ deploy `code.gs`)
+- 💌 **ปรับปรุงการ์ดเชิญ** — lazy-load รูป (Love Tree ~7.8MB) + preload cover + bgm `preload=none` + ฟอนต์ (โหลดไวขึ้น), `prefers-reduced-motion`, ปลดล็อกซูม, ปุ่มตอบรับกดด้วยคีย์บอร์ดได้ + label ผูก input (`for`/`id`), scroll bar ใช้ rAF
+- 🎴 **รีดีไซน์การ์ด "มาร่วมงาน / ไม่มาร่วมงาน"** ให้เข้าธีม (ขาวครีม + เส้นขอบทอง + sage/ฟ้าหม่น)
+- 🛠️ **เพิ่มสคริปต์ย่อรูป** `optimize-images.mjs` (`npm run optimize:img`, ต้อง `npm i sharp`) — ย่อรูปที่ใหญ่เกินจริง, สำรองต้นฉบับใน `images-backup/` *(ยังไม่รัน — รันบนเครื่องที่มี Node ได้เลย)*
 
 ### ก่อนหน้า (16–18 ต.ค. 2026)
 - เพิ่ม `bg-editor.html` (จัดรูปพื้นหลัง + ซูม + เปลี่ยนรูปคู่บ่าวสาว), เปลี่ยนรูป cover/countdown, ปรับ perf (เพลงไม่โหลดอัตโนมัติ, SW network-first, keep-warm cron)
