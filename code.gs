@@ -9,7 +9,12 @@ function doGet(e) {
   var ss = SpreadsheetApp.getActiveSpreadsheet();
   var result = { status: 'ok' };
 
+  // LockService: ล็อกเฉพาะ action ที่เขียน/สร้างชีต เพื่อกันเขียนชนกัน (การอ่านไม่ล็อก = ไม่ช้า)
+  var WRITE_ACTIONS_GET = { rsvp:1, bless:1, format_budget:1, format_summary:1, format_all:1, update_summary:1, update_dashboard:1, update_summary_dashboard:1, fix_overview_time:1, rebuild_overview:1 };
+  var _lock = null;
+
   try {
+    if (WRITE_ACTIONS_GET[action]) { _lock = LockService.getScriptLock(); _lock.waitLock(20000); }
     if (action === 'ping') {
       result.message = 'connected';
     } else if (action === 'all') {
@@ -109,6 +114,8 @@ function doGet(e) {
   } catch (err) {
     result.status = 'error';
     result.error  = err.toString();
+  } finally {
+    if (_lock) _lock.releaseLock();
   }
 
   return ContentService
@@ -119,9 +126,13 @@ function doGet(e) {
 function doPost(e) {
   var result = { status: 'ok' };
 
+  var _lock = null;
   try {
     var body = JSON.parse(e.postData.contents);
     var ss   = SpreadsheetApp.getActiveSpreadsheet();
+
+    // LockService: ล็อกทุกการเขียน (ยกเว้น readSlip = OCR ล้วน ไม่แตะชีต) กันข้อมูลชนกัน
+    if (body.action !== 'readSlip') { _lock = LockService.getScriptLock(); _lock.waitLock(20000); }
 
     // --- invite page actions ---
     if (body.action === 'rsvp') {
@@ -191,6 +202,8 @@ function doPost(e) {
   } catch (err) {
     result.status = 'error';
     result.error  = err.toString();
+  } finally {
+    if (_lock) _lock.releaseLock();
   }
 
   return ContentService
@@ -877,9 +890,10 @@ function getChecklist(ss) {
   if (!sheet) return {};
   var result = {};
 
+  // อ่านคอลัมน์ A แถว 3..32 ครั้งเดียว (เลิก N+1: เดิมเรียก getValue ทีละเซลล์ 26 ครั้งต่อการโหลด 'all')
+  var colA = sheet.getRange(3, 1, 30, 1).getValues();
   for (var i = 0; i < CHECKLIST_ROWS.length; i++) {
-    var row  = CHECKLIST_ROWS[i];
-    var cell = String(sheet.getRange(row, 1).getValue()).trim();
+    var cell = String(colA[CHECKLIST_ROWS[i] - 3][0] || '').trim();
     var status = 'none';
     if (cell === '✓') status = 'done';
     else if (cell === '✗') status = 'skipped';
@@ -2157,7 +2171,7 @@ function saveDonation(ss, body) {
 
   var dateStr = Utilities.formatDate(new Date(), 'Asia/Bangkok', 'dd/MM/yyyy HH:mm');
   var lastRow = sheet.getLastRow();
-  var amountNum = parseFloat(amount) || '';
+  var amountNum = parseFloat(String(amount).replace(/[,\s]/g,'')) || '';
 
   sheet.getRange(lastRow + 1, 1, 1, 5).setValues([[
     dateStr,
