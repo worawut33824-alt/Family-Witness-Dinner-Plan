@@ -12,3 +12,6 @@ docs/qa/
 
 # clasp working dir (สำเนา code.gs — source จริงคือ code.gs)
 .appsscript/
+
+# สำรองรูปต้นฉบับก่อนย่อ (optimize-images.mjs) — ไม่ต้อง push
+images-backup/

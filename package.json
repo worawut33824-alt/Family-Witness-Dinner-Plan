@@ -1,9 +1,11 @@
 {
   "devDependencies": {
-    "@google/clasp": "^3.4.1"
+    "@google/clasp": "^3.4.1",
+    "sharp": "^0.33.5"
   },
   "scripts": {
     "deploy:gs": "node scripts/deploy-gs.mjs",
-    "pull:gs": "clasp pull"
+    "pull:gs": "clasp pull",
+    "optimize:img": "node optimize-images.mjs"
   }
 }
