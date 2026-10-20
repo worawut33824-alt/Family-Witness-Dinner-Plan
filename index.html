@@ -390,10 +390,9 @@
     /* Budget detail items table */
     #budget-detail th, #budget-detail td { padding: 7px 8px; font-size: 0.78rem; }
 
-    /* Guest table: ซ่อน ความสัมพันธ์, อาหาร */
+    /* Guest table: ซ่อน ความสัมพันธ์ บนมือถือ */
     #guest-table { overflow-x: auto; }
-    #guest-table th:nth-child(4), #guest-table td:nth-child(4),
-    #guest-table th:nth-child(7), #guest-table td:nth-child(7) { display: none; }
+    #guest-table th:nth-child(4), #guest-table td:nth-child(4) { display: none; }
     #guest-table th, #guest-table td { padding: 7px 8px; font-size: 0.78rem; }
   }
 </style>
@@ -1062,10 +1061,6 @@
           <option value="declined">ไม่มาร่วมงาน</option>
         </select>
       </div>
-    </div>
-    <div class="form-group">
-      <label>อาหารพิเศษ / แพ้อาหาร</label>
-      <input id="gst-food" placeholder="เช่น มังสวิรัติ, แพ้อาหารทะเล">
     </div>
     <div class="form-group">
       <label>หมายเหตุ</label>
@@ -2217,9 +2212,9 @@ function renderGuests() {
   const statusLabel = {confirmed:'<span class="badge badge-ok">ยืนยันแล้ว</span>', pending:'<span class="badge badge-warn">รอยืนยัน</span>', declined:'<span class="badge badge-over">ไม่มาร่วมงาน</span>'};
   const sideLabel = {'เอ็ม':'เอ็ม', 'แป้ง':'แป้ง'};
 
-  let html = `<table><thead><tr><th>#</th><th>ชื่อ</th><th>ฝั่ง</th><th>ความสัมพันธ์</th><th>เบอร์โทร</th><th style="text-align:center">ที่นั่ง</th><th>อาหาร</th><th>สถานะ</th><th></th></tr></thead><tbody>`;
+  let html = `<table><thead><tr><th>#</th><th>ชื่อ</th><th>ฝั่ง</th><th>ความสัมพันธ์</th><th>เบอร์โทร</th><th style="text-align:center">ที่นั่ง</th><th>สถานะ</th><th></th></tr></thead><tbody>`;
   if(filtered.length===0) {
-    html += '<tr><td colspan="9" style="text-align:center;padding:24px;color:var(--text-light)">ยังไม่มีข้อมูลแขก<br><small>กด "+ เพิ่มแขก" เพื่อเริ่มต้น</small></td></tr>';
+    html += '<tr><td colspan="8" style="text-align:center;padding:24px;color:var(--text-light)">ยังไม่มีข้อมูลแขก<br><small>กด "+ เพิ่มแขก" เพื่อเริ่มต้น</small></td></tr>';
   } else {
     filtered.forEach((g,i) => {
       html += `<tr>
@@ -2229,7 +2224,6 @@ function renderGuests() {
         <td>${donEsc(g.relation)||'-'}</td>
         <td>${g.phone?`<a href="tel:${fmtPhone(g.phone)}" style="color:var(--primary)">${fmtPhone(g.phone)}</a>`:'-'}</td>
         <td style="text-align:center">${g.seats||1}</td>
-        <td style="font-size:0.8rem">${donEsc(g.food)||'-'}</td>
         <td>${statusLabel[g.status]||g.status}</td>
         <td style="white-space:nowrap">
           <button class="btn btn-sm btn-outline" onclick="editGuest(${g.id})">แก้ไข</button>
@@ -2252,7 +2246,6 @@ function openGuestModal(id=null) {
     document.getElementById('gst-relation').value = g.relation||'';
     document.getElementById('gst-seats').value = g.seats||1;
     document.getElementById('gst-status').value = g.status;
-    document.getElementById('gst-food').value = g.food||'';
     document.getElementById('gst-note').value = g.note||'';
   } else {
     document.getElementById('gst-name').value='';
@@ -2261,7 +2254,6 @@ function openGuestModal(id=null) {
     document.getElementById('gst-relation').value='';
     document.getElementById('gst-seats').value=1;
     document.getElementById('gst-status').value='pending';
-    document.getElementById('gst-food').value='';
     document.getElementById('gst-note').value='';
   }
   document.getElementById('guest-modal').classList.add('show');
@@ -2278,11 +2270,10 @@ function saveGuest() {
     relation: document.getElementById('gst-relation').value.trim(),
     seats: parseInt(document.getElementById('gst-seats').value)||1,
     status: document.getElementById('gst-status').value,
-    food: document.getElementById('gst-food').value.trim(),
     note: document.getElementById('gst-note').value.trim(),
   };
   const id = document.getElementById('gst-id').value;
-  if(id) { const idx = guests.findIndex(g=>g.id===parseInt(id)); guests[idx]={...obj,id:parseInt(id)}; toast('แก้ไขข้อมูลแขกสำเร็จ'); }
+  if(id) { const idx = guests.findIndex(g=>g.id===parseInt(id)); guests[idx]={...guests[idx],...obj,id:parseInt(id)}; toast('แก้ไขข้อมูลแขกสำเร็จ'); }
   else { guests.push({...obj,id:nextGstId++}); toast('เพิ่มแขกสำเร็จ'); }
   save(); closeModal('guest-modal'); renderGuests();
   autoPush('guests');

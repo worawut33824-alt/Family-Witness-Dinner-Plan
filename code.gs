@@ -1806,12 +1806,13 @@ function getGuests(ss) {
   var lastRow = sheet.getLastRow();
   if (lastRow < 2) return [];
 
-  var data   = sheet.getRange(2, 1, lastRow - 1, 8).getValues();
+  var data   = sheet.getRange(2, 1, lastRow - 1, 11).getValues();
   var guests = [];
 
   for (var i = 0; i < data.length; i++) {
     var row = data[i];
     if (!row[0]) continue;
+    // คอลัมน์: ชื่อ(1) ฝั่ง(2) เบอร์(3) ความสัมพันธ์(4) ที่นั่ง(5) สถานะ(6) อีเมล(7) คำอวยพร(8) รูป(9) วันที่(10) หมายเหตุ(11)
     guests.push({
       id:       i + 1,
       name:     String(row[0] || ''),
@@ -1820,8 +1821,11 @@ function getGuests(ss) {
       relation: String(row[3] || ''),
       seats:    parseInt(row[4]) || 1,
       status:   String(row[5] || 'pending'),
-      food:     String(row[6] || ''),
-      note:     String(row[7] || '')
+      email:    String(row[6] || ''),
+      blessing: String(row[7] || ''),
+      photoURL: String(row[8] || ''),
+      date:     String(row[9] || ''),
+      note:     String(row[10] || '')
     });
   }
   return guests;
@@ -1831,11 +1835,8 @@ function saveGuests(ss, guests) {
   var sheet = ss.getSheetByName('แขก');
   if (!sheet) {
     sheet = ss.insertSheet('แขก');
-    sheet.getRange(1, 1, 1, 8).setValues([[
-      'ชื่อ', 'ฝั่ง', 'เบอร์โทร', 'ความสัมพันธ์',
-      'ที่นั่ง', 'สถานะ', 'อาหาร/แพ้อาหาร', 'หมายเหตุ'
-    ]]);
-    sheet.getRange(1, 1, 1, 8).setFontWeight('bold');
+    sheet.getRange(1, 1, 1, GUEST_HEADERS.length).setValues([GUEST_HEADERS])
+      .setFontWeight('bold').setBackground('#f4d9d0');
     sheet.setFrozenRows(1);
   }
 
@@ -1847,9 +1848,14 @@ function saveGuests(ss, guests) {
   var rows = [];
   for (var i = 0; i < guests.length; i++) {
     var g = guests[i];
-    rows.push([g.name, g.side, g.phone, g.relation, g.seats, g.status, g.food, g.note]);
+    // เขียน 11 คอลัมน์ — เก็บ อีเมล/คำอวยพร/รูป/วันที่ ของ RSVP ไว้ (มาจาก object ที่ getGuests ส่งมา)
+    rows.push([
+      g.name || '', g.side || '', g.phone || '', g.relation || '',
+      g.seats || 1, g.status || 'pending',
+      g.email || '', g.blessing || '', g.photoURL || '', g.date || '', g.note || ''
+    ]);
   }
-  sheet.getRange(2, 1, rows.length, 8).setValues(rows);
+  sheet.getRange(2, 1, rows.length, 11).setValues(rows);
 }
 
 // --- INVITE LINKS -------------------------------------------------------
