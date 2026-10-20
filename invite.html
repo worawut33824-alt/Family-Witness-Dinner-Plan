@@ -42,6 +42,10 @@
   --white:       #ffffff;
   --shadow:      0 4px 28px rgba(90,127,168,0.15);
   --radius:      16px;
+  /* ── ระยะ section (3 ชั้น เพื่อจังหวะสม่ำเสมอ) ── */
+  --sp-sm:       52px;   /* section กระชับ (story, couple, map) */
+  --sp-md:       72px;   /* section มาตรฐาน */
+  --sp-lg:       104px;  /* แถบ hero (นับถอยหลัง) */
 }
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { scroll-behavior: smooth; overflow-x: hidden; }
@@ -321,7 +325,7 @@ a { color: inherit; }
    SECTION BASE
 ════════════════════════════════════════════════ */
 section {
-  padding: 72px 20px;
+  padding: var(--sp-md) 20px;
   max-width: 680px;
   margin: 0 auto;
 }
@@ -617,7 +621,7 @@ h2.sec-title em { font-style: italic; color: var(--blue-dk); }
   border-radius: var(--radius);
   color: var(--white);
   text-align: center;
-  padding: 100px 24px 110px;
+  padding: var(--sp-lg) 24px var(--sp-lg);
   margin: 0 16px;
   max-width: 100%;
   box-shadow: 0 12px 40px rgba(120,85,60,0.30);
@@ -647,7 +651,7 @@ h2.sec-title em { font-style: italic; color: var(--blue-dk); }
   #sec-details {
     max-width: none; margin: 0;
     border-radius: 0;
-    padding: 120px 24px 130px;
+    padding: var(--sp-lg) 24px var(--sp-lg);
   }
 }
 .cd-title { font-size: 0.78rem; letter-spacing: 0.5px; text-transform: uppercase; opacity: 0.75; margin-bottom: 8px; }
@@ -751,7 +755,7 @@ h2.sec-title em { font-style: italic; color: var(--blue-dk); }
    ITINERARY TIMELINE
 ════════════════════════════════════════════════ */
 #sec-itinerary {
-  padding: 72px 20px 64px;
+  padding: var(--sp-md) 20px var(--sp-md);
   max-width: 560px;
   margin: 0 auto;
 }
@@ -865,7 +869,7 @@ h2.sec-title em { font-style: italic; color: var(--blue-dk); }
    DRESS CODE
 ════════════════════════════════════════════════ */
 #sec-dresscode {
-  padding: 72px 20px 80px;
+  padding: var(--sp-md) 20px var(--sp-md);
   max-width: 580px;
   margin: 0 auto;
   text-align: center;
@@ -1752,7 +1756,7 @@ footer {
   <div class="sec-spacer"></div>
 
   <!-- ── STORY (video only) ── -->
-  <section id="sec-story" class="fade-up" style="max-width:680px; margin:0 auto; padding: 48px 24px;">
+  <section id="sec-story" class="fade-up" style="max-width:680px; margin:0 auto; padding: var(--sp-sm) 24px;">
     <div class="sec-label">เรื่องราวของเรา</div>
     <div class="sec-divider"></div>
     <h2 class="sec-title gold-shimmer anim from-bottom">Our <em>Love Story</em></h2>
@@ -1777,7 +1781,7 @@ footer {
   </section>
 
   <!-- ── COUPLE INTRO ── -->
-  <section id="sec-couple" class="fade-up" style="padding:56px 20px 48px;">
+  <section id="sec-couple" class="fade-up" style="padding:var(--sp-sm) 20px var(--sp-sm);">
     <div class="sec-label">คู่ชีวิต · Life Partner</div>
     <div class="sec-divider"></div>
     <h2 class="sec-title gold-shimmer anim from-bottom">Meet the <em>Couple</em></h2>
@@ -1890,7 +1894,7 @@ footer {
   </section>
 
   <!-- ── MAP ── -->
-  <section id="sec-map" class="fade-up" style="max-width:680px; margin:0 auto; padding: 64px 20px;">
+  <section id="sec-map" class="fade-up" style="max-width:680px; margin:0 auto; padding: var(--sp-sm) 20px;">
     <div class="sec-label">เส้นทางมาร่วมงาน</div>
     <div class="sec-divider"></div>
     <h2 class="sec-title gold-shimmer anim from-bottom">Getting <em>Here</em></h2>
@@ -2628,6 +2632,27 @@ function animateTreeEntry(pct, sM, sP) {
   _treeAnimTimers.push(t);
 }
 
+// เล่นอนิเมชันเผยใบ/ดอก "ซ้ำ" โดยไม่ rebuild innerHTML (ใช้ img ที่ updateTree สร้างไว้แล้ว — ลดงานตอนเลื่อนเข้า)
+function replayTreeAnimation() {
+  clearTreeTimers();
+  const wrap  = document.getElementById('foliage-wrap');
+  const fwrap = document.getElementById('flower-wrap');
+  if (!wrap) return;
+  const imgs = wrap.querySelectorAll('img');
+  const n = Math.round(Math.min(guestCount / GUEST_GOAL * 100, 100) / 100 * TREE_CLUSTERS.length);
+  imgs.forEach(img => { img.style.opacity = '0'; });
+  for (let i = 0; i < n; i++) {
+    const t = setTimeout(() => { if (imgs[i]) imgs[i].style.opacity = '1'; }, i * 80);
+    _treeAnimTimers.push(t);
+  }
+  if (fwrap) {
+    fwrap.style.transition = 'none';
+    fwrap.style.opacity = '0';
+    const t2 = setTimeout(() => { fwrap.style.transition = 'opacity 1s ease'; fwrap.style.opacity = '1'; }, n * 80 + 200);
+    _treeAnimTimers.push(t2);
+  }
+}
+
 // ── Intersection Observer: replay animation each time tree enters view ──
 let _treeSM = 0, _treeSP = 0;
 (function setupTreeObserver() {
@@ -2636,8 +2661,7 @@ let _treeSM = 0, _treeSP = 0;
   const obs = new IntersectionObserver((entries) => {
     entries.forEach(e => {
       if (e.isIntersecting) {
-        const pct = Math.min(guestCount / GUEST_GOAL * 100, 100);
-        animateTreeEntry(pct, _treeSM, _treeSP);
+        replayTreeAnimation();
       } else {
         // reset when out of view so animation replays on scroll back
         clearTreeTimers();
