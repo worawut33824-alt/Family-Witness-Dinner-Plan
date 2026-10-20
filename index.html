@@ -68,7 +68,7 @@
   .amt-donate { font-weight:700; color:var(--donate-dark); text-align:right; }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   html { scroll-behavior: smooth; }
-  body { font-family: var(--font-ui); background: var(--bg); color: var(--text); min-height: 100vh; -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; font-size: 15px; line-height: 1.5; }
+  body { font-family: var(--font-ui); background: var(--bg); color: var(--text); min-height: 100vh; -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; font-size: 15px; line-height: 1.5; padding-left: var(--sidebar-w); }
   ::selection { background: rgba(90,127,168,.22); }
 
   /* ── SIDEBAR NAV (desktop base) ── */
@@ -104,7 +104,7 @@
   .bless-ftab.active { background:var(--primary);border-color:var(--primary);color:#fff; }
 
   /* ── PAGES ── */
-  .page { display: none; margin-left: var(--sidebar-w); padding: 30px 34px 120px; max-width: 1240px; }
+  .page { display: none; margin: 0 auto; padding: 32px clamp(20px, 3vw, 48px) 120px; max-width: 1400px; width: 100%; }
   .page.active { display: block; animation: pageIn .26s ease; }
   @keyframes pageIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
 
@@ -371,7 +371,8 @@
     .nav-title { font-size: 1.15rem; }
     .nav-tabs { display: none; }
     .hamburger-btn { display: flex; align-items: center; justify-content: center; }
-    .page { margin-left: 0; padding: 18px 16px 120px; }
+    body { padding-left: 0; }
+    .page { padding: 18px 16px 120px; }
   }
 
   @media (max-width: 640px) {
