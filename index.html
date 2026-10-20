@@ -500,8 +500,13 @@
   </div>
   <div class="card" style="margin-bottom:28px">
     <div class="card-title">👥 สรุปแขก</div>
-    <div id="guest-person-grid" style="display:flex;flex-wrap:wrap;gap:3px;margin-bottom:10px"></div>
-    <div id="guest-legend"></div>
+    <div style="display:flex;flex-wrap:wrap;gap:24px;align-items:center">
+      <div class="chart-wrap" style="height:190px;width:200px;flex:0 0 200px"><canvas id="guestSideChart"></canvas></div>
+      <div style="flex:1;min-width:240px">
+        <div id="guest-person-grid" style="display:flex;flex-wrap:wrap;gap:3px;margin-bottom:10px"></div>
+        <div id="guest-legend"></div>
+      </div>
+    </div>
   </div>
 
   <!-- DONATION SUMMARY WIDGET -->
@@ -1620,6 +1625,26 @@ function renderDashboard() {
         <span style="color:var(--text-light)">ที่ว่าง ${seatsEmpty} ที่</span>
       </div>
     </div>`;
+
+  // กราฟโดนัทสรุปที่นั่งแยกฝั่ง (ดูง่าย) — มีตัวเลขรวมตรงกลาง
+  const gsCanvas = document.getElementById('guestSideChart');
+  if (gsCanvas && typeof Chart !== 'undefined') {
+    const gsData = [
+      { label:'ฝั่งเอ็ม', v:seatsM, c:C_M },
+      { label:'ฝั่งแป้ง', v:seatsP, c:C_P },
+      ...(seatsX    ? [{ label:'ไม่ระบุ', v:seatsX,     c:C_X }]     : []),
+      ...(seatsEmpty? [{ label:'ที่ว่าง', v:seatsEmpty, c:C_EMPTY }] : [])
+    ];
+    guestChartInst = new Chart(gsCanvas, {
+      type: 'doughnut',
+      data: { labels: gsData.map(d=>d.label),
+              datasets: [{ data: gsData.map(d=>d.v), backgroundColor: gsData.map(d=>d.c), borderColor:'#fff', borderWidth:2 }] },
+      options: { responsive:true, maintainAspectRatio:false, cutout:'64%',
+        plugins:{ legend:{ display:false },
+          tooltip:{ callbacks:{ label:(ctx)=>' '+ctx.label+': '+ctx.raw+' ที่' } } } },
+      plugins: [{ id:'gsCenter', afterDraw(ch){ const a=ch.chartArea; if(!a) return; const x=(a.left+a.right)/2, y=(a.top+a.bottom)/2, c=ch.ctx; c.save(); c.textAlign='center'; c.textBaseline='middle'; c.fillStyle='#44648c'; c.font='700 24px Sarabun, sans-serif'; c.fillText(String(totalFilled), x, y-7); c.fillStyle='#8a97a3'; c.font='500 11px Sarabun, sans-serif'; c.fillText('ที่นั่งรวม', x, y+15); c.restore(); } }]
+    });
+  }
 
   // donation widget
   renderDashDonations();
