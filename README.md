@@ -53,6 +53,7 @@ npm run deploy:gs  # ใช้ clasp (ต้อง clasp login + มี .clasp.j
 - 💌 **ปรับปรุงการ์ดเชิญ** — lazy-load รูป (Love Tree ~7.8MB) + preload cover + bgm `preload=none` + ฟอนต์ (โหลดไวขึ้น), `prefers-reduced-motion`, ปลดล็อกซูม, ปุ่มตอบรับกดด้วยคีย์บอร์ดได้ + label ผูก input (`for`/`id`), scroll bar ใช้ rAF
 - 🎴 **รีดีไซน์การ์ด "มาร่วมงาน / ไม่มาร่วมงาน"** ให้เข้าธีม (ขาวครีม + เส้นขอบทอง + sage/ฟ้าหม่น)
 - 🛠️ **เพิ่มสคริปต์ย่อรูป** `optimize-images.mjs` (`npm run optimize:img`, ต้อง `npm i sharp`) — ย่อรูปที่ใหญ่เกินจริง, สำรองต้นฉบับใน `images-backup/` *(ยังไม่รัน — รันบนเครื่องที่มี Node ได้เลย)*
+- ✨ **ขัดเกลาการ์ดเพิ่ม** — ต้นไม้ผู้ร่วมงานเล่นอนิเมชันโดยไม่ rebuild DOM (เบาขึ้น) + จัดระยะ section เป็น token 3 ชั้น (`--sp-sm/md/lg`) ให้จังหวะสม่ำเสมอ
 
 ### ก่อนหน้า (16–18 ต.ค. 2026)
 - เพิ่ม `bg-editor.html` (จัดรูปพื้นหลัง + ซูม + เปลี่ยนรูปคู่บ่าวสาว), เปลี่ยนรูป cover/countdown, ปรับ perf (เพลงไม่โหลดอัตโนมัติ, SW network-first, keep-warm cron)
