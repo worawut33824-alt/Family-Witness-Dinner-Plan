@@ -2600,3 +2600,238 @@ function testReadSlipFromDrive() {
              '\nHTTP: ' + r.httpCode + '\n\n' + r.error);
   }
 }
+
+
+// ═══════════════════════════════════════════════════════════════════════════
+// 📨 อีเมลเตือนแขกที่ตอบรับ (Guest Reminder) — ส่ง จ. 23 พ.ย. 2569 18:00 น.
+// ───────────────────────────────────────────────────────────────────────────
+// ส่งอีเมลเตือนถึงแขกที่ RSVP ว่า "มาร่วมงาน" (status=confirmed) และมีอีเมล
+// ส่งผ่าน Gmail ของเจ้าของสคริปต์ (ตัวเดียวกับที่ส่งการ์ดเชิญ)
+//
+// วิธีใช้ (รันจาก Apps Script editor → เลือกฟังก์ชัน → กด Run):
+//   1) previewGuestReminders()   → แสดงรายชื่อผู้รับ (ยังไม่ส่ง) — ตรวจก่อน
+//   2) sendReminderTestToMe()    → ส่งทดสอบ 1 ฉบับเข้าอีเมลตัวเอง (ดูของจริง)
+//   3) installReminderTrigger()  → ตั้งเวลายิงจริง 23 พ.ย. 18:00 น. (ครั้งเดียว)
+//   • removeReminderTrigger()    → ยกเลิกการตั้งเวลา
+//   • sendGuestReminders()       → ส่งจริงทันที (ปกติ trigger เรียกให้เอง)
+//   • resetReminderSentLog()     → ล้างบันทึกกันส่งซ้ำ (เผื่ออยากส่งรอบใหม่)
+// ═══════════════════════════════════════════════════════════════════════════
+
+// ── ตั้งค่า (แก้ได้) ────────────────────────────────────────────────────────
+var REMINDER_COVER_URL    = 'https://worawut33824-alt.github.io/Family-Witness-Dinner-Plan/%E0%B8%A3%E0%B8%B9%E0%B8%9B%E0%B8%9B%E0%B8%A3%E0%B8%B0%E0%B8%81%E0%B8%AD%E0%B8%9A%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B9%8C%E0%B8%94%E0%B9%80%E0%B8%8A%E0%B8%B4%E0%B8%8D/couple-reminder.jpg';
+var REMINDER_INVITE_URL   = 'https://worawut33824-alt.github.io/Family-Witness-Dinner-Plan/invite.html';
+var REMINDER_MAP_URL      = 'https://www.google.com/maps/place/tara+terrace+%E0%B8%98%E0%B8%B2%E0%B8%A3%E0%B8%B2+%E0%B9%80%E0%B8%97%E0%B8%AD%E0%B8%A3%E0%B9%8C%E0%B9%80%E0%B8%A3%E0%B8%8B/data=!4m2!3m1!1s0x30e2956cb4a86887:0x10b33033622a9040';
+var REMINDER_SEND_AT      = '2026-11-23T18:00:00+07:00';   // เวลายิง trigger (เวลาไทย)
+var REMINDER_EVENT_DATE   = '2026-11-28';                  // วันงาน (คำนวณ "อีก N วัน")
+var REMINDER_SENDER_NAME  = 'แป้ง & เอ็ม';                 // ชื่อผู้ส่งที่โชว์
+var REMINDER_SUBJECT_TAIL = ' วัน เจอกันนะครับ! งานแป้ง × เอ็ม · เสาร์ 28 พ.ย. · ธาราเทอเรส';
+var REMINDER_SENT_KEY     = 'reminder_2026_11_23_sent';    // key กันส่งซ้ำ
+
+// ── font stacks (แยกเป็นตัวแปรเพื่อเลี่ยง escape) ───────────────────────────
+var RF_UI = "'Sarabun', Arial, sans-serif";
+var RF_DP = "'Cormorant Garamond', Georgia, serif";
+var RF_IMPORT = "<style>@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Sarabun:wght@400;600;700;800&display=swap');</style>";
+
+function reminderEsc_(s){
+  return String(s == null ? '' : s)
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+// นับจำนวนวันถึงวันงาน (ตามเวลาไทย)
+function reminderDaysLeft_(){
+  var today = Utilities.formatDate(new Date(), 'Asia/Bangkok', 'yyyy-MM-dd');
+  var a = new Date(today + 'T00:00:00+07:00');
+  var b = new Date(REMINDER_EVENT_DATE + 'T00:00:00+07:00');
+  return Math.round((b.getTime() - a.getTime()) / 86400000);
+}
+
+// รายชื่อแขกที่ "มาร่วมงาน" + มีอีเมล (กันอีเมลซ้ำ)
+function reminderRecipients_(){
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var sheet = ss.getSheetByName('แขก');
+  if (!sheet) return [];
+  var lastRow = sheet.getLastRow();
+  if (lastRow < 2) return [];
+  var width = sheet.getLastColumn();
+  var rows = sheet.getRange(2, 1, lastRow - 1, width).getValues();
+  var out = [], seen = {};
+  for (var i = 0; i < rows.length; i++){
+    var name  = String(rows[i][0] == null ? '' : rows[i][0]).trim();   // ชื่อ
+    var st    = String(rows[i][5] == null ? '' : rows[i][5]).trim();   // สถานะ
+    var email = String(rows[i][6] == null ? '' : rows[i][6]).trim();   // อีเมล
+    if (!email || email.indexOf('@') < 1) continue;
+    var stl = st.toLowerCase();
+    var attending = (stl === 'confirmed') ||
+                    (st.indexOf('มาร่วมงาน') >= 0 && st.indexOf('ไม่') < 0) ||
+                    st === 'มา';
+    if (!attending) continue;
+    var key = email.toLowerCase();
+    if (seen[key]) continue;
+    seen[key] = true;
+    out.push({ name: name, email: email });
+  }
+  return out;
+}
+
+// สร้าง HTML อีเมล (ธีมเดียวกับการ์ดเชิญ) — personalize ชื่อ + "อีก N วัน"
+function buildReminderEmailHtml_(guestName, days){
+  var nm = String(guestName == null ? '' : guestName).trim().replace(/^คุณ\s*/, '');  // กัน "คุณคุณ"
+  var greetWho = nm ? ('คุณ' + reminderEsc_(nm)) : 'แขกผู้มีเกียรติ';
+  var d = days;
+  return '' +
+  '<div style="margin:0;padding:0;background:#e9efe7;">' +
+  RF_IMPORT +
+  '<div style="display:none;max-height:0;overflow:hidden;opacity:0;">อีก ' + d + ' วันเราจะได้พบกัน เสาร์ที่ 28 พ.ย. 16:00 น. ที่ธาราเทอเรส นครปฐม</div>' +
+  '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#e9efe7;padding:30px 12px;"><tr><td align="center">' +
+    '<table role="presentation" width="600" cellpadding="0" cellspacing="0" style="width:600px;max-width:600px;background:#ffffff;border-radius:22px;overflow:hidden;box-shadow:0 18px 50px rgba(44,58,74,.16);">' +
+      '<tr><td style="height:7px;background:linear-gradient(90deg,#B8CABC 0%,#809684 45%,#C9A96E 100%);font-size:0;line-height:0;">&nbsp;</td></tr>' +
+      '<tr><td align="center" style="padding:40px 44px 8px;">' +
+        '<div style="font-family:' + RF_UI + ';font-size:12px;letter-spacing:4px;color:#C9A96E;font-weight:700;text-transform:uppercase;">Save&nbsp;the&nbsp;Date&nbsp;&middot;&nbsp;Reminder</div>' +
+        '<div style="font-family:' + RF_DP + ';font-size:48px;font-weight:600;color:#2c3a4a;line-height:1.1;margin:10px 0 2px;">แป้ง <span style="color:#C9A96E;font-weight:400;">&times;</span> เอ็ม</div>' +
+        '<div style="font-family:' + RF_DP + ';font-style:italic;font-size:16px;letter-spacing:1px;color:#809684;">Family Witness Dinner</div>' +
+      '</td></tr>' +
+      '<tr><td align="center" style="padding:20px 44px 6px;">' +
+        '<img src="' + REMINDER_COVER_URL + '" alt="แป้ง และ เอ็ม" width="230" style="width:230px;max-width:70%;height:auto;border-radius:18px;border:1px solid #ecdcbf;box-shadow:0 10px 30px rgba(44,58,74,.18);display:block;margin:0 auto;">' +
+        '<div style="margin-top:14px;"><span style="font-family:' + RF_UI + ';font-size:13px;letter-spacing:2px;color:#5f7265;font-weight:700;background:#eef3ec;border:1px solid #dbe6dc;border-radius:999px;padding:6px 18px;display:inline-block;">&#9203; อีกเพียง <span style="color:#C9A96E;">' + d + '</span> วัน</span></div>' +
+      '</td></tr>' +
+      '<tr><td style="padding:20px 48px 4px;font-family:' + RF_UI + ';color:#2c3a4a;">' +
+        '<p style="font-size:17px;font-weight:600;margin:0 0 12px;">เรียน ' + greetWho + ' ที่เคารพรักครับ</p>' +
+        '<p style="font-size:15px;line-height:1.85;color:#4a5a6a;margin:0 0 14px;">ขอบคุณมากที่ตอบรับคำเชิญ มาร่วมเป็น<b>สักขีพยานแห่งความรัก</b>ในวันสำคัญของเรา อีกเพียง <b style="color:#C9A96E;">' + d + ' วัน</b> เราก็จะได้พบกันแล้วครับ — ขอส่งรายละเอียดงานมาเตือนความทรงจำอีกครั้งนะครับ เผื่อเตรียมตัวเดินทางกันล่วงหน้า</p>' +
+      '</td></tr>' +
+      '<tr><td style="padding:6px 48px 8px;">' +
+        '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f6f3ea;border:1px solid #ecdcbf;border-radius:16px;"><tr><td style="padding:22px 26px;font-family:' + RF_UI + ';">' +
+          '<table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr><td width="34" valign="top" style="font-size:20px;padding:6px 0;">📅</td><td style="padding:6px 0;"><div style="font-size:12px;letter-spacing:1px;color:#a08a5e;font-weight:700;text-transform:uppercase;">วันที่</div><div style="font-size:16px;color:#2c3a4a;font-weight:600;">วันเสาร์ที่ 28 พฤศจิกายน 2569</div></td></tr></table>' +
+          '<div style="border-top:1px dashed #e2d3b3;margin:4px 0;"></div>' +
+          '<table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr><td width="34" valign="top" style="font-size:20px;padding:6px 0;">🕓</td><td style="padding:6px 0;"><div style="font-size:12px;letter-spacing:1px;color:#a08a5e;font-weight:700;text-transform:uppercase;">เวลา</div><div style="font-size:16px;color:#2c3a4a;font-weight:600;">16:00 น. <span style="font-weight:400;color:#6b7c8d;">(เริ่มลงทะเบียน)</span></div></td></tr></table>' +
+          '<div style="border-top:1px dashed #e2d3b3;margin:4px 0;"></div>' +
+          '<table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr><td width="34" valign="top" style="font-size:20px;padding:6px 0;">📍</td><td style="padding:6px 0;"><div style="font-size:12px;letter-spacing:1px;color:#a08a5e;font-weight:700;text-transform:uppercase;">สถานที่</div><div style="font-size:16px;color:#2c3a4a;font-weight:600;">ธาราเทอเรส (Tara Terrace)</div><div style="font-size:14px;color:#6b7c8d;">จังหวัดนครปฐม</div></td></tr></table>' +
+        '</td></tr></table>' +
+      '</td></tr>' +
+      '<tr><td style="padding:18px 48px 6px;">' +
+        '<table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr>' +
+          '<td width="50%" style="padding:0 6px 0 0;"><a href="' + REMINDER_INVITE_URL + '" target="_blank" style="display:block;text-align:center;font-family:' + RF_UI + ';font-size:15px;font-weight:700;color:#ffffff;text-decoration:none;background:#C9A96E;padding:14px 10px;border-radius:12px;">💌 ดูการ์ดเชิญ</a></td>' +
+          '<td width="50%" style="padding:0 0 0 6px;"><a href="' + REMINDER_MAP_URL + '" target="_blank" style="display:block;text-align:center;font-family:' + RF_UI + ';font-size:15px;font-weight:700;color:#5f7265;text-decoration:none;background:#ffffff;border:1.5px solid #809684;padding:12.5px 10px;border-radius:12px;">🗺️ เปิดแผนที่นำทาง</a></td>' +
+        '</tr></table>' +
+      '</td></tr>' +
+      '<tr><td style="padding:14px 48px 4px;"><div style="font-family:' + RF_UI + ';font-size:13.5px;line-height:1.7;color:#7a8794;background:#eef3ec;border-left:3px solid #809684;border-radius:8px;padding:12px 16px;">⏰ รบกวนเผื่อเวลาเดินทาง และมาถึงก่อนเวลาเล็กน้อยเพื่อลงทะเบียนนะครับ — เราตั้งใจรอต้อนรับทุกท่านด้วยความยินดีจริง ๆ</div></td></tr>' +
+      '<tr><td align="center" style="padding:26px 48px 8px;"><div style="font-family:' + RF_UI + ';font-size:14px;color:#6b7c8d;">ด้วยรักและความตั้งใจ</div><div style="font-family:' + RF_DP + ';font-size:30px;font-weight:600;color:#2c3a4a;margin-top:4px;">แป้ง &amp; เอ็ม</div></td></tr>' +
+      '<tr><td align="center" style="padding:6px 48px 0;"><table role="presentation" cellpadding="0" cellspacing="0"><tr><td style="width:90px;border-top:1px solid #e0cfa8;font-size:0;line-height:0;">&nbsp;</td><td style="padding:0 12px;color:#C9A96E;font-size:14px;">&#10022;</td><td style="width:90px;border-top:1px solid #e0cfa8;font-size:0;line-height:0;">&nbsp;</td></tr></table></td></tr>' +
+      '<tr><td align="center" style="padding:16px 48px 34px;"><div style="font-family:' + RF_DP + ';font-size:17px;letter-spacing:2px;color:#809684;">28 &middot; 11 &middot; 2569 &nbsp;&#10022;&nbsp; TARA Terrace</div><div style="font-family:' + RF_UI + ';font-size:11.5px;color:#aab4bd;margin-top:10px;line-height:1.6;">อีเมลฉบับนี้ส่งถึงผู้ที่ตอบรับเข้าร่วมเป็นสักขีพยานของแป้งและเอ็ม<br>หากมีข้อสงสัยหรือต้องการแจ้งเปลี่ยนแปลง ตอบกลับอีเมลนี้ได้เลยครับ</div></td></tr>' +
+    '</table>' +
+    '<div style="font-family:' + RF_UI + ';font-size:11px;color:#9aa79c;margin-top:18px;">Family Witness Dinner · แป้ง × เอ็ม · 2569</div>' +
+  '</td></tr></table>' +
+  '</div>';
+}
+
+// แสดงรายชื่อผู้รับ (ยังไม่ส่ง) — ตรวจก่อนส่งจริง
+function previewGuestReminders(){
+  var NL = String.fromCharCode(10);
+  var days = reminderDaysLeft_();
+  var list = reminderRecipients_();
+  var lines = [];
+  for (var i = 0; i < list.length; i++){
+    lines.push((i + 1) + '. ' + (list[i].name || '(ไม่มีชื่อ)') + '  <' + list[i].email + '>');
+  }
+  var msg = 'อีก ' + days + ' วันถึงวันงาน' + NL +
+            'จะส่งอีเมลเตือนถึง ' + list.length + ' คน:' + NL + NL +
+            (lines.length ? lines.join(NL) : '(ไม่พบผู้รับที่เข้าเกณฑ์)');
+  Logger.log(msg);
+  try { SpreadsheetApp.getUi().alert('📋 รายชื่อผู้รับอีเมลเตือน (ยังไม่ส่ง)' + NL + NL + msg); } catch (e) {}
+  return msg;
+}
+
+// ส่งอีเมลทดสอบ 1 ฉบับเข้าอีเมลของผู้รันสคริปต์
+function sendReminderTestToMe(){
+  var email = Session.getEffectiveUser().getEmail();
+  if (!email) { Logger.log('❌ ไม่พบอีเมลผู้ใช้'); return 'ไม่พบอีเมลผู้ใช้'; }
+  var days = reminderDaysLeft_();
+  var html = buildReminderEmailHtml_('ตัวอย่าง (ทดสอบ)', days);
+  GmailApp.sendEmail(email,
+    '[ทดสอบ] 💌 อีก ' + days + ' วัน — อีเมลเตือนแขก แป้ง × เอ็ม',
+    'นี่คืออีเมลทดสอบ (เปิดแบบ HTML เพื่อดูหน้าตาจริง)',
+    { htmlBody: html, name: REMINDER_SENDER_NAME });
+  var m = '✅ ส่งอีเมลทดสอบไปที่ ' + email + ' แล้ว';
+  Logger.log(m);
+  try { SpreadsheetApp.getUi().alert(m); } catch (e) {}
+  return m;
+}
+
+// ส่งจริงถึงแขกทุกคนที่เข้าเกณฑ์ (ปกติให้ trigger เรียก) — กันส่งซ้ำด้วย sent log
+function sendGuestReminders(){
+  var NL = String.fromCharCode(10);
+  var days = reminderDaysLeft_();
+  var list = reminderRecipients_();
+  var props = PropertiesService.getScriptProperties();
+  var sentArr = [];
+  try { sentArr = JSON.parse(props.getProperty(REMINDER_SENT_KEY) || '[]'); } catch (e) { sentArr = []; }
+  var sentSet = {};
+  for (var s = 0; s < sentArr.length; s++){ sentSet[String(sentArr[s]).toLowerCase()] = true; }
+
+  var subject = '💌 อีก ' + days + REMINDER_SUBJECT_TAIL;
+  var ok = 0, skip = 0, fail = 0;
+
+  for (var i = 0; i < list.length; i++){
+    var g = list[i];
+    var key = g.email.toLowerCase();
+    if (sentSet[key]) { skip++; continue; }
+    try {
+      var html = buildReminderEmailHtml_(g.name, days);
+      var plain = 'เรียน คุณ ' + (g.name || 'แขกผู้มีเกียรติ') + NL + NL +
+        'อีก ' + days + ' วัน เจอกันนะครับ งานสักขีพยาน แป้ง & เอ็ม' + NL +
+        'วันเสาร์ที่ 28 พฤศจิกายน 2569 · 16:00 น. (เริ่มลงทะเบียน)' + NL +
+        'ธาราเทอเรส (Tara Terrace) · นครปฐม' + NL + NL +
+        'ดูการ์ดเชิญ: ' + REMINDER_INVITE_URL + NL +
+        'แผนที่: ' + REMINDER_MAP_URL;
+      GmailApp.sendEmail(g.email, subject, plain, { htmlBody: html, name: REMINDER_SENDER_NAME });
+      sentSet[key] = true; sentArr.push(g.email); ok++;
+      Utilities.sleep(400);
+    } catch (err) {
+      fail++;
+      Logger.log('reminder fail ' + g.email + ': ' + err);
+    }
+  }
+  props.setProperty(REMINDER_SENT_KEY, JSON.stringify(sentArr));
+  var msg = '📨 ส่งอีเมลเตือนเสร็จ — สำเร็จ ' + ok + ' · ข้าม(เคยส่ง) ' + skip + ' · พลาด ' + fail +
+            ' (ผู้รับที่เข้าเกณฑ์ ' + list.length + ')';
+  Logger.log(msg);
+  return msg;
+}
+
+// ตั้ง trigger แบบครั้งเดียว ให้ยิง sendGuestReminders ตามเวลา REMINDER_SEND_AT
+function installReminderTrigger(){
+  var trgs = ScriptApp.getProjectTriggers();
+  for (var i = 0; i < trgs.length; i++){
+    if (trgs[i].getHandlerFunction() === 'sendGuestReminders') ScriptApp.deleteTrigger(trgs[i]);
+  }
+  var when = new Date(REMINDER_SEND_AT);
+  if (when.getTime() <= Date.now()){
+    var w = '⚠️ เวลาส่ง (' + REMINDER_SEND_AT + ') ผ่านไปแล้ว — ยังไม่ได้ตั้ง trigger';
+    Logger.log(w);
+    try { SpreadsheetApp.getUi().alert(w); } catch (e) {}
+    return w;
+  }
+  ScriptApp.newTrigger('sendGuestReminders').timeBased().at(when).create();
+  var msg = '✅ ตั้งเวลาส่งอีเมลเตือนแล้ว: ' +
+            Utilities.formatDate(when, 'Asia/Bangkok', 'EEE d MMM yyyy HH:mm') + ' น. (เวลาไทย)';
+  Logger.log(msg);
+  try { SpreadsheetApp.getUi().alert(msg); } catch (e) {}
+  return msg;
+}
+
+// ยกเลิก trigger อีเมลเตือน
+function removeReminderTrigger(){
+  var n = 0, trgs = ScriptApp.getProjectTriggers();
+  for (var i = 0; i < trgs.length; i++){
+    if (trgs[i].getHandlerFunction() === 'sendGuestReminders'){ ScriptApp.deleteTrigger(trgs[i]); n++; }
+  }
+  var msg = '🗑️ ลบ trigger อีเมลเตือนแล้ว ' + n + ' ตัว';
+  Logger.log(msg);
+  try { SpreadsheetApp.getUi().alert(msg); } catch (e) {}
+  return msg;
+}
+
+// ล้างบันทึกกันส่งซ้ำ (ให้ส่งรอบใหม่ได้)
+function resetReminderSentLog(){
+  PropertiesService.getScriptProperties().deleteProperty(REMINDER_SENT_KEY);
+  Logger.log('🔄 ล้างบันทึกกันส่งซ้ำแล้ว — ส่งรอบใหม่ได้');
+}
