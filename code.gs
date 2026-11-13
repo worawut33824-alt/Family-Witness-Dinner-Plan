@@ -2627,6 +2627,12 @@ var REMINDER_SENDER_NAME  = 'แป้ง & เอ็ม';                 // �
 var REMINDER_SUBJECT_TAIL = ' วัน เจอกันนะครับ! งานแป้ง × เอ็ม · เสาร์ 28 พ.ย. · ธาราเทอเรส';
 var REMINDER_SENT_KEY     = 'reminder_2026_11_23_sent';    // key กันส่งซ้ำ
 
+// ── ผู้รับเพิ่มเติม (นอกเหนือจากในชีต เช่น คู่บ่าวสาว) ──────────────────────
+var REMINDER_EXTRA_RECIPIENTS = [
+  { name: 'เอ็ม', email: 'worawut33824@gmail.com' },
+  { name: 'แป้ง', email: 'pitchaon.kai@gmail.com' }
+];
+
 // ── font stacks (แยกเป็นตัวแปรเพื่อเลี่ยง escape) ───────────────────────────
 var RF_UI = "'Sarabun', Arial, sans-serif";
 var RF_DP = "'Cormorant Garamond', Georgia, serif";
@@ -2669,6 +2675,16 @@ function reminderRecipients_(){
     if (seen[key]) continue;
     seen[key] = true;
     out.push({ name: name, email: email });
+  }
+  // เพิ่มผู้รับพิเศษ (คู่บ่าวสาว ฯลฯ) — กันซ้ำกับในชีต
+  for (var k = 0; k < REMINDER_EXTRA_RECIPIENTS.length; k++){
+    var ex = REMINDER_EXTRA_RECIPIENTS[k];
+    var exEmail = String(ex.email == null ? '' : ex.email).trim();
+    if (!exEmail || exEmail.indexOf('@') < 1) continue;
+    var exKey = exEmail.toLowerCase();
+    if (seen[exKey]) continue;
+    seen[exKey] = true;
+    out.push({ name: ex.name || '', email: exEmail });
   }
   return out;
 }
