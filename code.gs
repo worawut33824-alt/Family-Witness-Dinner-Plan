@@ -2718,20 +2718,20 @@ function buildReminderEmailHtml_(guestName, days){
       '</td></tr>' +
       '<tr><td style="padding:6px 48px 8px;">' +
         '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f0f6fb;border:1px solid #d4e3ef;border-radius:16px;"><tr><td style="padding:22px 26px;font-family:' + RF_UI + ';">' +
-          '<table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr><td width="34" valign="top" style="font-size:20px;padding:6px 0;">📅</td><td style="padding:6px 0;"><div style="font-size:12px;letter-spacing:1px;color:#5a7fa8;font-weight:700;text-transform:uppercase;">วันที่</div><div style="font-size:16px;color:#2c3a4a;font-weight:600;">วันเสาร์ที่ 28 พฤศจิกายน 2569</div></td></tr></table>' +
+          '<table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr><td width="34" valign="top" style="font-size:20px;padding:6px 0;">&#128197;</td><td style="padding:6px 0;"><div style="font-size:12px;letter-spacing:1px;color:#5a7fa8;font-weight:700;text-transform:uppercase;">วันที่</div><div style="font-size:16px;color:#2c3a4a;font-weight:600;">วันเสาร์ที่ 28 พฤศจิกายน 2569</div></td></tr></table>' +
           '<div style="border-top:1px dashed #d0e0ec;margin:4px 0;"></div>' +
-          '<table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr><td width="34" valign="top" style="font-size:20px;padding:6px 0;">🕓</td><td style="padding:6px 0;"><div style="font-size:12px;letter-spacing:1px;color:#5a7fa8;font-weight:700;text-transform:uppercase;">เวลา</div><div style="font-size:16px;color:#2c3a4a;font-weight:600;">16:00 น. <span style="font-weight:400;color:#6b7c8d;">(เริ่มลงทะเบียน)</span></div></td></tr></table>' +
+          '<table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr><td width="34" valign="top" style="font-size:20px;padding:6px 0;">&#128339;</td><td style="padding:6px 0;"><div style="font-size:12px;letter-spacing:1px;color:#5a7fa8;font-weight:700;text-transform:uppercase;">เวลา</div><div style="font-size:16px;color:#2c3a4a;font-weight:600;">16:00 น. <span style="font-weight:400;color:#6b7c8d;">(เริ่มลงทะเบียน)</span></div></td></tr></table>' +
           '<div style="border-top:1px dashed #d0e0ec;margin:4px 0;"></div>' +
-          '<table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr><td width="34" valign="top" style="font-size:20px;padding:6px 0;">📍</td><td style="padding:6px 0;"><div style="font-size:12px;letter-spacing:1px;color:#5a7fa8;font-weight:700;text-transform:uppercase;">สถานที่</div><div style="font-size:16px;color:#2c3a4a;font-weight:600;">ธาราเทอเรส (Tara Terrace)</div><div style="font-size:14px;color:#6b7c8d;">จังหวัดนครปฐม</div></td></tr></table>' +
+          '<table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr><td width="34" valign="top" style="font-size:20px;padding:6px 0;">&#128205;</td><td style="padding:6px 0;"><div style="font-size:12px;letter-spacing:1px;color:#5a7fa8;font-weight:700;text-transform:uppercase;">สถานที่</div><div style="font-size:16px;color:#2c3a4a;font-weight:600;">ธาราเทอเรส (Tara Terrace)</div><div style="font-size:14px;color:#6b7c8d;">จังหวัดนครปฐม</div></td></tr></table>' +
         '</td></tr></table>' +
       '</td></tr>' +
       '<tr><td style="padding:18px 48px 6px;">' +
         '<table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr>' +
-          '<td width="50%" style="padding:0 6px 0 0;"><a href="' + REMINDER_INVITE_URL + '" target="_blank" style="display:block;text-align:center;font-family:' + RF_UI + ';font-size:15px;font-weight:700;color:#ffffff;text-decoration:none;background:linear-gradient(90deg,#4a7fa5,#3d6a91);padding:14px 10px;border-radius:12px;">💌 ดูการ์ดเชิญ</a></td>' +
-          '<td width="50%" style="padding:0 0 0 6px;"><a href="' + REMINDER_MAP_URL + '" target="_blank" style="display:block;text-align:center;font-family:' + RF_UI + ';font-size:15px;font-weight:700;color:#3d6a91;text-decoration:none;background:#ffffff;border:1.5px solid #4a7fa5;padding:12.5px 10px;border-radius:12px;">🗺️ เปิดแผนที่นำทาง</a></td>' +
+          '<td width="50%" style="padding:0 6px 0 0;"><a href="' + REMINDER_INVITE_URL + '" target="_blank" style="display:block;text-align:center;font-family:' + RF_UI + ';font-size:15px;font-weight:700;color:#ffffff;text-decoration:none;background:linear-gradient(90deg,#4a7fa5,#3d6a91);padding:14px 10px;border-radius:12px;">&#128140; ดูการ์ดเชิญ</a></td>' +
+          '<td width="50%" style="padding:0 0 0 6px;"><a href="' + REMINDER_MAP_URL + '" target="_blank" style="display:block;text-align:center;font-family:' + RF_UI + ';font-size:15px;font-weight:700;color:#3d6a91;text-decoration:none;background:#ffffff;border:1.5px solid #4a7fa5;padding:12.5px 10px;border-radius:12px;">&#128506;&#65039; เปิดแผนที่นำทาง</a></td>' +
         '</tr></table>' +
       '</td></tr>' +
-      '<tr><td style="padding:14px 48px 4px;"><div style="font-family:' + RF_UI + ';font-size:13.5px;line-height:1.7;color:#5a6b7a;background:#eef4f9;border-left:3px solid #4a7fa5;border-radius:8px;padding:12px 16px;">⏰ รบกวนเผื่อเวลาเดินทาง และมาถึงก่อนเวลาเล็กน้อยเพื่อลงทะเบียนนะครับ — เราตั้งใจรอต้อนรับทุกท่านด้วยความยินดีจริง ๆ</div></td></tr>' +
+      '<tr><td style="padding:14px 48px 4px;"><div style="font-family:' + RF_UI + ';font-size:13.5px;line-height:1.7;color:#5a6b7a;background:#eef4f9;border-left:3px solid #4a7fa5;border-radius:8px;padding:12px 16px;">&#9200; รบกวนเผื่อเวลาเดินทาง และมาถึงก่อนเวลาเล็กน้อยเพื่อลงทะเบียนนะครับ — เราตั้งใจรอต้อนรับทุกท่านด้วยความยินดีจริง ๆ</div></td></tr>' +
       '<tr><td align="center" style="padding:26px 48px 8px;"><div style="font-family:' + RF_UI + ';font-size:14px;color:#6b7c8d;">ด้วยรักและความตั้งใจ</div><div style="font-family:' + RF_DP + ';font-size:30px;font-weight:600;color:#2c4a6a;margin-top:4px;">แป้ง &amp; เอ็ม</div></td></tr>' +
       '<tr><td align="center" style="padding:6px 48px 0;"><table role="presentation" cellpadding="0" cellspacing="0"><tr><td style="width:90px;border-top:1px solid #cfe0ec;font-size:0;line-height:0;">&nbsp;</td><td style="padding:0 12px;color:#6b9bbe;font-size:14px;">&#10022;</td><td style="width:90px;border-top:1px solid #cfe0ec;font-size:0;line-height:0;">&nbsp;</td></tr></table></td></tr>' +
       '<tr><td align="center" style="padding:16px 48px 34px;"><div style="font-family:' + RF_DP + ';font-size:17px;letter-spacing:2px;color:#5a7fa8;">28 &middot; 11 &middot; 2569 &nbsp;&#10022;&nbsp; TARA Terrace</div><div style="font-family:' + RF_UI + ';font-size:11.5px;color:#9fb0c0;margin-top:10px;line-height:1.6;">อีเมลฉบับนี้ส่งถึงผู้ที่ตอบรับเข้าร่วมเป็นสักขีพยานของแป้งและเอ็ม<br>หากมีข้อสงสัยหรือต้องการแจ้งเปลี่ยนแปลง ตอบกลับอีเมลนี้ได้เลยครับ</div></td></tr>' +
@@ -2763,9 +2763,15 @@ function sendReminderTestToMe(){
   var email = Session.getEffectiveUser().getEmail();
   if (!email) { Logger.log('❌ ไม่พบอีเมลผู้ใช้'); return 'ไม่พบอีเมลผู้ใช้'; }
   var days = reminderDaysLeft_();
-  var html = buildReminderEmailHtml_('ตัวอย่าง (ทดสอบ)', days);
+  var list = reminderRecipients_();
+  var testName = '';
+  for (var i = 0; i < list.length; i++){
+    if (list[i].email && list[i].email.toLowerCase() === String(email).toLowerCase()){ testName = list[i].name; break; }
+  }
+  if (!testName) testName = 'เอ็ม';
+  var html = buildReminderEmailHtml_(testName, days);
   GmailApp.sendEmail(email,
-    '[ทดสอบ] 💌 อีก ' + days + ' วัน — อีเมลเตือนแขก แป้ง × เอ็ม',
+    '[ทดสอบ] อีก ' + days + ' วัน — อีเมลเตือนแขก แป้ง × เอ็ม',
     'นี่คืออีเมลทดสอบ (เปิดแบบ HTML เพื่อดูหน้าตาจริง)',
     { htmlBody: html, name: REMINDER_SENDER_NAME });
   var m = '✅ ส่งอีเมลทดสอบไปที่ ' + email + ' แล้ว';
@@ -2785,7 +2791,7 @@ function sendGuestReminders(){
   var sentSet = {};
   for (var s = 0; s < sentArr.length; s++){ sentSet[String(sentArr[s]).toLowerCase()] = true; }
 
-  var subject = '💌 อีก ' + days + REMINDER_SUBJECT_TAIL;
+  var subject = 'อีก ' + days + REMINDER_SUBJECT_TAIL;
   var ok = 0, skip = 0, fail = 0;
 
   for (var i = 0; i < list.length; i++){
