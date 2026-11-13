@@ -2602,39 +2602,44 @@ function testReadSlipFromDrive() {
 }
 
 
-// ═══════════════════════════════════════════════════════════════════════════
-// 📨 อีเมลเตือนแขกที่ตอบรับ (Guest Reminder) — ส่ง จ. 23 พ.ย. 2569 18:00 น.
-// ───────────────────────────────────────────────────────────────────────────
-// ส่งอีเมลเตือนถึงแขกที่ RSVP ว่า "มาร่วมงาน" (status=confirmed) และมีอีเมล
+// ===========================================================================
+// อีเมลเตือนแขกที่ตอบรับ (Guest Reminder) — ส่ง 2 รอบ: 23 + 27 พ.ย. 2569 18:00 น.
+// ---------------------------------------------------------------------------
+// ส่งอีเมลเตือนถึงแขกที่ RSVP "มาร่วมงาน" (status=confirmed) และมีอีเมล
 // + คู่บ่าวสาว (REMINDER_EXTRA_RECIPIENTS) · ส่งผ่าน Gmail ของเจ้าของสคริปต์
+// อ่านรายชื่อจากชีตสด ๆ ตอนส่ง → ใครลงทะเบียนเพิ่มก่อนเวลาส่ง ได้รับอัตโนมัติ
+// แต่ละรอบ (วัน) ส่งใหม่ครบทุกคน (กันส่งซ้ำเฉพาะภายในวันเดียวกัน)
 //
 // วิธีใช้ (รันจาก Apps Script editor → เลือกฟังก์ชัน → กด Run):
-//   1) previewGuestReminders()   → แสดงรายชื่อผู้รับ (ยังไม่ส่ง) — ตรวจก่อน
-//   2) sendReminderTestToMe()    → ส่งทดสอบ 1 ฉบับเข้าอีเมลตัวเอง (ดูของจริง)
-//   3) installReminderTrigger()  → ตั้งเวลายิงจริง 23 พ.ย. 18:00 น. (ครั้งเดียว)
-//   • removeReminderTrigger()    → ยกเลิกการตั้งเวลา
-//   • sendGuestReminders()       → ส่งจริงทันที (ปกติ trigger เรียกให้เอง)
-//   • resetReminderSentLog()     → ล้างบันทึกกันส่งซ้ำ (เผื่ออยากส่งรอบใหม่)
-// ═══════════════════════════════════════════════════════════════════════════
+//   1) previewGuestReminders()   -> แสดงรายชื่อผู้รับ (ยังไม่ส่ง) ตรวจก่อน
+//   2) sendReminderTestToMe()    -> ส่งทดสอบ 1 ฉบับเข้าอีเมลตัวเอง (ดูของจริง)
+//   3) installReminderTrigger()  -> ตั้งเวลายิงจริง 2 รอบ: 23 + 27 พ.ย. 18:00 น.
+//   - removeReminderTrigger()    -> ยกเลิกการตั้งเวลาทั้งหมด
+//   - sendGuestReminders()       -> ส่งจริงทันที (ปกติ trigger เรียกให้เอง)
+//   - resetReminderSentLog()     -> ล้างบันทึกกันส่งซ้ำ (เผื่ออยากส่งรอบใหม่ในวันเดิม)
+// ===========================================================================
 
-// ── ตั้งค่า (แก้ได้) ────────────────────────────────────────────────────────
+// -- ตั้งค่า (แก้ได้) --------------------------------------------------------
 var REMINDER_COVER_URL    = 'https://worawut33824-alt.github.io/Family-Witness-Dinner-Plan/%E0%B8%A3%E0%B8%B9%E0%B8%9B%E0%B8%9B%E0%B8%A3%E0%B8%B0%E0%B8%81%E0%B8%AD%E0%B8%9A%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B9%8C%E0%B8%94%E0%B9%80%E0%B8%8A%E0%B8%B4%E0%B8%8D/couple-reminder.jpg';
 var REMINDER_LOGO_URL     = 'https://worawut33824-alt.github.io/Family-Witness-Dinner-Plan/logo.png';
 var REMINDER_INVITE_URL   = 'https://worawut33824-alt.github.io/Family-Witness-Dinner-Plan/invite.html';
 var REMINDER_MAP_URL      = 'https://www.google.com/maps/place/tara+terrace+%E0%B8%98%E0%B8%B2%E0%B8%A3%E0%B8%B2+%E0%B9%80%E0%B8%97%E0%B8%AD%E0%B8%A3%E0%B9%8C%E0%B9%80%E0%B8%A3%E0%B8%8B/data=!4m2!3m1!1s0x30e2956cb4a86887:0x10b33033622a9040';
-var REMINDER_SEND_AT      = '2026-11-23T18:00:00+07:00';   // เวลายิง trigger (เวลาไทย)
+var REMINDER_SEND_DATES   = [                              // เวลายิง trigger (เวลาไทย) - ส่งหลายรอบได้
+  '2026-11-23T18:00:00+07:00',   // รอบ 1
+  '2026-11-27T18:00:00+07:00'    // รอบ 2 (ก่อนวันงาน 1 วัน)
+];
 var REMINDER_EVENT_DATE   = '2026-11-28';                  // วันงาน (คำนวณ "อีก N วัน")
 var REMINDER_SENDER_NAME  = 'แป้ง & เอ็ม';                 // ชื่อผู้ส่งที่โชว์
 var REMINDER_SUBJECT_TAIL = ' วัน เจอกันนะครับ! งานแป้ง × เอ็ม · เสาร์ 28 พ.ย. · ธาราเทอเรส';
-var REMINDER_SENT_KEY     = 'reminder_2026_11_23_sent';    // key กันส่งซ้ำ
+var REMINDER_SENT_PREFIX  = 'reminder_sent_';             // prefix key กันส่งซ้ำ (ต่อท้ายด้วยวันที่ส่ง)
 
-// ── ผู้รับเพิ่มเติม (นอกเหนือจากในชีต เช่น คู่บ่าวสาว) ──────────────────────
+// -- ผู้รับเพิ่มเติม (นอกเหนือจากในชีต เช่น คู่บ่าวสาว) ----------------------
 var REMINDER_EXTRA_RECIPIENTS = [
   { name: 'เอ็ม', email: 'worawut33824@gmail.com' },
   { name: 'แป้ง', email: 'pitchaon.kai@gmail.com' }
 ];
 
-// ── font stacks (แยกเป็นตัวแปรเพื่อเลี่ยง escape) ───────────────────────────
+// -- font stacks (แยกเป็นตัวแปรเพื่อเลี่ยง escape) ---------------------------
 var RF_UI = "'Sarabun', Arial, sans-serif";
 var RF_DP = "'Cormorant Garamond', Georgia, serif";
 var RF_IMPORT = "<style>@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Sarabun:wght@400;600;700;800&display=swap');</style>";
@@ -2677,7 +2682,7 @@ function reminderRecipients_(){
     seen[key] = true;
     out.push({ name: name, email: email });
   }
-  // เพิ่มผู้รับพิเศษ (คู่บ่าวสาว ฯลฯ) — กันซ้ำกับในชีต
+  // เพิ่มผู้รับพิเศษ (คู่บ่าวสาว ฯลฯ) - กันซ้ำกับในชีต
   for (var k = 0; k < REMINDER_EXTRA_RECIPIENTS.length; k++){
     var ex = REMINDER_EXTRA_RECIPIENTS[k];
     var exEmail = String(ex.email == null ? '' : ex.email).trim();
@@ -2690,7 +2695,8 @@ function reminderRecipients_(){
   return out;
 }
 
-// สร้าง HTML อีเมล (ธีมฟ้า-ขาว + โลโก้) — personalize ชื่อ + "อีก N วัน"
+// สร้าง HTML อีเมล (ธีมฟ้า-ขาว + โลโก้) - personalize ชื่อ + "อีก N วัน"
+// หมายเหตุ: ใช้ HTML entity แทนอีโมจิ (กันเพี้ยนตอนส่ง Gmail)
 function buildReminderEmailHtml_(guestName, days){
   var nm = String(guestName == null ? '' : guestName).trim().replace(/^คุณ\s*/, '');  // กัน "คุณคุณ"
   var greetWho = nm ? ('คุณ' + reminderEsc_(nm)) : 'แขกผู้มีเกียรติ';
@@ -2741,7 +2747,7 @@ function buildReminderEmailHtml_(guestName, days){
   '</div>';
 }
 
-// แสดงรายชื่อผู้รับ (ยังไม่ส่ง) — ตรวจก่อนส่งจริง
+// แสดงรายชื่อผู้รับ (ยังไม่ส่ง) - ตรวจก่อนส่งจริง
 function previewGuestReminders(){
   var NL = String.fromCharCode(10);
   var days = reminderDaysLeft_();
@@ -2754,14 +2760,14 @@ function previewGuestReminders(){
             'จะส่งอีเมลเตือนถึง ' + list.length + ' คน:' + NL + NL +
             (lines.length ? lines.join(NL) : '(ไม่พบผู้รับที่เข้าเกณฑ์)');
   Logger.log(msg);
-  try { SpreadsheetApp.getUi().alert('📋 รายชื่อผู้รับอีเมลเตือน (ยังไม่ส่ง)' + NL + NL + msg); } catch (e) {}
+  try { SpreadsheetApp.getUi().alert('รายชื่อผู้รับอีเมลเตือน (ยังไม่ส่ง)' + NL + NL + msg); } catch (e) {}
   return msg;
 }
 
-// ส่งอีเมลทดสอบ 1 ฉบับเข้าอีเมลของผู้รันสคริปต์
+// ส่งอีเมลทดสอบ 1 ฉบับเข้าอีเมลของผู้รันสคริปต์ (ขึ้นชื่อตามผู้รันจริง)
 function sendReminderTestToMe(){
   var email = Session.getEffectiveUser().getEmail();
-  if (!email) { Logger.log('❌ ไม่พบอีเมลผู้ใช้'); return 'ไม่พบอีเมลผู้ใช้'; }
+  if (!email) { Logger.log('ไม่พบอีเมลผู้ใช้'); return 'ไม่พบอีเมลผู้ใช้'; }
   var days = reminderDaysLeft_();
   var list = reminderRecipients_();
   var testName = '';
@@ -2774,20 +2780,22 @@ function sendReminderTestToMe(){
     '[ทดสอบ] อีก ' + days + ' วัน — อีเมลเตือนแขก แป้ง × เอ็ม',
     'นี่คืออีเมลทดสอบ (เปิดแบบ HTML เพื่อดูหน้าตาจริง)',
     { htmlBody: html, name: REMINDER_SENDER_NAME });
-  var m = '✅ ส่งอีเมลทดสอบไปที่ ' + email + ' แล้ว';
+  var m = 'ส่งอีเมลทดสอบไปที่ ' + email + ' แล้ว (ขึ้นชื่อ: คุณ' + testName + ')';
   Logger.log(m);
   try { SpreadsheetApp.getUi().alert(m); } catch (e) {}
   return m;
 }
 
-// ส่งจริงถึงแขกทุกคนที่เข้าเกณฑ์ (ปกติให้ trigger เรียก) — กันส่งซ้ำด้วย sent log
+// ส่งจริงถึงแขกทุกคนที่เข้าเกณฑ์ (ปกติให้ trigger เรียก)
+// กันส่งซ้ำแยกตามวัน -> แต่ละรอบ (23/27) ส่งใหม่ครบทุกคน
 function sendGuestReminders(){
   var NL = String.fromCharCode(10);
   var days = reminderDaysLeft_();
   var list = reminderRecipients_();
+  var sentKey = REMINDER_SENT_PREFIX + Utilities.formatDate(new Date(), 'Asia/Bangkok', 'yyyy-MM-dd');
   var props = PropertiesService.getScriptProperties();
   var sentArr = [];
-  try { sentArr = JSON.parse(props.getProperty(REMINDER_SENT_KEY) || '[]'); } catch (e) { sentArr = []; }
+  try { sentArr = JSON.parse(props.getProperty(sentKey) || '[]'); } catch (e) { sentArr = []; }
   var sentSet = {};
   for (var s = 0; s < sentArr.length; s++){ sentSet[String(sentArr[s]).toLowerCase()] = true; }
 
@@ -2814,48 +2822,55 @@ function sendGuestReminders(){
       Logger.log('reminder fail ' + g.email + ': ' + err);
     }
   }
-  props.setProperty(REMINDER_SENT_KEY, JSON.stringify(sentArr));
-  var msg = '📨 ส่งอีเมลเตือนเสร็จ — สำเร็จ ' + ok + ' · ข้าม(เคยส่ง) ' + skip + ' · พลาด ' + fail +
+  props.setProperty(sentKey, JSON.stringify(sentArr));
+  var msg = 'ส่งอีเมลเตือนเสร็จ (' + sentKey + ') - สำเร็จ ' + ok + ' · ข้าม(เคยส่งวันนี้) ' + skip + ' · พลาด ' + fail +
             ' (ผู้รับที่เข้าเกณฑ์ ' + list.length + ')';
   Logger.log(msg);
   return msg;
 }
 
-// ตั้ง trigger แบบครั้งเดียว ให้ยิง sendGuestReminders ตามเวลา REMINDER_SEND_AT
+// ตั้ง trigger แบบครั้งเดียว ให้ยิง sendGuestReminders ตามเวลาใน REMINDER_SEND_DATES (ทุกรอบ)
 function installReminderTrigger(){
+  var NL = String.fromCharCode(10);
   var trgs = ScriptApp.getProjectTriggers();
   for (var i = 0; i < trgs.length; i++){
     if (trgs[i].getHandlerFunction() === 'sendGuestReminders') ScriptApp.deleteTrigger(trgs[i]);
   }
-  var when = new Date(REMINDER_SEND_AT);
-  if (when.getTime() <= Date.now()){
-    var w = '⚠️ เวลาส่ง (' + REMINDER_SEND_AT + ') ผ่านไปแล้ว — ยังไม่ได้ตั้ง trigger';
-    Logger.log(w);
-    try { SpreadsheetApp.getUi().alert(w); } catch (e) {}
-    return w;
+  var created = [], skipped = [];
+  for (var k = 0; k < REMINDER_SEND_DATES.length; k++){
+    var when = new Date(REMINDER_SEND_DATES[k]);
+    var label = Utilities.formatDate(when, 'Asia/Bangkok', 'EEE d MMM yyyy HH:mm') + ' น.';
+    if (when.getTime() <= Date.now()){ skipped.push(label + ' (ผ่านไปแล้ว)'); continue; }
+    ScriptApp.newTrigger('sendGuestReminders').timeBased().at(when).create();
+    created.push(label);
   }
-  ScriptApp.newTrigger('sendGuestReminders').timeBased().at(when).create();
-  var msg = '✅ ตั้งเวลาส่งอีเมลเตือนแล้ว: ' +
-            Utilities.formatDate(when, 'Asia/Bangkok', 'EEE d MMM yyyy HH:mm') + ' น. (เวลาไทย)';
+  var msg = 'ตั้งเวลาส่งอีเมลเตือนแล้ว ' + created.length + ' รอบ (เวลาไทย):' + NL +
+            (created.length ? ('- ' + created.join(NL + '- ')) : '(ไม่มี)');
+  if (skipped.length) msg += NL + 'ข้าม: ' + skipped.join(', ');
   Logger.log(msg);
   try { SpreadsheetApp.getUi().alert(msg); } catch (e) {}
   return msg;
 }
 
-// ยกเลิก trigger อีเมลเตือน
+// ยกเลิก trigger อีเมลเตือนทั้งหมด
 function removeReminderTrigger(){
   var n = 0, trgs = ScriptApp.getProjectTriggers();
   for (var i = 0; i < trgs.length; i++){
     if (trgs[i].getHandlerFunction() === 'sendGuestReminders'){ ScriptApp.deleteTrigger(trgs[i]); n++; }
   }
-  var msg = '🗑️ ลบ trigger อีเมลเตือนแล้ว ' + n + ' ตัว';
+  var msg = 'ลบ trigger อีเมลเตือนแล้ว ' + n + ' ตัว';
   Logger.log(msg);
   try { SpreadsheetApp.getUi().alert(msg); } catch (e) {}
   return msg;
 }
 
-// ล้างบันทึกกันส่งซ้ำ (ให้ส่งรอบใหม่ได้)
+// ล้างบันทึกกันส่งซ้ำทั้งหมด (ให้ส่งรอบใหม่ได้)
 function resetReminderSentLog(){
-  PropertiesService.getScriptProperties().deleteProperty(REMINDER_SENT_KEY);
-  Logger.log('🔄 ล้างบันทึกกันส่งซ้ำแล้ว — ส่งรอบใหม่ได้');
+  var props = PropertiesService.getScriptProperties();
+  var all = props.getKeys(), n = 0;
+  for (var i = 0; i < all.length; i++){
+    if (all[i].indexOf(REMINDER_SENT_PREFIX) === 0 || all[i] === 'reminder_2026_11_23_sent'){ props.deleteProperty(all[i]); n++; }
+  }
+  Logger.log('ล้างบันทึกกันส่งซ้ำแล้ว ' + n + ' รายการ - ส่งรอบใหม่ได้');
+  try { SpreadsheetApp.getUi().alert('ล้างบันทึกกันส่งซ้ำแล้ว ' + n + ' รายการ'); } catch (e) {}
 }
