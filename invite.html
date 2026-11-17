@@ -2314,6 +2314,18 @@ async function loadCardSettings(tries) {
   // ถ้าโหลดไม่ได้เลย: ปล่อยทุก section แสดงตามปกติ (ค่า default ปลอดภัย)
 }
 loadCardSettings();   // โหลดทันที ให้ section ถูกซ่อนก่อนผู้ใช้เลื่อนถึง
+// deep-link จาก QR (หน้าจอแสดงคำอวยพร): invite.html#bless → เปิดซอง + ฟอร์มส่งคำอวยพรอัตโนมัติ
+(function () {
+  var h = (location.hash || '').toLowerCase();
+  if (!(h === '#bless' || h === '#send-wish' || /[?&]bless=1/.test(location.search))) return;
+  function go() {
+    try { if (typeof openEnvelope === 'function') openEnvelope(); } catch (e) {}   // ข้ามหน้าปกซอง
+    setTimeout(function () {
+      if (cardSettings['sec-bless'] !== false && typeof goBlessing === 'function') goBlessing();
+    }, 1800);   // รอแอนิเมชันเปิดซองจบ แล้วเปิดฟอร์ม + เลื่อนไปหา
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', go); else go();
+})();
 
 // ── รูปพื้นหลังที่อัปจาก bg-editor (ถ้ามี ใช้แทนรูป default ใน repo) ──
 // ทุกรูปเป็น <img object-fit:cover> → ปรับตำแหน่งด้วย object-position + ซูมด้วย transform scale
