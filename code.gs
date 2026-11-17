@@ -2630,7 +2630,10 @@ var REMINDER_SEND_DATES   = [                              // เวลายิ
 ];
 var REMINDER_EVENT_DATE   = '2026-11-28';                  // วันงาน (คำนวณ "อีก N วัน")
 var REMINDER_SENDER_NAME  = 'แป้ง & เอ็ม';                 // ชื่อผู้ส่งที่โชว์
-var REMINDER_SUBJECT_TAIL = ' วัน เจอกันนะครับ! งานแป้ง × เอ็ม · เสาร์ 28 พ.ย. · ธาราเทอเรส';
+var REMINDER_SUBJECT_TAIL = ' วัน เจอกันนะครับ! งานแป้ง × เอ็ม · เสาร์ 28 พ.ย. · ธาราเทอเรส';  // (เดิม — ไม่ใช้แล้ว)
+// หัวข้ออีเมล 2 แบบ ตามรอบส่ง (คู่บ่าวสาวเขียนเอง) — A ใช้ปกติ, B ใช้วันก่อนงาน (เหลือ <=1 วัน)
+var REMINDER_SUBJECT_A = 'ใกล้ถึงวันสำคัญที่เรานัดกันไว้นะครับ อย่าลืมมาร่วมเป็นสักขีพยานในวันพิเศษของเรา แป้งและเอ็ม ในวันที่ 28 พ.ย.69';
+var REMINDER_SUBJECT_B = 'พรุ่งนี้เจอกันครับ มาร่วมเป็นสักขีพยานในวันพิเศษของแป้งกับเอ็ม ที่ธาราเทอเรส เวลา 16.00 น. เป็นต้นไปครับ';
 var REMINDER_SENT_PREFIX  = 'reminder_sent_';             // prefix key กันส่งซ้ำ (ต่อท้ายด้วยวันที่ส่ง)
 
 // -- ผู้รับเพิ่มเติม (นอกเหนือจากในชีต เช่น คู่บ่าวสาว) ----------------------
@@ -2655,6 +2658,11 @@ function reminderDaysLeft_(){
   var a = new Date(today + 'T00:00:00+07:00');
   var b = new Date(REMINDER_EVENT_DATE + 'T00:00:00+07:00');
   return Math.round((b.getTime() - a.getTime()) / 86400000);
+}
+
+// เลือกหัวข้ออีเมลตามจำนวนวันที่เหลือ: เหลือ <=1 วัน (วันก่อนงาน เช่น 27 พ.ย.) ใช้ B, นอกนั้นใช้ A
+function reminderSubject_(days){
+  return (days <= 1) ? REMINDER_SUBJECT_B : REMINDER_SUBJECT_A;
 }
 
 // รายชื่อแขกที่ "มาร่วมงาน" + มีอีเมล (กันอีเมลซ้ำ) + ผู้รับพิเศษ
@@ -2783,7 +2791,7 @@ function sendReminderTestToMe(){
     'ธาราเทอเรส (Tara Terrace) · นครปฐม' + NL + NL +
     'ดูการ์ดเชิญ: ' + REMINDER_INVITE_URL + NL + 'แผนที่: ' + REMINDER_MAP_URL;
   GmailApp.sendEmail(email,
-    'อีก ' + days + REMINDER_SUBJECT_TAIL,
+    reminderSubject_(days),
     plain,
     { htmlBody: html, name: REMINDER_SENDER_NAME });
   var m = 'ส่งอีเมล (รูปแบบจริง ไม่มี [ทดสอบ]) ไปที่ ' + email + ' แล้ว (ขึ้นชื่อ: คุณ' + testName + ')';
@@ -2805,7 +2813,7 @@ function sendGuestReminders(){
   var sentSet = {};
   for (var s = 0; s < sentArr.length; s++){ sentSet[String(sentArr[s]).toLowerCase()] = true; }
 
-  var subject = 'อีก ' + days + REMINDER_SUBJECT_TAIL;
+  var subject = reminderSubject_(days);
   var ok = 0, skip = 0, fail = 0;
 
   for (var i = 0; i < list.length; i++){
