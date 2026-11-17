@@ -155,12 +155,12 @@ body{font-family:var(--sarabun);background:#f3f0ea;overflow:hidden}
 .live{width:1.2vmin;height:1.2vmin;border-radius:50%;background:#4f9a74;animation:pulse 2.4s ease-in-out infinite}
 .live.off{background:#b07f33;animation:none}
 @keyframes pulse{0%,100%{opacity:.35}50%{opacity:1}}
-.qr{display:flex;align-items:center;gap:1.8vmin;opacity:.95}
-.qr .qrbox{width:9vmin;height:9vmin;border-radius:12px;padding:1vmin;background:#fff;box-shadow:0 10px 24px -12px rgba(0,0,0,.4);display:block}
+.qr{display:flex;align-items:center;gap:2vmin;opacity:.98}
+.qr .qrbox{width:14vmin;height:14vmin;border-radius:14px;padding:1vmin;background:#fff;box-shadow:0 12px 28px -12px rgba(0,0,0,.45);display:block}
 .qr .qrbox img,.qr .qrbox canvas{width:100%!important;height:100%!important;display:block;border-radius:4px;image-rendering:pixelated}
 .qr .cap{font-family:var(--sarabun);text-align:right;line-height:1.35}
-.qr .cap .t1{font-size:2vmin;font-weight:600;color:var(--ink)}
-.qr .cap .t2{font-family:var(--cormorant);font-style:italic;font-size:1.9vmin;color:var(--gold-dk)}
+.qr .cap .t1{font-size:2.3vmin;font-weight:600;color:var(--ink)}
+.qr .cap .t2{font-family:var(--cormorant);font-style:italic;font-size:2.1vmin;color:var(--gold-dk)}
 .stage[data-theme="night"] .qr .cap .t2{color:var(--gold-lt)}
 
 .controls{position:absolute;z-index:9;top:4.4vmin;left:50%;transform:translateX(-50%) translateY(-1vmin);display:flex;gap:.6vmin;padding:.7vmin;border-radius:40px;background:rgba(20,28,42,.55);backdrop-filter:blur(10px);box-shadow:0 10px 30px -12px rgba(0,0,0,.5);opacity:0;transition:.35s;pointer-events:none;max-width:94vw;flex-wrap:wrap;justify-content:center}
@@ -457,7 +457,7 @@ showUI();
 
 /* QR */
 (function(){ try{
-  if(window.QRCode){ new QRCode(document.getElementById('qrbox'),{text:INVITE_BLESS_URL,width:160,height:160,colorDark:'#20303f',colorLight:'#ffffff',correctLevel:QRCode.CorrectLevel.M}); }
+  if(window.QRCode){ new QRCode(document.getElementById('qrbox'),{text:INVITE_BLESS_URL,width:300,height:300,colorDark:'#20303f',colorLight:'#ffffff',correctLevel:QRCode.CorrectLevel.M}); }
 }catch(e){} })();
 
 /* keep awake (best-effort) */

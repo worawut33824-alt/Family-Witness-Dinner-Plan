@@ -561,6 +561,43 @@
     </div>
   </div>
 
+  <!-- QUICK LINKS: เปิดหน้าต่างๆ ของงาน -->
+  <div class="card" id="dash-quicklinks" style="margin-bottom:28px">
+    <style>
+      #dash-quicklinks .ql-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+      #dash-quicklinks .ql-tile{display:flex;align-items:center;gap:12px;padding:14px 16px;border-radius:14px;border:1px solid var(--border,#e6ecf2);background:var(--surface,#fff);text-decoration:none;color:inherit;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease}
+      #dash-quicklinks .ql-tile:hover{transform:translateY(-2px);box-shadow:0 10px 24px -12px rgba(60,90,130,.35);border-color:var(--primary,#5a7fa8)}
+      #dash-quicklinks .ql-ic{flex:none;width:42px;height:42px;border-radius:11px;display:grid;place-items:center;color:#fff;box-shadow:0 6px 14px -6px rgba(0,0,0,.3)}
+      #dash-quicklinks .ql-ic svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+      #dash-quicklinks .ql-tx b{display:block;font-size:.95rem;font-weight:600;line-height:1.25}
+      #dash-quicklinks .ql-tx span{font-size:.76rem;color:var(--text-light,#8a9bb0)}
+      #dash-quicklinks .ql-go{margin-left:auto;color:var(--text-light,#8a9bb0);flex:none}
+    </style>
+    <div class="card-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M10 13a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1"/><path d="M14 11a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1"/></svg>เปิดหน้าต่างๆ ของงาน</div>
+    <div class="ql-grid">
+      <a class="ql-tile" href="invite.html" target="_blank" rel="noopener">
+        <span class="ql-ic" style="background:linear-gradient(135deg,#d47ea1,#b85c86)"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg></span>
+        <span class="ql-tx"><b>การ์ดเชิญ</b><span>หน้าเชิญสำหรับแขก (RSVP/คำอวยพร)</span></span>
+        <svg class="ql-go" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17 17 7M9 7h8v8"/></svg>
+      </a>
+      <a class="ql-tile" href="wishes.html" target="_blank" rel="noopener">
+        <span class="ql-ic" style="background:linear-gradient(135deg,#5a7fa8,#3d6a91)"><svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg></span>
+        <span class="ql-tx"><b>จอแสดงคำอวยพร</b><span>เปิดบนจอ/โปรเจคเตอร์วันงาน</span></span>
+        <svg class="ql-go" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17 17 7M9 7h8v8"/></svg>
+      </a>
+      <a class="ql-tile" href="bg-editor.html" target="_blank" rel="noopener">
+        <span class="ql-ic" style="background:linear-gradient(135deg,#c9a84c,#a9842f)"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg></span>
+        <span class="ql-tx"><b>จัดรูปพื้นหลังการ์ด</b><span>ปรับตำแหน่ง/ซูมรูปคู่บ่าวสาว</span></span>
+        <svg class="ql-go" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17 17 7M9 7h8v8"/></svg>
+      </a>
+      <a class="ql-tile" href="features.html" target="_blank" rel="noopener">
+        <span class="ql-ic" style="background:linear-gradient(135deg,#7bbf9c,#4f9a74)"><svg viewBox="0 0 24 24"><path d="M12 3v3M12 18v3M3 12h3M18 12h3"/><path d="M12 7.5 13.6 11 17 12l-3.4 1L12 16.5 10.4 13 7 12l3.4-1z"/></svg></span>
+        <span class="ql-tx"><b>หน้าฟีเจอร์</b><span>หน้าแนะนำ/โปรโมทงาน</span></span>
+        <svg class="ql-go" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17 17 7M9 7h8v8"/></svg>
+      </a>
+    </div>
+  </div>
+
   <div class="grid-4" id="dash-stats" style="margin-bottom:28px"></div>
   <div class="grid-2" style="margin-bottom:28px">
     <div class="card" style="margin-bottom:0">
