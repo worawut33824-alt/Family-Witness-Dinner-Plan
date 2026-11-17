@@ -23,9 +23,7 @@
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html,body{min-height:100%}
 body{font-family:var(--sarabun);color:var(--ink);
-  background:
-    radial-gradient(60% 40% at 50% 0%, var(--blue-xlt) 0%, transparent 60%),
-    linear-gradient(180deg,#fbfdff 0%, var(--bg) 100%);
+  background: linear-gradient(180deg, #eaf3fb 0%, #fbfdff 24%, var(--bg) 100%);
   background-attachment:fixed;min-height:100dvh;padding:0 0 env(safe-area-inset-bottom)}
 .wrap{max-width:480px;margin:0 auto;padding:0 18px 40px}
 
@@ -94,7 +92,7 @@ body{font-family:var(--sarabun);color:var(--ink);
 .side-btn.sel[data-side="แป้ง"]{border-color:var(--bride);background:#fdeef5;color:#b85c86}
 .send{width:100%;margin-top:6px;padding:16px;border-radius:14px;border:0;cursor:pointer;
   background:linear-gradient(135deg,#4f719b,#39557c);color:#fff;font-family:inherit;font-weight:600;font-size:1.05rem;
-  box-shadow:0 12px 26px -12px rgba(70,110,150,.7);transition:transform .1s,opacity .2s}
+  box-shadow:0 12px 26px -14px rgba(30,45,65,.4);transition:transform .1s,opacity .2s}
 .send:active{transform:scale(.99)}
 .send:disabled{opacity:.6;cursor:default}
 .foot{text-align:center;color:var(--muted);font-size:.8rem;margin-top:18px;line-height:1.6}
@@ -107,7 +105,7 @@ body{font-family:var(--sarabun);color:var(--ink);
 /* success */
 .done{position:fixed;inset:0;z-index:60;background:linear-gradient(180deg,#fbfdff,var(--bg));display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:30px}
 .done.show{display:flex}
-.done .ring{width:96px;height:96px;border-radius:50%;background:radial-gradient(circle at 50% 40%,#eaf4ff,#d7ecff);display:grid;place-items:center;box-shadow:0 14px 34px -14px rgba(90,130,170,.6);margin-bottom:20px}
+.done .ring{width:96px;height:96px;border-radius:50%;background:radial-gradient(circle at 50% 40%,#eaf4ff,#d7ecff);display:grid;place-items:center;box-shadow:0 14px 34px -16px rgba(40,55,75,.42);margin-bottom:20px}
 .done .ring svg{width:46px;height:46px;stroke:var(--blue-dk);fill:none;stroke-width:2.2}
 .done h2{font-family:var(--cormorant);font-size:2rem;color:var(--blue-dk);margin-bottom:8px}
 .done p{color:var(--muted);font-size:1rem;line-height:1.6;max-width:300px}
