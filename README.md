@@ -42,6 +42,15 @@ npm run deploy:gs  # ใช้ clasp (ต้อง clasp login + มี .clasp.j
 
 ## 📝 ความคืบหน้าล่าสุด (Changelog)
 
+### รอบ 17 พ.ย. 2026 — ยกเครื่องดีไซน์แดชบอร์ด (Soft UI) 🎨
+- **รีดีไซน์ `index.html` ครบทุกแท็บ** (CSS-forward · คงฟังก์ชัน/page id/handler/localStorage เดิมทั้งหมด)
+- 🧭 **Sidebar ฟ้าเข้มหรูหรา** + เมนูเป็น **ไอคอน SVG** (เลิกใช้อีโมจิในเมนู) + active ไฮไลต์เส้นทอง
+- 🪟 **สไตล์ Soft UI** — พื้นหลังนิวทรัลเย็น, เงานุ่มมีมิติ, มุมโค้งใหญ่ขึ้น, การ์ด/ตาราง/ฟอร์ม/ปุ่มสะอาดตา
+- 📊 **KPI/stat cards** แถบไล่สีด้านบน + hover ยก · countdown hero เปลี่ยน watermark เป็น soft glow
+- 🩷💙 **สีแยกฝั่ง: แป้ง = ชมพู · เอ็ม = ฟ้า** (กราฟโดนัท/pictogram/badge แขก)
+- ♿ a11y: `focus-visible` + รองรับ `prefers-reduced-motion` · bump SW cache **v98**
+- *(ใช้แนวทางจากสกิล ui-ux-pro-max — สไตล์ Soft UI Evolution, คงโทนแบรนด์ฟ้า-เซจ-ทอง)*
+
 ### รอบ 13 พ.ย. 2026 — ระบบอีเมลเตือนแขก (Guest Reminder) 📨
 - **ระบบส่งอีเมลเตือนอัตโนมัติ** (`code.gs`) — ส่งถึงแขกที่ RSVP "มาร่วมงาน" + มีอีเมล (26 คน) และคู่บ่าวสาว (เอ็ม/แป้ง) รวม 28 คน ผ่าน Gmail ของเจ้าของสคริปต์ ชื่อผู้ส่ง "แป้ง & เอ็ม"
   - `sendGuestReminders()` ส่งจริง — personalize ชื่อ (`เรียน คุณ...`, ตัด "คุณ" ซ้ำอัตโนมัติ) + "อีก N วัน" คำนวณสดตอนส่ง + **กันส่งซ้ำ** (sent log ใน Script Properties)
