@@ -2776,11 +2776,17 @@ function sendReminderTestToMe(){
   }
   if (!testName) testName = 'เอ็ม';
   var html = buildReminderEmailHtml_(testName, days);
+  var NL = String.fromCharCode(10);
+  var plain = 'เรียน คุณ ' + testName + NL + NL +
+    'อีก ' + days + ' วัน เจอกันนะครับ งานสักขีพยาน แป้ง & เอ็ม' + NL +
+    'วันเสาร์ที่ 28 พฤศจิกายน 2569 · 16:00 น. (เริ่มลงทะเบียน)' + NL +
+    'ธาราเทอเรส (Tara Terrace) · นครปฐม' + NL + NL +
+    'ดูการ์ดเชิญ: ' + REMINDER_INVITE_URL + NL + 'แผนที่: ' + REMINDER_MAP_URL;
   GmailApp.sendEmail(email,
-    '[ทดสอบ] อีก ' + days + ' วัน — อีเมลเตือนแขก แป้ง × เอ็ม',
-    'นี่คืออีเมลทดสอบ (เปิดแบบ HTML เพื่อดูหน้าตาจริง)',
+    'อีก ' + days + REMINDER_SUBJECT_TAIL,
+    plain,
     { htmlBody: html, name: REMINDER_SENDER_NAME });
-  var m = 'ส่งอีเมลทดสอบไปที่ ' + email + ' แล้ว (ขึ้นชื่อ: คุณ' + testName + ')';
+  var m = 'ส่งอีเมล (รูปแบบจริง ไม่มี [ทดสอบ]) ไปที่ ' + email + ' แล้ว (ขึ้นชื่อ: คุณ' + testName + ')';
   Logger.log(m);
   try { SpreadsheetApp.getUi().alert(m); } catch (e) {}
   return m;
