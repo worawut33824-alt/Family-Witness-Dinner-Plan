@@ -2318,11 +2318,19 @@ loadCardSettings();   // โหลดทันที ให้ section ถูก
 (function () {
   var h = (location.hash || '').toLowerCase();
   if (!(h === '#bless' || h === '#send-wish' || /[?&]bless=1/.test(location.search))) return;
+  function scrollToForm() {
+    var el = document.getElementById('sec-bless');
+    if (!el || getComputedStyle(el).display === 'none') return;
+    var abs = el.getBoundingClientRect().top + window.scrollY;
+    window.scrollTo(0, Math.max(0, abs - 60));   // ใช้ scrollTo (scrollIntoView เดิมโดน fade/smooth-scroll แทรก เลื่อนไม่ถึง)
+  }
   function go() {
     try { if (typeof openEnvelope === 'function') openEnvelope(); } catch (e) {}   // ข้ามหน้าปกซอง
     setTimeout(function () {
       if (cardSettings['sec-bless'] !== false && typeof goBlessing === 'function') goBlessing();
-    }, 1800);   // รอแอนิเมชันเปิดซองจบ แล้วเปิดฟอร์ม + เลื่อนไปหา
+      setTimeout(scrollToForm, 700);    // เลื่อนเข้าฟอร์มให้ชัวร์
+      setTimeout(scrollToForm, 1600);   // ย้ำอีกครั้งหลัง layout/fade นิ่ง
+    }, 1800);   // รอแอนิเมชันเปิดซองจบ แล้วเปิดฟอร์ม
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', go); else go();
 })();
