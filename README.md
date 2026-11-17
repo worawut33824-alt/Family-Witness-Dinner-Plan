@@ -9,6 +9,7 @@
 | 💌 การ์ดเชิญ | [invite.html](https://worawut33824-alt.github.io/Family-Witness-Dinner-Plan/invite.html) | แขก |
 | 📊 แดชบอร์ดจัดการงาน | [index.html](https://worawut33824-alt.github.io/Family-Witness-Dinner-Plan/index.html) | เจ้าภาพ |
 | 🖥️ จอแสดงคำอวยพร (วันงาน) | [wishes.html](https://worawut33824-alt.github.io/Family-Witness-Dinner-Plan/wishes.html) | เปิดบนจอ/โปรเจคเตอร์ |
+| ✍️ ฟอร์มส่งคำอวยพร (QR) | [bless.html](https://worawut33824-alt.github.io/Family-Witness-Dinner-Plan/bless.html) | แขกสแกน QR ในงาน |
 | 🎴 จัดรูปพื้นหลังการ์ด | [bg-editor.html](https://worawut33824-alt.github.io/Family-Witness-Dinner-Plan/bg-editor.html) | เจ้าภาพ |
 | ✨ หน้าโปรโมท/ฟีเจอร์ | [features.html](https://worawut33824-alt.github.io/Family-Witness-Dinner-Plan/features.html) | ทั่วไป |
 
@@ -23,6 +24,7 @@
 | `invite.html` | การ์ดเชิญ (cover, story, couple, กำหนดการ, แผนที่, RSVP, คำอวยพร, donate ฯลฯ) |
 | `index.html` | แดชบอร์ดหลังบ้าน — 11 แท็บ (Dashboard, ค่าใช้จ่าย, งบประมาณ, การสนับสนุน, Checklist, ผู้ติดต่อ, แขก, คำอวยพร, ลิงก์เชิญ, ตั้งค่าการ์ด, ซิงค์) |
 | `wishes.html` | จอแสดงคำอวยพรแบบสไลด์โชว์ (เปิดบนจอ/โปรเจคเตอร์วันงาน · ดึงคำอวยพรสดจาก backend · 2 โหมด/2 ธีม/รูปคู่) |
+| `bless.html` | หน้าฟอร์มส่งคำอวยพรสำหรับสแกน QR ในงาน (เปิดกล้องถ่ายรูป + ชื่อ/ฝั่ง/คำอวยพร → POST `action=bless` → ขึ้นจอ) |
 | `bg-editor.html` | เครื่องมือ WYSIWYG จัดตำแหน่ง+ซูมรูปพื้นหลัง/รูปคู่บ่าวสาว |
 | `code.gs` | Backend Apps Script (อ่าน/เขียนชีต, OCR, ปฏิทิน, อีเมล) |
 | `apps-script-invite-addon.js` | ไฟล์สำรองสร้าง .ics/อีเมลเชิญ (ไม่ได้ deploy คู่กับ code.gs) |
@@ -43,6 +45,14 @@ npm run deploy:gs  # ใช้ clasp (ต้อง clasp login + มี .clasp.j
 หรือเปิด Apps Script editor → วางเนื้อหา `code.gs` ใหม่ทับ → Deploy
 
 ## 📝 ความคืบหน้าล่าสุด (Changelog)
+
+### รอบ 17 พ.ย. 2026 (เพิ่ม) — ฟอร์มส่งคำอวยพรสำหรับ QR (กล้องในหน้าเว็บ) + หน้ารวมลิงค์ ✍️📷
+- **หน้าใหม่ `bless.html`** — หน้าฟอร์มส่งคำอวยพรเฉพาะสำหรับสแกน QR ในงาน (QR บน `wishes.html` ชี้มาที่นี่ แทน deep-link เข้าการ์ด)
+  - 📷 **เปิดกล้องในหน้าเว็บ** (เซลฟี่ + สลับกล้องหน้า/หลัง + ถ่าย) · สำรองเลือกรูปจากเครื่อง · ย่อรูป ≤800px
+  - ฟิลด์เหมือนฟอร์มในการ์ดเชิญ: ชื่อ · ฝั่ง (เอ็ม/แป้ง) · คำอวยพร · รูป → POST `action=bless` (no-cors) → ขึ้นจอแสดงผล
+  - มือถือเป็นหลัก · ธีมฟ้า-ขาว + โลโก้ · มีหน้า "ส่งสำเร็จ / ส่งอีกคน"
+- 🔗 **ย้ายลิงก์ฮับ "เปิดหน้าต่างๆ ของงาน" ไปหน้า "รวมลิงค์"** (เปลี่ยนชื่อเมนูจาก "ลิงก์เชิญ") + เพิ่มปุ่ม bless.html
+- bump SW cache **v104** + precache `bless.html`
 
 ### รอบ 17 พ.ย. 2026 (เพิ่ม) — จอแสดงคำอวยพรวันงาน (Live Wishes Display) 🖥️
 - **หน้าใหม่ `wishes.html`** — สไลด์โชว์คำอวยพรสำหรับเปิดบนจอ/โปรเจคเตอร์วันงาน (แยกจากแดชบอร์ด)

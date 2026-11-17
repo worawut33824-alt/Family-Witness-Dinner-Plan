@@ -1,0 +1,318 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1">
+<title>ส่งคำอวยพร · แป้ง & เอ็ม</title>
+<meta name="description" content="ส่งคำอวยพรขึ้นจอในงานแต่งแป้งและเอ็ม">
+<link rel="icon" href="logo.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="theme-color" content="#7B9CBF">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --blue:#7B9CBF; --blue-dk:#5a7fa8; --blue-lt:#A9C9EB; --blue-xlt:#DCF0FF;
+  --gold:#C9A96E; --gold-dk:#8a6c33;
+  --bride:#d47ea1; --groom:#5a89b8;
+  --bg:#f4f7fb; --surface:#ffffff; --ink:#35485a; --muted:#566573;
+  --line:#e2eaf2;
+  --sarabun:'Sarabun',sans-serif; --cormorant:'Cormorant Garamond','Sarabun',serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{min-height:100%}
+body{font-family:var(--sarabun);color:var(--ink);
+  background:
+    radial-gradient(60% 40% at 50% 0%, var(--blue-xlt) 0%, transparent 60%),
+    linear-gradient(180deg,#fbfdff 0%, var(--bg) 100%);
+  background-attachment:fixed;min-height:100dvh;padding:0 0 env(safe-area-inset-bottom)}
+.wrap{max-width:480px;margin:0 auto;padding:0 18px 40px}
+
+/* header */
+.hdr{display:flex;flex-direction:column;align-items:center;text-align:center;padding:26px 0 14px;padding-top:max(26px,env(safe-area-inset-top))}
+.hdr img{width:66px;height:66px;object-fit:contain;filter:drop-shadow(0 4px 10px rgba(90,110,140,.25))}
+.hdr .couple{font-family:var(--cormorant);font-weight:600;font-size:1.5rem;margin-top:4px;letter-spacing:.01em}
+.hdr .couple .amp{color:var(--gold);font-style:italic;margin:0 4px}
+.hdr .title{font-family:var(--cormorant);font-style:italic;font-size:2rem;color:var(--blue-dk);line-height:1.1;margin-top:10px}
+.hdr .sub{font-size:.92rem;color:var(--muted);margin-top:6px}
+.hdr .sub b{color:var(--gold-dk);font-weight:600}
+
+/* card */
+.card{background:var(--surface);border:1px solid var(--line);border-radius:22px;padding:16px;margin-top:16px;
+  box-shadow:0 18px 44px -26px rgba(70,100,140,.5)}
+.card-h{display:flex;align-items:center;gap:8px;font-weight:600;font-size:1rem;margin-bottom:12px;color:var(--blue-dk)}
+.card-h .n{width:24px;height:24px;border-radius:50%;background:#456a92;color:#fff;display:grid;place-items:center;font-size:.8rem;flex:none}
+.card-h small{font-weight:400;color:var(--muted);font-size:.8rem;margin-left:auto}
+
+/* camera */
+.camera{position:relative;width:100%;aspect-ratio:1/1;border-radius:16px;overflow:hidden;background:#0d1622;
+  display:grid;place-items:center}
+.camera video,.camera .shot{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.camera video.mirror{transform:scaleX(-1)}
+.cam-ph{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;
+  color:#cdd8e6;text-align:center;padding:20px;cursor:pointer}
+.cam-ph svg{width:46px;height:46px;stroke:#aebfd2;fill:none;stroke-width:1.5}
+.cam-ph span{font-size:.9rem;line-height:1.5}
+.cam-ph small{font-size:.78rem;color:#8ea0b6}
+.cam-flip{position:absolute;top:10px;right:10px;z-index:3;width:42px;height:42px;border-radius:50%;border:0;
+  background:rgba(13,22,34,.55);backdrop-filter:blur(6px);color:#fff;display:none;place-items:center;cursor:pointer}
+.cam-flip svg{width:22px;height:22px;stroke:#fff;fill:none;stroke-width:2}
+.camera.live .cam-flip{display:grid}
+.camera.live .cam-ph{display:none}
+.cam-bar{display:flex;align-items:center;justify-content:center;gap:18px;margin-top:12px}
+.shutter{width:66px;height:66px;border-radius:50%;border:4px solid var(--blue-lt);background:var(--blue);
+  display:grid;place-items:center;cursor:pointer;flex:none;transition:transform .1s;box-shadow:0 6px 16px -6px rgba(30,45,65,.4)}
+.shutter:active{transform:scale(.92)}
+.shutter svg{width:28px;height:28px;stroke:#fff;fill:none;stroke-width:2}
+.cam-sidebtn{min-width:64px;display:flex;flex-direction:column;align-items:center;gap:3px;background:none;border:0;color:var(--blue-dk);font-family:inherit;font-size:.72rem;cursor:pointer}
+.cam-sidebtn svg{width:24px;height:24px;stroke:currentColor;fill:none;stroke-width:1.8}
+.cam-sidebtn:disabled{opacity:.35}
+.retake{display:none;align-items:center;justify-content:center;gap:7px;width:100%;margin-top:12px;padding:11px;border-radius:12px;
+  border:1.5px solid var(--line);background:#fff;color:var(--blue-dk);font-family:inherit;font-weight:600;font-size:.92rem;cursor:pointer}
+.retake svg{width:17px;height:17px;stroke:currentColor;fill:none;stroke-width:2}
+.has-shot .cam-bar{display:none}
+.has-shot .retake{display:flex}
+.has-shot .camera .cam-flip{display:none}
+.hide{display:none!important}
+
+/* form */
+.field{margin-bottom:14px}
+.label{display:block;font-size:.9rem;font-weight:600;margin-bottom:7px}
+.label .opt{font-weight:400;color:var(--muted);font-size:.8rem}
+.input,.textarea{width:100%;border:1.5px solid var(--line);border-radius:12px;padding:13px 15px;font-family:inherit;
+  font-size:1rem;color:var(--ink);background:#f9fcff;transition:border-color .15s,background .15s}
+.input:focus,.textarea:focus{outline:none;border-color:var(--blue);background:#fff}
+.textarea{min-height:104px;resize:none;line-height:1.55}
+.side-group{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.side-btn{display:flex;align-items:center;justify-content:center;gap:7px;padding:14px;border-radius:12px;border:1.5px solid var(--line);
+  background:#f9fcff;font-family:inherit;font-size:1rem;font-weight:600;color:var(--ink);cursor:pointer;transition:.15s}
+.side-btn .dot{width:10px;height:10px;border-radius:50%;flex:none}
+.side-btn[data-side="เอ็ม"] .dot{background:var(--groom)}
+.side-btn[data-side="แป้ง"] .dot{background:var(--bride)}
+.side-btn.sel[data-side="เอ็ม"]{border-color:var(--groom);background:#eef4fb;color:var(--groom)}
+.side-btn.sel[data-side="แป้ง"]{border-color:var(--bride);background:#fdeef5;color:#b85c86}
+.send{width:100%;margin-top:6px;padding:16px;border-radius:14px;border:0;cursor:pointer;
+  background:linear-gradient(135deg,#4f719b,#39557c);color:#fff;font-family:inherit;font-weight:600;font-size:1.05rem;
+  box-shadow:0 12px 26px -12px rgba(70,110,150,.7);transition:transform .1s,opacity .2s}
+.send:active{transform:scale(.99)}
+.send:disabled{opacity:.6;cursor:default}
+.foot{text-align:center;color:var(--muted);font-size:.8rem;margin-top:18px;line-height:1.6}
+
+/* toast */
+.toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);z-index:50;
+  background:#2c3e50;color:#fff;padding:12px 20px;border-radius:30px;font-size:.9rem;opacity:0;transition:.25s;pointer-events:none;max-width:88vw;text-align:center;box-shadow:0 10px 30px -10px rgba(0,0,0,.5)}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* success */
+.done{position:fixed;inset:0;z-index:60;background:linear-gradient(180deg,#fbfdff,var(--bg));display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:30px}
+.done.show{display:flex}
+.done .ring{width:96px;height:96px;border-radius:50%;background:radial-gradient(circle at 50% 40%,#eaf4ff,#d7ecff);display:grid;place-items:center;box-shadow:0 14px 34px -14px rgba(90,130,170,.6);margin-bottom:20px}
+.done .ring svg{width:46px;height:46px;stroke:var(--blue-dk);fill:none;stroke-width:2.2}
+.done h2{font-family:var(--cormorant);font-size:2rem;color:var(--blue-dk);margin-bottom:8px}
+.done p{color:var(--muted);font-size:1rem;line-height:1.6;max-width:300px}
+.done .again{margin-top:26px;padding:14px 30px;border-radius:30px;border:1.5px solid var(--blue);background:#fff;color:var(--blue-dk);font-family:inherit;font-weight:600;font-size:1rem;cursor:pointer}
+.done .thumb{width:78px;height:78px;border-radius:50%;object-fit:cover;margin-bottom:16px;border:3px solid #fff;box-shadow:0 10px 24px -10px rgba(0,0,0,.35)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="hdr">
+    <img src="logo.png" alt="โลโก้ แป้ง และ เอ็ม" onerror="this.style.display='none'">
+    <div class="couple">แป้ง <span class="amp">&amp;</span> เอ็ม</div>
+    <div class="title">ส่งคำอวยพร</div>
+    <div class="sub">ถ่ายรูป + เขียนคำอวยพร แล้วจะ<b>ขึ้นบนจอในงาน</b>ให้เลย 🤍</div>
+  </div>
+
+  <!-- STEP 1: PHOTO -->
+  <div class="card" id="card-photo">
+    <div class="card-h"><span class="n">1</span>ถ่ายรูปของคุณ <small>ไม่บังคับ</small></div>
+    <div class="camera" id="camera">
+      <video id="video" playsinline autoplay muted></video>
+      <img class="shot hide" id="shot" alt="รูปที่ถ่าย" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7">
+      <button class="cam-flip" id="flip" title="สลับกล้อง" aria-label="สลับกล้อง">
+        <svg viewBox="0 0 24 24"><path d="M3 7h3l2-2h4l2 2h3a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2Z"/><path d="M9 13a3 3 0 0 0 5 2M15 13a3 3 0 0 0-5-2"/><path d="M8.5 11.5 10 13M15.5 14.5 14 13"/></svg>
+      </button>
+      <div class="cam-ph" id="camPh">
+        <svg viewBox="0 0 24 24"><path d="M3 7h3l2-2h8l2 2h3a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2Z"/><circle cx="12" cy="13" r="3.5"/></svg>
+        <span>แตะเพื่อเปิดกล้อง</span>
+        <small id="camHint">ถ่ายเซลฟี่ · สลับกล้องหน้า/หลังได้</small>
+      </div>
+    </div>
+    <div class="cam-bar" id="camBar">
+      <button class="cam-sidebtn" id="galleryBtn">
+        <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2.5"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg>
+        เลือกรูป
+      </button>
+      <div class="shutter" id="shutter" role="button" aria-label="ถ่ายรูป">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="13" r="3.5"/><path d="M4 9a2 2 0 0 1 2-2h1l1.5-2h7L18 7h1a2 2 0 0 1 2 2"/></svg>
+      </div>
+      <button class="cam-sidebtn" id="flipBtn">
+        <svg viewBox="0 0 24 24"><path d="M3 9a9 9 0 0 1 15-4l3 2M21 15a9 9 0 0 1-15 4l-3-2"/><path d="M18 3v4h-4M6 21v-4h4"/></svg>
+        สลับกล้อง
+      </button>
+    </div>
+    <button class="retake" id="retake"><svg viewBox="0 0 24 24"><path d="M3 9a9 9 0 0 1 15-4l3 2M21 15a9 9 0 0 1-15 4l-3-2"/><path d="M18 3v4h-4"/></svg>ถ่ายใหม่</button>
+    <input type="file" id="file" accept="image/*" style="display:none">
+  </div>
+
+  <!-- STEP 2: FORM -->
+  <div class="card" id="card-form">
+    <div class="card-h"><span class="n">2</span>เขียนคำอวยพร</div>
+    <div class="field">
+      <label class="label" for="name">ชื่อของคุณ</label>
+      <input class="input" id="name" placeholder="เช่น มะปราง, พี่เอ็ม…" maxlength="60" autocomplete="name">
+    </div>
+    <div class="field">
+      <label class="label">รู้จักฝั่งไหน?</label>
+      <div class="side-group">
+        <button type="button" class="side-btn" data-side="เอ็ม" id="side-m"><span class="dot"></span>💙 เอ็ม</button>
+        <button type="button" class="side-btn" data-side="แป้ง" id="side-p"><span class="dot"></span>🩷 แป้ง</button>
+      </div>
+    </div>
+    <div class="field">
+      <label class="label" for="msg">คำอวยพร <span class="opt">💌</span></label>
+      <textarea class="textarea" id="msg" placeholder="ฝากคำอวยพรถึงเจ้าบ่าวเจ้าสาวได้เลยนะคะ…" maxlength="400"></textarea>
+    </div>
+    <button class="send" id="send">💌 ส่งคำอวยพรขึ้นจอ</button>
+    <div class="foot">คำอวยพรจะไปปรากฏบนจอแสดงผลในงาน<br>ขอบคุณที่มาร่วมเป็นสักขีพยานนะคะ 🤍</div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<div class="done" id="done">
+  <img class="thumb hide" id="doneThumb" alt="" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7">
+  <div class="ring"><svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg></div>
+  <h2>ส่งเรียบร้อย!</h2>
+  <p>คำอวยพรของคุณกำลังจะขึ้นบนจอในงาน<br>ขอบคุณมากๆ นะคะ 💕</p>
+  <button class="again" id="again">✍️ ส่งอีกคน</button>
+</div>
+
+<script>
+var qp = new URLSearchParams(location.search);
+var SCRIPT_URL = qp.get('url') || localStorage.getItem('apps_script_url') ||
+  'https://script.google.com/macros/s/AKfycbyGS50jFbBmz6nU-o6zPBGZrSokuyxD1TPQMhpfzwbpmzOJSg4emYaXKHv6QB_8Q9wAbg/exec';
+var MAX = 800;   // ย่อรูปด้านยาวสุดไม่เกิน 800px (ให้ตรงกับการ์ดเชิญ)
+
+var video=document.getElementById('video'), shot=document.getElementById('shot'),
+    camera=document.getElementById('camera'), camPh=document.getElementById('camPh'),
+    camHint=document.getElementById('camHint'), cardPhoto=document.getElementById('card-photo'),
+    fileInput=document.getElementById('file'), toastEl=document.getElementById('toast');
+var stream=null, facing='user', photoData='', side='';
+
+/* ---------- camera ---------- */
+function hasCam(){ return !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia); }
+function stopCam(){ if(stream){ stream.getTracks().forEach(function(t){t.stop();}); stream=null; } }
+async function startCam(){
+  if(!hasCam()){ camHint.textContent='อุปกรณ์นี้เปิดกล้องในหน้าเว็บไม่ได้ — แตะ "เลือกรูป" เพื่อแนบจากเครื่อง'; return; }
+  stopCam();
+  try{
+    stream = await navigator.mediaDevices.getUserMedia({ video:{ facingMode:{ideal:facing} }, audio:false });
+    video.srcObject = stream;
+    video.classList.toggle('mirror', facing==='user');
+    camera.classList.add('live');
+    try{ await video.play(); }catch(e){}
+  }catch(err){
+    camera.classList.remove('live');
+    camHint.textContent = (err && err.name==='NotAllowedError')
+      ? 'ยังไม่ได้อนุญาตกล้อง — แตะอีกครั้งเพื่ออนุญาต หรือ "เลือกรูป" จากเครื่อง'
+      : 'เปิดกล้องไม่ได้ — แตะ "เลือกรูป" เพื่อแนบจากเครื่องได้เลย';
+  }
+}
+function flip(){ facing = (facing==='user') ? 'environment' : 'user'; startCam(); }
+
+/* วาดเฟรมวิดีโอเป็นสี่เหลี่ยมจัตุรัส (crop กลาง) + ย่อ → dataURL */
+function captureSquare(){
+  var vw=video.videoWidth, vh=video.videoHeight;
+  if(!vw||!vh) return '';
+  var s=Math.min(vw,vh), sx=(vw-s)/2, sy=(vh-s)/2;
+  var out=Math.min(s,MAX);
+  var c=document.createElement('canvas'); c.width=out; c.height=out;
+  var ctx=c.getContext('2d');
+  if(facing==='user'){ ctx.translate(out,0); ctx.scale(-1,1); }   // เซลฟี่: ให้ตรงกับที่เห็น
+  ctx.drawImage(video, sx,sy,s,s, 0,0,out,out);
+  return c.toDataURL('image/jpeg',0.82);
+}
+function showShot(dataUrl){
+  photoData=dataUrl; shot.src=dataUrl; shot.classList.remove('hide'); video.classList.add('hide');
+  cardPhoto.classList.add('has-shot'); stopCam();
+}
+function retake(){
+  photoData=''; shot.classList.add('hide'); shot.src=''; video.classList.remove('hide');
+  cardPhoto.classList.remove('has-shot'); fileInput.value=''; startCam();
+}
+
+/* ---------- gallery fallback (+ย่อเหมือนการ์ดเชิญ) ---------- */
+function fileToData(file){
+  return new Promise(function(resolve){
+    var r=new FileReader();
+    r.onload=function(e){ var img=new Image(); img.onload=function(){
+      var w=img.width,h=img.height;
+      if(w>MAX||h>MAX){ var k=Math.min(MAX/w,MAX/h); w=Math.round(w*k); h=Math.round(h*k); }
+      var c=document.createElement('canvas'); c.width=w; c.height=h;
+      c.getContext('2d').drawImage(img,0,0,w,h);
+      resolve(c.toDataURL('image/jpeg',0.8));
+    }; img.src=e.target.result; };
+    r.readAsDataURL(file);
+  });
+}
+
+/* ---------- events ---------- */
+document.getElementById('camPh').onclick=startCam;
+document.getElementById('flip').onclick=flip;
+document.getElementById('flipBtn').onclick=flip;
+document.getElementById('shutter').onclick=function(){
+  if(!camera.classList.contains('live')){ startCam(); return; }
+  var d=captureSquare(); if(d) showShot(d); else toast('ถ่ายไม่สำเร็จ ลองใหม่อีกครั้งนะคะ');
+};
+document.getElementById('retake').onclick=retake;
+document.getElementById('galleryBtn').onclick=function(){ fileInput.click(); };
+fileInput.onchange=async function(){ if(fileInput.files && fileInput.files[0]){ var d=await fileToData(fileInput.files[0]); showShot(d); } };
+
+document.getElementById('side-m').onclick=function(){ setSide('เอ็ม'); };
+document.getElementById('side-p').onclick=function(){ setSide('แป้ง'); };
+function setSide(s){ side=s;
+  document.getElementById('side-m').classList.toggle('sel', s==='เอ็ม');
+  document.getElementById('side-p').classList.toggle('sel', s==='แป้ง');
+}
+
+function toast(m){ toastEl.textContent=m; toastEl.classList.add('show'); clearTimeout(toast._t); toast._t=setTimeout(function(){toastEl.classList.remove('show');},2600); }
+
+/* ---------- submit ---------- */
+document.getElementById('send').onclick=function(){
+  var name=document.getElementById('name').value.trim();
+  var msg=document.getElementById('msg').value.trim();
+  if(!name){ toast('กรอกชื่อก่อนนะคะ 🌸'); document.getElementById('name').focus(); return; }
+  if(!side){ toast('เลือกฝั่งก่อนนะคะ 💙🩷'); return; }
+  if(!msg){ toast('เขียนคำอวยพรก่อนนะคะ 💌'); document.getElementById('msg').focus(); return; }
+  var btn=this; btn.disabled=true; btn.textContent='⏳ กำลังส่ง...';
+  var payload=JSON.stringify({ action:'bless', name:name, message:msg, photoBase64:photoData, side:side });
+  var finish=function(){ showDone(name); };
+  if(!SCRIPT_URL){ setTimeout(finish,600); return; }
+  fetch(SCRIPT_URL,{ method:'POST', mode:'no-cors', headers:{'Content-Type':'text/plain'}, body:payload })
+    .then(finish).catch(finish);
+};
+
+function showDone(name){
+  stopCam();
+  if(photoData){ var t=document.getElementById('doneThumb'); t.src=photoData; t.classList.remove('hide'); }
+  document.getElementById('done').classList.add('show');
+  try{ window.scrollTo(0,0); }catch(e){}
+}
+document.getElementById('again').onclick=function(){
+  document.getElementById('done').classList.remove('show');
+  document.getElementById('doneThumb').classList.add('hide');
+  document.getElementById('name').value=''; document.getElementById('msg').value='';
+  setSide(''); side='';
+  var b=document.getElementById('send'); b.disabled=false; b.textContent='💌 ส่งคำอวยพรขึ้นจอ';
+  retake();
+  window.scrollTo(0,0);
+};
+
+/* เปิดกล้องอัตโนมัติเมื่อเข้าหน้า (ถ้าเบราว์เซอร์ยอม) */
+window.addEventListener('load', function(){ if(hasCam()) startCam(); });
+document.addEventListener('visibilitychange', function(){ if(document.hidden) stopCam(); });
+</script>
+</body>
+</html>

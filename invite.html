@@ -2328,9 +2328,10 @@ loadCardSettings();   // โหลดทันที ให้ section ถูก
     try { if (typeof openEnvelope === 'function') openEnvelope(); } catch (e) {}   // ข้ามหน้าปกซอง
     setTimeout(function () {
       if (cardSettings['sec-bless'] !== false && typeof goBlessing === 'function') goBlessing();
-      setTimeout(scrollToForm, 700);    // เลื่อนเข้าฟอร์มให้ชัวร์
-      setTimeout(scrollToForm, 1600);   // ย้ำอีกครั้งหลัง layout/fade นิ่ง
-    }, 1800);   // รอแอนิเมชันเปิดซองจบ แล้วเปิดฟอร์ม
+      // เลื่อนย้ำหลายจังหวะ กันรูป/บล็อกด้านบนโหลดช้าแล้วดันตำแหน่งฟอร์ม (บนมือถือโหลดเย็น)
+      [300, 900, 1800, 3200, 5000].forEach(function (ms) { setTimeout(scrollToForm, ms); });
+    }, 1600);   // รอแอนิเมชันเปิดซองจบ แล้วเปิดฟอร์ม
+    window.addEventListener('load', function () { setTimeout(scrollToForm, 400); });   // ย้ำอีกทีหลังรูปโหลดครบ
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', go); else go();
 })();
