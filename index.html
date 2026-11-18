@@ -1475,7 +1475,7 @@ function renderBlessGrid() {
       <div style="display:flex;align-items:center;gap:10px;">${avatar}<div style="display:flex;flex-direction:column;gap:4px;"><div style="font-weight:700;font-size:0.9rem;">${esc(b.name)}</div><div style="display:flex;gap:5px;flex-wrap:wrap;">${attendBadge}${sideBadge}</div></div></div>
       ${b.message?`<div style="font-size:0.85rem;color:#6b7c93;line-height:1.7;font-style:italic;">"${esc(b.message)}"</div>`:''}
       ${photo}
-      <div style="display:flex;gap:6px;flex-wrap:wrap;">${photoBtns}</div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;">${photoBtns}<button onclick="deleteBless(${b.row})" title="ลบคำอวยพรนี้ถาวร" style="${btnStyle}color:#c0392b;border-color:#e8b4b4;margin-left:auto;">🗑️ ลบคำอวยพร</button></div>
       <div style="font-size:0.7rem;color:#bbb;text-align:right;">${esc(b.date)}</div>
     </div>`;
   }).join('');
@@ -1536,6 +1536,22 @@ async function deleteBlessPhoto(row) {
       body: JSON.stringify({ action: 'set_bless_photo', row, photoBase64: '' })
     });
     toast('✅ ลบรูปแล้ว');
+    loadBlessingsPage();
+  } catch(e) { toast('❌ ลบไม่สำเร็จ'); }
+}
+async function deleteBless(row) {
+  const b = allBlessData.find(x => x.row === row);
+  const who = b && b.name ? ` ของ "${b.name}"` : '';
+  if (!confirm(`ลบคำอวยพร${who} ออกถาวร?\nลบแล้วกู้คืนไม่ได้`)) return;
+  const url = scriptUrl || localStorage.getItem('apps_script_url');
+  if (!url) { toast('⚠️ ยังไม่ได้ตั้งค่า Script URL'); return; }
+  toast('⏳ กำลังลบคำอวยพร...');
+  try {
+    await fetch(url, {
+      method: 'POST', headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify({ action: 'delete_bless', row })
+    });
+    toast('✅ ลบคำอวยพรแล้ว');
     loadBlessingsPage();
   } catch(e) { toast('❌ ลบไม่สำเร็จ'); }
 }

@@ -165,6 +165,11 @@ function doPost(e) {
       result.photoUrl = bp.photoUrl;
       if (bp.error) result.error = bp.error;
 
+    } else if (body.action === 'delete_bless') {
+      var db = deleteBlessing(ss, body.row);
+      result.ok = db.ok;
+      if (db.error) result.error = db.error;
+
     } else if (body.action === 'update_donation') {
       var ud = updateDonation(ss, body.row, {
         name:   body.name,
@@ -726,6 +731,23 @@ function setBlessingPhoto(ss, row, photoBase64) {
   }
   sheet.getRange(r, 4).setValue(photoUrl);   // '' = ลบรูป
   return { ok: true, photoUrl: photoUrl };
+}
+
+// ลบคำอวยพรแถวที่ระบุ (ใช้จากหลังบ้าน index.html) — หลังลบ row ของอันอื่นจะเลื่อน จึงควร reload ใหม่ทุกครั้ง
+function deleteBlessing(ss, row) {
+  var lock = LockService.getScriptLock();
+  try { lock.waitLock(8000); } catch (e) {}
+  try {
+    var sheet = ss.getSheetByName('คำอวยพร');
+    if (!sheet) return { ok: false, error: 'ไม่พบ sheet คำอวยพร' };
+    var r = parseInt(row, 10);
+    var lastRow = sheet.getLastRow();
+    if (!(r >= 2 && r <= lastRow)) return { ok: false, error: 'แถวไม่ถูกต้อง: ' + row };
+    sheet.deleteRow(r);
+    return { ok: true };
+  } finally {
+    try { lock.releaseLock(); } catch (e) {}
+  }
 }
 
 // helper: เขียน row ลง sheet คำอวยพร

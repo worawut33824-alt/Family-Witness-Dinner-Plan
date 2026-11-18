@@ -125,9 +125,9 @@ body{font-family:var(--sarabun);background:#f3f0ea;overflow:hidden}
 .who .tag{display:inline-block;font-family:var(--sarabun);font-style:normal;font-size:1.7vmin;font-weight:500;color:var(--ink-soft);letter-spacing:.02em;padding:.3vmin 1.5vmin;border:1px solid var(--line);border-radius:20px;margin-left:1.4vmin;vertical-align:middle}
 
 .wall{position:absolute;inset:0;z-index:5;display:none;padding:15vmin 6vmin 12vmin;align-content:center;justify-content:center;grid-template-columns:repeat(3,minmax(0,1fr));gap:3vmin;max-width:1500px;margin:0 auto}
-.stage[data-mode="wall"] .single{display:none}
-.stage[data-mode="wall"] .wall{display:grid}
-.stage[data-mode="wall"] .overline-wall{display:block}
+.stage[data-mode="wall"] .single,.stage[data-mode="live"] .single{display:none}
+.stage[data-mode="wall"] .wall,.stage[data-mode="live"] .wall{display:grid}
+.stage[data-mode="wall"] .overline-wall,.stage[data-mode="live"] .overline-wall{display:block}
 .wcard{background:var(--paper);border-radius:20px;padding:3.2vmin 3vmin;box-shadow:var(--card-sh);border:1px solid rgba(201,169,110,.22);backdrop-filter:blur(6px);position:relative;transition:opacity .7s ease, transform .7s ease;animation:floaty 7s ease-in-out infinite}
 .stage[data-theme="night"] .wcard{border-color:rgba(234,215,174,.18)}
 .wcard:nth-child(2n){animation-duration:8.5s;animation-delay:-2s}
@@ -145,6 +145,33 @@ body{font-family:var(--sarabun);background:#f3f0ea;overflow:hidden}
 .wquote{position:absolute;top:1vmin;right:2.4vmin;font-family:var(--cormorant);font-size:7vmin;color:var(--gold);opacity:.16;line-height:1}
 .overline-wall{display:none;position:absolute;z-index:6;top:9.5vmin;left:0;right:0;text-align:center;font-family:var(--cormorant);font-style:italic;font-size:3vmin;color:var(--gold-dk);letter-spacing:.1em}
 .stage[data-theme="night"] .overline-wall{color:var(--gold-lt)}
+
+/* ===== LIVE popup (คำอวยพรใหม่เด้งขึ้นกลางจอ) ===== */
+.pop{position:absolute;inset:0;z-index:20;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .5s ease;background:radial-gradient(60% 60% at 50% 45%, rgba(230,240,250,.5), rgba(205,220,236,.72))}
+.stage[data-theme="night"] .pop{background:radial-gradient(60% 60% at 50% 45%, rgba(12,20,34,.5), rgba(10,16,28,.74))}
+.pop.show{opacity:1;pointer-events:auto}
+.pop-card{width:min(82vw,920px);background:var(--paper);border-radius:28px;padding:5vmin 6vmin;text-align:center;box-shadow:0 40px 120px -40px rgba(20,40,70,.6);border:1px solid rgba(201,169,110,.3);position:relative;transform:scale(.82) translateY(16px);opacity:0;transition:transform .55s cubic-bezier(.2,1.1,.3,1),opacity .4s ease}
+.stage[data-photo="on"] .pop-card{backdrop-filter:blur(10px) saturate(1.1);-webkit-backdrop-filter:blur(10px) saturate(1.1)}
+.pop.show .pop-card{transform:scale(1) translateY(0);opacity:1}
+.pop-badge{display:inline-flex;align-items:center;gap:1vmin;font-family:var(--cormorant);font-style:italic;font-size:2.6vmin;letter-spacing:.06em;color:var(--gold-dk);padding:.5vmin 3vmin;border:1px solid var(--line);border-radius:40px;margin-bottom:3.4vmin}
+.stage[data-theme="night"] .pop-badge{color:var(--gold-lt)}
+.pop-badge svg{width:2.6vmin;height:2.6vmin;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linejoin:round;stroke-linecap:round}
+.pop-avatar{width:12vmin;height:12vmin;border-radius:50%;margin:0 auto 3vmin;display:grid;place-items:center;overflow:hidden;font-family:var(--cormorant);font-weight:600;font-size:5vmin;color:#fff;box-shadow:0 10px 28px -10px rgba(0,0,0,.4),0 0 0 .7vmin rgba(255,255,255,.14);background:linear-gradient(145deg,var(--gold),var(--gold-dk))}
+.pop-avatar.bride{background:linear-gradient(145deg,#e7a6c0,var(--bride))}
+.pop-avatar.groom{background:linear-gradient(145deg,#8bb0d6,var(--groom))}
+.pop-avatar img{width:100%;height:100%;border-radius:50%;object-fit:cover}
+.pop-msg{font-family:var(--sarabun);color:var(--ink);line-height:1.6;text-wrap:balance}
+.pop-msg.sz-xl{font-size:clamp(1.8rem,4.2vmin,3.4rem)}
+.pop-msg.sz-lg{font-size:clamp(1.6rem,3.6vmin,2.9rem)}
+.pop-msg.sz-md{font-size:clamp(1.4rem,3vmin,2.3rem)}
+.pop-msg.sz-sm{font-size:clamp(1.2rem,2.5vmin,1.9rem)}
+.pop-msg.sz-xs{font-size:clamp(1.05rem,2.1vmin,1.6rem)}
+.pop-div{display:flex;align-items:center;justify-content:center;gap:2vmin;margin:3.4vmin auto 2.2vmin;width:min(40vmin,55%)}
+.pop-div i{height:1px;flex:1;background:linear-gradient(90deg,transparent,var(--line),transparent)}
+.pop-div b{width:1.4vmin;height:1.4vmin;flex:none;transform:rotate(45deg);border:1px solid var(--gold);background:var(--gold);opacity:.75}
+.pop-who{font-family:var(--cormorant);font-style:italic;font-weight:500;font-size:clamp(1.3rem,2.9vmin,2.2rem);color:var(--gold-dk)}
+.stage[data-theme="night"] .pop-who{color:var(--gold-lt)}
+.pop-who .tag{display:inline-block;font-family:var(--sarabun);font-style:normal;font-size:1.7vmin;font-weight:500;color:var(--ink-soft);padding:.3vmin 1.5vmin;border:1px solid var(--line);border-radius:20px;margin-left:1.4vmin;vertical-align:middle}
 
 .footerbar{position:absolute;z-index:6;left:0;right:0;bottom:0;display:flex;align-items:flex-end;justify-content:space-between;padding:0 7vmin 4.4vmin;padding-bottom:max(4.4vmin,env(safe-area-inset-bottom))}
 .progress{display:flex;align-items:center;gap:1.3vmin;height:6vmin}
@@ -228,6 +255,17 @@ body{font-family:var(--sarabun);background:#f3f0ea;overflow:hidden}
   <div class="overline-wall">ด้วยรักจากทุกคน · Words of Love</div>
   <section class="wall" id="wall"></section>
 
+  <!-- LIVE: ป็อปอัปคำอวยพรใหม่ -->
+  <div class="pop" id="pop">
+    <div class="pop-card">
+      <div class="pop-badge"><svg viewBox="0 0 24 24"><path d="M12 3l1.7 5.3L19 10l-5.3 1.7L12 17l-1.7-5.3L5 10l5.3-1.7L12 3Z"/></svg> คำอวยพรใหม่</div>
+      <div class="pop-avatar" id="popAv">&#9829;</div>
+      <p class="pop-msg" id="popMsg"></p>
+      <div class="pop-div"><i></i><b></b><i></i></div>
+      <p class="pop-who" id="popWho"></p>
+    </div>
+  </div>
+
   <footer class="footerbar">
     <div class="progress" id="progress"></div>
     <div class="qr">
@@ -246,13 +284,14 @@ body{font-family:var(--sarabun);background:#f3f0ea;overflow:hidden}
     <span class="sep"></span>
     <button id="bSingle" class="active">▣ การ์ดเดี่ยว</button>
     <button id="bWall">▦ ผนังลอย</button>
+    <button id="bLive">◉ ไลฟ์</button>
     <span class="sep"></span>
     <button id="bPhoto" class="active">❀ รูปคู่</button>
     <button id="bTheme">☾ กลางคืน</button>
     <button id="bFull">⛶ เต็มจอ</button>
     <button id="bReload" title="ดึงคำอวยพรใหม่">⟳ รีเฟรช</button>
   </div>
-  <div class="hint">← → เปลี่ยนสไลด์ · เว้นวรรค เล่น/หยุด · W โหมด · P รูปคู่ · N กลางวัน/คืน · F เต็มจอ · ขยับเมาส์เพื่อเรียกเมนู</div>
+  <div class="hint">← → เปลี่ยนสไลด์ · เว้นวรรค เล่น/หยุด · W ผนัง · L ไลฟ์ · P รูปคู่ · N กลางวัน/คืน · F เต็มจอ · ขยับเมาส์เพื่อเรียกเมนู</div>
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
@@ -374,30 +413,78 @@ async function fetchBlessings(){
   var list=Array.isArray(data.blessings)?data.blessings:[];
   return list.filter(function(b){ return b && String(b.message||'').trim(); });
 }
-function applyData(list){
-  DATA=list; curSig=sig(list); saveCache(list);
+/* ===== new-wish detection + LIVE popup queue ===== */
+var seenKeys=null, popQueue=[], popBusy=false;
+var POP_MS=6000;   // เวลาโชว์ป็อปอัปต่ออัน (เต็มเวลาเสมอ แม้ต่อคิว)
+function keyOf(b){ return (b&&b.row!=null)?('r'+b.row):(((b&&b.name)||'')+'|'+((b&&b.message)||'')); }
+function poolFrom(list){ if(!popQueue.length) return list.slice();
+  var pend={}; popQueue.forEach(function(q){ pend[keyOf(q)]=1; });
+  return list.filter(function(b){ return !pend[keyOf(b)]; }); }
+
+function applyPool(list){
+  DATA=list;
   if(!DATA.length){ showEmpty(); started=false; return; }
+  var m=stage.dataset.mode;
   if(!started){
     started=true; idx=0; card.classList.remove('leaving','entering'); paint(0); dots();
-    if(stage.dataset.mode==='wall'){ buildWall(); if(playing) startWall(); } else schedule();
+    if(m==='wall'||m==='live'){ buildWall(); if(playing) startWall(); } else schedule();
   }else{
     if(idx>=DATA.length) idx=0;
-    if(stage.dataset.mode==='wall') buildWall(); else { paint(idx); dots(); }
+    if(m==='wall'||m==='live'){ if(wall.children.length!==Math.min(6,DATA.length)) buildWall(); }
+    else { paint(idx); dots(); }
   }
 }
 async function refresh(first){
   try{
     var list=await fetchBlessings();
-    if(sig(list)!==curSig) applyData(list);
+    if(!seenKeys){   // โหลดจริงครั้งแรก → ถือว่าเห็นหมด (ไม่ป็อปของเก่า)
+      seenKeys={}; list.forEach(function(b){ seenKeys[keyOf(b)]=1; });
+      curSig=sig(list); saveCache(list); applyPool(list); return setLive(true);
+    }
+    if(sig(list)===curSig){ setLive(true); return; }
+    curSig=sig(list); saveCache(list);
+    var news=[]; list.forEach(function(b){ var k=keyOf(b); if(!seenKeys[k]){ seenKeys[k]=1; news.push(b); } });
+    if(!first && stage.dataset.mode==='live' && news.length){
+      news.forEach(function(b){ popQueue.push(b); });
+      applyPool(poolFrom(list));   // กริดยังไม่รวมอันที่กำลังจะป็อป
+      processPops();
+    }else{
+      if(stage.dataset.mode!=='live') popQueue=[];
+      applyPool(list);
+    }
     setLive(true);
   }catch(e){
     setLive(false);
     if(first){
       var c=loadCache();
-      if(c&&c.length){ applyData(c); }
+      if(c&&c.length){ curSig=sig(c); applyPool(c); }
       else showMessageCard('เชื่อมต่อไม่ได้ในตอนนี้<br>กำลังลองใหม่อัตโนมัติ…','⚠');
     }
   }
+}
+
+/* ===== LIVE popup ===== */
+function showPop(b){
+  var av2=document.getElementById('popAv'), pm=document.getElementById('popMsg'), pw=document.getElementById('popWho');
+  av2.className='pop-avatar '+sideClass(b.side); av2.innerHTML=avatarHTML(b);
+  pm.className='pop-msg '+sizeClass(b.message); pm.textContent=b.message;
+  var lab=sideLabel(b.side);
+  pw.innerHTML='— '+esc(b.name||'ไม่ระบุชื่อ')+' —'+(lab?' <span class="tag">'+lab+'</span>':'');
+  document.getElementById('pop').classList.add('show');
+}
+function hidePop(cb){ var p=document.getElementById('pop'); if(p) p.classList.remove('show'); setTimeout(function(){ cb&&cb(); }, 600); }
+function processPops(){
+  if(popBusy || !popQueue.length) return;
+  if(stage.dataset.mode!=='live'){ while(popQueue.length){ DATA.unshift(popQueue.shift()); } if(stage.dataset.mode==='wall') buildWall(); return; }
+  popBusy=true;
+  var b=popQueue.shift();
+  showPop(b);
+  setTimeout(function(){ hidePop(function(){
+    DATA.unshift(b);   // ป็อปจบ → ลงไปรวมกับกริดเหมือนคนอื่น
+    if(wall.children.length<Math.min(6,DATA.length)) buildWall();
+    popBusy=false;
+    if(popQueue.length) setTimeout(processPops,500);
+  }); }, POP_MS);
 }
 
 /* ===== controls ===== */
@@ -406,15 +493,18 @@ function setMode(m){
   stage.dataset.mode=m;
   document.getElementById('bSingle').classList.toggle('active',m==='single');
   document.getElementById('bWall').classList.toggle('active',m==='wall');
+  document.getElementById('bLive').classList.toggle('active',m==='live');
   clearTimeout(timer); clearInterval(wallTimer);
+  if(m!=='live'){ hidePop(); if(popQueue.length){ popQueue.forEach(function(b){ DATA.unshift(b); }); popQueue=[]; } popBusy=false; }
   if(!DATA.length) return;
-  if(m==='wall'){ buildWall(); if(playing) startWall(); } else { card.classList.remove('leaving','entering'); paint(idx); dots(); schedule(); }
+  if(m==='wall'||m==='live'){ buildWall(); if(playing) startWall(); if(m==='live') processPops(); }
+  else { card.classList.remove('leaving','entering'); paint(idx); dots(); schedule(); }
 }
 function setPlay(p){
   playing=p;
   var b=document.getElementById('bPlay'); b.classList.toggle('active',p); b.textContent=p?'⏸ หยุด':'▶ เล่น';
   clearTimeout(timer); clearInterval(wallTimer);
-  if(p && DATA.length){ if(stage.dataset.mode==='wall') startWall(); else schedule(); }
+  if(p && DATA.length){ if(stage.dataset.mode==='wall'||stage.dataset.mode==='live') startWall(); else schedule(); }
 }
 function setTheme(t){ stage.dataset.theme=t; document.getElementById('bTheme').textContent=t==='night'?'☀ กลางวัน':'☾ กลางคืน'; }
 function setPhoto(on){ stage.dataset.photo=on?'on':'off'; var b=document.getElementById('bPhoto'); b.classList.toggle('active',on); b.textContent=on?'❀ รูปคู่':'❀ ไม่ใส่รูป'; }
@@ -424,6 +514,7 @@ document.getElementById('bPrev').onclick=function(){ prev(); };
 document.getElementById('bPlay').onclick=function(){ setPlay(!playing); };
 document.getElementById('bSingle').onclick=function(){ setMode('single'); };
 document.getElementById('bWall').onclick=function(){ setMode('wall'); };
+document.getElementById('bLive').onclick=function(){ setMode('live'); };
 document.getElementById('bPhoto').onclick=function(){ setPhoto(stage.dataset.photo!=='on'); };
 document.getElementById('bTheme').onclick=function(){ setTheme(stage.dataset.theme==='night'?'light':'night'); };
 document.getElementById('bReload').onclick=function(){ refresh(false); };
@@ -434,6 +525,7 @@ document.addEventListener('keydown',function(e){
   else if(e.key==='ArrowLeft'){prev();}
   else if(e.key===' '){e.preventDefault();setPlay(!playing);}
   else if(e.key.toLowerCase()==='w'){setMode(stage.dataset.mode==='wall'?'single':'wall');}
+  else if(e.key.toLowerCase()==='l'){setMode(stage.dataset.mode==='live'?'single':'live');}
   else if(e.key.toLowerCase()==='p'){setPhoto(stage.dataset.photo!=='on');}
   else if(e.key.toLowerCase()==='n'){setTheme(stage.dataset.theme==='night'?'light':'night');}
   else if(e.key.toLowerCase()==='f'){document.getElementById('bFull').click();}
@@ -467,7 +559,7 @@ showUI();
 
 /* start */
 showLoading();
-var cached=loadCache(); if(cached&&cached.length){ applyData(cached); }
+var cached=loadCache(); if(cached&&cached.length){ curSig=sig(cached); applyPool(cached); }
 refresh(true);
 setInterval(function(){ refresh(false); }, REFRESH_MS);
 </script>
