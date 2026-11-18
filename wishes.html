@@ -124,11 +124,11 @@ body{font-family:var(--sarabun);background:#f3f0ea;overflow:hidden}
 .stage[data-theme="night"] .who{color:var(--gold-lt)}
 .who .tag{display:inline-block;font-family:var(--sarabun);font-style:normal;font-size:1.7vmin;font-weight:500;color:var(--ink-soft);letter-spacing:.02em;padding:.3vmin 1.5vmin;border:1px solid var(--line);border-radius:20px;margin-left:1.4vmin;vertical-align:middle}
 
-.wall{position:absolute;inset:0;z-index:5;display:none;padding:15vmin 6vmin 12vmin;align-content:center;justify-content:center;grid-template-columns:repeat(3,minmax(0,1fr));gap:3vmin;max-width:1500px;margin:0 auto}
+.wall{position:absolute;inset:0;z-index:5;display:none;padding:12.5vmin 6vmin 10.5vmin;column-count:3;column-gap:2.6vmin;max-width:1500px;margin:0 auto;overflow:hidden}
 .stage[data-mode="wall"] .single,.stage[data-mode="live"] .single{display:none}
-.stage[data-mode="wall"] .wall,.stage[data-mode="live"] .wall{display:grid}
+.stage[data-mode="wall"] .wall,.stage[data-mode="live"] .wall{display:block}
 .stage[data-mode="wall"] .overline-wall,.stage[data-mode="live"] .overline-wall{display:block}
-.wcard{background:var(--paper);border-radius:20px;padding:3.2vmin 3vmin;box-shadow:var(--card-sh);border:1px solid rgba(201,169,110,.22);backdrop-filter:blur(6px);position:relative;transition:opacity .7s ease, transform .7s ease;animation:floaty 7s ease-in-out infinite}
+.wcard{background:var(--paper);border-radius:20px;padding:3.2vmin 3vmin;box-shadow:var(--card-sh);border:1px solid rgba(201,169,110,.22);backdrop-filter:blur(6px);position:relative;transition:opacity .7s ease, transform .7s ease;animation:floaty 7s ease-in-out infinite;break-inside:avoid;-webkit-column-break-inside:avoid;margin-bottom:2.6vmin}
 .stage[data-theme="night"] .wcard{border-color:rgba(234,215,174,.18)}
 .wcard:nth-child(2n){animation-duration:8.5s;animation-delay:-2s}
 .wcard:nth-child(3n){animation-duration:9.5s;animation-delay:-4s}
@@ -141,7 +141,12 @@ body{font-family:var(--sarabun);background:#f3f0ea;overflow:hidden}
 .wavatar img{width:100%;height:100%;border-radius:50%;object-fit:cover}
 .wname{font-family:var(--cormorant);font-style:italic;font-size:2.7vmin;color:var(--gold-dk);font-weight:600}
 .stage[data-theme="night"] .wname{color:var(--gold-lt)}
-.wmsg{font-size:2.15vmin;line-height:1.6;color:var(--ink);display:-webkit-box;-webkit-line-clamp:5;-webkit-box-orient:vertical;overflow:hidden}
+.wmsg{line-height:1.58;color:var(--ink);overflow-wrap:anywhere;font-size:2.05vmin}
+.wmsg.wsz-xl{font-size:2.65vmin}
+.wmsg.wsz-lg{font-size:2.35vmin}
+.wmsg.wsz-md{font-size:2.05vmin}
+.wmsg.wsz-sm{font-size:1.8vmin;line-height:1.52}
+.wmsg.wsz-xs{font-size:1.58vmin;line-height:1.5}
 .wquote{position:absolute;top:1vmin;right:2.4vmin;font-family:var(--cormorant);font-size:7vmin;color:var(--gold);opacity:.16;line-height:1}
 .overline-wall{display:none;position:absolute;z-index:6;top:9.5vmin;left:0;right:0;text-align:center;font-family:var(--cormorant);font-style:italic;font-size:3vmin;color:var(--gold-dk);letter-spacing:.1em}
 .stage[data-theme="night"] .overline-wall{color:var(--gold-lt)}
@@ -207,7 +212,7 @@ body{font-family:var(--sarabun);background:#f3f0ea;overflow:hidden}
 @media(max-width:820px){
   .couple{font-size:5.4vmin}.datechip{font-size:3.4vmin;letter-spacing:.3em}
   .single{padding:20vmin 7vmin 18vmin}
-  .wall{grid-template-columns:1fr;max-width:90vw;gap:2.4vmin}
+  .wall{column-count:1;max-width:90vw;padding:16vmin 7vmin 14vmin}
   .wcard:nth-child(n+4){display:none}
   .qr .cap{display:none}
   .message.sz-xl,.message.sz-lg{font-size:clamp(1.5rem,5.4vmin,2.4rem)}
@@ -322,6 +327,8 @@ function sideLabel(s){ var c=sideClass(s); return c==='bride'?'ฝั่งเ�
 function initial(n){ n=(n||'').trim(); return n? Array.from(n)[0] : '♥'; }
 function sizeClass(m){ var n=Array.from(m||'').length;
   if(n<=48)return'sz-xl'; if(n<=100)return'sz-lg'; if(n<=170)return'sz-md'; if(n<=300)return'sz-sm'; return'sz-xs'; }
+function wallSize(m){ var n=Array.from(m||'').length;
+  if(n<=45)return'wsz-xl'; if(n<=95)return'wsz-lg'; if(n<=170)return'wsz-md'; if(n<=280)return'wsz-sm'; return'wsz-xs'; }
 function avatarHTML(b){
   var url=String(b.photoUrl||'').trim();
   if(url && /^https?:/.test(url)) return '<img src="'+esc(url)+'" alt="" onerror="this.remove()">';
@@ -368,7 +375,7 @@ function wallCardEl(b){
   c.innerHTML='<div class="wquote">&#10077;</div>'+
     '<div class="wtop"><div class="wavatar '+sideClass(b.side)+'">'+avatarHTML(b)+'</div>'+
     '<div class="wname">'+esc(b.name||'ไม่ระบุชื่อ')+'</div></div>'+
-    '<div class="wmsg">'+esc(b.message)+'</div>';
+    '<div class="wmsg '+wallSize(b.message)+'">'+esc(b.message)+'</div>';
   return c;
 }
 function buildWall(){
@@ -385,7 +392,7 @@ function wallTick(){
     slot.querySelector('.wavatar').className='wavatar '+sideClass(b.side);
     slot.querySelector('.wavatar').innerHTML=avatarHTML(b);
     slot.querySelector('.wname').textContent=b.name||'ไม่ระบุชื่อ';
-    slot.querySelector('.wmsg').textContent=b.message;
+    var wm=slot.querySelector('.wmsg'); wm.className='wmsg '+wallSize(b.message); wm.textContent=b.message;
     slot.classList.remove('swap');
   },700);
 }
