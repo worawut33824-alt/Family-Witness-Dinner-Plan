@@ -1975,6 +1975,32 @@ function checkDoneOrSkipped() { return checklist.flatMap(p=>p.items).filter(i=>i
 function checkTotal() { return checklist.flatMap(p=>p.items).length; }
 
 // ─── EXPENSES ────────────────────────────────────────────────────────────────
+// แสดงวันที่ให้เป็นรูปแบบเดียวกันทุกบรรทัด → "24 Nov 2026" (แปลงเฉพาะตอนแสดง ไม่แก้ข้อมูลจริง)
+const EXP_MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+function fmtExpDate(s) {
+  if (s == null) return '';
+  s = String(s).trim();
+  if (!s) return '';
+  let m;
+  // ISO: 2026-11-24 (อาจมีเวลาต่อท้าย) — parse เองเลี่ยงปัญหา timezone
+  if ((m = s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/))) {
+    const mo = +m[2]; if (mo>=1 && mo<=12) return `${+m[3]} ${EXP_MONTHS[mo-1]} ${m[1]}`;
+  }
+  // dd/MM/yyyy (เผื่อข้อมูลบางชุด)
+  if ((m = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})/))) {
+    const mo = +m[2]; if (mo>=1 && mo<=12) return `${+m[1]} ${EXP_MONTHS[mo-1]} ${m[3]}`;
+  }
+  // "Thu Apr 02" หรือ "Thu Apr 02 2026" (รายการเก่าที่ไม่มีปี → ใช้ 2026)
+  if ((m = s.match(/^[A-Za-z]{3}\s+([A-Za-z]{3})\s+(\d{1,2})(?:\s+(\d{4}))?$/))) {
+    const mi = EXP_MONTHS.findIndex(x => x.toLowerCase() === m[1].toLowerCase());
+    if (mi >= 0) return `${+m[2]} ${EXP_MONTHS[mi]} ${m[3] || 2026}`;
+  }
+  // สำรอง: ให้ JS parse แล้วจัดรูปแบบ
+  const d = new Date(s);
+  if (!isNaN(d)) return `${d.getDate()} ${EXP_MONTHS[d.getMonth()]} ${d.getFullYear()}`;
+  return s; // แปลงไม่ได้ ก็แสดงตามเดิม
+}
+
 function renderExpenses() {
   const cat = document.getElementById('filter-cat').value;
   const search = document.getElementById('filter-search').value.toLowerCase();
@@ -1996,7 +2022,7 @@ function renderExpenses() {
       filtered.forEach(e => {
         html += `<div style="padding:12px 16px;border-bottom:1px solid var(--border)">
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px">
-            <span style="font-size:0.75rem;color:var(--text-light)">${e.date}</span>
+            <span style="font-size:0.75rem;color:var(--text-light)">${fmtExpDate(e.date)}</span>
             <span style="font-weight:700;font-size:1rem" class="${e.amount<0?'amt-neg':''}">${e.amount.toLocaleString()} บาท</span>
           </div>
           <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:${e.note?'4px':'0'}">
@@ -2020,7 +2046,7 @@ function renderExpenses() {
     html = `<table><thead><tr><th>วันที่</th><th>หมวดหมู่</th><th>รายการ</th><th style="text-align:right">จำนวน (บาท)</th><th>หมายเหตุ</th><th></th></tr></thead><tbody>`;
     filtered.forEach(e => {
       html += `<tr>
-        <td style="white-space:nowrap">${e.date}</td>
+        <td style="white-space:nowrap">${fmtExpDate(e.date)}</td>
         <td><span class="badge badge-neutral" style="font-size:0.72rem">${e.cat}</span></td>
         <td>${e.item}</td>
         <td style="text-align:right;font-weight:600" class="${e.amount<0?'amt-neg':''}"> ${e.amount.toLocaleString()}</td>
