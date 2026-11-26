@@ -3095,7 +3095,7 @@ function backupGuestPhotos() {
     return { ok: true, scanned: out.items.length, added: added, truncated: out.truncated };
   } finally { lock.releaseLock(); }
 }
-var PHOTO_BACKUP_EVERY_MIN = 1; // ความถี่สำรอง (นาที) — Apps Script รองรับ 1,5,10,15,30
+var PHOTO_BACKUP_EVERY_MIN = 5; // ความถี่สำรอง (นาที) — Apps Script รองรับ 1,5,10,15,30
 // ติดตั้ง trigger อัตโนมัติ + สำรองรอบแรก — ลบของเดิมแล้วสร้างใหม่ (เปลี่ยน interval ได้) ใช้ได้ทั้ง editor และ web action
 function setupPhotoBackupCore() {
   _getOrCreateBackupFolder();
