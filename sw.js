@@ -6,7 +6,7 @@
 //  • Google Apps Script/Drive → เน็ตล้วน ไม่แคช
 // รูปที่เปลี่ยนบ่อย (cover/countdown) ใส่ ?v=N ต่อท้าย → เปลี่ยนเลข = URL ใหม่ = โหลดสดทันที
 
-const CACHE = 'wedding-planner-v116';
+const CACHE = 'wedding-planner-v117';
 const CORE = [
   './',
   './index.html',
