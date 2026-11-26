@@ -66,6 +66,17 @@
   .don-big { font-size:2.3rem;font-weight:800;color:var(--donate-dark);line-height:1;letter-spacing:-.5px; }
   .don-chip { display:inline-flex;align-items:center;gap:6px;background:#fff;border:1px solid #d9efe3;border-radius:20px;padding:5px 12px;font-size:0.8rem;color:var(--donate-dark);font-weight:600; }
   .amt-donate { font-weight:700; color:var(--donate-dark); text-align:right; }
+  /* Dashboard cashflow summary (เงินสนับสนุน − รายจ่าย = ส่วนต่าง) */
+  .cf-wrap { display:flex; align-items:stretch; flex-wrap:wrap; gap:4px; }
+  .cf-item { flex:1 1 180px; text-align:center; padding:8px 14px; display:flex; flex-direction:column; justify-content:center; }
+  .cf-op { flex:0 0 34px; display:flex; align-items:center; justify-content:center; font-size:1.7rem; font-weight:300; color:var(--text-light); }
+  .cf-label { font-size:0.82rem; color:var(--text-light); margin-bottom:7px; font-weight:600; }
+  .cf-val { font-size:1.75rem; font-weight:800; line-height:1; letter-spacing:-.5px; }
+  .cf-sub { font-size:0.72rem; color:var(--text-light); margin-top:6px; }
+  @media (max-width:640px){
+    .cf-item { flex-basis:100%; }
+    .cf-op { flex-basis:100%; height:26px; font-size:1.3rem; }
+  }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   html { scroll-behavior: smooth; }
   body { font-family: var(--font-ui); background: var(--bg); color: var(--text); min-height: 100vh; -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; font-size: 15px; line-height: 1.5; padding-left: var(--sidebar-w); }
@@ -562,6 +573,7 @@
   </div>
 
   <div class="grid-4" id="dash-stats" style="margin-bottom:28px"></div>
+  <div class="card dash-dwidget" id="dash-cashflow" style="margin-bottom:28px"></div>
   <div class="grid-2" style="margin-bottom:28px">
     <div class="card" style="margin-bottom:0">
       <div class="card-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 21h18"/><rect x="5" y="11" width="4" height="7" rx="1"/><rect x="10.5" y="6.5" width="4" height="11.5" rx="1"/><rect x="16" y="14" width="4" height="4" rx="1"/></svg>งบประมาณแยกหมวด</div>
@@ -1666,6 +1678,32 @@ function renderDashboard() {
       <div class="stat-value" style="font-size:1.4rem">${checkDoneOrSkipped()} / ${checkTotal()}</div>
       <div class="stat-label">Checklist สำเร็จ</div>
       <div class="stat-sub">${((checkDoneOrSkipped()/checkTotal())*100).toFixed(0)}% เสร็จ/ข้าม</div>
+    </div>`;
+
+  // cashflow summary: เงินสนับสนุนรวม − จ่ายไปแล้ว = ส่วนต่าง
+  const don = donStats();
+  const net = don.total - ts;
+  const netPos = net >= 0;
+  document.getElementById('dash-cashflow').innerHTML = `
+    <div class="card-title" style="color:var(--donate-dark)">💝 เงินสนับสนุน หักรายจ่าย</div>
+    <div class="cf-wrap">
+      <div class="cf-item">
+        <div class="cf-label">เงินสนับสนุนรวม</div>
+        <div class="cf-val" style="color:var(--donate-dark)">${fmtB(don.total)}</div>
+        <div class="cf-sub">💚 จาก ${don.count} ท่าน</div>
+      </div>
+      <div class="cf-op">−</div>
+      <div class="cf-item">
+        <div class="cf-label">จ่ายไปแล้ว</div>
+        <div class="cf-val" style="color:var(--primary)">${fmtB(ts)}</div>
+        <div class="cf-sub">รายจ่ายทั้งหมด</div>
+      </div>
+      <div class="cf-op">=</div>
+      <div class="cf-item">
+        <div class="cf-label">ส่วนต่าง</div>
+        <div class="cf-val" style="color:${netPos?'var(--success)':'var(--danger)'}">${netPos?fmtB(net):'('+Math.abs(net).toLocaleString('th-TH')+')'}</div>
+        <div class="cf-sub">${netPos?'✅ สนับสนุนครอบคลุมรายจ่าย':'🔴 จ่ายเกินเงินสนับสนุน'}</div>
+      </div>
     </div>`;
 
   // budget table
