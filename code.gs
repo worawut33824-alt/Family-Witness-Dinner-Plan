@@ -115,6 +115,10 @@ function doGet(e) {
       // สั่งสำรองทันที (นอกเหนือจาก trigger อัตโนมัติ)
       result.backup = backupGuestPhotos();
 
+    } else if (action === 'setup_backup') {
+      // ติดตั้ง trigger อัตโนมัติ + สำรองรอบแรก (เรียกครั้งเดียว ผ่านเว็บ)
+      result.backup = setupPhotoBackupCore();
+
     } else {
       result.message = 'unknown action';
     }
@@ -3091,20 +3095,27 @@ function backupGuestPhotos() {
     return { ok: true, scanned: out.items.length, added: added, truncated: out.truncated };
   } finally { lock.releaseLock(); }
 }
-// ตั้งค่าครั้งเดียว: สร้างโฟลเดอร์สำรอง + ชีต log + ติดตั้ง trigger ทุก 15 นาที + สำรองรอบแรก
-function setupPhotoBackup() {
+// ติดตั้ง trigger อัตโนมัติ (ทุก 30 นาที) + สำรองรอบแรก — ใช้ได้ทั้งจาก editor และ web action
+function setupPhotoBackupCore() {
   _getOrCreateBackupFolder();
   _backupLogSheet();
   var has = false, trigs = ScriptApp.getProjectTriggers();
   for (var i = 0; i < trigs.length; i++) { if (trigs[i].getHandlerFunction() === 'backupGuestPhotos') has = true; }
-  if (!has) ScriptApp.newTrigger('backupGuestPhotos').timeBased().everyMinutes(15).create();
+  var created = false;
+  if (!has) { ScriptApp.newTrigger('backupGuestPhotos').timeBased().everyMinutes(30).create(); created = true; }
   var r = backupGuestPhotos();
+  r.triggerCreated = created; r.hadTrigger = has; r.backupFolderUrl = _backupFolderUrlOrNull();
+  return r;
+}
+// ตั้งค่าครั้งเดียว (รันจาก editor — มี popup สรุป)
+function setupPhotoBackup() {
+  var r = setupPhotoBackupCore();
   try {
     SpreadsheetApp.getUi().alert(
       '✅ ตั้งค่าแบ็กอัปรูปจากแขกเรียบร้อย!\n\n' +
       '• โฟลเดอร์สำรอง (ส่วนตัว ไม่แชร์ให้แขก):\n' +
-      '  ' + _backupFolderUrlOrNull() + '\n' +
-      '• สำรองอัตโนมัติทุก 15 นาที (คัดลอกทุกไฟล์ที่ยังไม่เคยสำรอง)\n' +
+      '  ' + (r.backupFolderUrl || '-') + '\n' +
+      '• สำรองอัตโนมัติทุก 30 นาที (คัดลอกทุกไฟล์ที่ยังไม่เคยสำรอง)\n' +
       '• สำรองรอบแรก: ' + (r.added || 0) + ' ไฟล์ (สแกนเจอ ' + (r.scanned || 0) + ')'
     );
   } catch (e) {}
