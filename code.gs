@@ -3095,16 +3095,18 @@ function backupGuestPhotos() {
     return { ok: true, scanned: out.items.length, added: added, truncated: out.truncated };
   } finally { lock.releaseLock(); }
 }
-// ติดตั้ง trigger อัตโนมัติ (ทุก 30 นาที) + สำรองรอบแรก — ใช้ได้ทั้งจาก editor และ web action
+var PHOTO_BACKUP_EVERY_MIN = 1; // ความถี่สำรอง (นาที) — Apps Script รองรับ 1,5,10,15,30
+// ติดตั้ง trigger อัตโนมัติ + สำรองรอบแรก — ลบของเดิมแล้วสร้างใหม่ (เปลี่ยน interval ได้) ใช้ได้ทั้ง editor และ web action
 function setupPhotoBackupCore() {
   _getOrCreateBackupFolder();
   _backupLogSheet();
-  var has = false, trigs = ScriptApp.getProjectTriggers();
-  for (var i = 0; i < trigs.length; i++) { if (trigs[i].getHandlerFunction() === 'backupGuestPhotos') has = true; }
-  var created = false;
-  if (!has) { ScriptApp.newTrigger('backupGuestPhotos').timeBased().everyMinutes(30).create(); created = true; }
+  var trigs = ScriptApp.getProjectTriggers(), removed = 0;
+  for (var i = 0; i < trigs.length; i++) {
+    if (trigs[i].getHandlerFunction() === 'backupGuestPhotos') { ScriptApp.deleteTrigger(trigs[i]); removed++; }
+  }
+  ScriptApp.newTrigger('backupGuestPhotos').timeBased().everyMinutes(PHOTO_BACKUP_EVERY_MIN).create();
   var r = backupGuestPhotos();
-  r.triggerCreated = created; r.hadTrigger = has; r.backupFolderUrl = _backupFolderUrlOrNull();
+  r.everyMin = PHOTO_BACKUP_EVERY_MIN; r.removedOldTriggers = removed; r.backupFolderUrl = _backupFolderUrlOrNull();
   return r;
 }
 // ตั้งค่าครั้งเดียว (รันจาก editor — มี popup สรุป)
@@ -3115,7 +3117,7 @@ function setupPhotoBackup() {
       '✅ ตั้งค่าแบ็กอัปรูปจากแขกเรียบร้อย!\n\n' +
       '• โฟลเดอร์สำรอง (ส่วนตัว ไม่แชร์ให้แขก):\n' +
       '  ' + (r.backupFolderUrl || '-') + '\n' +
-      '• สำรองอัตโนมัติทุก 30 นาที (คัดลอกทุกไฟล์ที่ยังไม่เคยสำรอง)\n' +
+      '• สำรองอัตโนมัติทุก ' + PHOTO_BACKUP_EVERY_MIN + ' นาที (คัดลอกทุกไฟล์ที่ยังไม่เคยสำรอง)\n' +
       '• สำรองรอบแรก: ' + (r.added || 0) + ' ไฟล์ (สแกนเจอ ' + (r.scanned || 0) + ')'
     );
   } catch (e) {}
