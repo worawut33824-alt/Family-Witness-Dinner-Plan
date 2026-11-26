@@ -143,7 +143,7 @@ function doPost(e) {
     var ss   = SpreadsheetApp.getActiveSpreadsheet();
 
     // LockService: ล็อกทุกการเขียน (ยกเว้น readSlip = OCR ล้วน ไม่แตะชีต) กันข้อมูลชนกัน
-    if (body.action !== 'readSlip') { _lock = LockService.getScriptLock(); _lock.waitLock(20000); }
+    if (body.action !== 'readSlip' && body.action !== 'guest_upload') { _lock = LockService.getScriptLock(); _lock.waitLock(20000); }
 
     // --- invite page actions ---
     if (body.action === 'rsvp') {
@@ -175,6 +175,13 @@ function doPost(e) {
       result.ok       = bp.ok;
       result.photoUrl = bp.photoUrl;
       if (bp.error) result.error = bp.error;
+
+    } else if (body.action === 'guest_upload') {
+      // แขกอัปรูปผ่านหน้า upload.html → เก็บเข้าโฟลเดอร์ฝากรูป (ใส่ชื่อ = เข้าโฟลเดอร์ย่อยชื่อนั้น)
+      var gu = saveGuestUpload(body.name || '', body.photoBase64 || '', body.filename || '');
+      result.ok  = gu.ok;
+      result.url = gu.url;
+      if (gu.error) result.error = gu.error;
 
     } else if (body.action === 'delete_bless') {
       var db = deleteBlessing(ss, body.row);
@@ -332,6 +339,35 @@ function savePictureToDrive(base64Data, filename, size) {
   } catch(e) {
     Logger.log('savePictureToDrive error: ' + e);
     return '';
+  }
+}
+
+// --- GUEST UPLOAD: แขกอัปรูปผ่านหน้า upload.html → เก็บเข้าโฟลเดอร์ฝากรูป ---
+function saveGuestUpload(name, base64Data, filename) {
+  try {
+    if (!base64Data || base64Data.length < 100) return { ok: false, error: 'no data' };
+    var root = DriveApp.getFolderById(GUEST_PHOTO_FOLDER_ID);
+    var target = root;
+    name = String(name || '').trim();
+    if (name) {
+      name = name.replace(/[\\\/\r\n\t]+/g, ' ').replace(/\s+/g, ' ').slice(0, 60); // ชื่อโฟลเดอร์ปลอดภัย
+      var it = root.getFoldersByName(name);
+      target = it.hasNext() ? it.next() : root.createFolder(name);
+    }
+    var contentType = 'image/jpeg', raw = base64Data;
+    if (raw.indexOf(',') >= 0) {
+      var prefix = raw.split(',')[0]; raw = raw.split(',')[1];
+      if (prefix.indexOf('png')  >= 0) contentType = 'image/png';
+      if (prefix.indexOf('webp') >= 0) contentType = 'image/webp';
+    }
+    var bytes = Utilities.base64Decode(raw);
+    var ts = Utilities.formatDate(new Date(), 'Asia/Bangkok', 'yyyyMMdd_HHmmss') + '_' + Math.floor(Math.random() * 1000);
+    var fname = (filename && String(filename).trim()) ? String(filename).trim().replace(/[\\\/\r\n\t]+/g, '_') : ('photo_' + ts + '.jpg');
+    if (!/\.(jpe?g|png|webp)$/i.test(fname)) fname += '.jpg';
+    var file = target.createFile(Utilities.newBlob(bytes, contentType, fname));
+    return { ok: true, url: 'https://drive.google.com/file/d/' + file.getId() + '/view', id: file.getId() };
+  } catch (e) {
+    return { ok: false, error: String(e) };
   }
 }
 
