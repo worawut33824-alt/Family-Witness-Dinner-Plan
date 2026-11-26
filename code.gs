@@ -108,6 +108,13 @@ function doGet(e) {
     } else if (action === 'card_images') {
       result.images = getCardImages(ss);
 
+    } else if (action === 'photos') {
+      result.photos = getGuestPhotos();
+
+    } else if (action === 'backup_photos') {
+      // สั่งสำรองทันที (นอกเหนือจาก trigger อัตโนมัติ)
+      result.backup = backupGuestPhotos();
+
     } else {
       result.message = 'unknown action';
     }
@@ -2909,4 +2916,185 @@ function resetReminderSentLog(){
   }
   Logger.log('ล้างบันทึกกันส่งซ้ำแล้ว ' + n + ' รายการ - ส่งรอบใหม่ได้');
   try { SpreadsheetApp.getUi().alert('ล้างบันทึกกันส่งซ้ำแล้ว ' + n + ' รายการ'); } catch (e) {}
+}
+
+// ============================================================
+//  คลังรูปจากแขก (GUEST PHOTOS) + ออโต้แบ็กอัป
+//  โฟลเดอร์ที่แขกสแกน QR เข้ามาฝากรูป (สิทธิ์ Editor) — ไล่อ่านทั้งต้นไม้
+//  รองรับทุกเคส: ไฟล์ในโฟลเดอร์หลัก / โฟลเดอร์ย่อย / ซ้อนหลายชั้น / วิดีโอ /
+//  ไฟล์อื่น / โฟลเดอร์ว่าง  และสำรองรูปใหม่ไปโฟลเดอร์ส่วนตัวที่แขกเข้าไม่ถึง
+// ============================================================
+var GUEST_PHOTO_FOLDER_ID   = '1DRpHPg3CCVsdRqR3Tea1-JYOke41hwpU';
+var PHOTO_BACKUP_FOLDER_NAME = 'Backup รูปจากแขก (ส่วนตัว ห้ามแชร์)';
+var PHOTO_BACKUP_LOG_SHEET   = 'PhotoBackupLog';
+var PHOTO_BACKUP_PROP_KEY    = 'PHOTO_BACKUP_FOLDER_ID';
+var PHOTO_MAX_FILES = 2000;   // กันลูปนานเกินไป (พอสำหรับงานแต่ง)
+var PHOTO_MAX_DEPTH = 8;      // กันโฟลเดอร์ซ้อนลึกผิดปกติ
+
+// ---- LIST (recursive) → JSON สำหรับหน้าแกลเลอรี -------------------------------
+function getGuestPhotos() {
+  var out = {
+    ok: true,
+    folderId: GUEST_PHOTO_FOLDER_ID,
+    folderUrl: 'https://drive.google.com/drive/folders/' + GUEST_PHOTO_FOLDER_ID,
+    items: [], folders: [], truncated: false, scannedAt: new Date().toISOString()
+  };
+  var root;
+  try { root = DriveApp.getFolderById(GUEST_PHOTO_FOLDER_ID); }
+  catch (e) { return { ok: false, error: 'เปิดโฟลเดอร์ไม่ได้ (ตรวจสิทธิ์/ไอดีโฟลเดอร์): ' + e, folderId: GUEST_PHOTO_FOLDER_ID }; }
+
+  var count = { n: 0 };
+  _walkGuestFolder(root, [], 0, out, count);
+
+  // สถานะแบ็กอัป (ไฟล์ไหนสำรองแล้ว)
+  try {
+    var done = _backupDoneSet();
+    out.backedUp = 0;
+    for (var i = 0; i < out.items.length; i++) {
+      if (done[out.items[i].id]) { out.items[i].backed = true; out.backedUp++; }
+    }
+    out.backupFolderUrl = _backupFolderUrlOrNull();
+  } catch (e) { out.backupError = String(e); }
+  return out;
+}
+
+function _walkGuestFolder(folder, path, depth, out, count) {
+  if (count.n >= PHOTO_MAX_FILES) { out.truncated = true; return; }
+  // ไฟล์ในโฟลเดอร์นี้
+  var fi = folder.getFiles();
+  while (fi.hasNext()) {
+    if (count.n >= PHOTO_MAX_FILES) { out.truncated = true; return; }
+    out.items.push(_guestFileMeta(fi.next(), path));
+    count.n++;
+  }
+  // บันทึกโครงโฟลเดอร์ (รวมโฟลเดอร์ย่อยที่ว่าง เพื่อให้แสดงได้)
+  if (path.length) out.folders.push({ name: path[path.length - 1], path: path.slice(), id: folder.getId() });
+  // โฟลเดอร์ย่อย (recurse)
+  if (depth < PHOTO_MAX_DEPTH) {
+    var sub = folder.getFolders();
+    while (sub.hasNext()) {
+      if (count.n >= PHOTO_MAX_FILES) { out.truncated = true; return; }
+      var sf = sub.next();
+      _walkGuestFolder(sf, path.concat([sf.getName()]), depth + 1, out, count);
+    }
+  }
+}
+
+function _guestFileMeta(f, path) {
+  var id = f.getId();
+  var mime = ''; try { mime = f.getMimeType(); } catch (e) {}
+  var kind = 'other';
+  if (mime.indexOf('image/') === 0) kind = 'image';
+  else if (mime.indexOf('video/') === 0) kind = 'video';
+  else if (mime.indexOf('audio/') === 0) kind = 'audio';
+  else if (mime.indexOf('pdf') >= 0) kind = 'pdf';
+  var owner = '', ownerEmail = '';
+  try { var o = f.getOwner(); if (o) { owner = o.getName() || ''; ownerEmail = o.getEmail() || ''; } } catch (e) {}
+  var created = ''; try { created = f.getDateCreated().toISOString(); } catch (e) {}
+  var size = 0; try { size = f.getSize(); } catch (e) {}
+  return {
+    id: id, name: f.getName(), mime: mime, kind: kind,
+    owner: owner, ownerEmail: ownerEmail, created: created, size: size,
+    path: path.slice(),
+    thumb: 'https://drive.google.com/thumbnail?id=' + id + '&sz=w400',
+    view:  'https://drive.google.com/file/d/' + id + '/view'
+  };
+}
+
+// ---- BACKUP (สำรองไปโฟลเดอร์ส่วนตัว) -----------------------------------------
+function _getOrCreateBackupFolder() {
+  var props = PropertiesService.getScriptProperties();
+  var id = props.getProperty(PHOTO_BACKUP_PROP_KEY);
+  if (id) { try { return DriveApp.getFolderById(id); } catch (e) {} }
+  var it = DriveApp.getFoldersByName(PHOTO_BACKUP_FOLDER_NAME);
+  var folder = it.hasNext() ? it.next() : DriveApp.createFolder(PHOTO_BACKUP_FOLDER_NAME);
+  try { folder.setSharing(DriveApp.Access.PRIVATE, DriveApp.Permission.NONE); } catch (e) {} // ส่วนตัว ไม่แชร์
+  props.setProperty(PHOTO_BACKUP_PROP_KEY, folder.getId());
+  return folder;
+}
+function _backupFolderUrlOrNull() {
+  var id = PropertiesService.getScriptProperties().getProperty(PHOTO_BACKUP_PROP_KEY);
+  return id ? 'https://drive.google.com/drive/folders/' + id : null;
+}
+function _backupLogSheet() {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var sh = ss.getSheetByName(PHOTO_BACKUP_LOG_SHEET);
+  if (!sh) {
+    sh = ss.insertSheet(PHOTO_BACKUP_LOG_SHEET);
+    sh.getRange(1, 1, 1, 6).setValues([['originalId', 'backupId', 'name', 'owner', 'path', 'backedAt']])
+      .setFontWeight('bold').setBackground('#f4d9d0');
+    sh.setFrozenRows(1);
+  }
+  return sh;
+}
+function _backupDoneSet() {
+  var sh = _backupLogSheet();
+  var last = sh.getLastRow();
+  var set = {};
+  if (last >= 2) {
+    var ids = sh.getRange(2, 1, last - 1, 1).getValues();
+    for (var i = 0; i < ids.length; i++) { if (ids[i][0]) set[String(ids[i][0])] = true; }
+  }
+  return set;
+}
+// สร้างโฟลเดอร์ย่อยใน backup ให้ตรงกับ path ต้นทาง (mirror โครงสร้าง)
+function _ensureBackupPath(backupRoot, path) {
+  var cur = backupRoot;
+  for (var i = 0; i < path.length; i++) {
+    var it = cur.getFoldersByName(path[i]);
+    cur = it.hasNext() ? it.next() : cur.createFolder(path[i]);
+  }
+  return cur;
+}
+// งานหลัก: สำรองไฟล์ใหม่ (ที่ยังไม่เคยสำรอง) — เรียกโดย trigger หรือปุ่ม
+function backupGuestPhotos() {
+  var lock = LockService.getScriptLock();
+  if (!lock.tryLock(10000)) return { ok: false, msg: 'กำลังสำรองอยู่ ลองใหม่ภายหลัง' };
+  try {
+    var root;
+    try { root = DriveApp.getFolderById(GUEST_PHOTO_FOLDER_ID); }
+    catch (e) { return { ok: false, error: String(e) }; }
+    var backupRoot = _getOrCreateBackupFolder();
+    var sh = _backupLogSheet();
+    var done = _backupDoneSet();
+    var out = { items: [], folders: [], truncated: false };
+    var count = { n: 0 };
+    _walkGuestFolder(root, [], 0, out, count);
+
+    var added = 0, rows = [];
+    for (var i = 0; i < out.items.length; i++) {
+      var it = out.items[i];
+      if (done[it.id]) continue;
+      try {
+        var src = DriveApp.getFileById(it.id);
+        var dest = _ensureBackupPath(backupRoot, it.path);
+        var copy = src.makeCopy(it.name, dest);
+        rows.push([it.id, copy.getId(), it.name, it.owner || it.ownerEmail || '', it.path.join(' / '), new Date()]);
+        added++;
+      } catch (e) {
+        rows.push([it.id, 'ERROR', it.name, String(e).slice(0, 120), it.path.join(' / '), new Date()]);
+      }
+    }
+    if (rows.length) sh.getRange(sh.getLastRow() + 1, 1, rows.length, 6).setValues(rows);
+    return { ok: true, scanned: out.items.length, added: added, truncated: out.truncated };
+  } finally { lock.releaseLock(); }
+}
+// ตั้งค่าครั้งเดียว: สร้างโฟลเดอร์สำรอง + ชีต log + ติดตั้ง trigger ทุก 15 นาที + สำรองรอบแรก
+function setupPhotoBackup() {
+  _getOrCreateBackupFolder();
+  _backupLogSheet();
+  var has = false, trigs = ScriptApp.getProjectTriggers();
+  for (var i = 0; i < trigs.length; i++) { if (trigs[i].getHandlerFunction() === 'backupGuestPhotos') has = true; }
+  if (!has) ScriptApp.newTrigger('backupGuestPhotos').timeBased().everyMinutes(15).create();
+  var r = backupGuestPhotos();
+  try {
+    SpreadsheetApp.getUi().alert(
+      '✅ ตั้งค่าแบ็กอัปรูปจากแขกเรียบร้อย!\n\n' +
+      '• โฟลเดอร์สำรอง (ส่วนตัว ไม่แชร์ให้แขก): ' + PHOTO_BACKUP_FOLDER_NAME + '\n' +
+      '  ' + _backupFolderUrlOrNull() + '\n' +
+      '• สำรองอัตโนมัติทุก 15 นาที\n' +
+      '• สำรองรอบแรก: ' + (r.added || 0) + ' ไฟล์ (สแกนเจอ ' + (r.scanned || 0) + ')'
+    );
+  } catch (e) {}
+  return r;
 }

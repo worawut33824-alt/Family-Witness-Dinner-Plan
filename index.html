@@ -521,6 +521,7 @@
     <button class="tab-btn" onclick="showPage('contacts')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="9" cy="8" r="3.2"/><path d="M3.5 20a5.5 5.5 0 0 1 11 0"/><path d="M17 8.5a3 3 0 0 1 0 5"/><path d="M19 20a4.8 4.8 0 0 0-3-4.4"/></svg>ผู้ติดต่อ</button>
     <button class="tab-btn" onclick="showPage('guests')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="10" cy="8" r="3.4"/><path d="M3.5 20a6.5 6.5 0 0 1 13 0"/><path d="M16.5 11.5l1.8 1.8 3.2-3.4"/></svg>แขก</button>
     <button class="tab-btn" onclick="showPage('blessings')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4L3 21l1.1-3.4A8.4 8.4 0 1 1 21 11.5Z"/></svg>คำอวยพร</button>
+    <button class="tab-btn" onclick="showPage('gallery')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.6"/><path d="m21 15-5-5L5 21"/></svg>คลังรูป</button>
     <button class="tab-btn" onclick="showPage('links')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M10 13a4 4 0 0 0 5.7.4l2.6-2.6a4 4 0 0 0-5.7-5.7L11 6.5"/><path d="M14 11a4 4 0 0 0-5.7-.4L5.7 13.2a4 4 0 0 0 5.7 5.7L13 17.5"/></svg>รวมลิงค์</button>
     <button class="tab-btn" onclick="showPage('cardsettings')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6"/></svg>ตั้งค่าการ์ด</button>
     <button class="tab-btn" onclick="showPage('sync')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 12a9 9 0 0 1-15.3 6.4L3 16"/><path d="M3 12A9 9 0 0 1 18.3 5.6L21 8"/><path d="M21 4v4h-4"/><path d="M3 20v-4h4"/></svg>ซิงค์</button>
@@ -548,6 +549,7 @@
   <button class="drawer-nav-btn" onclick="showPage('contacts')"><span class="di"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="9" cy="8" r="3.2"/><path d="M3.5 20a5.5 5.5 0 0 1 11 0"/><path d="M17 8.5a3 3 0 0 1 0 5"/><path d="M19 20a4.8 4.8 0 0 0-3-4.4"/></svg></span>ผู้ติดต่อ</button>
   <button class="drawer-nav-btn" onclick="showPage('guests')"><span class="di"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="10" cy="8" r="3.4"/><path d="M3.5 20a6.5 6.5 0 0 1 13 0"/><path d="M16.5 11.5l1.8 1.8 3.2-3.4"/></svg></span>แขก</button>
   <button class="drawer-nav-btn" onclick="showPage('blessings')"><span class="di"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4L3 21l1.1-3.4A8.4 8.4 0 1 1 21 11.5Z"/></svg></span>คำอวยพร</button>
+  <button class="drawer-nav-btn" onclick="showPage('gallery')"><span class="di"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.6"/><path d="m21 15-5-5L5 21"/></svg></span>คลังรูป</button>
   <button class="drawer-nav-btn" onclick="showPage('links')"><span class="di"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M10 13a4 4 0 0 0 5.7.4l2.6-2.6a4 4 0 0 0-5.7-5.7L11 6.5"/><path d="M14 11a4 4 0 0 0-5.7-.4L5.7 13.2a4 4 0 0 0 5.7 5.7L13 17.5"/></svg></span>รวมลิงค์</button>
   <button class="drawer-nav-btn" onclick="showPage('cardsettings')"><span class="di"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6"/></svg></span>ตั้งค่าการ์ด</button>
   <button class="drawer-nav-btn" onclick="showPage('sync')"><span class="di"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 12a9 9 0 0 1-15.3 6.4L3 16"/><path d="M3 12A9 9 0 0 1 18.3 5.6L21 8"/><path d="M21 4v4h-4"/><path d="M3 20v-4h4"/></svg></span>ซิงค์</button>
@@ -802,6 +804,47 @@
 </div>
 
 <!-- LINKS PAGE -->
+<!-- GUEST PHOTO GALLERY: คลังรูปจากแขก -->
+<div id="page-gallery" class="page">
+  <style>
+    #page-gallery .gal-sum{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+    #page-gallery .gal-chip{display:inline-flex;align-items:center;gap:6px;background:var(--accent);color:var(--primary-dark);border-radius:20px;padding:5px 13px;font-size:.82rem;font-weight:600}
+    #page-gallery .gal-chip svg{width:15px;height:15px;flex:none}
+    #page-gallery .gal-toggle{display:inline-flex;border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:18px}
+    #page-gallery .gal-toggle button{border:none;background:#fff;padding:7px 16px;font:inherit;font-size:.83rem;font-weight:600;color:var(--text-light);cursor:pointer}
+    #page-gallery .gal-toggle button.on{background:var(--primary);color:#fff}
+    #page-gallery .gal-group{margin-bottom:24px}
+    #page-gallery .gal-ghead{display:flex;align-items:center;gap:8px;margin-bottom:11px;font-weight:700;font-size:.96rem;color:var(--text)}
+    #page-gallery .gal-ghead svg{flex:none;color:var(--primary)}
+    #page-gallery .gal-ghead>span:first-of-type{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    #page-gallery .gal-gcount{font-size:.75rem;color:var(--text-light);font-weight:600;flex:none;background:var(--accent);padding:2px 9px;border-radius:12px}
+    #page-gallery .gal-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(116px,1fr));gap:9px}
+    #page-gallery .gal-tile{position:relative;display:block;aspect-ratio:1;border-radius:11px;overflow:hidden;background:#eef2f6;border:1px solid var(--border);text-decoration:none;color:inherit;transition:transform .12s,box-shadow .12s}
+    #page-gallery .gal-tile:hover{transform:translateY(-2px);box-shadow:0 8px 18px -8px rgba(60,90,130,.45)}
+    #page-gallery .gal-tile img{width:100%;height:100%;object-fit:cover;display:block;background:#eef2f6}
+    #page-gallery .gal-cap{position:absolute;left:0;right:0;bottom:0;padding:13px 7px 5px;font-size:.64rem;color:#fff;background:linear-gradient(transparent,rgba(0,0,0,.72));white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    #page-gallery .gal-badge{position:absolute;top:5px;right:5px;background:rgba(32,120,70,.92);color:#fff;border-radius:7px;padding:2px 4px;display:inline-flex;align-items:center}
+    #page-gallery .gal-badge svg{width:13px;height:13px}
+    #page-gallery .gal-fallback{width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;color:var(--text-light);padding:8px;text-align:center}
+    #page-gallery .gal-fallback svg{width:28px;height:28px;flex:none}
+    #page-gallery .gal-fallback span{font-size:.6rem;word-break:break-word;line-height:1.2;max-height:2.4em;overflow:hidden}
+    #page-gallery .gal-play{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none}
+    #page-gallery .gal-play svg{width:34px;height:34px;color:#fff;filter:drop-shadow(0 2px 5px rgba(0,0,0,.55))}
+    #page-gallery .gal-empty-folder{grid-column:1/-1;padding:16px;text-align:center;color:var(--text-light);font-size:.8rem;border:1px dashed var(--border);border-radius:10px}
+  </style>
+
+  <div class="section-header">
+    <h2><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.6"/><path d="m21 15-5-5L5 21"/></svg>คลังรูปจากแขก</h2>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <a id="gal-open-drive" href="https://drive.google.com/drive/folders/1DRpHPg3CCVsdRqR3Tea1-JYOke41hwpU" target="_blank" rel="noopener" class="btn btn-outline btn-sm" style="text-decoration:none;display:inline-flex;align-items:center;gap:6px"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6M10 14 21 3"/></svg>เปิดโฟลเดอร์</a>
+      <button class="btn btn-outline btn-sm" onclick="renderGallery(true)" style="display:inline-flex;align-items:center;gap:6px"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-15 6.7L3 16"/><path d="M3 21v-5h5"/></svg>รีเฟรช</button>
+    </div>
+  </div>
+  <p style="color:var(--text-light);font-size:.85rem;margin:-6px 0 18px">รูปที่แขกฝากผ่าน QR (รวมโฟลเดอร์ย่อยที่แขกสร้าง) — กดที่รูปเพื่อเปิดดูใน Google Drive</p>
+
+  <div id="gallery-body"></div>
+</div>
+
 <div id="page-links" class="page">
 
   <!-- QUICK LINKS: เปิดหน้าต่างๆ ของงาน -->
@@ -1467,8 +1510,145 @@ function showPage(id) {
   if(id==='contacts') renderContacts();
   if(id==='guests') renderGuests();
   if(id==='blessings') loadBlessingsPage();
+  if(id==='gallery') renderGallery();
   if(id==='cardsettings') loadCardSettings();
   if(id==='sync') renderSyncPage();
+}
+
+// ─── GUEST PHOTO GALLERY (คลังรูปจากแขก) ─────────────────────────────────────
+let galleryData = null, galleryMode = 'folder', galleryLoaded = false;
+const _gi = (p, extra='') => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="width:1em;height:1em;vertical-align:-.15em;${extra}">${p}</svg>`;
+const GAL_ICONS = {
+  image:_gi('<rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.6"/><path d="m21 15-5-5L5 21"/>'),
+  video:_gi('<rect x="2" y="5" width="15" height="14" rx="2"/><path d="m22 8-5 4 5 4V8z"/>'),
+  file:_gi('<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/>'),
+  users:_gi('<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.9"/><path d="M16 3.1a4 4 0 0 1 0 7.8"/>'),
+  user:_gi('<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>'),
+  folder:_gi('<path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>'),
+  shield:_gi('<path d="M12 3l8 3v5c0 5-3.4 8.5-8 10-4.6-1.5-8-5-8-10V6z"/><path d="m9 12 2 2 4-4"/>'),
+  play:_gi('<path d="M8 5v14l11-7z" fill="currentColor" stroke="none"/>'),
+  check:_gi('<path d="M20 6 9 17l-5-5"/>'),
+};
+function galIcon(n){ return GAL_ICONS[n] || ''; }
+function galChip(n, txt){ return `<span class="gal-chip">${galIcon(n)}${galEsc(txt)}</span>`; }
+function galEsc(s){ return String(s==null?'':s).replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+
+async function renderGallery(force){
+  const body = document.getElementById('gallery-body');
+  if(!body) return;
+  const url = scriptUrl || localStorage.getItem('apps_script_url');
+  if(!url){ body.innerHTML = galMsg('ยังไม่ได้เชื่อมต่อ', 'ไปที่หน้า "ซิงค์" เพื่อตั้งค่า Apps Script URL ก่อน', false); return; }
+  if(galleryLoaded && !force && galleryData){ paintGallery(); return; }
+  body.innerHTML = `<div style="text-align:center;padding:50px;color:var(--text-light)">${ICO.spin} กำลังโหลดรูปจาก Google Drive...</div>`;
+  try{
+    const data = await fetchJSONRetry(`${url}?action=photos`, { tries:2, timeout:60000 });
+    const p = data.photos;
+    if(!p){ body.innerHTML = galMsg('ยังไม่พร้อมใช้งาน', 'Apps Script (code.gs) ยังไม่มี action "photos" — อัปเดตโค้ด แล้ว Deploy เวอร์ชันใหม่ จากนั้นกดรีเฟรช', true); return; }
+    if(p.ok === false){ body.innerHTML = galMsg('โหลดรูปไม่สำเร็จ', p.error || 'โฟลเดอร์อาจเข้าไม่ถึง (ตรวจสิทธิ์/ไอดีโฟลเดอร์)', true); return; }
+    galleryData = p; galleryLoaded = true;
+    paintGallery();
+  }catch(e){ body.innerHTML = galMsg('โหลดรูปไม่สำเร็จ', (e&&e.message)||String(e), true); }
+}
+
+function galMsg(title, sub, retry){
+  return `<div style="text-align:center;padding:44px 20px;color:var(--text-light)">
+    <div style="font-weight:700;color:var(--text);margin-bottom:6px;font-size:1rem">${galEsc(title)}</div>
+    <div style="font-size:.85rem;margin-bottom:14px;max-width:460px;margin-left:auto;margin-right:auto;line-height:1.5">${galEsc(sub)}</div>
+    ${retry?`<button class="btn btn-outline btn-sm" onclick="renderGallery(true)">ลองใหม่</button>`:''}
+  </div>`;
+}
+function setGalMode(m){ galleryMode = m; paintGallery(); }
+function galOwnerKey(it){ return it.owner || it.ownerEmail || 'ไม่ระบุผู้อัปโหลด'; }
+
+function paintGallery(){
+  const body = document.getElementById('gallery-body');
+  const p = galleryData; if(!body || !p) return;
+  const items = (p.items||[]).filter(it => it.kind !== 'folder');
+  const imgN = items.filter(i=>i.kind==='image').length;
+  const vidN = items.filter(i=>i.kind==='video').length;
+  const otherN = items.length - imgN - vidN;
+  const od = document.getElementById('gal-open-drive'); if(od && p.folderUrl) od.href = p.folderUrl;
+
+  if(items.length===0 && (!p.folders || p.folders.length===0)){
+    body.innerHTML = galMsg('ยังไม่มีรูปในโฟลเดอร์', 'เมื่อแขกสแกน QR แล้วฝากรูป รูปจะมาแสดงที่นี่อัตโนมัติ', true);
+    return;
+  }
+
+  const contributors = new Set(items.map(galOwnerKey)).size;
+  const topFolders = new Set(items.filter(i=>i.path.length).map(i=>i.path[0])).size;
+  let html = `<div class="gal-sum">
+    ${galChip('image', imgN+' รูปภาพ')}
+    ${vidN?galChip('video', vidN+' วิดีโอ'):''}
+    ${otherN?galChip('file', otherN+' ไฟล์อื่น'):''}
+    ${galChip('users', contributors+' ผู้อัปโหลด')}
+    ${topFolders?galChip('folder', topFolders+' โฟลเดอร์ย่อย'):''}
+    ${typeof p.backedUp==='number'?galChip('shield', 'สำรองแล้ว '+p.backedUp+'/'+items.length):''}
+  </div>`;
+
+  if(p.backupFolderUrl){
+    html += `<div style="background:var(--donate-soft);border:1px solid #cdebd9;border-radius:12px;padding:10px 14px;margin-bottom:14px;font-size:.82rem;color:var(--donate-dark);display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+      ${galIcon('shield')}<b>ออโต้แบ็กอัปทำงานอยู่</b> — รูปใหม่ถูกสำรองไปโฟลเดอร์ส่วนตัว (แขกเข้าไม่ถึง) อัตโนมัติ
+      <a href="${galEsc(p.backupFolderUrl)}" target="_blank" rel="noopener" style="margin-left:auto;color:var(--donate-dark);font-weight:700;text-decoration:none">เปิดโฟลเดอร์สำรอง →</a>
+    </div>`;
+  } else {
+    html += `<div style="background:#fff7ed;border:1px solid #fed7aa;border-radius:12px;padding:10px 14px;margin-bottom:14px;font-size:.8rem;color:#9a5a12;display:flex;align-items:center;gap:8px">
+      ${galIcon('shield')}<span>ยังไม่ได้เปิดออโต้แบ็กอัป — รันฟังก์ชัน <b>setupPhotoBackup</b> ใน Apps Script ครั้งเดียว เพื่อสำรองรูปอัตโนมัติ (กันแขกลบ/แก้)</span>
+    </div>`;
+  }
+  if(p.truncated) html += `<div style="font-size:.78rem;color:var(--text-light);margin-bottom:10px">* แสดงบางส่วน (ไฟล์เยอะมาก) — เปิดโฟลเดอร์ใน Drive เพื่อดูทั้งหมด</div>`;
+
+  html += `<div class="gal-toggle">
+    <button class="${galleryMode==='folder'?'on':''}" onclick="setGalMode('folder')">ตามโฟลเดอร์</button>
+    <button class="${galleryMode==='owner'?'on':''}" onclick="setGalMode('owner')">ตามผู้อัปโหลด</button>
+  </div>`;
+
+  for(const g of buildGalGroups(p, items)){
+    html += `<div class="gal-group">
+      <div class="gal-ghead">${galIcon(g.icon)}<span>${galEsc(g.name)}</span><span class="gal-gcount">${g.items.length?g.items.length+' รายการ':'ว่าง'}</span></div>
+      <div class="gal-grid">`;
+    if(!g.items.length){ html += `<div class="gal-empty-folder">โฟลเดอร์ว่าง (ยังไม่มีรูป)</div>`; }
+    for(const it of g.items){ html += galTile(it); }
+    html += `</div></div>`;
+  }
+  body.innerHTML = html;
+}
+
+function buildGalGroups(p, items){
+  const map = new Map();
+  for(const it of items){
+    const key = galleryMode==='owner' ? galOwnerKey(it) : (it.path&&it.path.length ? it.path[0] : '__root__');
+    if(!map.has(key)) map.set(key, []);
+    map.get(key).push(it);
+  }
+  if(galleryMode==='folder' && p.folders){
+    for(const f of p.folders){ const top=f.path[0]; if(top && !map.has(top)) map.set(top, []); }
+  }
+  const groups = [];
+  for(const [key, arr] of map){
+    arr.sort((a,b)=> String(b.created||'').localeCompare(String(a.created||'')));
+    groups.push({
+      name: key==='__root__' ? 'รูปในโฟลเดอร์หลัก' : key,
+      icon: galleryMode==='owner' ? 'user' : (key==='__root__' ? 'image' : 'folder'),
+      items: arr
+    });
+  }
+  groups.sort((a,b)=> b.items.length - a.items.length || a.name.localeCompare(b.name,'th'));
+  return groups;
+}
+
+function galTile(it){
+  const subPath = it.path && it.path.length>1 ? it.path.slice(1).join(' / ')+' · ' : '';
+  const title = galEsc(subPath + it.name);
+  let inner;
+  if(it.kind==='image' || it.kind==='video'){
+    inner = `<img loading="lazy" src="${galEsc(it.thumb)}" alt="" onerror="var w=this.nextElementSibling;if(w){w.style.display='flex';}this.style.display='none';">
+      <div class="gal-fallback" style="display:none">${galIcon(it.kind==='video'?'video':'image')}<span>${galEsc(it.name)}</span></div>`;
+    if(it.kind==='video') inner += `<div class="gal-play">${galIcon('play')}</div>`;
+  } else {
+    inner = `<div class="gal-fallback">${galIcon('file')}<span>${galEsc(it.name)}</span></div>`;
+  }
+  const badge = it.backed ? `<span class="gal-badge" title="สำรองแล้ว">${galIcon('check')}</span>` : '';
+  return `<a class="gal-tile" href="${galEsc(it.view)}" target="_blank" rel="noopener" title="${title}">${inner}${badge}<div class="gal-cap">${galEsc(it.name)}</div></a>`;
 }
 
 // ─── BLESSINGS PAGE ──────────────────────────────────────────────────────────
