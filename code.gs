@@ -2925,6 +2925,7 @@ function resetReminderSentLog(){
 //  ไฟล์อื่น / โฟลเดอร์ว่าง  และสำรองรูปใหม่ไปโฟลเดอร์ส่วนตัวที่แขกเข้าไม่ถึง
 // ============================================================
 var GUEST_PHOTO_FOLDER_ID   = '1DRpHPg3CCVsdRqR3Tea1-JYOke41hwpU';
+var PHOTO_BACKUP_FOLDER_ID  = '12oAxPtIcUfO1TviClL8pv5_Ay3t5nIGo'; // โฟลเดอร์สำรองที่กำหนดเอง (ถ้าเว้นว่าง '' = สร้างใหม่อัตโนมัติ)
 var PHOTO_BACKUP_FOLDER_NAME = 'Backup รูปจากแขก (ส่วนตัว ห้ามแชร์)';
 var PHOTO_BACKUP_LOG_SHEET   = 'PhotoBackupLog';
 var PHOTO_BACKUP_PROP_KEY    = 'PHOTO_BACKUP_FOLDER_ID';
@@ -2975,6 +2976,7 @@ function _walkGuestFolder(folder, path, depth, out, count) {
     while (sub.hasNext()) {
       if (count.n >= PHOTO_MAX_FILES) { out.truncated = true; return; }
       var sf = sub.next();
+      if (PHOTO_BACKUP_FOLDER_ID && sf.getId() === PHOTO_BACKUP_FOLDER_ID) continue; // กันไล่เข้าโฟลเดอร์สำรอง
       _walkGuestFolder(sf, path.concat([sf.getName()]), depth + 1, out, count);
     }
   }
@@ -3004,16 +3006,26 @@ function _guestFileMeta(f, path) {
 // ---- BACKUP (สำรองไปโฟลเดอร์ส่วนตัว) -----------------------------------------
 function _getOrCreateBackupFolder() {
   var props = PropertiesService.getScriptProperties();
+  // 1) ใช้โฟลเดอร์ที่กำหนด ID ไว้ (แนะนำ) — ไม่ยุ่งกับการแชร์ของพี่ (พี่ตั้งเป็นส่วนตัวเอง)
+  if (PHOTO_BACKUP_FOLDER_ID) {
+    try {
+      var f = DriveApp.getFolderById(PHOTO_BACKUP_FOLDER_ID);
+      props.setProperty(PHOTO_BACKUP_PROP_KEY, PHOTO_BACKUP_FOLDER_ID);
+      return f;
+    } catch (e) { /* เข้าโฟลเดอร์ที่กำหนดไม่ได้ → ตกไปสร้างใหม่ */ }
+  }
+  // 2) เคยสร้าง/ใช้ไว้แล้ว
   var id = props.getProperty(PHOTO_BACKUP_PROP_KEY);
   if (id) { try { return DriveApp.getFolderById(id); } catch (e) {} }
+  // 3) สร้างใหม่ (ส่วนตัว ไม่แชร์)
   var it = DriveApp.getFoldersByName(PHOTO_BACKUP_FOLDER_NAME);
   var folder = it.hasNext() ? it.next() : DriveApp.createFolder(PHOTO_BACKUP_FOLDER_NAME);
-  try { folder.setSharing(DriveApp.Access.PRIVATE, DriveApp.Permission.NONE); } catch (e) {} // ส่วนตัว ไม่แชร์
+  try { folder.setSharing(DriveApp.Access.PRIVATE, DriveApp.Permission.NONE); } catch (e) {}
   props.setProperty(PHOTO_BACKUP_PROP_KEY, folder.getId());
   return folder;
 }
 function _backupFolderUrlOrNull() {
-  var id = PropertiesService.getScriptProperties().getProperty(PHOTO_BACKUP_PROP_KEY);
+  var id = PHOTO_BACKUP_FOLDER_ID || PropertiesService.getScriptProperties().getProperty(PHOTO_BACKUP_PROP_KEY);
   return id ? 'https://drive.google.com/drive/folders/' + id : null;
 }
 function _backupLogSheet() {
@@ -3090,9 +3102,9 @@ function setupPhotoBackup() {
   try {
     SpreadsheetApp.getUi().alert(
       '✅ ตั้งค่าแบ็กอัปรูปจากแขกเรียบร้อย!\n\n' +
-      '• โฟลเดอร์สำรอง (ส่วนตัว ไม่แชร์ให้แขก): ' + PHOTO_BACKUP_FOLDER_NAME + '\n' +
+      '• โฟลเดอร์สำรอง (ส่วนตัว ไม่แชร์ให้แขก):\n' +
       '  ' + _backupFolderUrlOrNull() + '\n' +
-      '• สำรองอัตโนมัติทุก 15 นาที\n' +
+      '• สำรองอัตโนมัติทุก 15 นาที (คัดลอกทุกไฟล์ที่ยังไม่เคยสำรอง)\n' +
       '• สำรองรอบแรก: ' + (r.added || 0) + ' ไฟล์ (สแกนเจอ ' + (r.scanned || 0) + ')'
     );
   } catch (e) {}
