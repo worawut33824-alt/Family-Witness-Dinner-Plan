@@ -142,6 +142,8 @@ $('clear').addEventListener('click', function(){ photos=[]; render(); });
 $('go').addEventListener('click', upload);
 $('again').addEventListener('click', function(){
   photos=[]; $('name').value=''; render();
+  $('pick').style.pointerEvents='';                 // คืนสิทธิ์กดแนบรูป (เดิมถูกปิดตอนอัป)
+  $('prog').classList.remove('show'); $('barFill').style.width='0%';  // ซ่อน+รีเซ็ตแถบ progress
   $('done').classList.remove('show'); $('main').style.display='';
   window.scrollTo({top:0,behavior:'smooth'});
 });
