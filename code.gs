@@ -188,6 +188,13 @@ function doPost(e) {
       result.ok = db.ok;
       if (db.error) result.error = db.error;
 
+    } else if (body.action === 'delete_photos') {
+      var dpr = deleteGuestPhotos(body.ids, body.folderIds);
+      result.ok      = dpr.ok;
+      result.trashed = dpr.trashed;
+      result.skipped = dpr.skipped;
+      if (dpr.error) result.error = dpr.error;
+
     } else if (body.action === 'update_donation') {
       var ud = updateDonation(ss, body.row, {
         name:   body.name,
@@ -3041,6 +3048,48 @@ function _guestFileMeta(f, path) {
     thumb: 'https://drive.google.com/thumbnail?id=' + id + '&sz=w400',
     view:  'https://drive.google.com/file/d/' + id + '/view'
   };
+}
+
+// ---- DELETE (ย้ายลงถังขยะ Drive — กู้คืนได้ ~30 วัน) --------------------------
+// ความปลอดภัย: ลบได้เฉพาะไฟล์/โฟลเดอร์ที่อยู่ "ภายใต้โฟลเดอร์ฝากรูปของแขก" เท่านั้น
+// (ไล่ parent ขึ้นไปจนเจอโฟลเดอร์แขก) และห้ามแตะโฟลเดอร์สำรองหรือโฟลเดอร์หลักเด็ดขาด
+function _isInsideGuestFolder(node) {
+  var guard = 0, queue = [];
+  try { var ps = node.getParents(); while (ps.hasNext()) queue.push(ps.next()); }
+  catch (e) { return false; }
+  while (queue.length && guard++ < 300) {
+    var p = queue.shift(), pid;
+    try { pid = p.getId(); } catch (e) { continue; }
+    if (pid === PHOTO_BACKUP_FOLDER_ID) return false;   // อยู่ใต้โฟลเดอร์สำรอง = ห้ามลบ
+    if (pid === GUEST_PHOTO_FOLDER_ID)  return true;     // อยู่ใต้โฟลเดอร์แขก = ลบได้
+    try { var pp = p.getParents(); while (pp.hasNext()) queue.push(pp.next()); } catch (e) {}
+  }
+  return false;
+}
+
+function deleteGuestPhotos(ids, folderIds) {
+  ids       = (ids && ids.length) ? ids : [];
+  folderIds = (folderIds && folderIds.length) ? folderIds : [];
+  var trashed = 0, skipped = 0, errs = [];
+  // 1) ลบไฟล์ทีละไฟล์ (เลือกหลายรูป / ลบทั้งกลุ่มผู้อัป)
+  for (var i = 0; i < ids.length && i < 3000; i++) {
+    try {
+      var f = DriveApp.getFileById(String(ids[i]));
+      if (_isInsideGuestFolder(f)) { f.setTrashed(true); trashed++; }
+      else skipped++;
+    } catch (e) { skipped++; if (errs.length < 5) errs.push(String(e)); }
+  }
+  // 2) ลบทั้งโฟลเดอร์ย่อย (โฟลเดอร์ + ไฟล์ข้างในทั้งหมด) — กันลบโฟลเดอร์หลัก/สำรอง
+  for (var j = 0; j < folderIds.length && j < 500; j++) {
+    var fid = String(folderIds[j]);
+    if (fid === GUEST_PHOTO_FOLDER_ID || fid === PHOTO_BACKUP_FOLDER_ID) { skipped++; continue; }
+    try {
+      var fo = DriveApp.getFolderById(fid);
+      if (_isInsideGuestFolder(fo)) { fo.setTrashed(true); trashed++; }
+      else skipped++;
+    } catch (e) { skipped++; if (errs.length < 5) errs.push(String(e)); }
+  }
+  return { ok: true, trashed: trashed, skipped: skipped, error: errs.length ? errs.join(' | ') : '' };
 }
 
 // ---- BACKUP (สำรองไปโฟลเดอร์ส่วนตัว) -----------------------------------------

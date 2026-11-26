@@ -831,6 +831,37 @@
     #page-gallery .gal-play{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none}
     #page-gallery .gal-play svg{width:34px;height:34px;color:#fff;filter:drop-shadow(0 2px 5px rgba(0,0,0,.55))}
     #page-gallery .gal-empty-folder{grid-column:1/-1;padding:16px;text-align:center;color:var(--text-light);font-size:.8rem;border:1px dashed var(--border);border-radius:10px}
+    /* --- โหมดจัดการ/ลบรูป --- */
+    #page-gallery .gal-managebar{display:flex;align-items:center;gap:9px;flex-wrap:wrap;background:#fff7f6;border:1px solid #f3cbc5;border-radius:11px;padding:9px 13px;margin-bottom:16px;font-size:.84rem;color:#9a3b32}
+    #page-gallery .gal-mb-spacer{margin-left:auto}
+    #page-gallery .gal-mini{border:1px solid var(--border);background:#fff;border-radius:8px;padding:5px 11px;font:inherit;font-size:.8rem;font-weight:600;color:var(--text);cursor:pointer;display:inline-flex;align-items:center;gap:5px}
+    #page-gallery .gal-mini:hover{border-color:var(--primary)}
+    #page-gallery .gal-mini.danger{color:#c62828;border-color:#f0c6c1}
+    #page-gallery .gal-mini.danger:hover{background:#fdecea;border-color:#dc2626}
+    #page-gallery .gal-gactions-row{display:flex;gap:7px;flex-wrap:wrap;margin:-2px 0 11px}
+    #page-gallery .gal-sel-tile{cursor:pointer}
+    #page-gallery .gal-sel-tile .gal-check{position:absolute;top:5px;left:5px;width:22px;height:22px;border-radius:50%;background:rgba(255,255,255,.88);border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.3);display:flex;align-items:center;justify-content:center;color:transparent;z-index:2}
+    #page-gallery .gal-sel-tile .gal-check svg{width:14px;height:14px;stroke-width:3}
+    #page-gallery .gal-sel-tile.gal-on{outline:3px solid var(--primary);outline-offset:-3px}
+    #page-gallery .gal-sel-tile.gal-on .gal-check{background:var(--primary);border-color:var(--primary);color:#fff}
+    #page-gallery .gal-sel-tile.gal-on img{opacity:.8}
+    #gal-actionbar{position:fixed;left:50%;transform:translateX(-50%);bottom:18px;z-index:120;display:none;align-items:center;gap:12px;background:#283a4e;color:#fff;border-radius:14px;padding:10px 16px;box-shadow:0 14px 34px -8px rgba(0,0,0,.5);font-size:.9rem;max-width:calc(100vw - 24px)}
+    #gal-actionbar b{font-size:1.04rem}
+    #gal-actionbar button{border:none;border-radius:9px;padding:8px 14px;font:inherit;font-size:.85rem;font-weight:700;cursor:pointer}
+    #gal-actionbar .ga-clear{background:rgba(255,255,255,.16);color:#fff}
+    #gal-actionbar .ga-del{background:#ef4444;color:#fff;display:inline-flex;align-items:center;gap:6px}
+    #gal-actionbar .ga-del svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+    #gal-confirm{position:fixed;inset:0;z-index:200;display:none;align-items:center;justify-content:center;background:rgba(20,30,45,.5);padding:20px}
+    #gal-confirm .gm-box{background:#fff;border-radius:18px;max-width:380px;width:100%;padding:24px 22px;text-align:center;box-shadow:0 24px 60px -12px rgba(0,0,0,.4)}
+    #gal-confirm .gm-ic{width:52px;height:52px;border-radius:50%;background:#fdecea;color:#dc2626;display:flex;align-items:center;justify-content:center;margin:0 auto 12px}
+    #gal-confirm .gm-ic svg{width:27px;height:27px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+    #gal-confirm .gm-title{font-size:1.1rem;font-weight:700;color:var(--text);margin-bottom:6px}
+    #gal-confirm .gm-msg{font-size:.9rem;color:var(--text);line-height:1.5;margin-bottom:10px}
+    #gal-confirm .gm-note{font-size:.76rem;color:var(--text-light);background:#f6f8fb;border-radius:9px;padding:8px 11px;line-height:1.5;margin-bottom:18px;text-align:left}
+    #gal-confirm .gm-btns{display:flex;gap:10px}
+    #gal-confirm .gm-btns button{flex:1;border:none;border-radius:11px;padding:11px;font:inherit;font-size:.92rem;font-weight:700;cursor:pointer}
+    #gal-confirm .gm-cancel{background:#eef2f6;color:var(--text)}
+    #gal-confirm .gm-del{background:#dc2626;color:#fff}
   </style>
 
   <div class="section-header">
@@ -838,11 +869,31 @@
     <div style="display:flex;gap:8px;flex-wrap:wrap">
       <a id="gal-open-drive" href="https://drive.google.com/drive/folders/1DRpHPg3CCVsdRqR3Tea1-JYOke41hwpU" target="_blank" rel="noopener" class="btn btn-outline btn-sm" style="text-decoration:none;display:inline-flex;align-items:center;gap:6px"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6M10 14 21 3"/></svg>เปิดโฟลเดอร์</a>
       <button class="btn btn-outline btn-sm" onclick="renderGallery(true)" style="display:inline-flex;align-items:center;gap:6px"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-15 6.7L3 16"/><path d="M3 21v-5h5"/></svg>รีเฟรช</button>
+      <button id="gal-manage-btn" class="btn btn-outline btn-sm" onclick="toggleGalManage()" style="display:inline-flex;align-items:center;gap:6px"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg><span id="gal-manage-lbl">จัดการ/ลบรูป</span></button>
     </div>
   </div>
   <p style="color:var(--text-light);font-size:.85rem;margin:-6px 0 18px">รูปที่แขกฝากผ่าน QR (รวมโฟลเดอร์ย่อยที่แขกสร้าง) — กดที่รูปเพื่อเปิดดูใน Google Drive</p>
 
   <div id="gallery-body"></div>
+
+  <div id="gal-actionbar">
+    <span><b class="ga-count">0</b> รูปที่เลือก</span>
+    <button class="ga-clear" onclick="galClearSel()">ล้าง</button>
+    <button class="ga-del" onclick="galDeleteSelected()"><svg viewBox="0 0 24 24"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>ลบที่เลือก</button>
+  </div>
+
+  <div id="gal-confirm">
+    <div class="gm-box">
+      <div class="gm-ic"><svg viewBox="0 0 24 24"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4M12 17h.01"/></svg></div>
+      <div class="gm-title">ยืนยันการลบ</div>
+      <div class="gm-msg" id="gal-confirm-msg"></div>
+      <div class="gm-note">ย้ายไปถังขยะ Google Drive — กู้คืนได้ ~30 วัน · สำเนาในโฟลเดอร์สำรอง (ส่วนตัว) ยังอยู่</div>
+      <div class="gm-btns">
+        <button class="gm-cancel" onclick="galCloseConfirm()">ยกเลิก</button>
+        <button class="gm-del" onclick="galConfirmYes()">ลบเลย</button>
+      </div>
+    </div>
+  </div>
 </div>
 
 <div id="page-links" class="page">
@@ -1650,6 +1701,8 @@ function showPage(id) {
 
 // ─── GUEST PHOTO GALLERY (คลังรูปจากแขก) ─────────────────────────────────────
 let galleryData = null, galleryMode = 'folder', galleryLoaded = false;
+let galManage = false, galGroups = [], _galOnYes = null;
+const galSel = new Set();
 const _gi = (p, extra='') => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="width:1em;height:1em;vertical-align:-.15em;${extra}">${p}</svg>`;
 const GAL_ICONS = {
   image:_gi('<rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.6"/><path d="m21 15-5-5L5 21"/>'),
@@ -1661,6 +1714,7 @@ const GAL_ICONS = {
   shield:_gi('<path d="M12 3l8 3v5c0 5-3.4 8.5-8 10-4.6-1.5-8-5-8-10V6z"/><path d="m9 12 2 2 4-4"/>'),
   play:_gi('<path d="M8 5v14l11-7z" fill="currentColor" stroke="none"/>'),
   check:_gi('<path d="M20 6 9 17l-5-5"/>'),
+  trash:_gi('<path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>'),
 };
 function galIcon(n){ return GAL_ICONS[n] || ''; }
 function galChip(n, txt){ return `<span class="gal-chip">${galIcon(n)}${galEsc(txt)}</span>`; }
@@ -1690,8 +1744,81 @@ function galMsg(title, sub, retry){
     ${retry?`<button class="btn btn-outline btn-sm" onclick="renderGallery(true)">ลองใหม่</button>`:''}
   </div>`;
 }
-function setGalMode(m){ galleryMode = m; paintGallery(); }
+function setGalMode(m){ galleryMode = m; galSel.clear(); paintGallery(); }
 function galOwnerKey(it){ return it.owner || it.ownerEmail || 'ไม่ระบุผู้อัปโหลด'; }
+
+// ─── โหมดจัดการ/ลบรูป ───
+function toggleGalManage(){
+  galManage = !galManage;
+  if(!galManage) galSel.clear();
+  const lbl = document.getElementById('gal-manage-lbl');
+  const btn = document.getElementById('gal-manage-btn');
+  if(lbl) lbl.textContent = galManage ? 'เสร็จสิ้น' : 'จัดการ/ลบรูป';
+  if(btn){ btn.classList.toggle('btn-primary', galManage); btn.classList.toggle('btn-outline', !galManage); }
+  paintGallery();
+}
+function toggleGalItem(el){
+  const id = el.getAttribute('data-id');
+  if(galSel.has(id)){ galSel.delete(id); el.classList.remove('gal-on'); }
+  else { galSel.add(id); el.classList.add('gal-on'); }
+  updateGalBar();
+}
+function selectGalGroup(idx){
+  const g = galGroups[idx]; if(!g) return;
+  const allSel = g.items.length>0 && g.items.every(it=>galSel.has(it.id));
+  for(const it of g.items){ if(allSel) galSel.delete(it.id); else galSel.add(it.id); }
+  paintGallery();
+}
+function galSelectAll(){
+  const items = ((galleryData&&galleryData.items)||[]).filter(it=>it.kind!=='folder');
+  const allSel = items.length>0 && items.every(it=>galSel.has(it.id));
+  galSel.clear();
+  if(!allSel) for(const it of items) galSel.add(it.id);
+  paintGallery();
+}
+function galClearSel(){ galSel.clear(); paintGallery(); }
+function updateGalBar(){
+  const bar = document.getElementById('gal-actionbar'); if(!bar) return;
+  const c = bar.querySelector('.ga-count'); if(c) c.textContent = galSel.size;
+  bar.style.display = (galManage && galSel.size>0) ? 'flex' : 'none';
+}
+// ยืนยันลบ
+function galConfirm(msg, onYes){
+  const m = document.getElementById('gal-confirm-msg'); if(m) m.textContent = msg;
+  _galOnYes = onYes;
+  const ov = document.getElementById('gal-confirm'); if(ov) ov.style.display = 'flex';
+}
+function galCloseConfirm(){ const ov=document.getElementById('gal-confirm'); if(ov) ov.style.display='none'; _galOnYes=null; }
+function galConfirmYes(){ const f=_galOnYes; galCloseConfirm(); if(typeof f==='function') f(); }
+// ลบจริง
+function galDeleteSelected(){
+  const ids = Array.from(galSel); if(!ids.length) return;
+  galConfirm(`ต้องการลบ ${ids.length} รูปที่เลือกใช่ไหม?`, ()=> galDoDelete(ids, [], ids.length));
+}
+function galDeleteGroup(idx){
+  const g = galGroups[idx]; if(!g) return;
+  const n = g.items.length;
+  if(g.type==='folder' && g.folderId){
+    galConfirm(`ลบทั้งโฟลเดอร์ “${g.name}”${n?` (${n} รายการ)`:''} ใช่ไหม?`, ()=> galDoDelete([], [g.folderId], n||1));
+  } else {
+    const ids = g.items.map(it=>it.id); if(!ids.length) return;
+    const what = g.type==='owner' ? `ของ “${g.name}”` : 'ในโฟลเดอร์หลัก';
+    galConfirm(`ลบรูป ${what} ทั้งหมด ${n} รายการ ใช่ไหม?`, ()=> galDoDelete(ids, [], n));
+  }
+}
+async function galDoDelete(ids, folderIds, count){
+  const url = scriptUrl || localStorage.getItem('apps_script_url');
+  if(!url){ toast('❌ ยังไม่ได้ตั้งค่า Apps Script URL'); return; }
+  toast(`⏳ กำลังลบ ${count} รายการ...`);
+  const dset = new Set(ids);
+  document.querySelectorAll('#gallery-body .gal-sel-tile').forEach(el=>{ if(dset.has(el.getAttribute('data-id'))) el.style.display='none'; });
+  try{
+    await fetch(url, { method:'POST', mode:'no-cors', headers:{'Content-Type':'text/plain;charset=utf-8'},
+      body: JSON.stringify({ action:'delete_photos', ids: ids, folderIds: folderIds }) });
+  }catch(e){}
+  galSel.clear();
+  setTimeout(async ()=>{ await renderGallery(true); toast('✅ ลบเรียบร้อย'); }, 2000);
+}
 
 function paintGallery(){
   const body = document.getElementById('gallery-body');
@@ -1704,7 +1831,7 @@ function paintGallery(){
 
   if(items.length===0 && (!p.folders || p.folders.length===0)){
     body.innerHTML = galMsg('ยังไม่มีรูปในโฟลเดอร์', 'เมื่อแขกสแกน QR แล้วฝากรูป รูปจะมาแสดงที่นี่อัตโนมัติ', true);
-    return;
+    galGroups = []; updateGalBar(); return;
   }
 
   const contributors = new Set(items.map(galOwnerKey)).size;
@@ -1735,15 +1862,32 @@ function paintGallery(){
     <button class="${galleryMode==='owner'?'on':''}" onclick="setGalMode('owner')">ตามผู้อัปโหลด</button>
   </div>`;
 
-  for(const g of buildGalGroups(p, items)){
+  if(galManage){
+    html += `<div class="gal-managebar">
+      ${galIcon('trash')}<b style="color:#9a3b32">โหมดจัดการ — แตะรูปเพื่อเลือก แล้วกด “ลบที่เลือก”</b>
+      <span class="gal-mb-spacer"></span>
+      <button class="gal-mini" onclick="galSelectAll()">เลือก/ยกเลิกทั้งหมด</button>
+    </div>`;
+  }
+
+  galGroups = buildGalGroups(p, items);
+  galGroups.forEach((g, idx) => {
     html += `<div class="gal-group">
-      <div class="gal-ghead">${galIcon(g.icon)}<span>${galEsc(g.name)}</span><span class="gal-gcount">${g.items.length?g.items.length+' รายการ':'ว่าง'}</span></div>
-      <div class="gal-grid">`;
+      <div class="gal-ghead">${galIcon(g.icon)}<span>${galEsc(g.name)}</span><span class="gal-gcount">${g.items.length?g.items.length+' รายการ':'ว่าง'}</span></div>`;
+    if(galManage && (g.items.length || g.folderId)){
+      const delLabel = (g.type==='folder') ? 'ลบทั้งโฟลเดอร์' : (g.type==='owner' ? 'ลบทั้งกลุ่ม' : 'ลบทั้งหมด');
+      html += `<div class="gal-gactions-row">
+        ${g.items.length?`<button class="gal-mini" onclick="selectGalGroup(${idx})">${galIcon('check')}เลือกกลุ่ม</button>`:''}
+        <button class="gal-mini danger" onclick="galDeleteGroup(${idx})">${galIcon('trash')}${delLabel}</button>
+      </div>`;
+    }
+    html += `<div class="gal-grid">`;
     if(!g.items.length){ html += `<div class="gal-empty-folder">โฟลเดอร์ว่าง (ยังไม่มีรูป)</div>`; }
     for(const it of g.items){ html += galTile(it); }
     html += `</div></div>`;
-  }
+  });
   body.innerHTML = html;
+  updateGalBar();
 }
 
 function buildGalGroups(p, items){
@@ -1753,16 +1897,22 @@ function buildGalGroups(p, items){
     if(!map.has(key)) map.set(key, []);
     map.get(key).push(it);
   }
+  const folderIdByName = {};
   if(galleryMode==='folder' && p.folders){
+    for(const f of p.folders){ if(f.path && f.path.length===1 && f.id && !folderIdByName[f.path[0]]) folderIdByName[f.path[0]] = f.id; }
     for(const f of p.folders){ const top=f.path[0]; if(top && !map.has(top)) map.set(top, []); }
   }
   const groups = [];
   for(const [key, arr] of map){
     arr.sort((a,b)=> String(b.created||'').localeCompare(String(a.created||'')));
+    const type = galleryMode==='owner' ? 'owner' : (key==='__root__' ? 'root' : 'folder');
     groups.push({
+      key,
       name: key==='__root__' ? 'รูปในโฟลเดอร์หลัก' : key,
       icon: galleryMode==='owner' ? 'user' : (key==='__root__' ? 'image' : 'folder'),
-      items: arr
+      items: arr,
+      type: type,
+      folderId: type==='folder' ? (folderIdByName[key]||'') : ''
     });
   }
   groups.sort((a,b)=> b.items.length - a.items.length || a.name.localeCompare(b.name,'th'));
@@ -1781,6 +1931,10 @@ function galTile(it){
     inner = `<div class="gal-fallback">${galIcon('file')}<span>${galEsc(it.name)}</span></div>`;
   }
   const badge = it.backed ? `<span class="gal-badge" title="สำรองแล้ว">${galIcon('check')}</span>` : '';
+  if(galManage){
+    const on = galSel.has(it.id) ? ' gal-on' : '';
+    return `<div class="gal-tile gal-sel-tile${on}" data-id="${galEsc(it.id)}" onclick="toggleGalItem(this)" title="${title}">${inner}${badge}<div class="gal-check">${galIcon('check')}</div><div class="gal-cap">${galEsc(it.name)}</div></div>`;
+  }
   return `<a class="gal-tile" href="${galEsc(it.view)}" target="_blank" rel="noopener" title="${title}">${inner}${badge}<div class="gal-cap">${galEsc(it.name)}</div></a>`;
 }
 
