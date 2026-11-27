@@ -204,6 +204,11 @@ function doPost(e) {
       result.ok = ud.ok;
       if (ud.error) result.error = ud.error;
 
+    } else if (body.action === 'delete_donation') {
+      var dd = deleteDonation(ss, body.row);
+      result.ok = dd.ok;
+      if (dd.error) result.error = dd.error;
+
     } else if (body.action === 'donation') {
       var donResult = saveDonation(ss, body);
       result.amount  = donResult.amount;
@@ -2329,6 +2334,23 @@ function updateDonation(ss, row, fields) {
   }
   if (fields.note !== undefined)   sheet.getRange(r, 5).setValue(String(fields.note || ''));
   return { ok: true };
+}
+
+// ลบรายการแจ้งโอนแถวที่ระบุ (ไฟล์สลิปใน Drive ยังอยู่ — ลบเฉพาะบรรทัดในชีต)
+function deleteDonation(ss, row) {
+  var lock = LockService.getScriptLock();
+  try { lock.waitLock(8000); } catch (e) {}
+  try {
+    var sheet = ss.getSheetByName('โอนเงิน');
+    if (!sheet) return { ok: false, error: 'ไม่พบ sheet โอนเงิน' };
+    var r = parseInt(row, 10);
+    var lastRow = sheet.getLastRow();
+    if (!(r >= 2 && r <= lastRow)) return { ok: false, error: 'แถวไม่ถูกต้อง: ' + row };
+    sheet.deleteRow(r);
+    return { ok: true };
+  } finally {
+    try { lock.releaseLock(); } catch (e) {}
+  }
 }
 
 // ── ตั้งค่าการ์ดเชิญ (เปิด/ปิด section) ────────────────────────

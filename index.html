@@ -2460,12 +2460,15 @@ function renderDonations() {
     const editBtn = (d.row !== undefined)
       ? `<button onclick="editDonation(${d.row})" title="แก้ไข" style="padding:4px 10px;border-radius:14px;border:1px solid #d0dce8;background:#fff;font-size:0.75rem;cursor:pointer;font-family:inherit;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="width:1em;height:1em;vertical-align:-.15em;"><path d="M17 3a2.83 2.83 0 0 1 4 4L7.5 20.5 2 22l1.5-5.5z"/></svg></button>`
       : '';
+    const delBtn = (d.row !== undefined)
+      ? `<button onclick="deleteDonation(${d.row})" title="ลบรายการ" style="padding:4px 10px;border-radius:14px;border:1px solid #e8b4b4;background:#fff;color:#c0392b;font-size:0.75rem;cursor:pointer;font-family:inherit;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="width:1em;height:1em;vertical-align:-.15em;"><path d="M3 6h18"/><path d="M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg></button>`
+      : '';
     html += `<tr>
       <td style="font-size:0.78rem;color:var(--text-light)">${donEsc(d.date)}</td>
       <td><b>${donEsc(d.name)}</b></td>
       <td class="amt-donate" style="${zero}">${(donNum(d.amount)).toLocaleString()}</td>
       <td>${slip}</td>
-      <td style="text-align:right">${editBtn}</td>
+      <td style="text-align:right;white-space:nowrap"><span style="display:inline-flex;gap:6px;justify-content:flex-end">${editBtn}${delBtn}</span></td>
     </tr>`;
   });
   html += '</tbody></table>';
@@ -2511,6 +2514,34 @@ async function saveDonationEdit() {
   } catch(e) {
     toast('❌ บันทึกไม่สำเร็จ');
   } finally { btn.disabled = false; btn.innerHTML = ICO.save + ' บันทึก'; }
+}
+
+// ลบรายการแจ้งโอน
+async function deleteDonation(row) {
+  const d = donations.find(x => x.row === row);
+  const who = d ? (d.name || '') : '';
+  if (!confirm('ลบรายการแจ้งโอนนี้?' + (who ? '\n\n' + who + '  ·  ' + (donNum(d.amount)).toLocaleString() + ' บาท' : '') + '\n\n(ลบเฉพาะรายการ ไฟล์สลิปใน Drive ยังอยู่)')) return;
+  const url = scriptUrl || localStorage.getItem('apps_script_url');
+  if (!url) { toast('⚠ ยังไม่ได้ตั้งค่า Script URL'); return; }
+  toast(ICO.spin + ' กำลังลบ...');
+  try {
+    await fetch(url, {
+      method: 'POST', headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify({ action: 'delete_donation', row })
+    });
+    toast('✅ ลบแล้ว');
+    // รีเฟรชจาก backend (แถวเลื่อนหลังลบ ต้องโหลดใหม่ให้ row ตรง)
+    try {
+      const data = await fetchJSONRetry(url + '?action=donations', { tries: 2, timeout: 60000 });
+      if (Array.isArray(data.donations)) {
+        donations = data.donations;
+        localStorage.setItem('wedding_donations', JSON.stringify(donations));
+      }
+    } catch(e) {}
+    renderDonations();
+  } catch(e) {
+    toast('❌ ลบไม่สำเร็จ');
+  }
 }
 
 function checkDone() { return checklist.flatMap(p=>p.items).filter(i=>i.status==='done').length; }
