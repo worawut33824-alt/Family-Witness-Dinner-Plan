@@ -2619,7 +2619,7 @@ async function deleteDonation(row) {
   if (!confirm('ลบรายการแจ้งโอนนี้?' + (who ? '\n\n' + who + '  ·  ' + (donNum(d.amount)).toLocaleString() + ' บาท' : '') + '\n\n(ลบเฉพาะรายการ ไฟล์สลิปใน Drive ยังอยู่)')) return;
   const url = scriptUrl || localStorage.getItem('apps_script_url');
   if (!url) { toast('⚠ ยังไม่ได้ตั้งค่า Script URL'); return; }
-  toast(ICO.spin + ' กำลังลบ...');
+  toast('⏳ กำลังลบ...');
   try {
     await fetch(url, {
       method: 'POST', headers: { 'Content-Type': 'text/plain' },
