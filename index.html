@@ -670,7 +670,10 @@
 <div id="page-donations" class="page">
   <div class="section-header">
     <h2><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 12v8H4v-8"/><path d="M2 7.5h20V12H2z"/><path d="M12 20V7.5"/><path d="M12 7.5S9.5 3 7.2 4.2 8 7.5 12 7.5Zm0 0s2.5-4.5 4.8-3.3S16 7.5 12 7.5Z"/></svg>การสนับสนุน</h2>
-    <span id="don-count-label" style="font-size:0.8rem;color:var(--text-light)"></span>
+    <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;">
+      <span id="don-count-label" style="font-size:0.8rem;color:var(--text-light)"></span>
+      <button class="btn btn-primary" onclick="openDonAdd()">+ เพิ่มรายการ</button>
+    </div>
   </div>
 
   <!-- summary cards -->
@@ -709,6 +712,29 @@
     <div style="display:flex;gap:10px;justify-content:flex-end;">
       <button onclick="closeDonEdit()" style="padding:9px 18px;border-radius:20px;border:1px solid #d0dce8;background:#fff;font-size:0.85rem;cursor:pointer;font-family:inherit;">ยกเลิก</button>
       <button onclick="saveDonationEdit()" id="don-edit-save" style="padding:9px 20px;border-radius:20px;border:none;background:#6aaf8a;color:#fff;font-size:0.85rem;font-weight:600;cursor:pointer;font-family:inherit;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="width:1em;height:1em;vertical-align:-.15em;"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><path d="M17 21v-8H7v8"/><path d="M7 3v5h8"/></svg> บันทึก</button>
+    </div>
+  </div>
+</div>
+
+<!-- DONATION ADD MODAL -->
+<div id="don-add-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9998;align-items:center;justify-content:center;padding:20px;" onclick="closeDonAdd()">
+  <div style="background:#fff;border-radius:16px;padding:24px;max-width:400px;width:100%;max-height:92vh;overflow:auto;box-shadow:0 10px 40px rgba(0,0,0,.2);" onclick="event.stopPropagation()">
+    <div style="font-weight:700;font-size:1rem;margin-bottom:16px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="width:1em;height:1em;vertical-align:-.15em;"><path d="M12 5v14M5 12h14"/></svg> เพิ่มรายการสนับสนุน</div>
+    <label style="font-size:0.82rem;color:var(--text-light);display:block;margin-bottom:4px;">ชื่อผู้สนับสนุน</label>
+    <input id="don-add-name" type="text" placeholder="เช่น พี่นก Richest Supply" style="width:100%;padding:9px 12px;border:1px solid #d0dce8;border-radius:10px;font-family:inherit;font-size:0.9rem;margin-bottom:12px;box-sizing:border-box;">
+    <label style="font-size:0.82rem;color:var(--text-light);display:block;margin-bottom:4px;">ยอด (บาท)</label>
+    <input id="don-add-amount" type="number" inputmode="decimal" step="0.01" placeholder="เว้นว่างได้ถ้าแนบสลิป" style="width:100%;padding:9px 12px;border:1px solid #d0dce8;border-radius:10px;font-family:inherit;font-size:0.9rem;margin-bottom:4px;box-sizing:border-box;">
+    <div style="font-size:0.72rem;color:#8a9aa8;margin-bottom:12px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="width:1em;height:1em;vertical-align:-.15em;"><path d="M4 8V6a2 2 0 0 1 2-2h2M16 4h2a2 2 0 0 1 2 2v2M20 16v2a2 2 0 0 1-2 2h-2M8 20H6a2 2 0 0 1-2-2v-2M4 12h16"/></svg> เว้นว่าง + แนบสลิป แล้ว AI จะอ่านยอดให้อัตโนมัติ</div>
+    <label style="font-size:0.82rem;color:var(--text-light);display:block;margin-bottom:4px;">วันที่ <span style="color:#bbb">(ไม่บังคับ · เว้นว่าง = วันนี้)</span></label>
+    <input id="don-add-date" type="date" style="width:100%;padding:9px 12px;border:1px solid #d0dce8;border-radius:10px;font-family:inherit;font-size:0.9rem;margin-bottom:12px;box-sizing:border-box;">
+    <label style="font-size:0.82rem;color:var(--text-light);display:block;margin-bottom:4px;">แนบสลิป / รูป <span style="color:#bbb">(ไม่บังคับ)</span></label>
+    <input id="don-add-file" type="file" accept="image/*" onchange="onDonAddFile(this)" style="width:100%;font-family:inherit;font-size:0.82rem;margin-bottom:10px;">
+    <img id="don-add-preview" alt="พรีวิวสลิป" style="display:none;max-width:100%;max-height:220px;border-radius:10px;border:1px solid #e3e9f0;margin-bottom:14px;">
+    <label style="font-size:0.82rem;color:var(--text-light);display:block;margin-bottom:4px;">หมายเหตุ <span style="color:#bbb">(ไม่บังคับ)</span></label>
+    <input id="don-add-note" type="text" style="width:100%;padding:9px 12px;border:1px solid #d0dce8;border-radius:10px;font-family:inherit;font-size:0.9rem;margin-bottom:18px;box-sizing:border-box;">
+    <div style="display:flex;gap:10px;justify-content:flex-end;">
+      <button onclick="closeDonAdd()" style="padding:9px 18px;border-radius:20px;border:1px solid #d0dce8;background:#fff;font-size:0.85rem;cursor:pointer;font-family:inherit;">ยกเลิก</button>
+      <button onclick="saveDonAdd()" id="don-add-save" style="padding:9px 20px;border-radius:20px;border:none;background:#6aaf8a;color:#fff;font-size:0.85rem;font-weight:600;cursor:pointer;font-family:inherit;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="width:1em;height:1em;vertical-align:-.15em;"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><path d="M17 21v-8H7v8"/><path d="M7 3v5h8"/></svg> บันทึก</button>
     </div>
   </div>
 </div>
@@ -2341,6 +2367,23 @@ let donCumChartInst = null, donTopChartInst = null, dashDonChartInst = null;
 function donEsc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 // อ่านตัวเลขเงินให้ทน comma/ช่องว่าง เช่น "1,500" → 1500 (กันยอดเพี้ยนเป็น 0)
 function donNum(v){ return Number(String(v==null?0:v).replace(/[,\s]/g,'')) || 0; }
+// แสดงวันที่สวยงาม: "27/11/2026 11:47" → "27 พ.ย. 2026 · 11:47"  (แปลงตอนแสดงเท่านั้น ไม่แก้ข้อมูลจริง)
+const DON_TH_MONTHS = ['','ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
+function fmtDonDate(s){
+  s = String(s||'').trim(); if(!s) return '';
+  const parts = s.split(' '), dmy = parts[0].split('/'), time = parts[1] || '';
+  if (dmy.length === 3){
+    const d = parseInt(dmy[0],10), m = parseInt(dmy[1],10), y = dmy[2];
+    if (d && m>=1 && m<=12){ let out = d+' '+DON_TH_MONTHS[m]+' '+y; if(time) out += ' · '+time.slice(0,5); return out; }
+  }
+  return s;   // รูปแบบอื่น (ISO ฯลฯ) แสดงตามเดิม
+}
+// วันที่สั้นสำหรับแกนกราฟ: "06/10/2026" → "6 ต.ค."
+function fmtDonDateShort(s){
+  const dmy = String(s||'').trim().split(' ')[0].split('/');
+  if (dmy.length === 3){ const d=parseInt(dmy[0],10), m=parseInt(dmy[1],10); if(d&&m>=1&&m<=12) return d+' '+DON_TH_MONTHS[m]; }
+  return s;
+}
 function donStats() {
   const total = donations.reduce((s,d)=>s+(donNum(d.amount)),0);
   const count = donations.length;
@@ -2390,7 +2433,7 @@ function renderDashDonations() {
   if (cv) {
     dashDonChartInst = new Chart(cv, {
       type:'bar',
-      data:{ labels:keys, datasets:[{ data:keys.map(k=>map[k]), backgroundColor:'#a8dcc0', borderRadius:5 }] },
+      data:{ labels:keys.map(fmtDonDateShort), datasets:[{ data:keys.map(k=>map[k]), backgroundColor:'#a8dcc0', borderRadius:5 }] },
       options:{ responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}}, scales:{y:{ticks:{callback:v=>'฿'+Number(v).toLocaleString()}}} }
     });
   }
@@ -2431,7 +2474,7 @@ function renderDonations() {
   const cvCum = document.getElementById('donCumChart');
   if (cvCum) donCumChartInst = new Chart(cvCum, {
     type:'line',
-    data:{ labels:keys, datasets:[{ label:'ยอดสะสม', data:cum, borderColor:'#8ccfaa', backgroundColor:'rgba(168,220,192,0.30)', fill:true, tension:0.3, pointBackgroundColor:'#8ccfaa', pointBorderColor:'#fff', pointRadius:4 }] },
+    data:{ labels:keys.map(fmtDonDateShort), datasets:[{ label:'ยอดสะสม', data:cum, borderColor:'#8ccfaa', backgroundColor:'rgba(168,220,192,0.30)', fill:true, tension:0.3, pointBackgroundColor:'#8ccfaa', pointBorderColor:'#fff', pointRadius:4 }] },
     options:{ responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}}, scales:{y:{ticks:{callback:v=>'฿'+Number(v).toLocaleString()}}} }
   });
 
@@ -2464,7 +2507,7 @@ function renderDonations() {
       ? `<button onclick="deleteDonation(${d.row})" title="ลบรายการ" style="padding:4px 10px;border-radius:14px;border:1px solid #e8b4b4;background:#fff;color:#c0392b;font-size:0.75rem;cursor:pointer;font-family:inherit;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="width:1em;height:1em;vertical-align:-.15em;"><path d="M3 6h18"/><path d="M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg></button>`
       : '';
     html += `<tr>
-      <td style="font-size:0.78rem;color:var(--text-light)">${donEsc(d.date)}</td>
+      <td style="font-size:0.78rem;color:var(--text-light);white-space:nowrap">${donEsc(fmtDonDate(d.date))}</td>
       <td><b>${donEsc(d.name)}</b></td>
       <td class="amt-donate" style="${zero}">${(donNum(d.amount)).toLocaleString()}</td>
       <td>${slip}</td>
@@ -2513,6 +2556,59 @@ async function saveDonationEdit() {
     renderDonations();
   } catch(e) {
     toast('❌ บันทึกไม่สำเร็จ');
+  } finally { btn.disabled = false; btn.innerHTML = ICO.save + ' บันทึก'; }
+}
+
+// ─── เพิ่มรายการสนับสนุน (หลังบ้าน) — ชื่อ/ยอด/วันที่/แนบสลิป ───────────────────
+let donAddSlip = { b64: '', mime: '' };
+function openDonAdd() {
+  document.getElementById('don-add-name').value = '';
+  document.getElementById('don-add-amount').value = '';
+  document.getElementById('don-add-date').value = '';
+  document.getElementById('don-add-note').value = '';
+  const f = document.getElementById('don-add-file'); if (f) f.value = '';
+  donAddSlip = { b64: '', mime: '' };
+  const pv = document.getElementById('don-add-preview'); pv.style.display = 'none'; pv.src = '';
+  document.getElementById('don-add-modal').style.display = 'flex';
+}
+function closeDonAdd() { document.getElementById('don-add-modal').style.display = 'none'; }
+async function onDonAddFile(input) {
+  const file = input.files && input.files[0];
+  const pv = document.getElementById('don-add-preview');
+  if (!file) { donAddSlip = { b64: '', mime: '' }; pv.style.display = 'none'; pv.src = ''; return; }
+  try {
+    const b64 = await resizeImageToBase64(file, 1600);
+    donAddSlip = { b64, mime: 'image/jpeg' };
+    pv.src = 'data:image/jpeg;base64,' + b64; pv.style.display = 'block';
+  } catch (e) { toast('❌ อ่านรูปไม่สำเร็จ'); }
+}
+async function saveDonAdd() {
+  const url = scriptUrl || localStorage.getItem('apps_script_url');
+  if (!url) { toast('⚠ ยังไม่ได้ตั้งค่า Script URL'); return; }
+  const name   = document.getElementById('don-add-name').value.trim();
+  const amount = document.getElementById('don-add-amount').value.trim();
+  const date   = document.getElementById('don-add-date').value;   // yyyy-mm-dd หรือ ''
+  const note   = document.getElementById('don-add-note').value.trim();
+  if (!name && !amount && !donAddSlip.b64) { toast('⚠ กรอกชื่อ/ยอด หรือแนบสลิปอย่างน้อย 1 อย่าง'); return; }
+  const btn = document.getElementById('don-add-save');
+  btn.disabled = true; btn.innerHTML = ICO.spin + ' กำลังบันทึก...';
+  try {
+    await fetch(url, {
+      method: 'POST', headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify({ action: 'donation', name, amount, date, note, slipBase64: donAddSlip.b64, slipMime: donAddSlip.mime })
+    });
+    closeDonAdd();
+    toast('✅ เพิ่มรายการแล้ว' + (!amount && donAddSlip.b64 ? ' (AI อ่านยอดจากสลิป)' : ''));
+    try {
+      const data = await fetchJSONRetry(url + '?action=donations', { tries: 2, timeout: 60000 });
+      if (Array.isArray(data.donations)) {
+        donations = data.donations;
+        localStorage.setItem('wedding_donations', JSON.stringify(donations));
+      }
+    } catch (e) {}
+    renderDonations();
+  } catch (e) {
+    toast('❌ เพิ่มไม่สำเร็จ');
   } finally { btn.disabled = false; btn.innerHTML = ICO.save + ' บันทึก'; }
 }
 
