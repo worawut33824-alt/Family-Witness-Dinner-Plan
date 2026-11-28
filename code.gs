@@ -2268,6 +2268,8 @@ function saveDonation(ss, body) {
     slipUrl,
     String(body.note || '')
   ]]);
+  // เก็บวันที่เป็นข้อความ (format @) กันชีตแปลงเป็น Date แล้วเวลาเพี้ยนตาม timezone ชีต
+  sheet.getRange(lastRow + 1, 1).setNumberFormat('@').setValue(dateStr);
 
   // ตั้ง hyperlink สลิป
   if (slipUrl) {
