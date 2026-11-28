@@ -725,8 +725,7 @@
     <label style="font-size:0.82rem;color:var(--text-light);display:block;margin-bottom:4px;">ยอด (บาท)</label>
     <input id="don-add-amount" type="number" inputmode="decimal" step="0.01" placeholder="เว้นว่างได้ถ้าแนบสลิป" style="width:100%;padding:9px 12px;border:1px solid #d0dce8;border-radius:10px;font-family:inherit;font-size:0.9rem;margin-bottom:4px;box-sizing:border-box;">
     <div style="font-size:0.72rem;color:#8a9aa8;margin-bottom:12px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="width:1em;height:1em;vertical-align:-.15em;"><path d="M4 8V6a2 2 0 0 1 2-2h2M16 4h2a2 2 0 0 1 2 2v2M20 16v2a2 2 0 0 1-2 2h-2M8 20H6a2 2 0 0 1-2-2v-2M4 12h16"/></svg> เว้นว่าง + แนบสลิป แล้ว AI จะอ่านยอดให้อัตโนมัติ</div>
-    <label style="font-size:0.82rem;color:var(--text-light);display:block;margin-bottom:4px;">วันที่ <span style="color:#bbb">(ไม่บังคับ · เว้นว่าง = วันนี้)</span></label>
-    <input id="don-add-date" type="date" style="width:100%;padding:9px 12px;border:1px solid #d0dce8;border-radius:10px;font-family:inherit;font-size:0.9rem;margin-bottom:12px;box-sizing:border-box;">
+    <div style="font-size:0.74rem;color:#8a9aa8;margin-bottom:12px;display:flex;align-items:center;gap:.4em;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="width:1em;height:1em;"><circle cx="12" cy="12" r="9"/><path d="M12 7.5V12l3 2"/></svg> ระบบบันทึกวันที่–เวลาที่เพิ่มให้อัตโนมัติ</div>
     <label style="font-size:0.82rem;color:var(--text-light);display:block;margin-bottom:4px;">แนบสลิป / รูป <span style="color:#bbb">(ไม่บังคับ)</span></label>
     <input id="don-add-file" type="file" accept="image/*" onchange="onDonAddFile(this)" style="width:100%;font-family:inherit;font-size:0.82rem;margin-bottom:10px;">
     <img id="don-add-preview" alt="พรีวิวสลิป" style="display:none;max-width:100%;max-height:220px;border-radius:10px;border:1px solid #e3e9f0;margin-bottom:14px;">
@@ -2564,7 +2563,6 @@ let donAddSlip = { b64: '', mime: '' };
 function openDonAdd() {
   document.getElementById('don-add-name').value = '';
   document.getElementById('don-add-amount').value = '';
-  document.getElementById('don-add-date').value = '';
   document.getElementById('don-add-note').value = '';
   const f = document.getElementById('don-add-file'); if (f) f.value = '';
   donAddSlip = { b64: '', mime: '' };
@@ -2587,7 +2585,6 @@ async function saveDonAdd() {
   if (!url) { toast('⚠ ยังไม่ได้ตั้งค่า Script URL'); return; }
   const name   = document.getElementById('don-add-name').value.trim();
   const amount = document.getElementById('don-add-amount').value.trim();
-  const date   = document.getElementById('don-add-date').value;   // yyyy-mm-dd หรือ ''
   const note   = document.getElementById('don-add-note').value.trim();
   if (!name && !amount && !donAddSlip.b64) { toast('⚠ กรอกชื่อ/ยอด หรือแนบสลิปอย่างน้อย 1 อย่าง'); return; }
   const btn = document.getElementById('don-add-save');
@@ -2595,7 +2592,7 @@ async function saveDonAdd() {
   try {
     await fetch(url, {
       method: 'POST', headers: { 'Content-Type': 'text/plain' },
-      body: JSON.stringify({ action: 'donation', name, amount, date, note, slipBase64: donAddSlip.b64, slipMime: donAddSlip.mime })
+      body: JSON.stringify({ action: 'donation', name, amount, note, slipBase64: donAddSlip.b64, slipMime: donAddSlip.mime })
     });
     closeDonAdd();
     toast('✅ เพิ่มรายการแล้ว' + (!amount && donAddSlip.b64 ? ' (AI อ่านยอดจากสลิป)' : ''));

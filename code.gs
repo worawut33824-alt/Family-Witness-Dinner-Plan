@@ -2256,15 +2256,8 @@ function saveDonation(ss, body) {
     [160, 200, 120, 340, 200].forEach(function(w, i) { sheet.setColumnWidth(i + 1, w); });
   }
 
-  // วันที่: ใช้ body.date (yyyy-MM-dd จากหลังบ้าน) ถ้ามี, ไม่งั้นใช้เวลาปัจจุบัน (flow หน้าเชิญ)
-  var dateStr;
-  if (body.date && /^\d{4}-\d{2}-\d{2}$/.test(String(body.date))) {
-    var _p = String(body.date).split('-');
-    var _hm = Utilities.formatDate(new Date(), 'Asia/Bangkok', 'HH:mm');
-    dateStr = _p[2] + '/' + _p[1] + '/' + _p[0] + ' ' + _hm;
-  } else {
-    dateStr = Utilities.formatDate(new Date(), 'Asia/Bangkok', 'dd/MM/yyyy HH:mm');
-  }
+  // วันที่/เวลา: บันทึกเวลาที่ส่งเข้ามาอัตโนมัติเสมอ (เขตเวลาไทย) — ไม่ให้ผู้ใช้กรอกเอง
+  var dateStr = Utilities.formatDate(new Date(), 'Asia/Bangkok', 'dd/MM/yyyy HH:mm');
   var lastRow = sheet.getLastRow();
   var amountNum = parseFloat(String(amount).replace(/[,\s]/g,'')) || '';
 
